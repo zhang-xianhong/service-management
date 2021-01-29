@@ -1,5 +1,5 @@
 import { join } from 'path';
-import getConfig from './index';
+import getConfig from './';
 
 const {
   DATABASE_HOST,

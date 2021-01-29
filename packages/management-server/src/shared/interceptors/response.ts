@@ -17,7 +17,7 @@ export class ResponseInterceptor implements NestInterceptor {
         code: 0,
         data,
         message: 'successful',
-        status: HttpStatus.OK,
+        httpStatus: HttpStatus.OK,
         timestamp: Date.now(),
       })));
   }

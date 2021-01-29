@@ -25,7 +25,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
       const exceptionRes: any = httpException.getResponse();
       error = exceptionRes.error;
       message = exceptionRes.message;
-      code = exceptionRes.code;
+      code = Number(exceptionRes.code);
     } else {
       // 其他异常
       const httpException = exception as Error;
@@ -44,14 +44,14 @@ export class AllExceptionsFilter implements ExceptionFilter {
     };
 
     // 日志记录
-    this.logger.error(`[${traceId}](${status}): ${JSON.stringify(errorInfo)}`);
+    this.logger.error(`[${traceId}][${status}]: ${JSON.stringify(errorInfo)}`);
 
     // response 返回
     response.status(status).json({
       code,
       error,
       message: String(message),
-      status,
+      httpStatus: status,
       timestamp: Date.now(),
     });
   }

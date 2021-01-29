@@ -9,7 +9,7 @@ export default {
     }),
 
     format.label({
-      label: '测试',
+      label: 'CityBase Management Server',
     }),
 
     format.splat(),
