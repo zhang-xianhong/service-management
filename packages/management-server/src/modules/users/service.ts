@@ -1,7 +1,9 @@
-import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { Repository, Connection } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UsersEntity } from './entity';
+import { ApiException } from '../../shared/utils/api.exception';
+import { UserCodes } from '../../shared/constants/code';
 
 @Injectable()
 export class UsersService {
@@ -12,24 +14,17 @@ export class UsersService {
   ) {}
 
   async findAll() {
-    // throw 123;
-    // throw ReferenceError('123');
-    throw new HttpException({
-      message: '该用户名已被注册',
-      error: 'ParamsError.',
-      code: 50000,
-    }, HttpStatus.BAD_REQUEST);
-    // return await this.usersRepository.find({ select: ['username', 'id'] });
+    return await this.usersRepository.find({ select: ['username', 'id'] });
   }
 
   async create(data) {
     const { username } = data;
     const user = await this.usersRepository.findOne({ where: { username } });
     if (user) {
-      throw new HttpException({
+      throw new ApiException({
+        code: UserCodes.USERNAME_EXISTED,
         message: '该用户名已被注册',
-        error: 'ParamsError.',
-      }, HttpStatus.BAD_REQUEST);
+      });
     }
 
     return await this.usersRepository.save(data);
