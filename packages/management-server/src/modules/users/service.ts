@@ -26,7 +26,9 @@ export class UsersService {
         message: '该用户名已被注册',
       });
     }
-
-    return await this.usersRepository.save(data);
+    const res = await this.usersRepository.save(data);
+    return {
+      id: res.id,
+    };
   }
 }

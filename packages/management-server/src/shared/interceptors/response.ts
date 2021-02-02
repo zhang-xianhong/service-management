@@ -4,14 +4,21 @@ import { map } from 'rxjs/operators';
 import { CommonCodes } from '../constants/code';
 
 export interface Response<T> {
-  data: T;
-  httpStatus: Number;
+  code: number
+  data: T
   message: string
+  httpStatus: number
+  timestamp: number
 }
 
 @Injectable()
-export class ResponseInterceptor implements NestInterceptor {
-  intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
+export class ResponseInterceptor<T> implements NestInterceptor<T, Response<T>> {
+  intercept(context: ExecutionContext, next: CallHandler): Observable<Response<T>> {
+    // Rest默认POST请求使用201
+    // 无论是POST请求还是GET请求，统一把HTTP状态码改为200
+    context.switchToHttp()
+      .getResponse()
+      .status(HttpStatus.OK);
     return next
       .handle()
       .pipe(map(data => ({

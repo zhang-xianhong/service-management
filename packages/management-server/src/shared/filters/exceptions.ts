@@ -1,5 +1,4 @@
 // 异常捕获过滤器
-
 import { ExceptionFilter, Catch, ArgumentsHost, HttpException, HttpStatus } from '@nestjs/common';
 import { Logger } from 'winston';
 import { HEADER_TRACE_NAME } from '../constants';
