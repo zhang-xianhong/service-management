@@ -14,7 +14,7 @@ export interface Response<T> {
 @Injectable()
 export class ResponseInterceptor<T> implements NestInterceptor<T, Response<T>> {
   intercept(context: ExecutionContext, next: CallHandler): Observable<Response<T>> {
-    // Rest默认POST请求使用201
+    // Nest默认POST请求使用201
     // 无论是POST请求还是GET请求，统一把HTTP状态码改为200
     context.switchToHttp()
       .getResponse()

@@ -25,7 +25,7 @@ export class ApiException extends HttpException {
     super({
       code,
       error: error || ErrorTypes.INVALID_PARAMETER,
-      message: message || 'error',
+      message: message || 'bad request',
     }, status);
   }
 }

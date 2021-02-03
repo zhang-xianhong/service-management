@@ -33,5 +33,9 @@ export enum UserCodes {
   USERNAME_EXISTED = 20001,
   // 邮箱已存在
   EMAIL_EXISTED = 20002,
+  // 名称无效
+  USERNAME_INVALID = 20003,
+  // 密码无效
+  PASSWORD_INVALID = 20004
 }
 
