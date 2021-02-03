@@ -16,7 +16,7 @@ export const isNull = (value: unknown): boolean => value === null;
  * @param value
  * @param ignoreWhitespace
  */
-export const isEmpty = (value: unknown, ignoreWhitespace = false): boolean => {
+export const isEmpty = (value: unknown, ignoreWhitespace = true): boolean => {
   if (isUndefined(value) || isNull(value)) {
     return false;
   }
