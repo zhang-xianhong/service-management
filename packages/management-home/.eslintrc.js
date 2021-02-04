@@ -4,12 +4,13 @@ module.exports = {
     node: true
   },
   extends: [
-    '@tencent/eslint-config-tencent',
-    '@tencent/eslint-config-tencent/ts'
+    'plugin:vue/vue3-essential',
+    '@vue/standard',
+    '@vue/typescript/recommended'
   ],
   parserOptions: {
     ecmaVersion: 2020,
-    project: "./tsconfig.json"
+    project: './tsconfig.json',
   },
   rules: {
     'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
