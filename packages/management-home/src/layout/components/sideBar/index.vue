@@ -1,7 +1,11 @@
 <template>
   <div class="side-bar">
-    <logo></logo>
-    <main-menu></main-menu>
+    <keep-alive>
+      <div>
+        <logo></logo>
+        <main-menu></main-menu>
+      </div>
+    </keep-alive>
   </div>
 </template>
 

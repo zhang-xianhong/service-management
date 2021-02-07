@@ -5,14 +5,24 @@
 
 <script lang="ts">
 import { defineComponent, onMounted } from 'vue'
-import { getRouterRef } from '@/layout/messageCenter/routerRef'
+import { getRouterRef, getComputedRoutes } from '@/layout/messageCenter/routerRef'
+import Link from '@/layout/components/sideBar/link.vue'
+import Item from '@/layout/components/sideBar/item.vue'
+import { isExternal } from '@/utils/validate'
+// import path from 'path'
 
 export default defineComponent({
-  name: 'menu',
-  components: {},
+  name: 'Menu',
+  components: {
+    // eslint-disable-next-line vue/no-unused-components
+    Link,
+    // eslint-disable-next-line vue/no-unused-components
+    Item
+  },
   setup () {
     onMounted(() => {
-      console.log(getRouterRef())
+      const luts = getComputedRoutes()
+      console.log(Object.keys(luts), luts)
     })
   }
 })
