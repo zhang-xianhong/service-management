@@ -17,6 +17,17 @@ export class UsersService {
     return await this.usersRepository.find({ select: ['username', 'id'] });
   }
 
+  async find(username: string) {
+    const user = await this.usersRepository.findOne({ where: { username } });
+    if (!user) {
+      throw new ApiException({
+        code: UserCodes.USERNAME_INVALID,
+        message: '用户不存在！',
+      });
+    }
+    return user;
+  }
+
   async create(data) {
     const { username } = data;
     const user = await this.usersRepository.findOne({ where: { username } });

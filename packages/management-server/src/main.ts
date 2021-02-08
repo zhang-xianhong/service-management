@@ -7,7 +7,7 @@ import corsConfig from './config/cors';
 import { AllExceptionsFilter } from './shared/filters/exceptions';
 import { TraceMiddleware } from './shared/middleware/trace';
 import { ResponseInterceptor } from './shared/interceptors/response';
-import { AuthGuard } from './shared/guards/auth';
+// import { AuthGuard } from './shared/guards/auth';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -29,7 +29,7 @@ async function bootstrap() {
   // 全局拦截器
   app.useGlobalInterceptors(new ResponseInterceptor());
   // 全局守卫
-  app.useGlobalGuards(new AuthGuard());
+  // app.useGlobalGuards(new AuthGuard());
 
 
   await app.listen(Number(config.HTTP_PORT));
