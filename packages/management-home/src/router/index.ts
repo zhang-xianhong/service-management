@@ -18,6 +18,10 @@ const routes: Array<RouteRecordRaw> = [
         path: '/about',
         name: 'About',
         component: () => import('../views/About.vue'),
+        meta: {
+          title: 'about',
+          icon: 'el-icon-eleme'
+        },
         props: {
           isRouteLevel: false
         }
@@ -27,6 +31,10 @@ const routes: Array<RouteRecordRaw> = [
         props: {
           hidden: !true,
           isRouteLevel: false
+        },
+        meta: {
+          title: 'hello',
+          icon: 'el-icon-eleme'
         },
         component: () => import('../views/Home.vue')
       }

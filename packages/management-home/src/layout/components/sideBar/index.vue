@@ -3,22 +3,62 @@
     <keep-alive>
       <div>
         <logo></logo>
-        <main-menu></main-menu>
+        <el-scrollbar wrap-class="scrollbar-wrapper">
+<!--          :default-active="activeMenu"-->
+          <el-menu
+            :collapse="isCollapse"
+            :background-color="variables.menuBg"
+            :text-color="variables.menuText"
+            :unique-opened="false"
+            :active-text-color="variables.menuActiveText"
+            :collapse-transition="false"
+            mode="vertical"
+          >
+            <sidebar-item v-for="route in permissionRoutes" :key="route.path" :item="route" :base-path="route.path" />
+          </el-menu>
+        </el-scrollbar>
       </div>
     </keep-alive>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, computed, getCurrentInstance } from 'vue'
 import logo from '@/layout/components/sideBar/logo.vue'
-import mainMenu from '@/layout/components/sideBar/menu.vue'
+import SidebarItem from '@/layout/components/sideBar/SidebarItem.vue'
+import variables from '@/styles/variables.scss'
+import { getComputedRoutes } from '@/layout/messageCenter/routerRef'
 
 export default defineComponent({
   name: 'sideBar',
   components: {
     logo,
-    mainMenu
+    SidebarItem
+  },
+  setup (props, ctx) {
+    const isCollapse = computed(() => false)
+    // eslint-disable-next-line
+    // @ts-ignore
+    const ctxthis = getCurrentInstance().ctx
+    const activeMenu = computed(() => {
+      // eslint-disable-next-line
+      // @ts-ignore
+      const route = ctxthis.$route
+      console.log(ctxthis, route)
+      const { meta, path } = route
+      if (meta.activeMenu) {
+        return meta.activeMenu
+      }
+      return path
+    })
+    const permissionRoutes = getComputedRoutes()
+    console.log(permissionRoutes)
+    return {
+      variables,
+      isCollapse,
+      activeMenu,
+      permissionRoutes
+    }
   }
 })
 </script>
