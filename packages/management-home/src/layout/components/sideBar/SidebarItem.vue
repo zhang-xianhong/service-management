@@ -1,10 +1,10 @@
 <template>
   <div class="main-menu" v-if="!item.props.hidden">
     <template v-if="hasOwnShowingChild(item.children, item) && (!onlyOneChild.children || onlyOneChild.noShowingChildren)">
-      <app-link v-if="onlyOneChild.meta" :to="resolvePath(onlyOneChild.path)">
-        <el-menu-item :index="resolvePath(onlyOneChild.path)" :class="{'submenu-title-noDropdown':!isNest}">
-          <item :icon="onlyOneChild.meta.icon||(item.meta&&item.meta.icon)"
-                :title="onlyOneChild.meta.title" />
+      <app-link v-if="onlyOneChild.value.meta" :to="resolvePath(onlyOneChild.value.path)">
+        <el-menu-item :index="resolvePath(onlyOneChild.value.path)" :class="{'submenu-title-noDropdown':!isNest}">
+          <item :icon="onlyOneChild.value.meta.icon||(item.meta&&item.meta.icon)"
+                :title="onlyOneChild.value.meta.title" @click="logs(onlyOneChild.value)" />
         </el-menu-item>
       </app-link>
     </template>
@@ -26,8 +26,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, reactive } from 'vue'
-import { getComputedRoutes } from '@/layout/messageCenter/routerRef'
+import { defineComponent, reactive } from 'vue'
 import AppLink from '@/layout/components/sideBar/link.vue'
 import Item from '@/layout/components/sideBar/item.vue'
 import { isExternal } from '@/utils/validate'
@@ -48,6 +47,10 @@ export default defineComponent({
             default: {
               hidden: false
             }
+          },
+          meta: {
+            title: '',
+            icon: ''
           }
         }
       }
@@ -62,16 +65,10 @@ export default defineComponent({
     }
   },
   setup (props) {
-    onMounted(() => {
-      const luts = getComputedRoutes()
-      console.log(Object.keys(luts), luts)
-    })
-
     const onlyOneChild = reactive({ value: {} })
 
     const hasOwnShowingChild = (children = [], parent: any) => {
       const showChidren = children.filter(item => {
-        console.log(item, 'item')
         if ((item as any).props.hidden) {
           return false
         } else {
@@ -85,27 +82,40 @@ export default defineComponent({
       }
 
       if (showChidren.length === 0) {
-        onlyOneChild.value = { ...parent, path: '', noShowingChildren: true }
+        onlyOneChild.value = { ...parent, noShowingChildren: true }
         return true
       }
-
+      console.log(true, 11111, onlyOneChild.value)
       return false
     }
 
-    const resolvePath = (routePath: string) => {
+    const resolvePath = (routePath: string | undefined) => {
+      if (!routePath) {
+        return '/'
+      }
       if (isExternal(routePath)) {
         return routePath
       }
       if (isExternal(props.basePath)) {
         return props.basePath
       }
-      return path.resolve(props.basePath, routePath)
+      const rpath = path.resolve(props.basePath, routePath)
+      // console.log(props.basePath, routePath, rpath, '12222222222222')
+      return rpath
     }
+
+    const logs = (res: any) => {
+      console.log(res, 'this is log')
+      return res
+    }
+
+    console.log(props.item.meta, 'this is item propss')
 
     return {
       hasOwnShowingChild,
       resolvePath,
-      onlyOneChild
+      onlyOneChild,
+      logs
     }
   }
 })

@@ -10,6 +10,10 @@ const routes: Array<RouteRecordRaw> = [
     // eslint-disable-next-line
     // @ts-ignore
     component: Layout,
+    meta: {
+      title: 'home',
+      icon: 'el-icon-eleme'
+    },
     props: {
       isRouteLevel: true
     },
