@@ -5,6 +5,14 @@ import { setRouterRef } from '@/layout/messageCenter/routerRef'
 
 const routes: Array<RouteRecordRaw> = [
   {
+    path: '/login',
+    name: 'login',
+    component: () => import('@/views/login/index.vue'),
+    props: {
+      isRouteLevel: false
+    }
+  },
+  {
     path: '/',
     name: 'Home',
     // eslint-disable-next-line

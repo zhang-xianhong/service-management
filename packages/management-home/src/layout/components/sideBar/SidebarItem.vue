@@ -124,5 +124,6 @@ export default defineComponent({
 <style lang="scss">
 .main-menu{
   background: rgba(255,255,255,0.2);
+  width: 210px;
 }
 </style>
