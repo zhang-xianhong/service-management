@@ -15,7 +15,8 @@ import {
   ElMenu,
   ElMenuItem,
   ElBreadcrumb,
-  ElBreadcrumbItem
+  ElBreadcrumbItem,
+  ElScrollbar
 } from 'element-plus'
 
 const components = [
@@ -29,7 +30,8 @@ const components = [
   ElMenu,
   ElMenuItem,
   ElBreadcrumb,
-  ElBreadcrumbItem
+  ElBreadcrumbItem,
+  ElScrollbar
 ]
 const plugins = [ElInfiniteScroll, ElLoading, ElMessage, ElMessageBox, ElNotification]
 

@@ -9,12 +9,12 @@
     "precommit": "lint-staged"
   },
   "dependencies": {
-    "babel-plugin-component": "^1.1.1",
-    "core-js": "^3.6.5",
-    "element-plus": "^1.0.2-beta.32",
     "@types/js-cookie": "^2.2.6",
     "@types/nprogress": "^0.2.0",
     "@types/path-to-regexp": "^1.7.0",
+    "babel-plugin-component": "^1.1.1",
+    "core-js": "^3.6.5",
+    "element-plus": "^1.0.2-beta.32",
     "js-cookie": "^2.2.1",
     "nprogress": "^0.2.0",
     "path": "^0.12.7",
