@@ -1,12 +1,14 @@
 <template>
-  <el-breadcrumb class="app-breadcrumb" separator="/">
-    <transition-group name="breadcrumb">
-      <el-breadcrumb-item v-for="(item,index) in levelList" :key="item.path">
-        <span v-if="item.redirect==='noRedirect'||index==levelList.length-1" class="no-redirect">{{ item.meta.title }}</span>
-        <a v-else @click.prevent="handleLink(item)">{{ item.meta.title }}</a>
-      </el-breadcrumb-item>
-    </transition-group>
-  </el-breadcrumb>
+  <div class="bread-curmb">
+    <el-breadcrumb class="app-breadcrumb" separator="/">
+      <transition-group name="breadcrumb">
+        <el-breadcrumb-item v-for="(item,index) in levelList" :key="item.path">
+          <span v-if="item.redirect==='noRedirect'||index==levelList.length-1" class="no-redirect">{{ item.meta.title }}</span>
+          <a v-else @click.prevent="handleLink(item)">{{ item.meta.title }}</a>
+        </el-breadcrumb-item>
+      </transition-group>
+    </el-breadcrumb>
+  </div>
 </template>
 
 <script lang="ts">
@@ -44,6 +46,15 @@ export default defineComponent({
 })
 </script>
 
-<style scoped>
+<style lang="scss">
+@import './src/styles/publicStyle';
 
+.bread-curmb{
+  .el-breadcrumb__inner{
+    color: $breadCurmbColor !important;
+    &>a{
+      color: $breadCurmbColor !important;
+    }
+  }
+}
 </style>

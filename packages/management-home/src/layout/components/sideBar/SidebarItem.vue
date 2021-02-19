@@ -31,6 +31,7 @@ import AppLink from '@/layout/components/sideBar/link.vue'
 import Item from '@/layout/components/sideBar/item.vue'
 import { isExternal } from '@/utils/validate'
 import path from 'path'
+import { setLink } from '@/layout/messageCenter/linkto'
 
 export default defineComponent({
   name: 'SidebarItem',
@@ -100,16 +101,15 @@ export default defineComponent({
         return props.basePath
       }
       const rpath = path.resolve(props.basePath, routePath)
-      // console.log(props.basePath, routePath, rpath, '12222222222222')
       return rpath
     }
 
     const logs = (res: any) => {
-      console.log(res, 'this is log')
+      console.log(res.path, 'this is log')
+      // 设置侧边栏默认的路由值
+      setLink(res.path)
       return res
     }
-
-    console.log(props.item.meta, 'this is item propss')
 
     return {
       hasOwnShowingChild,

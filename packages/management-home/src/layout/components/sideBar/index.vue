@@ -4,7 +4,6 @@
       <div>
         <logo></logo>
         <el-scrollbar wrap-class="scrollbar-wrapper">
-<!--          :default-active="activeMenu"-->
           <el-menu
             :collapse="isCollapse"
             :background-color="variables.menuBg"
@@ -13,6 +12,7 @@
             :active-text-color="variables.menuActiveText"
             :collapse-transition="false"
             mode="vertical"
+            :default-active="activeMenu"
           >
             <sidebar-item v-for="route in permissionRoutes" :key="route.path" :item="route" :base-path="route.path" />
           </el-menu>
@@ -28,6 +28,7 @@ import logo from '@/layout/components/sideBar/logo.vue'
 import SidebarItem from '@/layout/components/sideBar/SidebarItem.vue'
 import variables from '@/styles/variables.scss'
 import { getComputedRoutes } from '@/layout/messageCenter/routerRef'
+import { getLink } from '@/layout/messageCenter/linkto'
 
 export default defineComponent({
   name: 'sideBar',
@@ -39,12 +40,12 @@ export default defineComponent({
     const isCollapse = computed(() => false)
     // eslint-disable-next-line
     // @ts-ignore
-    const ctxthis = getCurrentInstance().ctx
+    const proxy = getCurrentInstance().proxy
     const activeMenu = computed(() => {
       // eslint-disable-next-line
       // @ts-ignore
-      const route = ctxthis.$route
-      console.log(ctxthis, route)
+      const route = proxy.$route
+      console.log(proxy, route)
       const { meta, path } = route
       if (meta.activeMenu) {
         return meta.activeMenu
@@ -57,7 +58,8 @@ export default defineComponent({
       variables,
       isCollapse,
       activeMenu,
-      permissionRoutes
+      permissionRoutes,
+      getLink
     }
   }
 })
