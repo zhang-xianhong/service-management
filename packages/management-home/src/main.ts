@@ -1,16 +1,10 @@
-import { createApp } from 'vue'
+import Vue, { createApp } from 'vue'
 import App from './App.vue'
 
-import installelement from '@/plugins/initElement'
-import installRouter from '@/plugins/installRouter'
-import installStore from '@/plugins/installStore'
+import Element from './element'
+import Store from './store'
+import Router from './router'
 
-// eslint-disable-next-line
-// @ts-ignore
-const app = createApp(App)
+const app: Vue.App = createApp(App)
 
-installelement(app)
-installRouter(app)
-installStore(app)
-
-app.mount('#app')
+app.use(Element).use(Store).use(Router).mount('#app')

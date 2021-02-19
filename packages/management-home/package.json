@@ -9,8 +9,9 @@
     "precommit": "lint-staged"
   },
   "dependencies": {
+    "babel-plugin-component": "^1.1.1",
     "core-js": "^3.6.5",
-    "element-plus": "^1.0.2-beta.31",
+    "element-plus": "^1.0.2-beta.32",
     "path": "^0.12.7",
     "path-to-regexp": "^6.2.0",
     "vue": "^3.0.0",
