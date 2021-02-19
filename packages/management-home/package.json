@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@types/js-cookie": "^2.2.6",
+    "@types/nprogress": "^0.2.0",
     "@types/path-to-regexp": "^1.7.0",
     "core-js": "^3.6.5",
     "element-plus": "^1.0.2-beta.31",

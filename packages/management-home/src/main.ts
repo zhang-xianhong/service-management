@@ -5,6 +5,8 @@ import installelement from '@/plugins/initElement'
 import installRouter from '@/plugins/installRouter'
 import installStore from '@/plugins/installStore'
 
+import './permission'
+
 // eslint-disable-next-line
 // @ts-ignore
 const app = createApp(App)
