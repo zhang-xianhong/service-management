@@ -3,7 +3,7 @@
     <div class="layout-item side-bar-item">
       <side-bar></side-bar>
     </div>
-    <div class="layout-item nav-content">
+    <div class="layout-item nav-content" :style="{background: publicStyle.navBarBgcolor}">
       <div class="nav-parent">
         <nav-bar></nav-bar>
       </div>
@@ -19,6 +19,7 @@ import { defineComponent } from 'vue'
 import sideBar from './components/sideBar/index.vue'
 import navBar from './components/navBar/index.vue'
 import mainWindow from './components/mainWindow/index.vue'
+import publicStyle from '@/styles/publicStyle.scss'
 
 export default defineComponent({
   name: 'Layout',
@@ -28,12 +29,16 @@ export default defineComponent({
     mainWindow
   },
   setup () {
-    return {}
+    return {
+      publicStyle
+    }
   }
 })
 </script>
 
 <style lang="scss">
+@import "./src/styles/publicStyle";
+
 .layout{
   width: 100%;
   min-height: 100%;
@@ -43,8 +48,15 @@ export default defineComponent({
     flex: 1;
   }
   .side-bar-item{
-    max-width: 180px;
+    max-width: 210px;
     background: rgba(0,0,0,0.2);
+    background: $sideBarBgcolor !important;
+    .el-submenu .el-menu-item{
+      background: $routerLiBgcolor !important;
+    }
+    .el-submenu__title{
+      background: $routerUlBgcolor !important;
+    }
   }
   .nav-content{
     background: rgba(255,255,255,0.3);

@@ -1,0 +1,16 @@
+$sideBarWidth: 210px;
+$navBarHeight: 50px;
+
+$navBarBgcolor: #006eff;
+$sideBarBgcolor: #304156;
+$routerUlBgcolor: rgba(0,0,0,0.3);
+$routerLiBgcolor: rgba(0,0,0,0.5);
+
+$breadCurmbColor: #ffffff;
+
+:export {
+  sideBarWidth: $sideBarWidth;
+  navBarHeight: $navBarHeight;
+  navBarBgcolor: $navBarBgcolor;
+  sideBarBgcolor: $sideBarBgcolor;
+}

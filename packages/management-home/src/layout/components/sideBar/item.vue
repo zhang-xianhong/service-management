@@ -2,7 +2,6 @@
   <div>
     <template v-if="icon">
       <i :class="[icon, 'sub-el-icon']" v-if="icon.includes('el-')"></i>
-<!--      <svg-icon v-else :icon-class="icon"></svg-icon>-->
     </template>
     <span v-if="title">{{title}}</span>
   </div>
