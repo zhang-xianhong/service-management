@@ -1,6 +1,5 @@
 <template>
   <div class="main-window">
-    this is mainWindow
     <router-view />
   </div>
 </template>
@@ -17,6 +16,9 @@ export default defineComponent({
 .main-window{
   width: 100%;
   height: 100%;
-  background: #9dbbdb;
+  position: absolute;
+  top: 0;
+  left: 0;
+  //background: #9dbbdb;
 }
 </style>

@@ -1,7 +1,7 @@
 <template>
   <div class="logo-bar">
-    <div class="logo-content" :style="{height: pubicStyle.navBarHeight, background: pubicStyle.navBarBgcolor}">
-      this is logo
+    <div class="logo-content" :style="{height: pubicStyle.navBarHeight, background: pubicStyle.sideBarBgcolor}">
+      <img src="citybaselogo.png">
     </div>
   </div>
 </template>
@@ -31,6 +31,9 @@ export default defineComponent({
     width: 100%;
     line-height: 50px;
     color: white;
+    &>img{
+      width: 180px;
+    }
   }
 }
 </style>

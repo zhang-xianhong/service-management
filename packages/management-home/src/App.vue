@@ -7,7 +7,7 @@
 <style lang="scss">
 html,body{
   width: 100vw;
-  min-height: 100vh;
+  height: 100vh;
   overflow-x: hidden;
   overflow-y: auto;
   margin: 0;

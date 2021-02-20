@@ -57,6 +57,13 @@ export default defineComponent({
     .el-submenu__title{
       background: $routerUlBgcolor !important;
     }
+    .el-menu-item{
+      background: $routerUlBgcolor !important;
+      color: #ffffff !important;
+    }
+    .el-menu-item.is-active{
+      background: $routerActiveBgcolor !important;
+    }
   }
   .nav-content{
     background: rgba(255,255,255,0.3);
@@ -69,6 +76,9 @@ export default defineComponent({
       height: 50px;
       min-height: 50px;
       max-height: 50px;
+    }
+    .mian-parent{
+      position: relative;
     }
   }
 }

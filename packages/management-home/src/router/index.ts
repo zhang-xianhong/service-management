@@ -14,11 +14,30 @@ const routes: Array<RouteRecordRaw> = [
   },
   {
     path: '/',
+    redirect: '/dashboard',
+    component: Layout,
+    props: {
+      isRouteLevel: true
+    },
+    children: [{
+      path: 'dashboard',
+      component: () => import('@/views/dashboard/index.vue'),
+      name: 'Dashboard',
+      meta: {
+        title: '首页',
+        icon: 'el-icon-eleme'
+      },
+      props: {
+        isRouteLevel: false
+      }
+    }]
+  },
+  {
+    path: '/home',
     name: 'Home',
     // eslint-disable-next-line
     // @ts-ignore
     component: Layout,
-    redirect: '/about',
     meta: {
       title: 'home',
       icon: 'el-icon-eleme'
