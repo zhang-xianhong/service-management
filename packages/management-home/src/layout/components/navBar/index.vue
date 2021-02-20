@@ -8,6 +8,8 @@
         placement="bottom"
         :width="150"
         trigger="click"
+        :show-after="50"
+        :hide-after="50"
       >
         <template #reference>
           <el-button>aidentao</el-button>
@@ -83,7 +85,7 @@ export default defineComponent({
 .props-list-item{
   margin-bottom: 10px;
   border-radius: 2px;
-  padding-left: 20px;
+  padding: 5px 30px;
   //border: solid 1px rgba(0,0,0,0.2);
   &>span{
     display: inline-block;
@@ -94,6 +96,7 @@ export default defineComponent({
   }
   &:hover{
     background: rgba(0,0,0,0.2);
+    cursor: pointer;
   }
 }
 </style>

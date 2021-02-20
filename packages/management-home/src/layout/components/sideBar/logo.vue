@@ -1,7 +1,7 @@
 <template>
   <div class="logo-bar">
     <div class="logo-content" :style="{height: pubicStyle.navBarHeight, background: pubicStyle.sideBarBgcolor}">
-      <img src="citybaselogo.png">
+      <img src="./citybaselogo.png">
     </div>
   </div>
 </template>
