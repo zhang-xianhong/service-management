@@ -3,6 +3,13 @@ const Mock = require('mockjs')
 const path = require('path')
 
 module.exports = {
+  css: {
+    loaderOptions: {
+      sass: {
+        additionalData: '@import "@/styles/common/index.scss";'
+      }
+    }
+  },
   devServer: {
     host: 'dev.sa.qq.com',
     port: '80',

@@ -8,7 +8,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import pubicStyle from '@/styles/publicStyle.scss'
+import pubicStyle from '@/styles/layout.scss'
 
 export default defineComponent({
   name: 'logoBar',

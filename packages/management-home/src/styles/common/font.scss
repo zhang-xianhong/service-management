@@ -1,0 +1,26 @@
+$titleColor: '#000000'; // 标签｜控件
+$formColor: '#444444'; // 表单｜表格｜icon
+$descColor: '#888888'; // 说明
+$disableColor: '#BBBBBB'; // disable|描边
+$deepColor: '#FFFFFF'; // 深色，蓝色背景下
+$linkColor: '#006EFF'; // 链接
+
+// 字体大小
+$title1Size: 16px; // 一级标题
+$title2Size: 14px; // 二级标题
+$title3Size: 12px; // 三级标题
+$superSize: 36px; // 特殊大字体
+
+
+:export {
+    titleColor :$titleColor;
+    formColor: $formColor;
+    descColor: $descColor;
+    disableColor: $disableColor;
+    deepColor: $deepColor;
+    linkColor: $linkColor;
+    title1Size: $title1Size;
+    title2Size: $title2Size;
+    title3Size: $title3Size;
+    superSize: $superSize; // 特殊大字体
+}

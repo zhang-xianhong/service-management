@@ -19,7 +19,7 @@ import { defineComponent } from 'vue'
 import sideBar from './components/sideBar/index.vue'
 import navBar from './components/navBar/index.vue'
 import mainWindow from './components/mainWindow/index.vue'
-import publicStyle from '@/styles/publicStyle.scss'
+import publicStyle from '@/styles/layout.scss'
 
 export default defineComponent({
   name: 'Layout',
@@ -37,7 +37,7 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
-@import "./src/styles/publicStyle";
+@import "./src/styles/layout.scss";
 
 .layout{
   width: 100%;

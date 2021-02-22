@@ -1,10 +1,13 @@
-$sideBarWidth: 210px;
+$sideBarWidth: 200px;
 $navBarHeight: 50px;
 
-$navBarBgcolor: #006eff;
-$sideBarBgcolor: #304156;
+$navBarBgcolor: #262626; // 顶部导航栏背景色
+$sideBarBgcolor: #f2f2f2; // 侧边导航栏背景色
+
 $routerUlBgcolor: rgba(0,0,0,0.3);
 $routerLiBgcolor: rgba(0,0,0,0.5);
+
+$contentBgcolor: #ffffff; // 内容区背景色
 
 $breadCurmbColor: #ffffff;
 

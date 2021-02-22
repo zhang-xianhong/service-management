@@ -6,10 +6,10 @@
         <el-scrollbar wrap-class="scrollbar-wrapper">
           <el-menu
             :collapse="isCollapse"
-            :background-color="variables.menuBg"
-            :text-color="variables.menuText"
+            :background-color="menuVariables.menuBg"
+            :text-color="menuVariables.menuText"
             :unique-opened="false"
-            :active-text-color="variables.menuActiveText"
+            :active-text-color="menuVariables.menuActiveText"
             :collapse-transition="false"
             mode="vertical"
             :default-active="activeMenu"
@@ -26,7 +26,7 @@
 import { defineComponent, computed, getCurrentInstance } from 'vue'
 import logo from '@/layout/components/sideBar/logo.vue'
 import SidebarItem from '@/layout/components/sideBar/SidebarItem.vue'
-import variables from '@/styles/variables.scss'
+import menuVariables from '@/styles/menu.scss'
 import { getComputedRoutes } from '@/layout/messageCenter/routerRef'
 import { getLink } from '@/layout/messageCenter/linkto'
 
@@ -55,7 +55,7 @@ export default defineComponent({
     const permissionRoutes = getComputedRoutes()
     console.log(permissionRoutes)
     return {
-      variables,
+      menuVariables,
       isCollapse,
       activeMenu,
       permissionRoutes,

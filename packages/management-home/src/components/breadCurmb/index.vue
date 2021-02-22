@@ -47,7 +47,7 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
-@import './src/styles/publicStyle';
+@import './src/styles/layout';
 
 .bread-curmb{
   .el-breadcrumb__inner{

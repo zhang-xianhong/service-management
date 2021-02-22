@@ -1,7 +1,7 @@
 interface UserInterface {
-    id: string;
-    username: string;
-    token: string;
+  id: string;
+  username: string;
+  token: string;
 }
 export default {
   namespaced: true,
