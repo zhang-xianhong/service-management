@@ -62,7 +62,7 @@ export default defineComponent({
   position: relative;
   border-bottom: solid 1px rgba(0,0,0,0.2);
   .bread-bar{
-    width: 200px;
+    width: 400px;
     height: 30px;
     position: absolute;
     top: 0;

@@ -70,5 +70,8 @@ export default defineComponent({
 .side-bar{
   width: 100%;
   height: 100%;
+  li{
+    text-align: left !important;
+  }
 }
 </style>
