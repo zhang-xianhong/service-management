@@ -25,11 +25,9 @@ export default defineComponent({
     // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
     // @ts-ignore
     const proxy = getCurrentInstance().proxy as any
-    console.log(proxy.$route)
     const getBread = () => {
       const matched = proxy.$route.matched.filter((item: any) => item.meta && item.meta.title)
       levelList.value = matched.filter((item: any) => item.meta && item.meta.title && item.meta.breadcrumb !== false)
-      console.log(levelList.value)
     }
     const watchRoute = watch(() => proxy.$route, route => {
       if (route.path.startsWith('/redirect/')) {
@@ -50,11 +48,12 @@ export default defineComponent({
 @import './src/styles/layout';
 
 .bread-curmb{
-  .el-breadcrumb__inner{
-    color: $breadCurmbColor !important;
-    &>a{
-      color: $breadCurmbColor !important;
-    }
-  }
+  // 面包屑字体颜色控制
+  //.el-breadcrumb__inner{
+  //  color: $breadCurmbColor !important;
+  //  &>a{
+  //    color: $breadCurmbColor !important;
+  //  }
+  //}
 }
 </style>
