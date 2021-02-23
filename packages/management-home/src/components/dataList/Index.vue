@@ -6,6 +6,9 @@
     <main class="data-list__body">
       <slot/>
     </main>
+    <aside class="data-list__foot" v-if="$slots.foot">
+      <slot name="foot"/>
+    </aside>
   </div>
 </template>
 <script lang="ts">
@@ -18,6 +21,10 @@ export default defineComponent({
 .data-list {
   &__head {
     margin-bottom: 20px;
+  }
+  &__foot {
+    margin-top: 20px;
+    text-align: right;
   }
 }
 </style>
