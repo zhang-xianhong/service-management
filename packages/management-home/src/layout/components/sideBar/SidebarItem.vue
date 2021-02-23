@@ -26,8 +26,8 @@
 
 <script lang="ts">
 import { defineComponent, reactive } from 'vue'
-// import AppLink from '@/layout/components/sideBar/link.vue'
-import Item from '@/layout/components/sideBar/item.vue'
+// import AppLink from '@/layout/components/sideBar/Link.vue'
+import Item from '@/layout/components/sideBar/Item.vue'
 import { isExternal } from '@/utils/validate'
 import path from 'path'
 import { setLink } from '@/layout/messageCenter/linkto'
