@@ -46,7 +46,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import breadCurmb from '@/components/breadCurmb/index.vue'
+import breadCurmb from '@/components/breadCurmb/Index.vue'
 
 export default defineComponent({
   name: 'navBar',

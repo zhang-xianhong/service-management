@@ -20,8 +20,8 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import SideBar from './components/sideBar/index.vue'
-import NavBar from './components/navBar/index.vue'
+import SideBar from './components/sideBar/Index.vue'
+import NavBar from './components/navBar/Index.vue'
 import publicStyle from '@/styles/layout.scss'
 
 export default defineComponent({

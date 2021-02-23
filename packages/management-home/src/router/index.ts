@@ -1,13 +1,13 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 
-import Layout from '@/layout/index.vue'
+import Layout from '@/layout/Index.vue'
 import { setRouterRef } from '@/layout/messageCenter/routerRef'
 
 const routes: Array<RouteRecordRaw> = [
   {
     path: '/login',
     name: 'login',
-    component: () => import('@/views/login/index.vue'),
+    component: () => import('@/views/login/Index.vue'),
     props: {
       isRouteLevel: false
     }
@@ -21,7 +21,7 @@ const routes: Array<RouteRecordRaw> = [
     },
     children: [{
       path: 'dashboard',
-      component: () => import('@/views/dashboard/index.vue'),
+      component: () => import('@/views/dashboard/Index.vue'),
       name: 'Dashboard',
       meta: {
         title: '首页',
@@ -45,7 +45,7 @@ const routes: Array<RouteRecordRaw> = [
     },
     children: [{
       path: '/project-list',
-      component: () => import('@/views/projectManagement/index.vue'),
+      component: () => import('@/views/projectManagement/Index.vue'),
       name: 'projectList',
       props: {
         isRouteLevel: false
@@ -56,7 +56,7 @@ const routes: Array<RouteRecordRaw> = [
       }
     }, {
       path: '/add-project',
-      component: () => import('@/views/projectManagement/addProject.vue'),
+      component: () => import('@/views/projectManagement/AddProject.vue'),
       name: 'addProject',
       props: {
         isRouteLevel: false,
@@ -68,7 +68,7 @@ const routes: Array<RouteRecordRaw> = [
       }
     }, {
       path: '/user-list',
-      component: () => import('@/views/userManagement/index.vue'),
+      component: () => import('@/views/userManagement/Index.vue'),
       name: 'userList',
       props: {
         isRouteLevel: false
