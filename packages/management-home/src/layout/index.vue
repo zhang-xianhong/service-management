@@ -37,7 +37,7 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
-@import "./src/styles/layout.scss";
+@import "./src/styles/layout";
 
 .layout{
   width: 100%;
@@ -73,6 +73,7 @@ export default defineComponent({
       flex: 1;
     }
     .nav-parent{
+      color: $deepColor;
       height: 50px;
       min-height: 50px;
       max-height: 50px;

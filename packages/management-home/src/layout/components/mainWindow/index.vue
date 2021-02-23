@@ -13,7 +13,7 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
-@import './src/styles/layout';
+@import '@/styles/layout';
 .main-window{
   width: 100%;
   height: 100%;
