@@ -62,6 +62,16 @@ export default defineComponent({
     width: 210px;
     flex-shrink: 0;
     background-color: #1e222d;
+    .el-menu-item:focus, .el-menu-item:hover{
+      background-color: $routerHoverBgcolor !important;
+    }
+    .el-submenu__title:focus, .el-submenu__title:hover{
+      background-color: $routerHoverBgcolor !important;
+    }
+    .el-menu-item.is-active{
+      color: $routerActiveColor !important;
+      background-color: $routerActiveBgcolor !important;
+    }
   }
   &-container {
     flex: 1;
