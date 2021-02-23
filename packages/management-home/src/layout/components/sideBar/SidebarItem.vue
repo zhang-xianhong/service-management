@@ -1,12 +1,12 @@
 <template>
-  <div class="main-menu" v-if="!item.props.hidden">
+  <template v-if="!item.props.hidden">
     <template v-if="hasOwnShowingChild(item.children, item) && (!onlyOneChild.children || onlyOneChild.noShowingChildren)">
-      <app-link v-if="onlyOneChild.value.meta" :to="resolvePath(onlyOneChild.value.path)">
-        <el-menu-item :index="resolvePath(onlyOneChild.value.path)" :class="{'submenu-title-noDropdown':!isNest}">
-          <item :icon="onlyOneChild.value.meta.icon||(item.meta&&item.meta.icon)"
-                :title="onlyOneChild.value.meta.title" @click="logs(onlyOneChild.value)" />
-        </el-menu-item>
-      </app-link>
+      <el-menu-item :index="resolvePath(onlyOneChild.value.path)" :class="{'submenu-title-noDropdown':!isNest}">
+        <item :icon="onlyOneChild.value.meta.icon||(item.meta&&item.meta.icon)"
+              :title="onlyOneChild.value.meta.title" @click="onlyOneChild.value" />
+      </el-menu-item>
+      <!--    <app-link v-if="onlyOneChild.value.meta" :to="resolvePath(onlyOneChild.value.path)">-->
+      <!--    </app-link>-->
     </template>
 
     <el-submenu v-else ref="subMenu" :index="resolvePath(item.path)" popper-append-to-body>
@@ -19,15 +19,14 @@
         :is-nest="true"
         :item="child"
         :base-path="resolvePath(child.path)"
-        class="nest-menu"
       />
     </el-submenu>
-  </div>
+  </template>
 </template>
 
 <script lang="ts">
 import { defineComponent, reactive } from 'vue'
-import AppLink from '@/layout/components/sideBar/link.vue'
+// import AppLink from '@/layout/components/sideBar/link.vue'
 import Item from '@/layout/components/sideBar/item.vue'
 import { isExternal } from '@/utils/validate'
 import path from 'path'
@@ -36,7 +35,7 @@ import { setLink } from '@/layout/messageCenter/linkto'
 export default defineComponent({
   name: 'SidebarItem',
   components: {
-    AppLink,
+    // AppLink,
     Item
   },
   props: {
@@ -45,9 +44,7 @@ export default defineComponent({
       default: () => {
         return {
           props: {
-            default: {
-              hidden: false
-            }
+            hidden: false
           },
           meta: {
             title: '',
@@ -86,7 +83,6 @@ export default defineComponent({
         onlyOneChild.value = { ...parent, noShowingChildren: true }
         return true
       }
-      console.log(true, 11111, onlyOneChild.value)
       return false
     }
 
@@ -105,7 +101,7 @@ export default defineComponent({
     }
 
     const logs = (res: any) => {
-      console.log(res.path, 'this is log')
+      console.log(res, 'this is log')
       // 设置侧边栏默认的路由值
       setLink(res.path)
       return res
