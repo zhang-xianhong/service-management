@@ -118,6 +118,31 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import('../views/Home.vue')
       }
     ]
+  },
+  {
+    path: '/schema',
+    name: 'Schema',
+    redirect: '/data-object',
+    component: Layout,
+    props: {
+      isRouteLevel: true
+    },
+    meta: {
+      title: '数据建模',
+      icon: 'el-icon-eleme'
+    },
+    children: [{
+      path: 'data-object',
+      component: () => import('@/views/schema/data-object/Index.vue'),
+      name: 'DataObject',
+      meta: {
+        title: '数据对象',
+        icon: 'el-icon-eleme'
+      },
+      props: {
+        isRouteLevel: false
+      }
+    }]
   }
 ]
 
