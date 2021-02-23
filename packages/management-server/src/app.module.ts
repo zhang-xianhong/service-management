@@ -1,32 +1,32 @@
+import { resolve } from 'path';
 import { Module } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import customConfig from './config';
+import { ConfigModule, ConfigService } from 'nestjs-config';
+import { WinstonModule } from 'nest-winston';
+import { RedisModule } from 'nestjs-redis';
+
+import { UsersModule } from './modules/users/module';
+import { AuthModule } from './modules/auth/module';
+
 
 @Module({
   imports: [
-    ConfigModule.forRoot({
-      ignoreEnvFile: true,
-      isGlobal: true,
-      load: [customConfig],
-    }),
+    ConfigModule.load(resolve(__dirname, 'config', '**/!(*.d|index).{ts,js}')),
     TypeOrmModule.forRootAsync({
-      useFactory: (config: ConfigService) => ({
-        type: 'mysql',
-        host: config.get('DATABASE_HOST'),
-        port: parseInt(config.get('DATABASE_PORT'), 10),
-        username: config.get('DATABASE_USERNAME'),
-        password: config.get('DATABASE_PASSWORD'),
-        database: config.get('DATABASE_DB'),
-        entities: [`${__dirname}/**/*.entity.{ts,js}`],
-        synchronize: true,
-      }),
+      useFactory: (config: ConfigService) => config.get('database'),
       inject: [ConfigService],
     }),
+    WinstonModule.forRootAsync({
+      useFactory: (config: ConfigService) => config.get('winston'),
+      inject: [ConfigService],
+    }),
+    RedisModule.forRootAsync({
+      useFactory: (config: ConfigService) => config.get('redis'),
+      inject: [ConfigService],
+    }),
+    UsersModule,
+    AuthModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
 })
+
 export class AppModule {}
