@@ -75,7 +75,7 @@ export default defineComponent({
     text-align: left !important;
   }
   .el-scrollbar{
-    height: calc(100vh - $navBarHeight) !important;
+    height: calc(100vh - #{$navBarHeight}) !important;
   }
 }
 </style>
