@@ -3,12 +3,12 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from 'nestjs-config';
 import { WinstonModule } from 'nest-winston';
+import { RedisModule } from 'nestjs-redis';
 
 import { UsersModule } from './modules/users/module';
-import { NpmModule } from './modules/npm/module';
-import { AuthModule } from './modules/auth/auth.module';
-import { APP_GUARD } from '@nestjs/core';
-import { RolesGuard } from './shared/guards/roles.guard';
+import { AuthModule } from './modules/auth/module';
+
+
 @Module({
   imports: [
     ConfigModule.load(resolve(__dirname, 'config', '**/!(*.d|index).{ts,js}')),
@@ -20,15 +20,12 @@ import { RolesGuard } from './shared/guards/roles.guard';
       useFactory: (config: ConfigService) => config.get('winston'),
       inject: [ConfigService],
     }),
-    AuthModule,
+    RedisModule.forRootAsync({
+      useFactory: (config: ConfigService) => config.get('redis'),
+      inject: [ConfigService],
+    }),
     UsersModule,
-    NpmModule,
-  ],
-  providers: [
-    {
-      provide: APP_GUARD,
-      useClass: RolesGuard,
-    },
+    AuthModule,
   ],
 })
 

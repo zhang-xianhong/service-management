@@ -25,6 +25,8 @@ export enum CommonCodes {
   TOKEN_EXPIRED = 10002,
   // token无效
   TOKEN_INVALID = 10003,
+  // 未找到
+  NOT_FOUND = 10004
 }
 
 // 用户模块
@@ -36,6 +38,8 @@ export enum UserCodes {
   // 名称无效
   USERNAME_INVALID = 20003,
   // 密码无效
-  PASSWORD_INVALID = 20004
+  PASSWORD_INVALID = 20004,
+  // 登录无效, 用户名或密码错误
+  LOGIN_INVALID = 20005
 }
 

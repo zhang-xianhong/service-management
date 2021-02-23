@@ -21,7 +21,7 @@ export interface ApiExceptionInfo {
  *
  */
 export class ApiException extends HttpException {
-  constructor({ code, error, message }: ApiExceptionInfo, status: HttpStatus = HttpStatus.BAD_REQUEST) {
+  constructor({ code, error, message }: ApiExceptionInfo, status: HttpStatus = HttpStatus.UNPROCESSABLE_ENTITY) {
     super({
       code,
       error: error || ErrorTypes.INVALID_PARAMETER,

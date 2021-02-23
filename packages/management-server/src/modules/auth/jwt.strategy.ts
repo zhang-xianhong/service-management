@@ -1,19 +1,26 @@
-import { Strategy, ExtractJwt } from 'passport-jwt';
-import { Injectable } from '@nestjs/common';
+import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
-import { jwtConstants } from '../../shared/constants/constants';
+import { Injectable } from '@nestjs/common';
+import { RedisService } from 'nestjs-redis';
+import { jwtConstants, REDIS_TOKEN_PREFIX } from './constants';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-  constructor() {
+  constructor(private readonly redisService: RedisService) {
     super({
-      jwtFromRequest: ExtractJwt.fromHeader('token'),
+      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
       secretOrKey: jwtConstants.secret,
     });
   }
 
+
   async validate(payload: any) {
-    return { userId: payload.sub, username: payload.username };
+    const user = { ...payload };
+    const redis = await this.redisService.getClient();
+    const key = REDIS_TOKEN_PREFIX + user.uid;
+    const redisToken = await redis.get(key);
+    user.token = redisToken;
+    return user;
   }
 }
