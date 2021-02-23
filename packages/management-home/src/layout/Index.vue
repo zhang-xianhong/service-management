@@ -72,6 +72,12 @@ export default defineComponent({
       color: $routerActiveColor !important;
       background-color: $routerActiveBgcolor !important;
     }
+    .el-menu-item * {
+      user-select: none;
+    }
+    .el-submenu__title{
+      user-select: none;
+    }
   }
   &-container {
     flex: 1;
