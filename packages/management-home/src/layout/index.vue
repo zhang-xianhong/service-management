@@ -37,7 +37,7 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
-@import "./src/styles/layout.scss";
+@import "./src/styles/layout";
 
 .layout{
   width: 100%;
@@ -50,19 +50,19 @@ export default defineComponent({
   .side-bar-item{
     max-width: 210px;
     background: rgba(0,0,0,0.2);
-    background: sideBarBgcolor !important;
+    background: $sideBarBgcolor !important;
     .el-submenu .el-menu-item{
-      background: routerLiBgcolor !important;
+      background: $routerLiBgcolor !important;
     }
     .el-submenu__title{
-      background: routerUlBgcolor !important;
+      background: $routerUlBgcolor !important;
     }
     .el-menu-item{
-      background: routerUlBgcolor !important;
+      background: $routerUlBgcolor !important;
       color: #ffffff !important;
     }
     .el-menu-item.is-active{
-      background: routerActiveBgcolor !important;
+      background: $routerActiveBgcolor !important;
     }
   }
   .nav-content{
@@ -73,6 +73,7 @@ export default defineComponent({
       flex: 1;
     }
     .nav-parent{
+      color: $deepColor;
       height: 50px;
       min-height: 50px;
       max-height: 50px;

@@ -13,12 +13,13 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
+@import '@/styles/layout';
 .main-window{
   width: 100%;
   height: 100%;
   position: absolute;
   top: 0;
   left: 0;
-  //background: #9dbbdb;
+  background: $contentBgcolor;
 }
 </style>

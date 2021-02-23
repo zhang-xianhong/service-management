@@ -6,6 +6,7 @@ $sideBarBgcolor: #f2f2f2; // 侧边导航栏背景色
 
 $routerUlBgcolor: rgba(0,0,0,0.3);
 $routerLiBgcolor: rgba(0,0,0,0.5);
+$routerActiveBgcolor: #409EFF;
 
 $contentBgcolor: #ffffff; // 内容区背景色
 
@@ -16,4 +17,5 @@ $breadCurmbColor: #ffffff;
   navBarHeight: $navBarHeight;
   navBarBgcolor: $navBarBgcolor;
   sideBarBgcolor: $sideBarBgcolor;
+  contentBgcolor: $contentBgcolor;
 }
