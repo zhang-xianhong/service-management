@@ -25,14 +25,14 @@ service.interceptors.request.use(
 service.interceptors.response.use(
   (response: AxiosResponse) => {
     const res = response.data
-    if (res.code !== 200) {
+    if (response.status !== 200) {
       ElMessage({
         message: res.message || 'Error',
         type: 'error',
         duration: 5 * 1000
       })
       // TODO 状态码同步
-      if (res.code === 401) {
+      if (response.status === 401) {
         ElMessageBox.confirm('登录状态失效，请重新登录！', '登录状态提示', {
           confirmButtonText: '重新登录',
           cancelButtonText: '取消',
