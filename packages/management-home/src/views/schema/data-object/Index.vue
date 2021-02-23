@@ -1,7 +1,12 @@
 <template>
-  <div>
-    数据对象
-  </div>
+  <data-list>
+    <template v-slot:head>
+        这里是头部
+    </template>
+    <el-table>
+
+    </el-table>
+  </data-list>
 </template>
 <script lang="ts">
 import { defineComponent } from 'vue'
