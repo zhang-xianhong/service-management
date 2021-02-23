@@ -12,6 +12,7 @@
             :active-text-color="menuVariables.menuActiveText"
             :collapse-transition="false"
             mode="vertical"
+            router
             :default-active="activeMenu"
           >
             <sidebar-item v-for="route in permissionRoutes" :key="route.path" :item="route" :base-path="route.path" />
@@ -66,12 +67,15 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
-
+@import './src/styles/layout';
 .side-bar{
   width: 100%;
   height: 100%;
   li{
     text-align: left !important;
+  }
+  .el-scrollbar{
+    height: calc(100vh - $navBarHeight) !important;
   }
 }
 </style>

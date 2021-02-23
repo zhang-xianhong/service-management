@@ -33,6 +33,53 @@ const routes: Array<RouteRecordRaw> = [
     }]
   },
   {
+    path: '/project',
+    component: Layout,
+    name: 'project',
+    props: {
+      isRouteLevel: true
+    },
+    meta: {
+      title: '项目管理',
+      icon: 'el-icon-eleme'
+    },
+    children: [{
+      path: '/project-list',
+      component: () => import('@/views/projectManagement/index.vue'),
+      name: 'projectList',
+      props: {
+        isRouteLevel: false
+      },
+      meta: {
+        title: '项目列表',
+        icon: 'el-icon-eleme'
+      }
+    }, {
+      path: '/add-project',
+      component: () => import('@/views/projectManagement/addProject.vue'),
+      name: 'addProject',
+      props: {
+        isRouteLevel: false,
+        hidden: !true
+      },
+      meta: {
+        title: '新增项目',
+        icon: 'el-icon-eleme'
+      }
+    }, {
+      path: '/user-list',
+      component: () => import('@/views/userManagement/index.vue'),
+      name: 'userList',
+      props: {
+        isRouteLevel: false
+      },
+      meta: {
+        title: '用户列表',
+        icon: 'el-icon-eleme'
+      }
+    }]
+  },
+  {
     path: '/home',
     name: 'Home',
     // eslint-disable-next-line
