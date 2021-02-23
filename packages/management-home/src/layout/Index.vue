@@ -8,8 +8,10 @@
         <side-bar/>
       </aside>
       <div class="layout-container">
-        <el-scrollbar class="layout-viewport">
-          <router-view />
+        <el-scrollbar >
+          <div class="layout-viewport">
+            <router-view />
+          </div>
         </el-scrollbar>
       </div>
     </main>
@@ -66,7 +68,9 @@ export default defineComponent({
     overflow: hidden;
   }
   &-viewport {
+    margin: 20px;
     padding: 20px;
+    background-color: white;
   }
 
   .el-menu {
