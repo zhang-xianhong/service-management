@@ -13,7 +13,6 @@
 
 <script lang="ts">
 import { defineComponent, getCurrentInstance, watch, ref } from 'vue'
-import pathToRegexp from 'path-to-regexp'
 
 export default defineComponent({
   name: 'breadCurmb',
@@ -29,7 +28,7 @@ export default defineComponent({
       const matched = proxy.$route.matched.filter((item: any) => item.meta && item.meta.title)
       levelList.value = matched.filter((item: any) => item.meta && item.meta.title && item.meta.breadcrumb !== false)
     }
-    const watchRoute = watch(() => proxy.$route, route => {
+    watch(() => proxy.$route, route => {
       if (route.path.startsWith('/redirect/')) {
         return false
       }

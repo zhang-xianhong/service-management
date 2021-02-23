@@ -36,7 +36,7 @@ export default defineComponent({
     logo,
     SidebarItem
   },
-  setup (props, ctx) {
+  setup () {
     const isCollapse = computed(() => false)
     // eslint-disable-next-line
     // @ts-ignore
