@@ -1,32 +1,32 @@
 <template>
   <div class="layout">
-    <div class="layout-item side-bar-item">
-      <side-bar></side-bar>
-    </div>
-    <div class="layout-item nav-content" :style="{background: publicStyle.navBarBgcolor}">
-      <div class="nav-parent">
-        <nav-bar></nav-bar>
+    <header class="layout-head">
+      <nav-bar/>
+    </header>
+    <main class="layout-main">
+      <aside class="layout-sidebar">
+        <side-bar/>
+      </aside>
+      <div class="layout-container">
+        <el-scrollbar class="layout-viewport">
+          <router-view />
+        </el-scrollbar>
       </div>
-      <div class="mian-parent">
-        <main-window></main-window>
-      </div>
-    </div>
+    </main>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import sideBar from './components/sideBar/index.vue'
-import navBar from './components/navBar/index.vue'
-import mainWindow from './components/mainWindow/index.vue'
+import SideBar from './components/sideBar/index.vue'
+import NavBar from './components/navBar/index.vue'
 import publicStyle from '@/styles/layout.scss'
 
 export default defineComponent({
   name: 'Layout',
   components: {
-    sideBar,
-    navBar,
-    mainWindow
+    SideBar,
+    NavBar
   },
   setup () {
     return {
@@ -41,46 +41,77 @@ export default defineComponent({
 
 .layout{
   width: 100%;
-  min-height: 100%;
-  background: cadetblue;
+  height: 100%;
   display: flex;
-  .layout-item{
+  overflow: hidden;
+  flex-flow: column;
+  background-color: #f2f2f2;
+  &-head {
+    height: 50px;
+    flex-shrink: 0;
+    background-color: #262F3E;
+  }
+  &-main {
     flex: 1;
-  }
-  .side-bar-item{
-    max-width: 210px;
-    background: rgba(0,0,0,0.2);
-    background: $sideBarBgcolor !important;
-    .el-submenu .el-menu-item{
-      background: $routerLiBgcolor !important;
-    }
-    .el-submenu__title{
-      background: $routerUlBgcolor !important;
-    }
-    .el-menu-item{
-      background: $routerUlBgcolor !important;
-      color: #ffffff !important;
-    }
-    .el-menu-item.is-active{
-      background: $routerActiveBgcolor !important;
-    }
-  }
-  .nav-content{
-    background: rgba(255,255,255,0.3);
     display: flex;
-    flex-direction: column;
-    &>div{
-      flex: 1;
-    }
-    .nav-parent{
-      color: $deepColor;
-      height: 50px;
-      min-height: 50px;
-      max-height: 50px;
-    }
-    .mian-parent{
-      position: relative;
-    }
+    overflow: hidden;
   }
+  &-sidebar {
+    width: 210px;
+    flex-shrink: 0;
+    background-color: #1e222d;
+  }
+  &-container {
+    flex: 1;
+    overflow: hidden;
+  }
+  &-viewport {
+    padding: 20px;
+  }
+
+  .el-menu {
+    background: transparent;
+    border-right: none;
+  }
+
+  // .layout-item{
+  //   flex: 1;
+  // }
+  // .side-bar-item{
+  //   max-width: 210px;
+  //   background: rgba(0,0,0,0.2);
+  //   background: $sideBarBgcolor !important;
+  //   flex-shrink: 0;
+  //   .el-submenu .el-menu-item{
+  //     background: $routerLiBgcolor !important;
+  //   }
+  //   .el-submenu__title{
+  //     background: $routerUlBgcolor !important;
+  //   }
+  //   .el-menu-item{
+  //     background: $routerUlBgcolor !important;
+  //     color: #ffffff !important;
+  //   }
+  //   .el-menu-item.is-active{
+  //     background: $routerActiveBgcolor !important;
+  //   }
+  // }
+  // .nav-content{
+  //   background: rgba(255,255,255,0.3);
+  //   display: flex;
+  //   flex-direction: column;
+  //   &>div{
+  //     flex: 1;
+  //   }
+  //   .nav-parent{
+  //     color: $deepColor;
+  //     height: 50px;
+  //     min-height: 50px;
+  //     max-height: 50px;
+  //   }
+  //   .mian-parent{
+  //     position: relative;
+  //   }
+  // }
 }
 </style>

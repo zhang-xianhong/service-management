@@ -5,6 +5,9 @@
 </template>
 
 <style lang="scss">
+* {
+  box-sizing: border-box;
+}
 html,body{
   width: 100vw;
   height: 100vh;
@@ -22,8 +25,7 @@ html,body{
 .apps{
   width: 100vw;
   height: 100vh;
-  overflow-x: hidden;
-  overflow-y: auto;
+  overflow: hidden;
 }
 
 #nav {

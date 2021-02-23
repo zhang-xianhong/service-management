@@ -1,31 +1,25 @@
 <template>
-  <div class="side-bar">
-    <keep-alive>
-      <div>
-        <logo></logo>
-        <el-scrollbar wrap-class="scrollbar-wrapper">
-          <el-menu
-            :collapse="isCollapse"
-            :background-color="menuVariables.menuBg"
-            :text-color="menuVariables.menuText"
-            :unique-opened="false"
-            :active-text-color="menuVariables.menuActiveText"
-            :collapse-transition="false"
-            mode="vertical"
-            router
-            :default-active="activeMenu"
-          >
-            <sidebar-item v-for="route in permissionRoutes" :key="route.path" :item="route" :base-path="route.path" />
-          </el-menu>
-        </el-scrollbar>
-      </div>
-    </keep-alive>
-  </div>
+ <keep-alive>
+  <el-scrollbar wrap-class="scrollbar-wrapper">
+    <el-menu
+      :collapse="isCollapse"
+      :background-color="menuVariables.menuBg"
+      :text-color="menuVariables.menuText"
+      :unique-opened="false"
+      :active-text-color="menuVariables.menuActiveText"
+      :collapse-transition="false"
+      mode="vertical"
+      router
+      :default-active="activeMenu"
+    >
+      <sidebar-item v-for="route in permissionRoutes" :key="route.path" :item="route" :base-path="route.path" />
+    </el-menu>
+  </el-scrollbar>
+</keep-alive>
 </template>
 
 <script lang="ts">
 import { defineComponent, computed, getCurrentInstance } from 'vue'
-import logo from '@/layout/components/sideBar/logo.vue'
 import SidebarItem from '@/layout/components/sideBar/SidebarItem.vue'
 import menuVariables from '@/styles/menu.scss'
 import { getComputedRoutes } from '@/layout/messageCenter/routerRef'
@@ -34,7 +28,6 @@ import { getLink } from '@/layout/messageCenter/linkto'
 export default defineComponent({
   name: 'sideBar',
   components: {
-    logo,
     SidebarItem
   },
   setup () {

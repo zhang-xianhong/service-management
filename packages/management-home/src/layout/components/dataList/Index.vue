@@ -14,7 +14,7 @@ export default defineComponent({
   name: 'DataList'
 })
 </script>
-<style module lang="scss">
+<style scoped lang="scss">
 .data-list {
   &__head {
     margin-bottom: 20px;

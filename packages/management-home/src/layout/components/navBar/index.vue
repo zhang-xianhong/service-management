@@ -1,5 +1,8 @@
 <template>
   <div class="nav-bar">
+    <a class="app-logo">
+      <img src="./logo.png">
+    </a>
     <div class="bread-bar">
       <bread-curmb></bread-curmb>
     </div>
@@ -61,25 +64,25 @@ export default defineComponent({
   line-height: 50px;
   position: relative;
   border-bottom: solid 1px rgba(0,0,0,0.2);
+  display: flex;
+  padding: 0 20px;
+  .app-logo {
+    flex-shrink: 0;
+    width: 180px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    > img {
+      max-width: 100%;
+    }
+  }
   .bread-bar{
-    width: 400px;
-    height: 30px;
-    position: absolute;
-    top: 0;
-    margin-top: auto;
-    bottom: 0;
-    margin-bottom: auto;
-    left: 40px;
-    padding-top: 15px;
+    display: flex;
+    align-items: center;
+    margin-left: 40px;
   }
   .position-right-bar{
-    width: 400px;
-    height: 100%;
-    line-height: 50px;
-    //background: #1f2d3d;
-    position: absolute;
-    top: 0;
-    right: 20px;
+    margin-left: auto;
   }
 }
 .props-list-item{
