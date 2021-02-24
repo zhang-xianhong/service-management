@@ -1,25 +1,54 @@
 <template>
-  <data-list>
-    <template v-slot:head>
-      头
+  <data-list
+  :loading="loading"
+  :total="total"
+  :page="searchParams.page"
+  :pageSize="searchParams.pageSize"
+  @page-change="handlePageChange">
+    <template v-slot:headLeft>
+      <el-select v-model="searchParams.category" placeholder="请选择">
+      </el-select>
+       <el-select v-model="searchParams.tags" placeholder="请选择">
+      </el-select>
+      <el-input v-model="searchParams.keyword" placeholder="请输入关键字"/>
+      <el-button icon="el-icon-search"></el-button>
+    </template>
+    <template v-slot:headRight>
+      <el-button type="primary">新增</el-button>
     </template>
     <el-table>
 
     </el-table>
-    <template v-slot:foot>
-      <el-pagination
-        :current-page="10"
-        :page-sizes="[100, 200, 300, 400]"
-        :page-size="10"
-        layout="total, sizes, prev, pager, next, jumper"
-        :total="4000">
-      </el-pagination>
-    </template>
   </data-list>
 </template>
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, reactive, ref } from 'vue'
+import { PageInfo } from '@/types/dataList'
 export default defineComponent({
-  name: 'dashboard'
+  name: 'dashboard',
+  setup () {
+    const loading = ref(true)
+    const total = ref(1000)
+    const searchParams = reactive({
+      category: '',
+      tags: [],
+      keyword: '',
+      page: 1,
+      pageSize: 10
+    })
+    const handlePageChange = ({ key, value }: PageInfo) => {
+      searchParams[key] = value
+      console.log(searchParams)
+    }
+    setTimeout(() => {
+      loading.value = false
+    }, 3000)
+    return {
+      loading,
+      total,
+      searchParams,
+      handlePageChange
+    }
+  }
 })
 </script>
