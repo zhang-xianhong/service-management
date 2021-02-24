@@ -1,5 +1,6 @@
 import router from '@/router';
 import { reactive } from 'vue';
+import { RouteRecordNormalized } from 'vue-router';
 
 const routerRef = reactive({ value: router });
 
@@ -12,11 +13,13 @@ export const setRouterRef = (res: any) => {
 export const getComputedRoutes = () =>
   routerRef.value
     .getRoutes()
-    .map((x) => {
-      // eslint-disable-next-line
-      // @ts-ignore
-      if (x.props.default.isRouteLevel) {
+    .map((x): undefined | RouteRecordNormalized => {
+      const data = x?.props.default as {
+        isRouteLevel: boolean;
+      };
+      if (data.isRouteLevel) {
         return x;
       }
+      return undefined;
     })
     .filter((x) => x);
