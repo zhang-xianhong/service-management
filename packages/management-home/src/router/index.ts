@@ -59,12 +59,12 @@ const routes: Array<RouteRecordRaw> = [
       component: () => import('@/views/projectManagement/AddProject.vue'),
       name: 'addProject',
       props: {
-        isRouteLevel: false,
-        sideHidden: !true
+        isRouteLevel: false
       },
       meta: {
         title: '新增项目',
-        icon: 'el-icon-eleme'
+        icon: 'el-icon-eleme',
+        hidden: false
       }
     }, {
       path: 'user-list',
