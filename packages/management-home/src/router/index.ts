@@ -60,7 +60,7 @@ const routes: Array<RouteRecordRaw> = [
       name: 'addProject',
       props: {
         isRouteLevel: false,
-        hidden: !true
+        sideHidden: !true
       },
       meta: {
         title: '新增项目',

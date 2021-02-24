@@ -1,5 +1,5 @@
 <template>
-  <template v-if="!item.props.hidden">
+  <template v-if="!item.props.sideHidden">
     <template v-if="hasOwnShowingChild(item.children, item) && (!onlyOneChild.children || onlyOneChild.noShowingChildren)">
       <el-menu-item :index="resolvePath(onlyOneChild.value.path)" :class="{'submenu-title-noDropdown':!isNest}">
         <item :icon="onlyOneChild.value.meta.icon||(item.meta&&item.meta.icon)"
@@ -44,7 +44,7 @@ export default defineComponent({
       default: () => {
         return {
           props: {
-            hidden: false
+            sideHidden: false
           },
           meta: {
             title: '',
@@ -67,7 +67,7 @@ export default defineComponent({
 
     const hasOwnShowingChild = (children = [], parent: any) => {
       const showChidren = children.filter(item => {
-        if ((item as any).props.hidden) {
+        if ((item as any).props.sideHidden) {
           return false
         } else {
           onlyOneChild.value = item
