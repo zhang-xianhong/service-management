@@ -44,7 +44,7 @@ const routes: Array<RouteRecordRaw> = [
       icon: 'el-icon-eleme'
     },
     children: [{
-      path: '/project-list',
+      path: 'project-list',
       component: () => import('@/views/projectManagement/Index.vue'),
       name: 'projectList',
       props: {
@@ -55,7 +55,7 @@ const routes: Array<RouteRecordRaw> = [
         icon: 'el-icon-eleme'
       }
     }, {
-      path: '/add-project',
+      path: 'add-project',
       component: () => import('@/views/projectManagement/AddProject.vue'),
       name: 'addProject',
       props: {
@@ -67,7 +67,7 @@ const routes: Array<RouteRecordRaw> = [
         icon: 'el-icon-eleme'
       }
     }, {
-      path: '/user-list',
+      path: 'user-list',
       component: () => import('@/views/userManagement/Index.vue'),
       name: 'userList',
       props: {
