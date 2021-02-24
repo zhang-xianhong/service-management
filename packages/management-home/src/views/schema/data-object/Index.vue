@@ -15,7 +15,7 @@
     <template v-slot:headRight>
       <el-button type="primary">新增</el-button>
     </template>
-    <el-table :default-sort="{ prop: 'name', order: 'descending' }" @sort-change="handleSortChange" style="width:100%">
+    <el-table :default-sort="{ prop: 'name', order: 'descending' }" @sort-change="handleSortChange" style="width: 100%">
       <el-table-column type="selection" width="55"> </el-table-column>
       <el-table-column v-for="column in columns" :key="column.prop" v-bind="{ ...column }" />
       <el-table-column label="操作" fixed="right"> </el-table-column>
