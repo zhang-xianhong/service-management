@@ -1,4 +1,7 @@
 import 'element-plus/lib/theme-chalk/index.css'
+import locale from 'element-plus/lib/locale'
+import lang from 'element-plus/lib/locale/lang/zh-cn'
+import 'dayjs/locale/zh-cn'
 import {
   ElButton,
   ElIcon,
@@ -22,8 +25,13 @@ import {
   ElBadge,
   ElDropdown,
   ElDropdownItem,
-  ElDropdownMenu
+  ElDropdownMenu,
+  ElSelect,
+  ElOption
 } from 'element-plus'
+
+// 设置语言
+locale.use(lang)
 
 const components = [
   ElButton,
@@ -43,7 +51,9 @@ const components = [
   ElBadge,
   ElDropdown,
   ElDropdownItem,
-  ElDropdownMenu
+  ElDropdownMenu,
+  ElSelect,
+  ElOption
 ]
 const plugins = [ElInfiniteScroll, ElLoading, ElMessage, ElMessageBox, ElNotification]
 
