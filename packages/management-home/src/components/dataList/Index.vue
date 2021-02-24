@@ -2,18 +2,18 @@
   <div class="data-list">
     <aside class="data-list__head" v-if="$slots.head || $slots.headLeft || $slots.headRight">
       <div class="data-list__search" v-if="$slots.headLeft">
-        <slot name="headLeft"/>
+        <slot name="headLeft" />
       </div>
       <div class="data-list__actions" v-if="$slots.headRight">
-        <slot name="headRight"/>
+        <slot name="headRight" />
       </div>
-      <slot name="head"/>
+      <slot name="head" />
     </aside>
     <main class="data-list__body" v-loading="loading">
-      <slot/>
+      <slot />
     </main>
     <aside class="data-list__foot" v-if="showPagination && total">
-       <el-pagination
+      <el-pagination
         background
         :disabled="loading"
         :current-page="page"
@@ -22,7 +22,8 @@
         layout="total, sizes, prev, pager, next, jumper"
         :total="total"
         @size-change="handlePageSizeChange"
-        @current-change="handlePageChange">
+        @current-change="handlePageChange"
+      >
       </el-pagination>
     </aside>
   </div>

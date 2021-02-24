@@ -13,8 +13,6 @@ export default {
   getters: {
     token: (state: UserInterface) => state.token
   },
-  mutations: {
-  },
-  actions: {
-  }
-}
+  mutations: {},
+  actions: {}
+};

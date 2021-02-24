@@ -18,16 +18,13 @@ export default defineComponent({
     }
   },
   setup (props) {
-    const isExternals = computed(() => {
-      return isExternal(props.to)
-    })
+    const isExternals = computed(() => isExternal(props.to))
     const type = computed(() => {
       if (isExternals.value) {
-        return 'a'
-      } else {
-        return 'router-link'
+        return 'a';
       }
-    })
+      return 'router-link'
+    });
     const linkProps = (to: string) => {
       if (isExternals.value) {
         return {
@@ -37,7 +34,7 @@ export default defineComponent({
         }
       }
       return {
-        to: to
+        to,
       }
     }
     return {

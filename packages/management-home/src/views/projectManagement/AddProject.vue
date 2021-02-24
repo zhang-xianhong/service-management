@@ -12,5 +12,6 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
-.add-project{}
+.add-project {
+}
 </style>

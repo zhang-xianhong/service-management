@@ -1,14 +1,14 @@
 <template>
   <div class="layout">
     <header class="layout-head">
-      <nav-bar/>
+      <nav-bar />
     </header>
     <main class="layout-main">
       <aside class="layout-sidebar">
-        <side-bar/>
+        <side-bar />
       </aside>
       <div class="layout-container">
-        <el-scrollbar >
+        <el-scrollbar>
           <div class="layout-viewport">
             <router-view />
           </div>
@@ -39,9 +39,9 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
-@import "./src/styles/layout";
+@import './src/styles/layout';
 
-.layout{
+.layout {
   width: 100%;
   height: 100%;
   display: flex;
@@ -51,7 +51,7 @@ export default defineComponent({
   &-head {
     height: 50px;
     flex-shrink: 0;
-    background-color: #262F3E;
+    background-color: #262f3e;
   }
   &-main {
     flex: 1;
@@ -62,20 +62,22 @@ export default defineComponent({
     width: 210px;
     flex-shrink: 0;
     background-color: #1e222d;
-    .el-menu-item:focus, .el-menu-item:hover{
+    .el-menu-item:focus,
+    .el-menu-item:hover {
       background-color: $routerHoverBgcolor !important;
     }
-    .el-submenu__title:focus, .el-submenu__title:hover{
+    .el-submenu__title:focus,
+    .el-submenu__title:hover {
       background-color: $routerHoverBgcolor !important;
     }
-    .el-menu-item.is-active{
+    .el-menu-item.is-active {
       color: $routerActiveColor !important;
       background-color: $routerActiveBgcolor !important;
     }
     .el-menu-item * {
       user-select: none;
     }
-    .el-submenu__title{
+    .el-submenu__title {
       user-select: none;
     }
   }

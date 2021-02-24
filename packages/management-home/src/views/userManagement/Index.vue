@@ -1,7 +1,5 @@
 <template>
-  <div class="user-managerment">
-
-  </div>
+  <div class="user-managerment"></div>
 </template>
 
 <script>
@@ -11,6 +9,4 @@ export default defineComponent({
 })
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

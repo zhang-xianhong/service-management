@@ -3,7 +3,7 @@
     <template v-if="icon">
       <i :class="[icon, 'sub-el-icon']" v-if="icon.includes('el-')"></i>
     </template>
-    <span v-if="title">{{title}}</span>
+    <span v-if="title">{{ title }}</span>
   </div>
 </template>
 

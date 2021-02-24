@@ -1,9 +1,14 @@
 <template>
   <template v-if="!item.props.hidden">
-    <template v-if="hasOwnShowingChild(item.children, item) && (!onlyOneChild.children || onlyOneChild.noShowingChildren)">
-      <el-menu-item :index="resolvePath(onlyOneChild.value.path)" :class="{'submenu-title-noDropdown':!isNest}">
-        <item :icon="onlyOneChild.value.meta.icon||(item.meta&&item.meta.icon)"
-              :title="onlyOneChild.value.meta.title" @click="onlyOneChild.value" />
+    <template
+      v-if="hasOwnShowingChild(item.children, item) && (!onlyOneChild.children || onlyOneChild.noShowingChildren)"
+    >
+      <el-menu-item :index="resolvePath(onlyOneChild.value.path)" :class="{ 'submenu-title-noDropdown': !isNest }">
+        <item
+          :icon="onlyOneChild.value.meta.icon || (item.meta && item.meta.icon)"
+          :title="onlyOneChild.value.meta.title"
+          @click="onlyOneChild.value"
+        />
       </el-menu-item>
       <!--    <app-link v-if="onlyOneChild.value.meta" :to="resolvePath(onlyOneChild.value.path)">-->
       <!--    </app-link>-->
@@ -41,17 +46,15 @@ export default defineComponent({
   props: {
     item: {
       type: Object,
-      default: () => {
-        return {
-          props: {
-            hidden: false
-          },
-          meta: {
-            title: '',
-            icon: ''
-          }
+      default: () => ({
+        props: {
+          hidden: false
+        },
+        meta: {
+          title: '',
+          icon: ''
         }
-      }
+      })
     },
     isNest: {
       type: Boolean,
@@ -66,14 +69,13 @@ export default defineComponent({
     const onlyOneChild = reactive({ value: {} })
 
     const hasOwnShowingChild = (children = [], parent: any) => {
-      const showChidren = children.filter(item => {
+      const showChidren = children.filter((item) => {
         if ((item as any).props.hidden) {
-          return false
-        } else {
-          onlyOneChild.value = item
-          return true
+          return false;
         }
-      })
+        onlyOneChild.value = item;
+        return true
+      });
 
       if (showChidren.length === 1) {
         return true
@@ -118,8 +120,8 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
-.main-menu{
-  background: rgba(255,255,255,0.2);
+.main-menu {
+  background: rgba(255, 255, 255, 0.2);
   width: 210px;
 }
 </style>

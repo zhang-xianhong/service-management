@@ -12,10 +12,10 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
-.login{
+.login {
   width: 100%;
   height: 100%;
-  background: rgba(0,0,0,0.2);
+  background: rgba(0, 0, 0, 0.2);
   color: white;
 }
 </style>

@@ -1,21 +1,21 @@
 <template>
- <keep-alive>
-  <el-scrollbar wrap-class="scrollbar-wrapper">
-    <el-menu
-      :collapse="isCollapse"
-      :background-color="menuVariables.menuBg"
-      :text-color="menuVariables.menuText"
-      :unique-opened="false"
-      :active-text-color="menuVariables.menuActiveText"
-      :collapse-transition="false"
-      mode="vertical"
-      router
-      :default-active="activeMenu"
-    >
-      <sidebar-item v-for="route in permissionRoutes" :key="route.path" :item="route" :base-path="route.path" />
-    </el-menu>
-  </el-scrollbar>
-</keep-alive>
+  <keep-alive>
+    <el-scrollbar wrap-class="scrollbar-wrapper">
+      <el-menu
+        :collapse="isCollapse"
+        :background-color="menuVariables.menuBg"
+        :text-color="menuVariables.menuText"
+        :unique-opened="false"
+        :active-text-color="menuVariables.menuActiveText"
+        :collapse-transition="false"
+        mode="vertical"
+        router
+        :default-active="activeMenu"
+      >
+        <sidebar-item v-for="route in permissionRoutes" :key="route.path" :item="route" :base-path="route.path" />
+      </el-menu>
+    </el-scrollbar>
+  </keep-alive>
 </template>
 
 <script lang="ts">
@@ -34,7 +34,7 @@ export default defineComponent({
     const isCollapse = computed(() => false)
     // eslint-disable-next-line
     // @ts-ignore
-    const proxy = getCurrentInstance().proxy
+    const { proxy } = getCurrentInstance()
     const activeMenu = computed(() => {
       // eslint-disable-next-line
       // @ts-ignore
@@ -45,7 +45,7 @@ export default defineComponent({
         return meta.activeMenu
       }
       return path
-    })
+    });
     const permissionRoutes = getComputedRoutes()
     console.log(permissionRoutes)
     return {
@@ -61,13 +61,13 @@ export default defineComponent({
 
 <style lang="scss">
 @import './src/styles/layout';
-.side-bar{
+.side-bar {
   width: 100%;
   height: 100%;
-  li{
+  li {
     text-align: left !important;
   }
-  .el-scrollbar{
+  .el-scrollbar {
     height: calc(100vh - #{$navBarHeight}) !important;
   }
 }
