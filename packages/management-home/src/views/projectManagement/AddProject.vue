@@ -9,11 +9,21 @@
         <el-tab-pane label="基本信息" name="baseInfo">
           <add-base-info></add-base-info>
         </el-tab-pane>
-        <el-tab-pane label="开放设置" name="openSet">开放设置</el-tab-pane>
-        <el-tab-pane label="运行参数" name="runParams">运行参数</el-tab-pane>
-        <el-tab-pane label="代码模板" name="codeTemplate">代码模板</el-tab-pane>
-        <el-tab-pane label="高级设置" name="heigherSet">高级设置</el-tab-pane>
-        <el-tab-pane label="版权信息" name="copyright">版权信息</el-tab-pane>
+        <el-tab-pane label="开放设置" name="openSet">
+          <add-open-set></add-open-set>
+        </el-tab-pane>
+        <el-tab-pane label="运行参数" name="runParams">
+          <add-run-params></add-run-params>
+        </el-tab-pane>
+        <el-tab-pane label="代码模板" name="codeTemplate">
+          <add-code-template></add-code-template>
+        </el-tab-pane>
+        <el-tab-pane label="高级设置" name="heigherSet">
+          <add-heigh-set></add-heigh-set>
+        </el-tab-pane>
+        <el-tab-pane label="版权信息" name="copyright">
+          <add-copyright></add-copyright>
+        </el-tab-pane>
       </el-tabs>
     </div>
   </div>
@@ -23,11 +33,21 @@
 import { defineComponent, ref } from 'vue'
 
 import AddBaseInfo from '@/views/projectManagement/components/AddBaseInfo.vue'
+import AddOpenSet from '@/views/projectManagement/components/AddOpenSet.vue'
+import AddRunParams from '@/views/projectManagement/components/AddRunParams.vue'
+import AddCodeTemplate from '@/views/projectManagement/components/AddCodeTemplate.vue'
+import AddHeighSet from '@/views/projectManagement/components/AddHeighSet.vue'
+import AddCopyright from '@/views/projectManagement/components/AddCopyright.vue'
 
 export default defineComponent({
   name: 'addProject',
   components: {
-    AddBaseInfo
+    AddBaseInfo,
+    AddOpenSet,
+    AddRunParams,
+    AddCodeTemplate,
+    AddHeighSet,
+    AddCopyright
   },
   setup () {
     const tabActive = ref('baseInfo')

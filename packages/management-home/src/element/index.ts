@@ -29,7 +29,8 @@ import {
   ElRadioGroup,
   ElCheckbox,
   ElCheckboxGroup,
-  ElSlider
+  ElSlider,
+  ElInputNumber
 } from 'element-plus'
 
 const components = [
@@ -57,7 +58,8 @@ const components = [
   ElRadioGroup,
   ElCheckbox,
   ElCheckboxGroup,
-  ElSlider
+  ElSlider,
+  ElInputNumber
 ]
 const plugins = [ElInfiniteScroll, ElLoading, ElMessage, ElMessageBox, ElNotification]
 

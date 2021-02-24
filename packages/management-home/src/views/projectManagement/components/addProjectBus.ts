@@ -12,8 +12,12 @@ export const runParamsForm = reactive({})
 
 export const openSetForm = reactive({})
 
-export const codeTemplateForm = reactive({})
+export const codeTemplateForm = reactive({
+  others: []
+})
 
-export const heigherSetForm = reactive({})
+export const heigherSetForm = reactive({
+  others: []
+})
 
 export const copyrightForm = reactive({})
