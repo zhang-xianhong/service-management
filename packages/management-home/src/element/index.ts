@@ -18,7 +18,18 @@ import {
   ElBreadcrumbItem,
   ElScrollbar,
   ElPopover,
-  ElPagination
+  ElPagination,
+  ElTabs,
+  ElTabPane,
+  ElForm,
+  ElFormItem,
+  ElSelect,
+  ElOption,
+  ElRadio,
+  ElRadioGroup,
+  ElCheckbox,
+  ElCheckboxGroup,
+  ElSlider
 } from 'element-plus'
 
 const components = [
@@ -35,7 +46,18 @@ const components = [
   ElBreadcrumbItem,
   ElScrollbar,
   ElPopover,
-  ElPagination
+  ElPagination,
+  ElTabs,
+  ElTabPane,
+  ElForm,
+  ElFormItem,
+  ElSelect,
+  ElOption,
+  ElRadio,
+  ElRadioGroup,
+  ElCheckbox,
+  ElCheckboxGroup,
+  ElSlider
 ]
 const plugins = [ElInfiniteScroll, ElLoading, ElMessage, ElMessageBox, ElNotification]
 

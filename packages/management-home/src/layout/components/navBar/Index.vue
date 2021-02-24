@@ -9,7 +9,7 @@
     <div class="position-right-bar">
       <el-popover
         placement="bottom"
-        :width="150"
+        :width="180"
         trigger="click"
         :show-after="50"
         :hide-after="50"
