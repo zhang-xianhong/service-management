@@ -54,6 +54,10 @@ export default defineComponent({
   //    color: $breadCurmbColor !important;
   //  }
   //}
+  user-select: none;
+  &:hover{
+    cursor: default !important;
+  }
 }
 .breadcrumb-item {
   color: $deepColor !important
