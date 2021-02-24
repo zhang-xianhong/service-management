@@ -21,15 +21,14 @@
         :page-sizes="[10, 20, 50, 100]"
         layout="total, sizes, prev, pager, next, jumper"
         :total="total"
-        @size-change="handlePageSizeChange"
-        @current-change="handlePageChange">
+        @size-change="$emit('pageChange', { key: 'pageSize',value: $event })"
+        @current-change="$emit('pageChange', { key: 'page',value: $event })">
       </el-pagination>
     </aside>
   </div>
 </template>
 <script lang="ts">
-import { defineComponent } from 'vue'
-export default defineComponent({
+export default {
   name: 'DataList',
   props: {
     loading: {
@@ -53,25 +52,13 @@ export default defineComponent({
       default: 2000
     }
   },
-  methods: {
-    handlePageSizeChange (size: number) {
-      this.$emit('pageChange', {
-        key: 'pageSize',
-        value: size
-      })
-    },
-    handlePageChange (page: number) {
-      this.$emit('pageChange', {
-        key: 'page',
-        value: page
-      })
-    }
-  }
-})
+  emits: ['pageChange']
+}
 </script>
 <style scoped lang="scss">
 .data-list {
   &__head {
+    padding: 16px;
     margin-bottom: 20px;
     display: flex;
     align-items: center;

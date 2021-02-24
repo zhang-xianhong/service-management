@@ -17,6 +17,7 @@ html,body{
   padding: 0;
 }
 #app {
+  background-color: #f2f2f2;
   font-family: 'Microsoft YaHei', 'PingFang SC', 'Avenir', Helvetica, Arial, sans-serif;;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -39,20 +40,5 @@ html,body{
       color: #42b983;
     }
   }
-}
-</style>
-
-<style lang="scss" module>
-.normal {
-  background-color: #0ABF5B;
-}
-.warning {
-  background-color: #FF9D00;
-}
-.error {
-  background-color: #E54545;
-}
-.primary {
-  background-color: #006EFF;
 }
 </style>

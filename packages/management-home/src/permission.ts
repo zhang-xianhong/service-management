@@ -1,6 +1,5 @@
 import router from '@/router'
 
-import Message from 'element-plus'
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
 

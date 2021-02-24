@@ -27,7 +27,8 @@ import {
   ElDropdownItem,
   ElDropdownMenu,
   ElSelect,
-  ElOption
+  ElOption,
+  ElRow
 } from 'element-plus'
 
 // 设置语言
@@ -53,8 +54,10 @@ const components = [
   ElDropdownItem,
   ElDropdownMenu,
   ElSelect,
-  ElOption
+  ElOption,
+  ElRow
 ]
+
 const plugins = [ElInfiniteScroll, ElLoading, ElMessage, ElMessageBox, ElNotification]
 
 export default {

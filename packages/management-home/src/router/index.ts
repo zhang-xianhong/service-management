@@ -33,60 +33,11 @@ const routes: Array<RouteRecordRaw> = [
     }]
   },
   {
-    path: '/project',
-    component: Layout,
-    name: 'project',
-    props: {
-      isRouteLevel: true
-    },
-    meta: {
-      title: '项目管理',
-      icon: 'el-icon-eleme'
-    },
-    children: [{
-      path: '/project-list',
-      component: () => import('@/views/projectManagement/Index.vue'),
-      name: 'projectList',
-      props: {
-        isRouteLevel: false
-      },
-      meta: {
-        title: '项目列表',
-        icon: 'el-icon-eleme'
-      }
-    }, {
-      path: '/add-project',
-      component: () => import('@/views/projectManagement/AddProject.vue'),
-      name: 'addProject',
-      props: {
-        isRouteLevel: false,
-        hidden: !true
-      },
-      meta: {
-        title: '新增项目',
-        icon: 'el-icon-eleme'
-      }
-    }, {
-      path: '/user-list',
-      component: () => import('@/views/userManagement/Index.vue'),
-      name: 'userList',
-      props: {
-        isRouteLevel: false
-      },
-      meta: {
-        title: '用户列表',
-        icon: 'el-icon-eleme'
-      }
-    }]
-  },
-  {
-    path: '/home',
-    name: 'Home',
-    // eslint-disable-next-line
-    // @ts-ignore
+    path: '/serve',
+    name: 'Server',
     component: Layout,
     meta: {
-      title: 'home',
+      title: '服务管理',
       icon: 'el-icon-eleme'
     },
     props: {
@@ -94,28 +45,28 @@ const routes: Array<RouteRecordRaw> = [
     },
     children: [
       {
-        path: '/about',
-        name: 'About',
-        component: () => import('../views/About.vue'),
+        path: '/business-server',
+        name: 'BusinessServer',
+        component: () => import(/* webpackChunkName: "business-server" */ '../views/servers/BusinessServer.vue'),
         meta: {
-          title: 'about',
+          title: '业务服务',
           icon: 'el-icon-eleme'
         },
         props: {
           isRouteLevel: false
         }
-      }, {
-        path: '/hello',
-        name: 'Hello',
-        props: {
-          hidden: !true,
-          isRouteLevel: false
-        },
+      },
+      {
+        path: '/business-server',
+        name: 'BusinessServer',
+        component: () => import(/* webpackChunkName: "business-server" */ '../views/servers/BusinessServer.vue'),
         meta: {
-          title: 'hello',
+          title: '其他服务',
           icon: 'el-icon-eleme'
         },
-        component: () => import('../views/Home.vue')
+        props: {
+          isRouteLevel: false
+        }
       }
     ]
   },
