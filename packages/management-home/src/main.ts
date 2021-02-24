@@ -12,4 +12,13 @@ const app: Vue.App = createApp(App)
 
 app.component('DataList', DataList)
 
-app.use(Element).use(Store).use(Router).mount('#app')
+// element全局配置
+app.config.globalProperties.$ELEMENT = {
+  size: 'small'
+}
+
+app
+  .use(Element)
+  .use(Store)
+  .use(Router)
+  .mount('#app')

@@ -85,7 +85,11 @@ export default defineComponent({
     display: flex;
     align-items: center;
     > *:not(:first-child) {
-      margin-left: 20px;
+      margin-left: 10px;
+    }
+
+    > .el-input {
+      max-width: 220px;
     }
   }
   &__search {
