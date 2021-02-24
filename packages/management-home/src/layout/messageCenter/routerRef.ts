@@ -14,7 +14,7 @@ export const getComputedRoutes = () =>
     .getRoutes()
     .map((x) => {
       // eslint-disable-next-line
-    // @ts-ignore
+      // @ts-ignore
       if (x.props.default.isRouteLevel) {
         return x;
       }

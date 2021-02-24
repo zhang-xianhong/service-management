@@ -13,14 +13,14 @@ requireModules.keys().forEach((filePath: string): void => {
   name = name.split('/').pop() || '';
   modules[name] = {
     namespaced: true,
-    ...modular.default
+    ...modular.default,
   };
 });
 
 const store = createStore({
   modules: {
-    ...modules
-  }
+    ...modules,
+  },
 });
 
 export default store;

@@ -30,43 +30,43 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive } from 'vue'
+import { defineComponent, reactive } from 'vue';
 // import AppLink from '@/layout/components/sideBar/Link.vue'
-import Item from '@/layout/components/sideBar/Item.vue'
-import { isExternal } from '@/utils/validate'
-import path from 'path'
-import { setLink } from '@/layout/messageCenter/linkto'
+import Item from '@/layout/components/sideBar/Item.vue';
+import { isExternal } from '@/utils/validate';
+import path from 'path';
+import { setLink } from '@/layout/messageCenter/linkto';
 
 export default defineComponent({
   name: 'SidebarItem',
   components: {
     // AppLink,
-    Item
+    Item,
   },
   props: {
     item: {
       type: Object,
       default: () => ({
         props: {
-          hidden: false
+          hidden: false,
         },
         meta: {
           title: '',
-          icon: ''
-        }
-      })
+          icon: '',
+        },
+      }),
     },
     isNest: {
       type: Boolean,
-      default: false
+      default: false,
     },
     basePath: {
       type: String,
-      default: ''
-    }
+      default: '',
+    },
   },
-  setup (props) {
-    const onlyOneChild = reactive({ value: {} })
+  setup(props) {
+    const onlyOneChild = reactive({ value: {} });
 
     const hasOwnShowingChild = (children = [], parent: any) => {
       const showChidren = children.filter((item) => {
@@ -74,49 +74,49 @@ export default defineComponent({
           return false;
         }
         onlyOneChild.value = item;
-        return true
+        return true;
       });
 
       if (showChidren.length === 1) {
-        return true
+        return true;
       }
 
       if (showChidren.length === 0) {
-        onlyOneChild.value = { ...parent, noShowingChildren: true }
-        return true
+        onlyOneChild.value = { ...parent, noShowingChildren: true };
+        return true;
       }
-      return false
-    }
+      return false;
+    };
 
     const resolvePath = (routePath: string | undefined) => {
       if (!routePath) {
-        return '/'
+        return '/';
       }
       if (isExternal(routePath)) {
-        return routePath
+        return routePath;
       }
       if (isExternal(props.basePath)) {
-        return props.basePath
+        return props.basePath;
       }
-      const rpath = path.resolve(props.basePath, routePath)
-      return rpath
-    }
+      const rpath = path.resolve(props.basePath, routePath);
+      return rpath;
+    };
 
     const logs = (res: any) => {
-      console.log(res, 'this is log')
+      console.log(res, 'this is log');
       // 设置侧边栏默认的路由值
-      setLink(res.path)
-      return res
-    }
+      setLink(res.path);
+      return res;
+    };
 
     return {
       hasOwnShowingChild,
       resolvePath,
       onlyOneChild,
-      logs
-    }
-  }
-})
+      logs,
+    };
+  },
+});
 </script>
 
 <style lang="scss">

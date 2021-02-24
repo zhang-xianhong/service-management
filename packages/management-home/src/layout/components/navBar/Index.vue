@@ -88,30 +88,30 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive } from 'vue'
-import breadCurmb from '@/components/breadCurmb/Index.vue'
+import { defineComponent, reactive } from 'vue';
+import breadCurmb from '@/components/breadCurmb/Index.vue';
 
 export default defineComponent({
   name: 'navBar',
   components: {
-    breadCurmb
+    breadCurmb,
   },
-  setup () {
+  setup() {
     const projectList = reactive([
       {
         id: 1,
-        name: '测试项目1'
+        name: '测试项目1',
       },
       {
         id: 2,
-        name: '测试项目2'
-      }
-    ])
+        name: '测试项目2',
+      },
+    ]);
     return {
-      projectList
-    }
-  }
-})
+      projectList,
+    };
+  },
+});
 </script>
 
 <style lang="scss">

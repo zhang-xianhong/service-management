@@ -19,44 +19,44 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, getCurrentInstance } from 'vue'
-import SidebarItem from '@/layout/components/sideBar/SidebarItem.vue'
-import menuVariables from '@/styles/menu.scss'
-import { getComputedRoutes } from '@/layout/messageCenter/routerRef'
-import { getLink } from '@/layout/messageCenter/linkto'
+import { defineComponent, computed, getCurrentInstance } from 'vue';
+import SidebarItem from '@/layout/components/sideBar/SidebarItem.vue';
+import menuVariables from '@/styles/menu.scss';
+import { getComputedRoutes } from '@/layout/messageCenter/routerRef';
+import { getLink } from '@/layout/messageCenter/linkto';
 
 export default defineComponent({
   name: 'sideBar',
   components: {
-    SidebarItem
+    SidebarItem,
   },
-  setup () {
-    const isCollapse = computed(() => false)
+  setup() {
+    const isCollapse = computed(() => false);
     // eslint-disable-next-line
     // @ts-ignore
-    const { proxy } = getCurrentInstance()
+    const { proxy } = getCurrentInstance();
     const activeMenu = computed(() => {
       // eslint-disable-next-line
       // @ts-ignore
-      const route = proxy.$route
-      console.log(proxy, route)
-      const { meta, path } = route
+      const route = proxy.$route;
+      console.log(proxy, route);
+      const { meta, path } = route;
       if (meta.activeMenu) {
-        return meta.activeMenu
+        return meta.activeMenu;
       }
-      return path
+      return path;
     });
-    const permissionRoutes = getComputedRoutes()
-    console.log(permissionRoutes)
+    const permissionRoutes = getComputedRoutes();
+    console.log(permissionRoutes);
     return {
       menuVariables,
       isCollapse,
       activeMenu,
       permissionRoutes,
-      getLink
-    }
-  }
-})
+      getLink,
+    };
+  },
+});
 </script>
 
 <style lang="scss">

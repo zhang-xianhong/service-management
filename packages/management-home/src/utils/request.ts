@@ -5,7 +5,7 @@ import { ElMessage, ElMessageBox } from 'element-plus';
 
 const service = axios.create({
   baseURL: process.env.VUE_APP_BASE_API,
-  timeout: 5000
+  timeout: 5000,
 });
 
 const TOKEN = 'token';
@@ -38,7 +38,7 @@ service.interceptors.response.use(
         }).then(() => {
           removeToken();
           location.reload();
-        })
+        });
       }
       return Promise.reject(new Error(res.message || 'Error'));
     }
@@ -48,10 +48,10 @@ service.interceptors.response.use(
     ElMessage({
       message: error || 'Error',
       type: 'error',
-      duration: 5 * 1000
+      duration: 5 * 1000,
     });
     return Promise.reject(error);
-  }
+  },
 );
 
 export default service;

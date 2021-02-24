@@ -19,23 +19,23 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
-import SideBar from './components/sideBar/Index.vue'
-import NavBar from './components/navBar/Index.vue'
-import publicStyle from '@/styles/layout.scss'
+import { defineComponent } from 'vue';
+import SideBar from './components/sideBar/Index.vue';
+import NavBar from './components/navBar/Index.vue';
+import publicStyle from '@/styles/layout.scss';
 
 export default defineComponent({
   name: 'Layout',
   components: {
     SideBar,
-    NavBar
+    NavBar,
   },
-  setup () {
+  setup() {
     return {
-      publicStyle
-    }
-  }
-})
+      publicStyle,
+    };
+  },
+});
 </script>
 
 <style lang="scss">

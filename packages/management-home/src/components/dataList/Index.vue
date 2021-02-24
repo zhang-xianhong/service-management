@@ -29,46 +29,46 @@
   </div>
 </template>
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent } from 'vue';
 export default defineComponent({
   name: 'DataList',
   props: {
     loading: {
       type: Boolean,
-      default: false
+      default: false,
     },
     showPagination: {
       type: Boolean,
-      default: true
+      default: true,
     },
     page: {
       type: Number,
-      default: 1
+      default: 1,
     },
     pageSize: {
       type: Number,
-      default: 10
+      default: 10,
     },
     total: {
       type: Number,
-      default: 2000
-    }
+      default: 2000,
+    },
   },
   methods: {
-    handlePageSizeChange (size: number) {
+    handlePageSizeChange(size: number) {
       this.$emit('pageChange', {
         key: 'pageSize',
-        value: size
-      })
+        value: size,
+      });
     },
-    handlePageChange (page: number) {
+    handlePageChange(page: number) {
       this.$emit('pageChange', {
         key: 'page',
-        value: page
-      })
-    }
-  }
-})
+        value: page,
+      });
+    },
+  },
+});
 </script>
 <style scoped lang="scss">
 .data-list {

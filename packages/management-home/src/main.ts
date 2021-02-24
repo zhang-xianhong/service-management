@@ -17,4 +17,8 @@ app.config.globalProperties.$ELEMENT = {
   size: 'small',
 };
 
-app.use(Element).use(Store).use(Router).mount('#app');
+app
+  .use(Element)
+  .use(Store)
+  .use(Router)
+  .mount('#app');

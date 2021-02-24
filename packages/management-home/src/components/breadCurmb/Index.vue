@@ -16,38 +16,38 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, getCurrentInstance, watch, ref } from 'vue'
+import { defineComponent, getCurrentInstance, watch, ref } from 'vue';
 
 export default defineComponent({
   name: 'breadCurmb',
-  setup () {
-    const levelList = ref([])
+  setup() {
+    const levelList = ref([]);
     const handleLink = (item: any) => {
-      console.log(item)
-    }
+      console.log(item);
+    };
     // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
     // @ts-ignore
-    const proxy = getCurrentInstance().proxy as any
+    const proxy = getCurrentInstance().proxy as any;
     const getBread = () => {
-      const matched = proxy.$route.matched.filter((item: any) => item.meta && item.meta.title)
-      levelList.value = matched.filter((item: any) => item.meta && item.meta.title && item.meta.breadcrumb !== false)
-    }
+      const matched = proxy.$route.matched.filter((item: any) => item.meta && item.meta.title);
+      levelList.value = matched.filter((item: any) => item.meta && item.meta.title && item.meta.breadcrumb !== false);
+    };
     watch(
       () => proxy.$route,
       (route) => {
         if (route.path.startsWith('/redirect/')) {
-          return false
+          return false;
         }
-        getBread()
-      }
-    )
-    getBread()
+        getBread();
+      },
+    );
+    getBread();
     return {
       levelList,
-      handleLink
-    }
-  }
-})
+      handleLink,
+    };
+  },
+});
 </script>
 
 <style lang="scss">

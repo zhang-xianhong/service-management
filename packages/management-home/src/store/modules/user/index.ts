@@ -8,11 +8,11 @@ export default {
   state: {
     id: '',
     username: '',
-    token: ''
+    token: '',
   },
   getters: {
-    token: (state: UserInterface) => state.token
+    token: (state: UserInterface) => state.token,
   },
   mutations: {},
-  actions: {}
+  actions: {},
 };

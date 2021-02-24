@@ -9,15 +9,15 @@ const routes: Array<RouteRecordRaw> = [
     name: 'login',
     component: () => import('@/views/login/Index.vue'),
     props: {
-      isRouteLevel: false
-    }
+      isRouteLevel: false,
+    },
   },
   {
     path: '/',
     redirect: '/dashboard',
     component: Layout,
     props: {
-      isRouteLevel: true
+      isRouteLevel: true,
     },
     children: [
       {
@@ -26,24 +26,24 @@ const routes: Array<RouteRecordRaw> = [
         name: 'Dashboard',
         meta: {
           title: '首页',
-          icon: 'el-icon-eleme'
+          icon: 'el-icon-eleme',
         },
         props: {
-          isRouteLevel: false
-        }
-      }
-    ]
+          isRouteLevel: false,
+        },
+      },
+    ],
   },
   {
     path: '/project',
     component: Layout,
     name: 'project',
     props: {
-      isRouteLevel: true
+      isRouteLevel: true,
     },
     meta: {
       title: '项目管理',
-      icon: 'el-icon-eleme'
+      icon: 'el-icon-eleme',
     },
     children: [
       {
@@ -51,12 +51,12 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import('@/views/projectManagement/Index.vue'),
         name: 'projectList',
         props: {
-          isRouteLevel: false
+          isRouteLevel: false,
         },
         meta: {
           title: '项目列表',
-          icon: 'el-icon-eleme'
-        }
+          icon: 'el-icon-eleme',
+        },
       },
       {
         path: '/add-project',
@@ -64,26 +64,26 @@ const routes: Array<RouteRecordRaw> = [
         name: 'addProject',
         props: {
           isRouteLevel: false,
-          hidden: !true
+          hidden: !true,
         },
         meta: {
           title: '新增项目',
-          icon: 'el-icon-eleme'
-        }
+          icon: 'el-icon-eleme',
+        },
       },
       {
         path: '/user-list',
         component: () => import('@/views/userManagement/Index.vue'),
         name: 'userList',
         props: {
-          isRouteLevel: false
+          isRouteLevel: false,
         },
         meta: {
           title: '用户列表',
-          icon: 'el-icon-eleme'
-        }
-      }
-    ]
+          icon: 'el-icon-eleme',
+        },
+      },
+    ],
   },
   {
     path: '/home',
@@ -93,10 +93,10 @@ const routes: Array<RouteRecordRaw> = [
     component: Layout,
     meta: {
       title: 'home',
-      icon: 'el-icon-eleme'
+      icon: 'el-icon-eleme',
     },
     props: {
-      isRouteLevel: true
+      isRouteLevel: true,
     },
     children: [
       {
@@ -105,26 +105,26 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import('../views/About.vue'),
         meta: {
           title: 'about',
-          icon: 'el-icon-eleme'
+          icon: 'el-icon-eleme',
         },
         props: {
-          isRouteLevel: false
-        }
+          isRouteLevel: false,
+        },
       },
       {
         path: '/hello',
         name: 'Hello',
         props: {
           hidden: !true,
-          isRouteLevel: false
+          isRouteLevel: false,
         },
         meta: {
           title: 'hello',
-          icon: 'el-icon-eleme'
+          icon: 'el-icon-eleme',
         },
-        component: () => import('../views/Home.vue')
-      }
-    ]
+        component: () => import('../views/Home.vue'),
+      },
+    ],
   },
   {
     path: '/schema',
@@ -132,11 +132,11 @@ const routes: Array<RouteRecordRaw> = [
     redirect: '/data-object',
     component: Layout,
     props: {
-      isRouteLevel: true
+      isRouteLevel: true,
     },
     meta: {
       title: '数据建模',
-      icon: 'el-icon-eleme'
+      icon: 'el-icon-eleme',
     },
     children: [
       {
@@ -145,19 +145,19 @@ const routes: Array<RouteRecordRaw> = [
         name: 'DataObject',
         meta: {
           title: '数据对象',
-          icon: 'el-icon-eleme'
+          icon: 'el-icon-eleme',
         },
         props: {
-          isRouteLevel: false
-        }
-      }
-    ]
-  }
+          isRouteLevel: false,
+        },
+      },
+    ],
+  },
 ];
 
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
-  routes
+  routes,
 });
 
 setRouterRef(router);

@@ -23,33 +23,33 @@
   </data-list>
 </template>
 <script lang="ts">
-import { defineComponent, reactive, ref } from 'vue'
-import { PageInfo, SortInfo } from '@/types/dataList'
-import { Columns } from './columns'
+import { defineComponent, reactive, ref } from 'vue';
+import { PageInfo, SortInfo } from '@/types/dataList';
+import { Columns } from './columns';
 export default defineComponent({
   name: 'dashboard',
-  setup () {
-    const loading = ref(false)
-    const total = ref(100)
-    const columns = ref(Columns)
+  setup() {
+    const loading = ref(false);
+    const total = ref(100);
+    const columns = ref(Columns);
     const searchParams = reactive({
       category: '',
       tags: [],
       keyword: '',
       page: 1,
-      pageSize: 10
-    })
+      pageSize: 10,
+    });
 
     // 分页改变
     const handlePageChange = ({ key, value }: PageInfo) => {
-      searchParams[key] = value
-      console.log(searchParams)
-    }
+      searchParams[key] = value;
+      console.log(searchParams);
+    };
 
     // 排序改变
     const handleSortChange = ({ prop, order }: SortInfo) => {
-      console.log(prop, order)
-    }
+      console.log(prop, order);
+    };
 
     return {
       loading,
@@ -57,8 +57,8 @@ export default defineComponent({
       columns,
       searchParams,
       handlePageChange,
-      handleSortChange
-    }
-  }
-})
+      handleSortChange,
+    };
+  },
+});
 </script>

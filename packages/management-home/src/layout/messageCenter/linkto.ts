@@ -5,7 +5,7 @@ const linkto = ref('/');
 export const getLink = computed(() => {
   linkto.value = localStorage.getItem('linkPath') || '/home';
   return linkto.value;
-})
+});
 
 export const setLink = (path: string) => {
   localStorage.setItem('linkPath', path);
