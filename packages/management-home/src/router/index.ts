@@ -1,7 +1,7 @@
-import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
+import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
 
-import Layout from '@/layout/Index.vue'
-import { setRouterRef } from '@/layout/messageCenter/routerRef'
+import Layout from '@/layout/Index.vue';
+import { setRouterRef } from '@/layout/messageCenter/routerRef';
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -9,75 +9,77 @@ const routes: Array<RouteRecordRaw> = [
     name: 'login',
     component: () => import('@/views/login/Index.vue'),
     props: {
-      isRouteLevel: false
-    }
+      isRouteLevel: false,
+    },
   },
   {
     path: '/',
     redirect: '/dashboard',
     component: Layout,
     props: {
-      isRouteLevel: true
+      isRouteLevel: true,
     },
-    children: [{
-      path: 'dashboard',
-      component: () => import('@/views/dashboard/Index.vue'),
-      name: 'Dashboard',
-      meta: {
-        title: '首页',
-        icon: 'el-icon-eleme'
+    children: [
+      {
+        path: 'dashboard',
+        component: () => import('@/views/dashboard/Index.vue'),
+        name: 'Dashboard',
+        meta: {
+          title: '首页',
+          icon: 'el-icon-eleme',
+        },
+        props: {
+          isRouteLevel: false,
+        },
       },
-      props: {
-        isRouteLevel: false
-      }
-    }]
+    ],
   },
   {
     path: '/project',
     component: Layout,
     name: 'project',
     props: {
-      isRouteLevel: true
+      isRouteLevel: true,
     },
     meta: {
       title: '项目管理',
-      icon: 'el-icon-eleme'
+      icon: 'el-icon-eleme',
     },
-    children: [{
-      path: 'project-list',
-      component: () => import('@/views/projectManagement/Index.vue'),
-      name: 'projectList',
-      props: {
-        isRouteLevel: false
+    children: [
+      {
+        path: 'project-list',
+        component: () => import('@/views/projectManagement/Index.vue'),
+        name: 'projectList',
+        props: {
+          isRouteLevel: false,
+        },
+        meta: {
+          title: '项目列表',
+          icon: 'el-icon-eleme',
+        },
       },
-      meta: {
-        title: '项目列表',
-        icon: 'el-icon-eleme'
-      }
-    }, {
-      path: 'add-project',
-      component: () => import('@/views/projectManagement/AddProject.vue'),
-      name: 'addProject',
-      props: {
-        isRouteLevel: false
+      {
+        path: 'add-project',
+        component: () => import('@/views/projectManagement/AddProject.vue'),
+        name: 'addProject',
+        props: {
+          isRouteLevel: false,
+        },
+        meta: {
+          title: '新增项目',
+          icon: 'el-icon-eleme',
+          hidden: false,
+        },
       },
-      meta: {
-        title: '新增项目',
-        icon: 'el-icon-eleme',
-        hidden: false
-      }
-    }, {
-      path: 'user-list',
-      component: () => import('@/views/userManagement/Index.vue'),
-      name: 'userList',
-      props: {
-        isRouteLevel: false
+      {
+        path: 'user-list',
+        component: () => import('@/views/userManagement/Index.vue'),
+        name: 'userList',
+        props: {
+          isRouteLevel: false,
+        },
       },
-      meta: {
-        title: '用户列表',
-        icon: 'el-icon-eleme'
-      }
-    }]
+    ],
   },
   {
     path: '/home',
@@ -87,10 +89,10 @@ const routes: Array<RouteRecordRaw> = [
     component: Layout,
     meta: {
       title: 'home',
-      icon: 'el-icon-eleme'
+      icon: 'el-icon-eleme',
     },
     props: {
-      isRouteLevel: true
+      isRouteLevel: true,
     },
     children: [
       {
@@ -99,25 +101,26 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import('../views/About.vue'),
         meta: {
           title: 'about',
-          icon: 'el-icon-eleme'
+          icon: 'el-icon-eleme',
         },
         props: {
-          isRouteLevel: false
-        }
-      }, {
+          isRouteLevel: false,
+        },
+      },
+      {
         path: '/hello',
         name: 'Hello',
         props: {
           hidden: !true,
-          isRouteLevel: false
+          isRouteLevel: false,
         },
         meta: {
           title: 'hello',
-          icon: 'el-icon-eleme'
+          icon: 'el-icon-eleme',
         },
-        component: () => import('../views/Home.vue')
-      }
-    ]
+        component: () => import('../views/Home.vue'),
+      },
+    ],
   },
   {
     path: '/schema',
@@ -125,32 +128,34 @@ const routes: Array<RouteRecordRaw> = [
     redirect: '/data-object',
     component: Layout,
     props: {
-      isRouteLevel: true
+      isRouteLevel: true,
     },
     meta: {
       title: '数据建模',
-      icon: 'el-icon-eleme'
+      icon: 'el-icon-eleme',
     },
-    children: [{
-      path: 'data-object',
-      component: () => import('@/views/schema/data-object/Index.vue'),
-      name: 'DataObject',
-      meta: {
-        title: '数据对象',
-        icon: 'el-icon-eleme'
+    children: [
+      {
+        path: 'data-object',
+        component: () => import('@/views/schema/data-object/Index.vue'),
+        name: 'DataObject',
+        meta: {
+          title: '数据对象',
+          icon: 'el-icon-eleme',
+        },
+        props: {
+          isRouteLevel: false,
+        },
       },
-      props: {
-        isRouteLevel: false
-      }
-    }]
-  }
-]
+    ],
+  },
+];
 
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
-  routes
-})
+  routes,
+});
 
-setRouterRef(router)
+setRouterRef(router);
 
-export default router
+export default router;

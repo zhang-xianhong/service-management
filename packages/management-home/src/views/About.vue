@@ -5,16 +5,16 @@
 </template>
 
 <script>
-import { useCssModule } from 'vue'
+import { useCssModule } from 'vue';
 export default {
-  setup () {
-    const $style = useCssModule()
-    console.log($style)
+  setup() {
+    const $style = useCssModule();
+    console.log($style);
     return {
-      $style
-    }
-  }
-}
+      $style,
+    };
+  },
+};
 </script>
 
 <style module>

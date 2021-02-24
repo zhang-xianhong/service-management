@@ -3,7 +3,11 @@
     <el-breadcrumb class="app-breadcrumb" separator="/">
       <transition-group name="breadcrumb">
         <el-breadcrumb-item v-for="(item, index) in levelList" :key="item.path">
-          <span v-if="item.redirect==='noRedirect'||index==levelList.length-1" class="no-redirect breadcrumb-item">{{ item.meta.title }}</span>
+          <span
+            v-if="item.redirect === 'noRedirect' || index == levelList.length - 1"
+            class="no-redirect breadcrumb-item"
+            >{{ item.meta.title }}</span
+          >
           <a class="breadcrumb-item" v-else @click.prevent="handleLink(item)">{{ item.meta.title }}</a>
         </el-breadcrumb-item>
       </transition-group>
@@ -12,41 +16,44 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, getCurrentInstance, watch, ref } from 'vue'
+import { defineComponent, getCurrentInstance, watch, ref } from 'vue';
 
 export default defineComponent({
   name: 'breadCurmb',
-  setup () {
-    const levelList = ref([])
+  setup() {
+    const levelList = ref([]);
     const handleLink = (item: any) => {
-      console.log(item)
-    }
+      console.log(item);
+    };
     // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
     // @ts-ignore
-    const proxy = getCurrentInstance().proxy as any
+    const proxy = getCurrentInstance().proxy as any;
     const getBread = () => {
-      const matched = proxy.$route.matched.filter((item: any) => item.meta && item.meta.title)
-      levelList.value = matched.filter((item: any) => item.meta && item.meta.title && item.meta.breadcrumb !== false)
-    }
-    watch(() => proxy.$route, route => {
-      if (route.path.startsWith('/redirect/')) {
-        return false
-      }
-      getBread()
-    })
-    getBread()
+      const matched = proxy.$route.matched.filter((item: any) => item.meta && item.meta.title);
+      levelList.value = matched.filter((item: any) => item.meta && item.meta.title && item.meta.breadcrumb !== false);
+    };
+    watch(
+      () => proxy.$route,
+      (route) => {
+        if (route.path.startsWith('/redirect/')) {
+          return false;
+        }
+        getBread();
+      },
+    );
+    getBread();
     return {
       levelList,
-      handleLink
-    }
-  }
-})
+      handleLink,
+    };
+  },
+});
 </script>
 
 <style lang="scss">
 @import './src/styles/layout';
 
-.bread-curmb{
+.bread-curmb {
   // 面包屑字体颜色控制
   //.el-breadcrumb__inner{
   //  color: $breadCurmbColor !important;
@@ -55,11 +62,11 @@ export default defineComponent({
   //  }
   //}
   user-select: none;
-  &:hover{
+  &:hover {
     cursor: default !important;
   }
 }
 .breadcrumb-item {
-  color: $deepColor !important
+  color: $deepColor !important;
 }
 </style>

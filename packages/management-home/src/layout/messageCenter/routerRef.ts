@@ -1,22 +1,25 @@
-import router from '@/router'
-import { reactive } from 'vue'
+import router from '@/router';
+import { reactive } from 'vue';
+import { RouteRecordNormalized } from 'vue-router';
 
-const routerRef = reactive({ value: router })
+const routerRef = reactive({ value: router });
 
-export const getRouterRef = () => {
-  return routerRef
-}
+export const getRouterRef = () => routerRef;
 
 export const setRouterRef = (res: any) => {
-  routerRef.value = res
-}
+  routerRef.value = res;
+};
 
-export const getComputedRoutes = () => {
-  return routerRef.value.getRoutes().map(x => {
-    // eslint-disable-next-line
-    // @ts-ignore
-    if (x.props.default.isRouteLevel) {
-      return x
-    }
-  }).filter(x => x)
-}
+export const getComputedRoutes = () =>
+  routerRef.value
+    .getRoutes()
+    .map((x): undefined | RouteRecordNormalized => {
+      const data = x?.props.default as {
+        isRouteLevel: boolean;
+      };
+      if (data.isRouteLevel) {
+        return x;
+      }
+      return undefined;
+    })
+    .filter((x) => x);

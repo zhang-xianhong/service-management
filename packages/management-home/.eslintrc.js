@@ -6,17 +6,21 @@ module.exports = {
     es6: true
   },
   extends: [
-    'plugin:vue/vue3-essential',
     '@vue/standard',
-    '@vue/typescript/recommended'
+    '@vue/typescript/recommended',
+    '@tencent/eslint-config-tencent', 
+    '@tencent/eslint-config-tencent/ts',
+    'plugin:vue/vue3-essential',
   ],
   parserOptions: {
-    ecmaVersion: 2020
+    ecmaVersion: 2020,
+    project: './tsconfig.json',
   },
   rules: {
     'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
     'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
     '@typescript-eslint/no-var-requires': 'off',
-    '@typescript-eslint/no-explicit-any': 'off'
+    '@typescript-eslint/no-explicit-any': 'off',
+    'comma-dangle': 0
   }
 }

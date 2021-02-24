@@ -3,26 +3,26 @@
     <template v-if="icon">
       <i :class="[icon, 'sub-el-icon']" v-if="icon.includes('el-')"></i>
     </template>
-    <span v-if="title">{{title}}</span>
+    <span v-if="title">{{ title }}</span>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent } from 'vue';
 export default defineComponent({
   name: 'linkItem',
   functional: true,
   props: {
     icon: {
       type: String,
-      default: () => ''
+      default: () => '',
     },
     title: {
       type: String,
-      default: () => ''
-    }
-  }
-})
+      default: () => '',
+    },
+  },
+});
 </script>
 
 <style scoped>

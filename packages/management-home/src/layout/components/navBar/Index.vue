@@ -14,37 +14,23 @@
         <template #dropdown>
           <el-dropdown-menu>
             <el-dropdown-item icon="el-icon-message"
-              >升级公告<span
-                class="el-badge__content el-badge__content--primary"
-                >2</span
-              ></el-dropdown-item
+              >升级公告<span class="el-badge__content el-badge__content--primary">2</span></el-dropdown-item
             >
             <el-dropdown-item icon="el-icon-s-flag">待办任务</el-dropdown-item>
             <el-dropdown-item icon="el-icon-tickets">待办工单</el-dropdown-item>
             <el-dropdown-item icon="el-icon-date"
-              >今日日程<span
-                class="el-badge__content el-badge__content--primary"
-                >3</span
-              ></el-dropdown-item
+              >今日日程<span class="el-badge__content el-badge__content--primary">3</span></el-dropdown-item
             >
-            <el-dropdown-item icon="el-icon-edit-outline"
-              >待批申请</el-dropdown-item
-            >
+            <el-dropdown-item icon="el-icon-edit-outline">待批申请</el-dropdown-item>
             <el-dropdown-item icon="el-icon-bell">系统通知</el-dropdown-item>
           </el-dropdown-menu>
         </template>
       </el-dropdown>
       <el-dropdown trigger="click" class="header-title">
-        <span class="el-dropdown-link">
-          <i class="el-icon-s-unfold header-title-object-icon3"></i>项目
-        </span>
+        <span class="el-dropdown-link"> <i class="el-icon-s-unfold header-title-object-icon3"></i>项目 </span>
         <template #dropdown>
           <el-dropdown-menu>
-            <el-dropdown-item
-              v-for="project in projectList"
-              :key="project.id"
-              >{{ project.name }}</el-dropdown-item
-            >
+            <el-dropdown-item v-for="project in projectList" :key="project.id">{{ project.name }}</el-dropdown-item>
           </el-dropdown-menu>
         </template>
       </el-dropdown>
@@ -57,16 +43,10 @@
         <template #dropdown>
           <el-dropdown-menu>
             <el-dropdown-item icon="el-icon-edit">用户设置</el-dropdown-item>
-            <el-dropdown-item icon="el-icon-map-location"
-              >登录地点</el-dropdown-item
-            >
-            <el-dropdown-item icon="el-icon-s-custom"
-              >我的资产</el-dropdown-item
-            >
+            <el-dropdown-item icon="el-icon-map-location">登录地点</el-dropdown-item>
+            <el-dropdown-item icon="el-icon-s-custom">我的资产</el-dropdown-item>
             <el-dropdown-item icon="el-icon-info">关于</el-dropdown-item>
-            <el-dropdown-item icon="el-icon-switch-button"
-              >登出</el-dropdown-item
-            >
+            <el-dropdown-item icon="el-icon-switch-button">登出</el-dropdown-item>
           </el-dropdown-menu>
         </template>
       </el-dropdown>
@@ -108,30 +88,30 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive } from 'vue'
-import breadCurmb from '@/components/breadCurmb/Index.vue'
+import { defineComponent, reactive } from 'vue';
+import breadCurmb from '@/components/breadCurmb/Index.vue';
 
 export default defineComponent({
   name: 'navBar',
   components: {
-    breadCurmb
+    breadCurmb,
   },
-  setup () {
+  setup() {
     const projectList = reactive([
       {
         id: 1,
-        name: '测试项目1'
+        name: '测试项目1',
       },
       {
         id: 2,
-        name: '测试项目2'
-      }
-    ])
+        name: '测试项目2',
+      },
+    ]);
     return {
-      projectList
-    }
-  }
-})
+      projectList,
+    };
+  },
+});
 </script>
 
 <style lang="scss">
