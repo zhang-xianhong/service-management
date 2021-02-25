@@ -36,18 +36,8 @@
         <el-input v-model="baseInfoForm.modules" placeholder="请输入库依赖信息"></el-input>
       </el-form-item>
       <el-form-item label="负责人">
-        <el-select
-          v-model="baseInfoForm.persion"
-          multiple
-          clearable
-          collapse-tags
-          placeholder="请选择">
-          <el-option
-            v-for="item in persions"
-            :key="item.id"
-            :label="item.name"
-            :value="item.name">
-          </el-option>
+        <el-select v-model="baseInfoForm.persion" multiple clearable collapse-tags placeholder="请选择">
+          <el-option v-for="item in persions" :key="item.id" :label="item.name" :value="item.name"> </el-option>
         </el-select>
       </el-form-item>
       <el-form-item label="模板">
@@ -61,12 +51,7 @@
         <el-input-number v-model="baseInfoForm.changeCount" disabled></el-input-number>
       </el-form-item>
       <el-form-item label="变更历史">
-        <el-input
-          type="textarea"
-          :rows="2"
-          placeholder="请输入内容"
-          disabled
-          v-model="baseInfoForm.changeLogs">
+        <el-input type="textarea" :rows="2" placeholder="请输入内容" disabled v-model="baseInfoForm.changeLogs">
         </el-input>
       </el-form-item>
     </el-form>
@@ -74,29 +59,31 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
-import { baseInfoForm } from '@/views/projectManagement/add-project/components/addProjectBus'
+import { defineComponent } from 'vue';
+import { baseInfoForm } from '@/views/projectManagement/add-project/components/addProjectBus';
 
 export default defineComponent({
   name: 'addBaseInfo',
-  data () {
+  data() {
     return {
-      persions: [{
-        name: 'aiden',
-        id: 'i12345'
-      }]
-    }
+      persions: [
+        {
+          name: 'aiden',
+          id: 'i12345',
+        },
+      ],
+    };
   },
-  setup () {
+  setup() {
     return {
-      baseInfoForm
-    }
-  }
-})
+      baseInfoForm,
+    };
+  },
+});
 </script>
 
 <style lang="scss">
-.add-base-info{
+.add-base-info {
   width: 40%;
 }
 </style>

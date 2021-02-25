@@ -1,4 +1,4 @@
-import 'element-plus/lib/theme-chalk/index.css'
+import 'element-plus/lib/theme-chalk/index.css';
 import {
   ElButton,
   ElIcon,
@@ -30,8 +30,8 @@ import {
   ElCheckbox,
   ElCheckboxGroup,
   ElSlider,
-  ElInputNumber
-} from 'element-plus'
+  ElInputNumber,
+} from 'element-plus';
 
 const components = [
   ElButton,
@@ -59,18 +59,18 @@ const components = [
   ElCheckbox,
   ElCheckboxGroup,
   ElSlider,
-  ElInputNumber
-]
-const plugins = [ElInfiniteScroll, ElLoading, ElMessage, ElMessageBox, ElNotification]
+  ElInputNumber,
+];
+const plugins = [ElInfiniteScroll, ElLoading, ElMessage, ElMessageBox, ElNotification];
 
 export default {
   // element-plus UI组件按需引入
-  install: function (app: any): void {
-    components.forEach(component => {
-      app.component(component.name, component)
-    })
-    plugins.forEach(plugin => {
-      app.use(plugin)
-    })
-  }
-}
+  install(app: any): void {
+    components.forEach((component) => {
+      app.component(component.name, component);
+    });
+    plugins.forEach((plugin) => {
+      app.use(plugin);
+    });
+  },
+};

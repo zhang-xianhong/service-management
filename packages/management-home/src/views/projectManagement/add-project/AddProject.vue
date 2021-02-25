@@ -30,14 +30,14 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue'
+import { defineComponent, ref } from 'vue';
 
-import AddBaseInfo from '@/views/projectManagement/add-project/components/AddBaseInfo.vue'
-import AddOpenSet from '@/views/projectManagement/add-project/components/AddOpenSet.vue'
-import AddRunParams from '@/views/projectManagement/add-project/components/AddRunParams.vue'
-import AddCodeTemplate from '@/views/projectManagement/add-project/components/AddCodeTemplate.vue'
-import AddHeighSet from '@/views/projectManagement/add-project/components/AddHeighSet.vue'
-import AddCopyright from '@/views/projectManagement/add-project/components/AddCopyright.vue'
+import AddBaseInfo from '@/views/projectManagement/add-project/components/AddBaseInfo.vue';
+import AddOpenSet from '@/views/projectManagement/add-project/components/AddOpenSet.vue';
+import AddRunParams from '@/views/projectManagement/add-project/components/AddRunParams.vue';
+import AddCodeTemplate from '@/views/projectManagement/add-project/components/AddCodeTemplate.vue';
+import AddHeighSet from '@/views/projectManagement/add-project/components/AddHeighSet.vue';
+import AddCopyright from '@/views/projectManagement/add-project/components/AddCopyright.vue';
 
 export default defineComponent({
   name: 'addProject',
@@ -47,25 +47,25 @@ export default defineComponent({
     AddRunParams,
     AddCodeTemplate,
     AddHeighSet,
-    AddCopyright
+    AddCopyright,
   },
-  setup () {
-    const tabActive = ref('baseInfo')
+  setup() {
+    const tabActive = ref('baseInfo');
     return {
-      tabActive
-    }
-  }
-})
+      tabActive,
+    };
+  },
+});
 </script>
 
 <style lang="scss">
-.add-project{
-  .add-project-btns_container{
+.add-project {
+  .add-project-btns_container {
     width: 100%;
     height: 60px;
     //background-color: rgba(0,0,0,0.2);
   }
-  .add-project-tabs_container{
+  .add-project-tabs_container {
     width: 100%;
   }
 }

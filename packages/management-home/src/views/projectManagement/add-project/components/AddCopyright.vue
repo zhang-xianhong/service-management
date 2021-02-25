@@ -9,21 +9,21 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
-import { copyrightForm } from './addProjectBus'
+import { defineComponent } from 'vue';
+import { copyrightForm } from './addProjectBus';
 
 export default defineComponent({
   name: 'AddCopyright',
-  setup () {
+  setup() {
     return {
-      copyrightForm
-    }
-  }
-})
+      copyrightForm,
+    };
+  },
+});
 </script>
 
 <style lang="scss">
-.copyright{
+.copyright {
   width: 40%;
   padding-left: 40px;
 }

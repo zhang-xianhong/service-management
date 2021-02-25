@@ -2,11 +2,7 @@
   <div class="add-heigh-set">
     <el-form :model="heigherSetForm" label-position="top">
       <el-form-item label="继承星级">
-        <el-slider
-          v-model="heigherSetForm.extends"
-          :step="10"
-          show-stops>
-        </el-slider>
+        <el-slider v-model="heigherSetForm.extends" :step="10" show-stops> </el-slider>
       </el-form-item>
       <el-form-item label="在创建模块页面的时候是否启用模板功能">
         <el-radio-group v-model="heigherSetForm.template">
@@ -75,21 +71,21 @@
 </template>
 
 <script>
-import { defineComponent } from 'vue'
-import { heigherSetForm } from '@/views/projectManagement/add-project/components/addProjectBus'
+import { defineComponent } from 'vue';
+import { heigherSetForm } from '@/views/projectManagement/add-project/components/addProjectBus';
 
 export default defineComponent({
   name: 'AddHeighSet',
-  setup () {
+  setup() {
     return {
-      heigherSetForm
-    }
-  }
-})
+      heigherSetForm,
+    };
+  },
+});
 </script>
 
 <style lang="scss">
-.add-heigh-set{
+.add-heigh-set {
   width: 40%;
   padding-left: 40px;
 }

@@ -27,21 +27,21 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
-import { runParamsForm } from '@/views/projectManagement/add-project/components/addProjectBus'
+import { defineComponent } from 'vue';
+import { runParamsForm } from '@/views/projectManagement/add-project/components/addProjectBus';
 
 export default defineComponent({
   name: 'AddRunParams',
-  setup () {
+  setup() {
     return {
-      runParamsForm
-    }
-  }
-})
+      runParamsForm,
+    };
+  },
+});
 </script>
 s
 <style lang="scss">
-.add-run-params{
+.add-run-params {
   width: 40%;
   padding-left: 40px;
 }

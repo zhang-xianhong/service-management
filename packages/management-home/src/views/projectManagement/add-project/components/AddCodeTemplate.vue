@@ -43,21 +43,21 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
-import { codeTemplateForm } from './addProjectBus'
+import { defineComponent } from 'vue';
+import { codeTemplateForm } from './addProjectBus';
 
 export default defineComponent({
   name: 'AddCodeTemplate',
-  setup () {
+  setup() {
     return {
-      codeTemplateForm
-    }
-  }
-})
+      codeTemplateForm,
+    };
+  },
+});
 </script>
 
 <style lang="scss">
-.add-code-template{
+.add-code-template {
   width: 40%;
   padding-left: 40px;
 }
