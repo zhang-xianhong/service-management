@@ -31,6 +31,10 @@ import {
   ElCheckboxGroup,
   ElSlider,
   ElInputNumber,
+  ElBadge,
+  ElDropdown,
+  ElDropdownMenu,
+  ElDropdownItem,
 } from 'element-plus';
 
 const components = [
@@ -60,6 +64,10 @@ const components = [
   ElCheckboxGroup,
   ElSlider,
   ElInputNumber,
+  ElBadge,
+  ElDropdown,
+  ElDropdownMenu,
+  ElDropdownItem,
 ];
 const plugins = [ElInfiniteScroll, ElLoading, ElMessage, ElMessageBox, ElNotification];
 
