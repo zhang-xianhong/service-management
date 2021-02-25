@@ -78,6 +78,11 @@ const routes: Array<RouteRecordRaw> = [
         props: {
           isRouteLevel: false,
         },
+        meta: {
+          title: '新增项目',
+          icon: 'el-icon-eleme',
+          hidden: false,
+        }
       },
     ],
   },
