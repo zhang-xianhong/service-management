@@ -7,6 +7,7 @@ import { RedisModule } from 'nestjs-redis';
 
 import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './modules/auth/auth.module';
+import { ModelModule } from './modules/model/model.module';
 
 
 @Module({
@@ -26,6 +27,7 @@ import { AuthModule } from './modules/auth/auth.module';
     }),
     UsersModule,
     AuthModule,
+    ModelModule,
   ],
 })
 
