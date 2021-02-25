@@ -3,7 +3,7 @@
     <template v-slot:head>
       <el-row class="business-tooltip">
         <el-button-group class="business-tooltip__operations">
-          <el-button type="primary">新增</el-button>
+          <el-button type="primary" @click="serviceAdd">新增</el-button>
           <el-button>克隆</el-button>
           <el-button>继承</el-button>
           <el-button>启动</el-button>
@@ -50,6 +50,7 @@
 
 <script lang="ts">
 import { reactive, toRefs, ref } from 'vue';
+import { useRouter } from 'vue-router';
 
 interface CategoryState {
   categories: Array<Record<string, any>>;
@@ -63,6 +64,7 @@ interface TagState {
 
 export default {
   setup() {
+    const router = useRouter();
     // 分类相关状态
     const categoryState: CategoryState = reactive({
       categories: [],
@@ -78,10 +80,15 @@ export default {
     // 搜索框输入
     const inputValue = ref('');
 
+    const serviceAdd = () => {
+      router.push({ path: '/serve/business-add' });
+    };
+
     return {
       ...toRefs(categoryState),
       ...toRefs(tagState),
       inputValue,
+      serviceAdd,
     };
   },
 };
