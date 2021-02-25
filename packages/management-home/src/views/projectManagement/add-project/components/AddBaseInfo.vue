@@ -75,7 +75,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { baseInfoForm } from '@/views/projectManagement/components/addProjectBus'
+import { baseInfoForm } from '@/views/projectManagement/add-project/components/addProjectBus'
 
 export default defineComponent({
   name: 'addBaseInfo',

@@ -56,7 +56,7 @@ const routes: Array<RouteRecordRaw> = [
       }
     }, {
       path: 'add-project',
-      component: () => import('@/views/projectManagement/AddProject.vue'),
+      component: () => import('@/views/projectManagement/add-project/AddProject.vue'),
       name: 'addProject',
       props: {
         isRouteLevel: false

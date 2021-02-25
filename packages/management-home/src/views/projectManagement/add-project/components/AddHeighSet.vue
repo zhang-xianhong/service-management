@@ -76,7 +76,7 @@
 
 <script>
 import { defineComponent } from 'vue'
-import { heigherSetForm } from '@/views/projectManagement/components/addProjectBus'
+import { heigherSetForm } from '@/views/projectManagement/add-project/components/addProjectBus'
 
 export default defineComponent({
   name: 'AddHeighSet',
