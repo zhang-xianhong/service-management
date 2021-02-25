@@ -49,7 +49,7 @@ export const Columns = [
     sortable: true,
   },
   {
-    prop: 'update_user',
+    prop: 'update_time',
     label: '修改时间',
     minWidth: 100,
     sortable: true,

@@ -32,7 +32,7 @@ module.exports = {
     },
     before (app) {
       // add mockjs request
-      app.use('/mock/*', (req, res, next) => {
+      app.use('/api/mock/*', (req, res, next) => {
         const filePath = path.resolve(__dirname, './mock', req.params[0])
         fs.readFile(filePath, 'utf8', (err, data) => {
           if (err) {

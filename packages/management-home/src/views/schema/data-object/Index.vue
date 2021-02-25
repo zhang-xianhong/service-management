@@ -15,7 +15,12 @@
     <template v-slot:headRight>
       <el-button type="primary">新增</el-button>
     </template>
-    <el-table :default-sort="{ prop: 'name', order: 'descending' }" @sort-change="handleSortChange" style="width: 100%">
+    <el-table
+      :data="datasource"
+      :default-sort="{ prop: 'name', order: 'descending' }"
+      @sort-change="handleSortChange"
+      style="width: 100%"
+    >
       <el-table-column type="selection" width="55"> </el-table-column>
       <el-table-column v-for="column in columns" :key="column.prop" v-bind="{ ...column }" />
       <el-table-column label="操作" fixed="right"> </el-table-column>
@@ -23,39 +28,60 @@
   </data-list>
 </template>
 <script lang="ts">
-import { defineComponent, reactive, ref } from 'vue';
+import { defineComponent, reactive, ref, onMounted } from 'vue';
 import { PageInfo, SortInfo } from '@/types/dataList';
 import { Columns } from './columns';
+import { getDataObjectList } from '@/api/schema/data-object';
 export default defineComponent({
   name: 'dashboard',
   setup() {
     const loading = ref(false);
     const total = ref(100);
     const columns = ref(Columns);
+    const datasource = ref([] as Array<object>);
     const searchParams = reactive({
       category: '',
       tags: [],
       keyword: '',
       page: 1,
       pageSize: 10,
+      sortField: '',
+      sortType: '',
     });
+
+    const getList = async () => {
+      loading.value = true;
+      try {
+        const { data } = await getDataObjectList(searchParams);
+        datasource.value = data.list;
+        total.value = data.total;
+      } catch (error) {}
+      loading.value = false;
+    };
 
     // 分页改变
     const handlePageChange = ({ key, value }: PageInfo) => {
       searchParams[key] = value;
-      console.log(searchParams);
+      getList();
     };
 
     // 排序改变
     const handleSortChange = ({ prop, order }: SortInfo) => {
-      console.log(prop, order);
+      searchParams.sortField = prop;
+      searchParams.sortType = order;
+      getList();
     };
+
+    onMounted(() => {
+      getList();
+    });
 
     return {
       loading,
       total,
       columns,
       searchParams,
+      datasource,
       handlePageChange,
       handleSortChange,
     };
