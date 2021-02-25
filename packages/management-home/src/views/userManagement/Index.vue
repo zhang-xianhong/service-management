@@ -1,16 +1,12 @@
 <template>
-  <div class="user-managerment">
-
-  </div>
+  <div class="user-managerment"></div>
 </template>
 
 <script>
-import { defineComponent } from 'vue'
+import { defineComponent } from 'vue';
 export default defineComponent({
-  name: 'userManagerment'
-})
+  name: 'userManagerment',
+});
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>
