@@ -7,16 +7,16 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent } from 'vue';
 
 export default defineComponent({
-  name: 'mainwindow'
-})
+  name: 'mainwindow',
+});
 </script>
 
 <style lang="scss">
 @import '@/styles/layout';
-.main-window{
+.main-window {
   width: 100%;
   height: 100%;
   position: absolute;

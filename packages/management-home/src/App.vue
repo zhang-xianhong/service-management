@@ -1,6 +1,6 @@
 <template>
   <div class="apps">
-    <router-view/>
+    <router-view />
   </div>
 </template>
 
@@ -8,7 +8,8 @@
 * {
   box-sizing: border-box;
 }
-html,body{
+html,
+body {
   width: 100vw;
   height: 100vh;
   overflow-x: hidden;
@@ -17,13 +18,12 @@ html,body{
   padding: 0;
 }
 #app {
-  background-color: #f2f2f2;
-  font-family: 'Microsoft YaHei', 'PingFang SC', 'Avenir', Helvetica, Arial, sans-serif;;
+  font-family: 'Microsoft YaHei', 'PingFang SC', 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: #2c3e50;
 }
-.apps{
+.apps {
   width: 100vw;
   height: 100vh;
   overflow: hidden;
@@ -40,5 +40,20 @@ html,body{
       color: #42b983;
     }
   }
+}
+</style>
+
+<style lang="scss" module>
+.normal {
+  background-color: #0abf5b;
+}
+.warning {
+  background-color: #ff9d00;
+}
+.error {
+  background-color: #e54545;
+}
+.primary {
+  background-color: #006eff;
 }
 </style>

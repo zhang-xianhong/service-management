@@ -3,12 +3,10 @@
 </template>
 
 <script>
-import { defineComponent } from 'vue'
+import { defineComponent } from 'vue';
 export default defineComponent({
-  name: 'dashboard'
-})
+  name: 'dashboard',
+});
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>
