@@ -50,7 +50,7 @@ export default defineComponent({
     AddCopyright,
   },
   setup() {
-    const tabActive = ref('baseInfo');
+    const tabActive = ref('openSet');
     return {
       tabActive,
     };
