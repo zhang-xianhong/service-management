@@ -31,25 +31,27 @@
 </template>
 
 <script lang="ts">
-import { ref, reactive, toRefs, defineComponent } from 'vue';
+import { reactive, toRefs, defineComponent } from 'vue';
 
-interface Form {
-  name: string;
-  description: string;
-  demand: Array<string>;
-  principal: Array<string>;
-  versionManagement: boolean;
-  classification: string;
-  tags: Array<string>;
-  detail: string;
+interface BasicFormState {
+  basicForm: {
+    name: string;
+    description: string;
+    demand: Array<string>;
+    principal: Array<string>;
+    versionManagement: boolean;
+    classification: string;
+    tags: Array<string>;
+    detail: string;
+  };
 }
 
 export default defineComponent({
   name: 'BusinessEditBasic',
   setup() {
-    const formState = reactive({
+    const formState: BasicFormState = reactive({
       basicForm: {
-        name: ref(''),
+        name: '',
         description: '',
         demand: [],
         principal: [],
