@@ -2,7 +2,7 @@ import { Controller, Request, Post, UseGuards, Get } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { AuthGuard } from '@nestjs/passport';
 import { RedisService } from 'nestjs-redis';
-import { Public } from '../../shared/decorators/auth';
+import { Public } from '../../shared/decorators/auth.decorator';
 import { REDIS_TOKEN_PREFIX } from './constants';
 
 @Controller('auth')

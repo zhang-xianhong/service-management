@@ -16,6 +16,6 @@ export default {
   username: DATABASE_USERNAME,
   password: DATABASE_PASSWORD,
   database: DATABASE_DB,
-  entities: [join(__dirname, '../', '**/entity{.ts,.js}')],
+  entities: [join(__dirname, '../', '**/*.entity{.ts,.js}')],
   synchronize: true,
 };
