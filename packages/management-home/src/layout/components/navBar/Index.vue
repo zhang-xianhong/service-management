@@ -50,39 +50,6 @@
           </el-dropdown-menu>
         </template>
       </el-dropdown>
-      <!-- <el-popover
-        placement="bottom"
-        :width="180"
-        trigger="click"
-        :show-after="50"
-        :hide-after="50"
-      >
-        <template #reference>
-          <el-button>aidentao</el-button>
-        </template>
-        <div>
-          <div class="props-list-item">
-            <i class="el-icon-s-tools"></i>
-            <span>用户设置</span>
-          </div>
-          <div class="props-list-item">
-            <i class="el-icon-s-promotion"></i>
-            <span>登录地点</span>
-          </div>
-          <div class="props-list-item">
-            <i class="el-icon-folder"></i>
-            <span>我的资产</span>
-          </div>
-          <div class="props-list-item">
-            <i class="el-icon-info"></i>
-            <span>关于</span>
-          </div>
-          <div class="props-list-item">
-            <i class="el-icon-lollipop"></i>
-            <span>登出</span>
-          </div>
-        </div>
-      </el-popover> -->
     </div>
   </div>
 </template>
