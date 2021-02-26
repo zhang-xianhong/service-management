@@ -47,7 +47,7 @@ const routes: Array<RouteRecordRaw> = [
     },
     children: [
       {
-        path: '/project-list',
+        path: 'project-list',
         component: () => import('@/views/projectManagement/Index.vue'),
         name: 'projectList',
         props: {
@@ -59,20 +59,20 @@ const routes: Array<RouteRecordRaw> = [
         },
       },
       {
-        path: '/add-project',
-        component: () => import('@/views/projectManagement/AddProject.vue'),
+        path: 'add-project',
+        component: () => import('@/views/projectManagement/add-project/AddProject.vue'),
         name: 'addProject',
         props: {
           isRouteLevel: false,
-          hidden: !true,
         },
         meta: {
           title: '新增项目',
           icon: 'el-icon-eleme',
+          hidden: false,
         },
       },
       {
-        path: '/user-list',
+        path: 'user-list',
         component: () => import('@/views/userManagement/Index.vue'),
         name: 'userList',
         props: {

@@ -1,5 +1,5 @@
 <template>
-  <template v-if="!item.props.hidden">
+  <template v-if="!item.meta.hidden">
     <template
       v-if="hasOwnShowingChild(item.children, item) && (!onlyOneChild.children || onlyOneChild.noShowingChildren)"
     >
@@ -23,7 +23,7 @@
         :key="child.path"
         :is-nest="true"
         :item="child"
-        :base-path="resolvePath(child.path)"
+        :base-path="resolvePath(item.path)"
       />
     </el-submenu>
   </template>
@@ -47,12 +47,10 @@ export default defineComponent({
     item: {
       type: Object,
       default: () => ({
-        props: {
-          hidden: false,
-        },
         meta: {
           title: '',
           icon: '',
+          hidden: false,
         },
       }),
     },
@@ -70,7 +68,7 @@ export default defineComponent({
 
     const hasOwnShowingChild = (children = [], parent: any) => {
       const showChidren = children.filter((item) => {
-        if ((item as any).props.hidden) {
+        if ((item as any).meta.hidden) {
           return false;
         }
         onlyOneChild.value = item;

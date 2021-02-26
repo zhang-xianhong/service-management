@@ -1,7 +1,4 @@
 import 'element-plus/lib/theme-chalk/index.css';
-import locale from 'element-plus/lib/locale';
-import lang from 'element-plus/lib/locale/lang/zh-cn';
-import 'dayjs/locale/zh-cn';
 import {
   ElButton,
   ElIcon,
@@ -22,16 +19,23 @@ import {
   ElScrollbar,
   ElPopover,
   ElPagination,
-  ElBadge,
-  ElDropdown,
-  ElDropdownItem,
-  ElDropdownMenu,
+  ElTabs,
+  ElTabPane,
+  ElForm,
+  ElFormItem,
   ElSelect,
   ElOption,
+  ElRadio,
+  ElRadioGroup,
+  ElCheckbox,
+  ElCheckboxGroup,
+  ElSlider,
+  ElInputNumber,
+  ElBadge,
+  ElDropdown,
+  ElDropdownMenu,
+  ElDropdownItem,
 } from 'element-plus';
-
-// 设置语言
-locale.use(lang);
 
 const components = [
   ElButton,
@@ -48,12 +52,22 @@ const components = [
   ElScrollbar,
   ElPopover,
   ElPagination,
-  ElBadge,
-  ElDropdown,
-  ElDropdownItem,
-  ElDropdownMenu,
+  ElTabs,
+  ElTabPane,
+  ElForm,
+  ElFormItem,
   ElSelect,
   ElOption,
+  ElRadio,
+  ElRadioGroup,
+  ElCheckbox,
+  ElCheckboxGroup,
+  ElSlider,
+  ElInputNumber,
+  ElBadge,
+  ElDropdown,
+  ElDropdownMenu,
+  ElDropdownItem,
 ];
 const plugins = [ElInfiniteScroll, ElLoading, ElMessage, ElMessageBox, ElNotification];
 
