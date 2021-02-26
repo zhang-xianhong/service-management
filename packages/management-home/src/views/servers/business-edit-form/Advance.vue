@@ -15,28 +15,24 @@
 </template>
 
 <script lang="ts">
-import { reactive, toRefs, defineComponent } from 'vue';
+import { ref, Ref, defineComponent } from 'vue';
 
-interface AdvanceFormState {
-  advanceForm: {
-    objDep: Array<Record<string, string>>;
-    svcDep: Array<Record<string, string>>;
-    libDep: Array<Record<string, string>>;
-  };
+interface AdvanceForm {
+  objDep: Array<Record<string, string>>;
+  svcDep: Array<Record<string, string>>;
+  libDep: Array<Record<string, string>>;
 }
 
 export default defineComponent({
   name: 'BusinessEditBasic',
   setup() {
-    const formState: AdvanceFormState = reactive({
-      advanceForm: {
-        objDep: [],
-        svcDep: [],
-        libDep: [],
-      },
+    const advanceForm: Ref<AdvanceForm> = ref({
+      objDep: [],
+      svcDep: [],
+      libDep: [],
     });
     return {
-      ...toRefs(formState),
+      advanceForm,
     };
   },
 });

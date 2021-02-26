@@ -50,7 +50,7 @@
 </template>
 
 <script lang="ts">
-import { reactive, toRefs, defineComponent } from 'vue';
+import { ref, Ref, defineComponent } from 'vue';
 
 interface RelationRecord {
   type: 'include' | 'reference' | '';
@@ -59,21 +59,17 @@ interface RelationRecord {
   objAttr: string;
   objMainAttr: string;
 }
-interface RelationFormState {
-  relationForm: {
-    objMain: string;
-    relationRecords: Array<RelationRecord>;
-  };
+interface RelationForm {
+  objMain: string;
+  relationRecords: Array<RelationRecord>;
 }
 
 export default defineComponent({
   name: 'BusinessEditRelation',
   setup() {
-    const formState: RelationFormState = reactive({
-      relationForm: {
-        objMain: '',
-        relationRecords: [],
-      },
+    const relationForm: Ref<RelationForm> = ref({
+      objMain: '',
+      relationRecords: [],
     });
 
     const rules = {
@@ -81,7 +77,7 @@ export default defineComponent({
     };
 
     const addRelation = () => {
-      formState.relationForm.relationRecords.push({
+      relationForm.value.relationRecords.push({
         type: '',
         obj: '',
         objType: '',
@@ -90,7 +86,7 @@ export default defineComponent({
       });
     };
     return {
-      ...toRefs(formState),
+      relationForm,
       rules,
       addRelation,
     };
