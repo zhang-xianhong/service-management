@@ -1,8 +1,8 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { ModelFieldsEntity } from './model-fields.entity';
+import { ModelsFieldsEntity } from './models-fields.entity';
 
 @Entity({ name: 'model-info' })
-export class ModelInfoEntity {
+export class ModelsInfoEntity {
   @PrimaryGeneratedColumn({
     type: 'bigint',
   })
@@ -66,6 +66,6 @@ export class ModelInfoEntity {
   })
   isDelete: number;
 
-  @OneToMany(() => ModelFieldsEntity, field => field.modelId)
-  fields: ModelFieldsEntity;
+  @OneToMany(() => ModelsFieldsEntity, field => field.modelId)
+  fields: ModelsFieldsEntity;
 }

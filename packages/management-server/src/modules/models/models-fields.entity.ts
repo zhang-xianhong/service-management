@@ -1,8 +1,8 @@
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { ModelInfoEntity } from './model-info.entity';
+import { ModelsInfoEntity } from './models-info.entity';
 
 @Entity({ name: 'model-fields' })
-export class ModelFieldsEntity {
+export class ModelsFieldsEntity {
   @PrimaryGeneratedColumn({
     type: 'bigint',
   })
@@ -29,7 +29,7 @@ export class ModelFieldsEntity {
   })
   order: number;
 
-  @ManyToOne(() => ModelInfoEntity, model => model.id)
+  @ManyToOne(() => ModelsInfoEntity, model => model.id)
   @JoinColumn({
     name: 'model_id',
   })
@@ -54,19 +54,19 @@ export class ModelFieldsEntity {
   })
   version: number;
 
-  @Column({
-    type: 'datetime',
-    name: 'create_time',
-    default: () => 'NOW()',
-  })
-  createTime: Date;
+  // @Column({
+  //   type: 'datetime',
+  //   name: 'create_time',
+  //   default: () => 'NOW()',
+  // })
+  // createTime: Date;
 
-  @Column({
-    type: 'datetime',
-    name: 'update_time',
-    default: () => 'NOW()',
-  })
-  updateTime: Date;
+  // @Column({
+  //   type: 'datetime',
+  //   name: 'update_time',
+  //   default: () => 'NOW()',
+  // })
+  // updateTime: Date;
 
   @Column({
     type: 'bigint',

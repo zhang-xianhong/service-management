@@ -5,11 +5,15 @@
 import { ArgumentMetadata, Injectable, PipeTransform } from '@nestjs/common';
 import { DEFAULT_PAGE_SIZE } from '../constants';
 
-
 export interface SearchQuery {
-  page: number
-  limit: number
   [propName: string]: any
+  conditions: {
+    skip: number
+    take: number
+    order: undefined | {
+      [fieldName: string]: string
+    }
+  }
 }
 
 @Injectable()
@@ -19,14 +23,22 @@ export class QueryPipe implements PipeTransform <any, SearchQuery> {
       return value;
     }
     const query: SearchQuery = { ...value };
-    let { page, limit } = value;
+    let { page, limit, sortType } = value;
+    const { sortField, keyword } = value;
     page = parseInt(page, 10);
     limit = parseInt(limit, 10);
     page = (isNaN(page) || page < 1) ? 1 : page;
     limit = (isNaN(limit) || limit < 1) ? DEFAULT_PAGE_SIZE : limit;
-    query.page = page;
-    query.limit = limit;
-    // TODO 排序
+    sortType = ['ascending', 'descending'].includes(sortType) ? sortType : 'descending';
+    sortType = sortType === 'descending' ? 'DESC' : 'ASC';
+    query.keyword = keyword ? keyword.trim() : '';
+    query.conditions = {
+      skip: (page - 1) * limit,
+      take: limit,
+      order: !sortField ? undefined : {
+        [sortField]: sortType,
+      },
+    };
     return query;
   }
 }

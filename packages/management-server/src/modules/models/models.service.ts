@@ -3,18 +3,33 @@ import { Repository, Connection } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ApiException } from '../../shared/utils/api.exception';
 import { CommonCodes } from '../../shared/constants/code';
-import { ModelInfoEntity } from './model-info.entity';
-import { ModelFieldsEntity } from './model-fields.entity';
+import { ModelsInfoEntity } from './models-info.entity';
+import { ModelsFieldsEntity } from './models-fields.entity';
 
 @Injectable()
-export class ModelService {
+export class ModelsService {
   constructor(
-    @InjectRepository(ModelInfoEntity)
-    private readonly infoRepository: Repository<ModelInfoEntity>,
-    @InjectRepository(ModelFieldsEntity)
-    private readonly fieldsRepository: Repository<ModelFieldsEntity>,
+    @InjectRepository(ModelsInfoEntity)
+    private readonly infoRepository: Repository<ModelsInfoEntity>,
+    @InjectRepository(ModelsFieldsEntity)
+    private readonly fieldsRepository: Repository<ModelsFieldsEntity>,
     private connection: Connection,
   ) {}
+
+
+  async findAll(query) {
+    const where = {
+      isDelete: 0,
+    };
+    const total = this.infoRepository.count({
+      where,
+    });
+    const list =  this.infoRepository.find({
+      ...query,
+      where,
+    });
+    return await Promise.all([total, list]);
+  }
 
 
   async findById(id: number) {
@@ -61,24 +76,4 @@ export class ModelService {
       await queryRunner.release();
     }
   }
-
-  // /**
-  //  * 创建模型字段
-  //  * @param data
-  //  */
-  // async createField(data) {
-  //   const { modelId } = data;
-  //   const model = await this.infoRepository.findOne(modelId, {
-  //     where: {
-  //       isDelete: 0,
-  //     },
-  //   });
-  //   if (!model) {
-  //     throw new ApiException({
-  //       code: CommonCodes.NOT_FOUND,
-  //       message: '模型不存在',
-  //     }, HttpStatus.NOT_FOUND);
-  //   }
-  //   return await this.fieldsRepository.save(data);
-  // }
 }
