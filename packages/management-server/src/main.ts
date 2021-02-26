@@ -22,6 +22,8 @@ async function bootstrap() {
   app.use(TraceMiddleware);
   // cors
   app.enableCors(corsConfig);
+  // 统一前缀
+  app.setGlobalPrefix('/api');
 
   const nestWinston = app.get(WINSTON_MODULE_NEST_PROVIDER);
 

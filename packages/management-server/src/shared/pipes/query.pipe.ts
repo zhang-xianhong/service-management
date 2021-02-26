@@ -23,18 +23,19 @@ export class QueryPipe implements PipeTransform <any, SearchQuery> {
       return value;
     }
     const query: SearchQuery = { ...value };
-    let { page, limit, sortType } = value;
+    let { page, pageSize, sortType } = value;
     const { sortField, keyword } = value;
     page = parseInt(page, 10);
-    limit = parseInt(limit, 10);
+    pageSize = parseInt(pageSize, 10);
     page = (isNaN(page) || page < 1) ? 1 : page;
-    limit = (isNaN(limit) || limit < 1) ? DEFAULT_PAGE_SIZE : limit;
+    pageSize = (isNaN(pageSize) || pageSize < 1) ? DEFAULT_PAGE_SIZE : pageSize;
     sortType = ['ascending', 'descending'].includes(sortType) ? sortType : 'descending';
     sortType = sortType === 'descending' ? 'DESC' : 'ASC';
     query.keyword = keyword ? keyword.trim() : '';
+    // conditions可直接参与数据库查询
     query.conditions = {
-      skip: (page - 1) * limit,
-      take: limit,
+      skip: (page - 1) * pageSize,
+      take: pageSize,
       order: !sortField ? undefined : {
         [sortField]: sortType,
       },

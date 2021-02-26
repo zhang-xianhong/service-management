@@ -31,7 +31,7 @@
 import { defineComponent, reactive, ref, onMounted } from 'vue';
 import { PageInfo, SortInfo } from '@/types/dataList';
 import { Columns } from './columns';
-import { getDataObjectList } from '@/api/schema/data-object';
+import { getModelList } from '@/api/schema/model';
 export default defineComponent({
   name: 'dashboard',
   setup() {
@@ -52,7 +52,7 @@ export default defineComponent({
     const getList = async () => {
       loading.value = true;
       try {
-        const { data } = await getDataObjectList(searchParams);
+        const { data } = await getModelList(searchParams);
         datasource.value = data.list;
         total.value = data.total;
       } catch (error) {}

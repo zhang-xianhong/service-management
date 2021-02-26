@@ -20,7 +20,7 @@ module.exports = {
       // 代理所有请求
       '/api': {
         // 后端rest服务
-        target: 'http://localhost:8081',
+        target: 'http://localhost:3000',
         ws: true,
         changeOrigin: true
         // 添加所有请求路径前缀/api/
