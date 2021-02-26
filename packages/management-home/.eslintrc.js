@@ -15,6 +15,7 @@ module.exports = {
   parserOptions: {
     ecmaVersion: 2020,
     project: './tsconfig.json',
+    extraFileExtensions: ['.vue']
   },
   rules: {
     'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',

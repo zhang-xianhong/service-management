@@ -1,7 +1,7 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { Repository, Connection } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UsersEntity } from './entity';
+import { UsersEntity } from './users.entity';
 import { ApiException } from '../../shared/utils/api.exception';
 import { CommonCodes, UserCodes } from '../../shared/constants/code';
 import { genPassword, validPassword } from '../../shared/utils/password';

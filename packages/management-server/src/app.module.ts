@@ -5,8 +5,10 @@ import { ConfigModule, ConfigService } from 'nestjs-config';
 import { WinstonModule } from 'nest-winston';
 import { RedisModule } from 'nestjs-redis';
 
-import { UsersModule } from './modules/users/module';
-import { AuthModule } from './modules/auth/module';
+import { UsersModule } from './modules/users/users.module';
+import { AuthModule } from './modules/auth/auth.module';
+import { ModelsModule } from './modules/models/models.module';
+import { SettingsModule } from './modules/settings/settings.module';
 
 
 @Module({
@@ -26,6 +28,8 @@ import { AuthModule } from './modules/auth/module';
     }),
     UsersModule,
     AuthModule,
+    ModelsModule,
+    SettingsModule,
   ],
 })
 

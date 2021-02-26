@@ -26,7 +26,9 @@ export enum CommonCodes {
   // token无效
   TOKEN_INVALID = 10003,
   // 未找到
-  NOT_FOUND = 10004
+  NOT_FOUND = 10004,
+  // 创建失败
+  CREATED_FAIL = 10005
 }
 
 // 用户模块
@@ -43,3 +45,12 @@ export enum UserCodes {
   LOGIN_INVALID = 20005
 }
 
+// 模型模块
+export enum ModelCodes {
+  // 名称已存在
+  NAME_EXISTED = 30001,
+  // 名称无效
+  NAME_INVALID = 30002,
+  // 无效的modelId
+  MODEL_ID_INVALID = 30003
+}

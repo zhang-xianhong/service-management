@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { v4 } from 'uuid';
-import { HEADER_TRACE_NAME } from '../constants/';
+import { HEADER_TRACE_NAME } from '../constants';
 
 
 export const TraceMiddleware = (req: Request, res: Response, next: () => void) => {
