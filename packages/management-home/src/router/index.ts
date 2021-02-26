@@ -98,7 +98,7 @@ const routes: Array<RouteRecordRaw> = [
     },
     children: [
       {
-        path: '/business-server',
+        path: 'business-server',
         name: 'BusinessServer',
         component: () => import(/* webpackChunkName: "business-server" */ '../views/servers/BusinessServer.vue'),
         meta: {
@@ -110,7 +110,20 @@ const routes: Array<RouteRecordRaw> = [
         },
       },
       {
-        path: '/business-server',
+        path: 'business-add',
+        name: 'BusinessAdd',
+        component: () => import(/* webpackChunkName: "business-server" */ '../views/servers/BusinessEdit.vue'),
+        meta: {
+          title: '业务服务新增',
+          icon: 'el-icon-eleme',
+          hidden: true,
+        },
+        props: {
+          isRouteLevel: false,
+        },
+      },
+      {
+        path: 'business-server',
         name: 'BusinessServer',
         component: () => import(/* webpackChunkName: "business-server" */ '../views/servers/BusinessServer.vue'),
         meta: {
