@@ -37,6 +37,7 @@ import {
   ElDropdownItem,
   ElRow,
   ElCol,
+  ElDialog,
 } from 'element-plus';
 
 const components = [
@@ -72,6 +73,7 @@ const components = [
   ElDropdownItem,
   ElRow,
   ElCol,
+  ElDialog,
 ];
 const plugins = [ElInfiniteScroll, ElLoading, ElMessage, ElMessageBox, ElNotification];
 

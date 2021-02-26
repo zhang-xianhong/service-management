@@ -9,10 +9,10 @@
         <el-tab-pane label="基本信息" name="basic"><basic-form></basic-form></el-tab-pane>
         <el-tab-pane label="高级设置" name="advance"><advance-form></advance-form></el-tab-pane>
         <el-tab-pane label="业务对象关联" name="relation"><relation-form></relation-form></el-tab-pane>
-        <el-tab-pane label="计算列" name="computed"></el-tab-pane>
-        <el-tab-pane label="接口配置" name="interface"></el-tab-pane>
+        <el-tab-pane label="计算列" name="computed"><computed-form></computed-form></el-tab-pane>
+        <el-tab-pane label="接口配置" name="interface"><interface-form></interface-form></el-tab-pane>
         <el-tab-pane label="视图设计" name="view"></el-tab-pane>
-        <el-tab-pane label="运行参数" name="args"></el-tab-pane>
+        <el-tab-pane label="运行参数" name="args"><args-form></args-form></el-tab-pane>
       </el-tabs>
     </el-row>
   </div>
@@ -24,10 +24,13 @@ import { useRouter } from 'vue-router';
 import BasicForm from './business-edit-form/Basic.vue';
 import AdvanceForm from './business-edit-form/Advance.vue';
 import RelationForm from './business-edit-form/Relation.vue';
+import ComputedForm from './business-edit-form/Computed.vue';
+import InterfaceForm from './business-edit-form/Interface.vue';
+import ArgsForm from './business-edit-form/Args.vue';
 
 export default defineComponent({
   name: 'BusinessEdit',
-  components: { BasicForm, AdvanceForm, RelationForm },
+  components: { BasicForm, AdvanceForm, RelationForm, ComputedForm, InterfaceForm, ArgsForm },
   setup() {
     const router = useRouter();
     const backToList = () => {

@@ -2,13 +2,18 @@
   <div class="business-edit-advance">
     <el-form label-position="top" :model="advanceForm">
       <el-form-item label="对象依赖" prop="objDep">
-        <el-input v-model="advanceForm.objDep" readonly class="readonly-input"></el-input>
+        <el-input :value="advanceForm.objDep.join()" readonly class="readonly-input"></el-input>
       </el-form-item>
       <el-form-item label="服务依赖" prop="svcDep">
-        <el-input placeholder="请选择服务" v-model="advanceForm.svcDep" readonly class="readonly-input">></el-input>
+        <el-input
+          placeholder="请选择服务"
+          :value="advanceForm.svcDep.join()"
+          readonly
+          class="readonly-input"
+        ></el-input>
       </el-form-item>
       <el-form-item label="库依赖" prop="libDep">
-        <el-input placeholder="请输入库信息" v-model="advanceForm.libDep"></el-input>
+        <el-input placeholder="请输入库信息" :value="advanceForm.libDep.join()"></el-input>
       </el-form-item>
     </el-form>
   </div>
