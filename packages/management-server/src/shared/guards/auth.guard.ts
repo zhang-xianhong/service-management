@@ -3,7 +3,7 @@ import { Reflector } from '@nestjs/core';
 import { AuthGuard } from '@nestjs/passport';
 import { TokenExpiredError } from 'jsonwebtoken';
 import { ErrorTypes } from '../constants/error';
-import { IS_PUBLIC_KEY } from '../decorators/auth';
+import { IS_PUBLIC_KEY } from '../decorators/auth.decorator';
 import { ApiException } from '../utils/api.exception';
 import { CommonCodes } from '../constants/code';
 import { ExtractJwt } from 'passport-jwt';

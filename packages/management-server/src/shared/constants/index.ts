@@ -8,3 +8,5 @@ export const HEADER_TRACE_NAME: string = TRACE_ID_NAME || 'x-trace-id';
 export const DEFAULT_PAGE_SIZE = 10;
 
 //
+export const DATE_TIME_FORMAT = 'YYYY-MM-DD HH:mm:ss'
+;

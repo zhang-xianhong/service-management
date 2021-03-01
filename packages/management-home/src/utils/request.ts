@@ -1,7 +1,6 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { getToken, removeToken } from '@/utils/todoToken';
-
-import { ElMessage, ElMessageBox } from 'element-plus';
+import { ElMessage } from 'element-plus';
 
 const service = axios.create({
   baseURL: process.env.VUE_APP_BASE_API,
@@ -22,36 +21,32 @@ service.interceptors.request.use(
 );
 
 service.interceptors.response.use(
-  (response: AxiosResponse) => {
-    const res = response.data;
-    if (response.status !== 200) {
+  (response: AxiosResponse) => response.data,
+  (error) => {
+    // 如果没有error.response返回，则当做服务器异常处理
+    if (!error.response) {
       ElMessage({
-        message: res.message || 'Error',
+        message: error || '服务异常，请稍后处理',
         type: 'error',
         duration: 5 * 1000,
       });
-      // TODO 状态码同步
-      if (response.status === 401) {
-        ElMessageBox.confirm('登录状态失效，请重新登录！', '登录状态提示', {
-          confirmButtonText: '重新登录',
-          cancelButtonText: '取消',
-          type: 'warning',
-        }).then(() => {
-          removeToken();
-          location.reload();
-        });
-      }
-      return Promise.reject(new Error(res.message || 'Error'));
+      return Promise.reject(error);
     }
-    return res;
-  },
-  (error) => {
-    ElMessage({
-      message: error || 'Error',
-      type: 'error',
-      duration: 5 * 1000,
-    });
-    return Promise.reject(error);
+    const { data, status } = error.response;
+    // 登录失效处理
+    if (status === 401) {
+      ElMessage({
+        message: '登录状态失效，请重新登录',
+        type: 'error',
+        duration: 5 * 1000,
+        onClose() {
+          removeToken();
+          window.location.href = '/login';
+        },
+      });
+    } else {
+      return Promise.reject(data);
+    }
   },
 );
 

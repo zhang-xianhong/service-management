@@ -6,12 +6,18 @@
       </div>
       <div class="data-list__actions" v-if="$slots.headRight">
         <slot name="headRight" />
+        <el-button v-if="showSeting" type="primary" size="mini" icon="el-icon-s-tools" @click="openDrawer()"
+          >设置</el-button
+        >
       </div>
       <slot name="head" />
     </aside>
     <main class="data-list__body" v-loading="loading">
       <slot />
     </main>
+    <div v-if="showSeting">
+      <CustomColumn ref="customColumn" :tableColumns="tableColumns" @handelChange="customColumns"></CustomColumn>
+    </div>
     <aside class="data-list__foot" v-if="showPagination && total">
       <el-pagination
         background
@@ -29,7 +35,8 @@
   </div>
 </template>
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent, ref } from 'vue';
+import CustomColumn from './CustomColumn.vue';
 export default defineComponent({
   name: 'DataList',
   props: {
@@ -53,20 +60,44 @@ export default defineComponent({
       type: Number,
       default: 2000,
     },
+    showSeting: {
+      type: Boolean,
+      default: true,
+    },
+    tableColumns: {
+      type: Array,
+      default: () => [],
+    },
   },
-  methods: {
-    handlePageSizeChange(size: number) {
-      this.$emit('pageChange', {
+  components: { CustomColumn },
+  emits: ['pageChange', 'setColumns'],
+  setup(props, { emit }) {
+    const handlePageSizeChange = (size: number) => {
+      emit('pageChange', {
         key: 'pageSize',
         value: size,
       });
-    },
-    handlePageChange(page: number) {
-      this.$emit('pageChange', {
+    };
+    const handlePageChange = (page: number) => {
+      emit('pageChange', {
         key: 'page',
         value: page,
       });
-    },
+    };
+    const customColumns = (colnums: any) => {
+      emit('setColumns', colnums);
+    };
+    const customColumn = ref(null);
+    const openDrawer = () => {
+      (customColumn.value as any).openDrawer();
+    };
+    return {
+      customColumn,
+      openDrawer,
+      handlePageSizeChange,
+      handlePageChange,
+      customColumns,
+    };
   },
 });
 </script>
