@@ -13,7 +13,9 @@
       <el-button icon="el-icon-search" type="primary"></el-button>
     </template>
     <template v-slot:headRight>
-      <el-button type="primary">新增</el-button>
+      <router-link to="/schema/model/create">
+        <el-button type="primary">新增</el-button>
+      </router-link>
     </template>
     <el-table
       :data="datasource"
