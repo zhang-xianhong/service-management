@@ -1,16 +1,8 @@
 <template>
- <el-table
-    :data="properties"
-    max-height="400"
-    border
-    style="width: 100%">
-    <el-table-column
-      prop="index"
-      label="序号"
-      fixed
-      width="80">
+  <el-table :data="properties" max-height="400" border style="width: 100%">
+    <el-table-column prop="index" label="序号" fixed width="80">
       <template #default="scope">
-        {{scope.$index + 1}}
+        {{ scope.$index + 1 }}
       </template>
     </el-table-column>
     <el-table-column prop="name" label="属性名称" fixed min-width="100">
@@ -18,7 +10,7 @@
         <el-input v-model="scope.row.name" />
       </template>
     </el-table-column>
-     <el-table-column prop="description" label="属性描述" min-width="100">
+    <el-table-column prop="description" label="属性描述" min-width="100">
       <template #default="scope">
         <el-input v-model="scope.row.description" />
       </template>
@@ -28,7 +20,7 @@
         <el-input v-model="scope.row.type" />
       </template>
     </el-table-column>
-     <el-table-column prop="notNull" label="非空" width="70">
+    <el-table-column prop="notNull" label="非空" width="70">
       <template #default="scope">
         <el-checkbox v-model="scope.row.notNull" />
       </template>
@@ -58,12 +50,7 @@
         <el-input v-model="scope.row.description" />
       </template>
     </el-table-column>
-    <el-table-column
-      prop="opt"
-      label=""
-      align="center"
-      fixed="right"
-      width="50">
+    <el-table-column prop="opt" label="" align="center" fixed="right" width="50">
       <a class="action">
         <i class="el-icon-delete"></i>
       </a>
@@ -74,17 +61,17 @@
 import { defineComponent, reactive, ref } from 'vue';
 import { Columns } from './property-columns';
 export default defineComponent({
-  name: "ModelProperty",
+  name: 'ModelProperty',
   setup() {
     const properties = reactive([
       {
-        name: 'test'
-      }
+        name: 'test',
+      },
     ]);
     const columns = ref(Columns);
     return {
       properties,
-      columns
+      columns,
     };
   },
 });
