@@ -157,11 +157,11 @@ const routes: Array<RouteRecordRaw> = [
         name: 'ModelCreate',
         props: {
           isRouteLevel: false,
-          hidden: true,
         },
         meta: {
           title: '数据对象',
           icon: 'el-icon-eleme',
+          hidden: true,
         },
       },
     ],
