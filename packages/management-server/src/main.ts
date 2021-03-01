@@ -5,11 +5,11 @@ import * as helmet from 'helmet';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import customConfig from './config';
 import corsConfig from './config/cors';
-import { AllExceptionsFilter } from './shared/filters/exceptions';
-import { TraceMiddleware } from './shared/middleware/trace';
-import { ResponseInterceptor } from './shared/interceptors/response';
+import { AllExceptionsFilter } from './shared/filters/exceptions.filter';
+import { TraceMiddleware } from './shared/middleware/trace.middleware';
+import { ResponseInterceptor } from './shared/interceptors/response.interceptor';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { AuthorityGuard } from './shared/guards/auth';
+import { AuthorityGuard } from './shared/guards/auth.guard';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     // logger: false,
@@ -22,6 +22,8 @@ async function bootstrap() {
   app.use(TraceMiddleware);
   // cors
   app.enableCors(corsConfig);
+  // 统一前缀
+  app.setGlobalPrefix('/api');
 
   const nestWinston = app.get(WINSTON_MODULE_NEST_PROVIDER);
 

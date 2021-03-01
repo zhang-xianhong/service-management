@@ -18,7 +18,7 @@ export const isNull = (value: unknown): boolean => value === null;
  */
 export const isEmpty = (value: unknown, ignoreWhitespace = true): boolean => {
   if (isUndefined(value) || isNull(value)) {
-    return false;
+    return true;
   }
   const string = String(value);
   return ignoreWhitespace ? string.trim().length === 0 : string.length === 0;

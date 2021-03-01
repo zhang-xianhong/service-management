@@ -1,0 +1,23 @@
+{
+  "code": 0,
+  "data": {
+    "total": 3,
+    "list": [
+      {
+        "id": "1",
+        "name": "test 003 field",
+        "description": null,
+        "engine": "innoDB",
+        "version": 0,
+        "createTime": "2021-02-26T06:15:42.000Z",
+        "updateTime": "2021-02-26T06:15:42.000Z",
+        "createUser": null,
+        "updateUser": null,
+        "isDelete": 0
+      }
+    ]
+  },
+  "message": "successful",
+  "httpStatus": 200,
+  "timestamp": 1614328643228
+}

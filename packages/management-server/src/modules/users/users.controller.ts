@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Param, Post, Query, Request } from '@nestjs/common';
-import { UsersService } from './service';
-import { QueryPipe, SearchQuery } from '../../shared/pipes/query';
+import { UsersService } from './users.service';
+import { QueryPipe, SearchQuery } from '../../shared/pipes/query.pipe';
 import { isEmpty } from '../../shared/utils/validator';
 import { ApiException } from '../../shared/utils/api.exception';
 import { UserCodes } from '../../shared/constants/code';

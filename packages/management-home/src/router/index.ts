@@ -129,7 +129,7 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/schema',
     name: 'Schema',
-    redirect: '/data-object',
+    redirect: '/model',
     component: Layout,
     props: {
       isRouteLevel: true,
@@ -140,15 +140,28 @@ const routes: Array<RouteRecordRaw> = [
     },
     children: [
       {
-        path: 'data-object',
-        component: () => import('@/views/schema/data-object/Index.vue'),
-        name: 'DataObject',
+        path: 'model',
+        component: () => import('@/views/schema/model/Index.vue'),
+        name: 'Model',
         meta: {
           title: '数据对象',
           icon: 'el-icon-eleme',
         },
         props: {
           isRouteLevel: false,
+        },
+      },
+      {
+        path: 'model/create',
+        component: () => import('@/views/schema/model/form/Index.vue'),
+        name: 'ModelCreate',
+        props: {
+          isRouteLevel: false,
+        },
+        meta: {
+          title: '数据对象',
+          icon: 'el-icon-eleme',
+          hidden: true,
         },
       },
     ],
