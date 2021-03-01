@@ -5,3 +5,8 @@ export interface ProjectInfo {
   users: string;
   id: string;
 }
+
+export interface HeighLightObject {
+  position: string;
+  dataArray: string[];
+}
