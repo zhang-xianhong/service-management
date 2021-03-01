@@ -28,16 +28,16 @@
 <script lang="ts">
 import { ref, defineComponent } from 'vue';
 export default defineComponent({
-  name: 'Args',
+  name: 'BusinessEditArgs',
   setup() {
     const argsForm = ref({
-      memory: '',
-      syncSvcPoolSize: '',
-      baseCtlPoolSize: '',
-      rabitPoolSize: '',
-      esSvcPoolSize: '',
-      jpaPoolSize: '',
-      svcBasePoolSize: '',
+      memory: '120m',
+      syncSvcPoolSize: '5',
+      baseCtlPoolSize: '5',
+      rabitPoolSize: '5',
+      esSvcPoolSize: '5',
+      jpaPoolSize: '5',
+      svcBasePoolSize: '5',
     });
 
     const rules = {

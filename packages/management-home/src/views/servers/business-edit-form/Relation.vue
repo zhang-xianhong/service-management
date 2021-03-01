@@ -1,6 +1,6 @@
 <template>
   <div class="business-edit-relation">
-    <el-form label-position="top" :model="relationForm" :rules="rules">
+    <el-form label-position="top" :model="relationForm" :rules="rules" ref="relationFormRef">
       <el-form-item label="设置主对象" prop="objMain">
         <el-select v-model="relationForm.objMain" placeholder="请选择主对象"></el-select>
         <el-button type="primary" class="el-icon-male"></el-button>
@@ -62,14 +62,17 @@ interface RelationRecord {
 interface RelationForm {
   objMain: string;
   relationRecords: Array<RelationRecord>;
+  isValid: boolean;
 }
 
 export default defineComponent({
   name: 'BusinessEditRelation',
   setup() {
+    const relationFormRef: any = ref(null);
     const relationForm: Ref<RelationForm> = ref({
       objMain: '',
       relationRecords: [],
+      isValid: true,
     });
 
     const rules = {
@@ -85,10 +88,20 @@ export default defineComponent({
         objMainAttr: '',
       });
     };
+
+    const getValues = () => {
+      relationFormRef.value.validate((isValid: boolean) => {
+        relationForm.value.isValid = isValid;
+      });
+      return relationForm.value;
+    };
+
     return {
       relationForm,
       rules,
       addRelation,
+      getValues,
+      relationFormRef,
     };
   },
 });
@@ -96,15 +109,11 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .business-edit-relation {
-  &::v-deep {
-    table {
-      .el-select.el-select--small {
-        width: 100%;
-      }
-    }
-    .el-select.el-select--small {
-      width: calc(100% - 50px);
-    }
+  &:deep(table .el-select.el-select--small) {
+    width: 100%;
+  }
+  &:deep(.el-select.el-select--small) {
+    width: calc(100% - 50px);
   }
 }
 </style>

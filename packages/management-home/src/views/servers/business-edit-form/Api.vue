@@ -1,7 +1,7 @@
 <template>
-  <div class="business-edit-interface">
+  <div class="business-edit-api">
     <el-button type="primary" @click="addRow"><i class="el-icon-plus"></i>新增接口</el-button>
-    <el-table :data="interfaceRecords" :row-class-name="tableRowClass" ref="interfaceTable">
+    <el-table :data="apiRecords" :row-class-name="tableRowClass" ref="apiTable">
       <el-table-column type="expand" width="1">
         <template #default="{ row }">
           <p>使用说明:</p>
@@ -42,7 +42,7 @@
 <script lang="ts">
 import { ref, Ref, defineComponent } from 'vue';
 
-interface InterfaceRecord {
+interface ApiRecord {
   name: string;
   desc: string;
   method: string;
@@ -50,7 +50,7 @@ interface InterfaceRecord {
   isDefault: boolean;
 }
 
-const defaultInterface = [
+const defaultApi = [
   {
     name: 'save',
     desc: '保存',
@@ -97,16 +97,16 @@ const defaultInterface = [
 ];
 
 export default defineComponent({
-  name: 'BusinessEditInterface',
+  name: 'BusinessEditApi',
   setup() {
-    const interfaceTable: any = ref(null);
+    const apiTable: any = ref(null);
     // 计算列记录表格
-    const interfaceRecords: Ref<Array<InterfaceRecord>> = ref(defaultInterface);
+    const apiRecords: Ref<Array<ApiRecord>> = ref(defaultApi);
     const deleteRow = (rowIndex: number) => {
-      interfaceRecords.value.splice(rowIndex, 1);
+      apiRecords.value.splice(rowIndex, 1);
     };
     const addRow = () => {
-      interfaceRecords.value.push({
+      apiRecords.value.push({
         name: '',
         desc: '',
         method: '',
@@ -117,24 +117,26 @@ export default defineComponent({
     const tableRowClass = ({ row: { isDefault = false } }) => (isDefault ? 'default-row' : 'normal-row');
 
     const detail = (row: any) => {
-      interfaceTable.value.toggleRowExpansion(row);
+      apiTable.value.toggleRowExpansion(row);
     };
 
+    const getValues = () => apiRecords.value;
     return {
-      interfaceRecords,
+      apiRecords,
       deleteRow,
       addRow,
       tableRowClass,
       detail,
-      interfaceTable,
+      apiTable,
+      getValues,
     };
   },
 });
 </script>
 
 <style lang="scss" scoped>
-.business-edit-interface {
-  &::v-deep {
+.business-edit-api {
+  &:deep {
     table {
       width: 100% !important;
     }

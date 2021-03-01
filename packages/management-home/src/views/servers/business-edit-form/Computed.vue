@@ -99,15 +99,11 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .business-edit-compute {
-  &::v-deep {
-    table {
-      .el-select.el-select--small {
-        width: 100%;
-      }
-    }
-    .el-select.el-select--small {
-      width: calc(100% - 50px);
-    }
+  &:deep(table .el-select.el-select--small) {
+    width: 100%;
+  }
+  &:deep(.el-select.el-select--small) {
+    width: calc(100% - 50px);
   }
 }
 </style>

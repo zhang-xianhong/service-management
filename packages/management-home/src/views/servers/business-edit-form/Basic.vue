@@ -1,6 +1,6 @@
 <template>
   <div class="business-edit-basic">
-    <el-form label-position="top" :model="basicForm" :rules="rules">
+    <el-form label-position="top" :model="basicForm" :rules="rules" ref="basicFormRef">
       <el-form-item label="服务名称" prop="name">
         <el-input placeholder="请输入英文命名，并以Svc结尾" v-model="basicForm.name"></el-input>
       </el-form-item>
@@ -42,11 +42,13 @@ interface BasicForm {
   classification: string;
   tags: Array<string>;
   detail: string;
+  isValid: boolean;
 }
 
 export default defineComponent({
   name: 'BusinessEditBasic',
   setup() {
+    const basicFormRef: any = ref(null);
     const basicForm: Ref<BasicForm> = ref({
       name: '',
       description: '',
@@ -56,6 +58,7 @@ export default defineComponent({
       classification: '',
       tags: [],
       detail: '',
+      isValid: true,
     });
 
     const rules = {
@@ -63,16 +66,25 @@ export default defineComponent({
       description: [{ required: true, message: '请输入服务描述', trigger: 'blur' }],
     };
 
+    const getValues = () => {
+      basicFormRef.value.validate((isValid: boolean) => {
+        basicForm.value.isValid = isValid;
+      });
+      return basicForm.value;
+    };
+
     return {
       basicForm,
       rules,
+      getValues,
+      basicFormRef,
     };
   },
 });
 </script>
 
 <style lang="scss" scoped>
-.business-edit-basic::v-deep .el-select.el-select--small {
+.business-edit-basic:deep(.el-select.el-select--small) {
   width: 100%;
 }
 </style>
