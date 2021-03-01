@@ -64,8 +64,8 @@
         >
         </el-pagination>
         <br />
-        <el-button type="primary">确定</el-button>
-        <el-button>取消</el-button>
+        <el-button type="primary" @click="addString">确定</el-button>
+        <el-button @click="closeDialog">取消</el-button>
       </div>
     </el-dialog>
   </div>
@@ -73,10 +73,10 @@
 
 <script lang="ts">
 import { defineComponent, ref } from 'vue';
-import { openSetForm } from '@/views/projectManagement/add-project/components/addProjectBus';
+import { openSetForm, setOpenSetFrom } from '@/views/projectManagement/add-project/components/addProjectBus';
 import { ProjectInfo, HeighLightObject } from '@/views/projectManagement/add-project/types';
 import { ElMessage } from 'element-plus';
-import HeightLight from '@/views/projectManagement/add-project/components/heighLight';
+import HeightLight from '@/views/projectManagement/add-project/components/HeightLight.vue';
 
 export default defineComponent({
   name: 'AddOpenSet',
@@ -84,11 +84,13 @@ export default defineComponent({
     HeightLight,
   },
   setup() {
+    const showModule = ref('openObject');
+    const dialogVisiable = ref(false);
     const showBox = (pros: string) => {
-      console.log(pros);
+      showModule.value = pros;
+      dialogVisiable.value = true;
     };
-    const dialogVisiable = ref(true);
-    const searchChar = ref('dem');
+    const searchChar = ref('');
 
     const projectList = ref([
       {
@@ -215,6 +217,18 @@ export default defineComponent({
       }
       return result;
     };
+    const closeDialog = () => {
+      dialogVisiable.value = false;
+      pickedList.value = [];
+    };
+    const addString = () => {
+      let str = '';
+      pickedList.value.forEach((item: ProjectInfo, index: number) => {
+        str += `${index + 1}、${item.projectName}\n`;
+      });
+      setOpenSetFrom<any, string>(showModule.value, str);
+      closeDialog();
+    };
     return {
       openSetForm,
       showBox,
@@ -233,6 +247,8 @@ export default defineComponent({
       pagesize,
       searchProject,
       getHeighLightChar,
+      addString,
+      closeDialog,
     };
   },
 });
