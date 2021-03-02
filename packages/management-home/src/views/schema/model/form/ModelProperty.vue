@@ -99,7 +99,7 @@ export default defineComponent({
         foreignId: '',
       });
     };
-    const handleRemoveField = () => {};
+    const handleRemoveField = () => false;
 
     onMounted(() => {
       fetchDataTypes();

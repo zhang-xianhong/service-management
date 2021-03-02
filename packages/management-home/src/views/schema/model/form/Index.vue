@@ -2,7 +2,7 @@
   <form-panel>
     <el-tabs v-model="activeTab" @tab-click="handleTabChange">
       <el-tab-pane label="基本信息" name="base">
-        <Base :data="form" />
+        <base-info :data="form" />
       </el-tab-pane>
       <el-tab-pane label="对象分析" name="analysis">对象分析</el-tab-pane>
       <el-tab-pane label="相似度分析" name="similarity">相似度分析</el-tab-pane>
@@ -13,11 +13,12 @@
 import { ElMessage } from 'element-plus';
 import { defineComponent, onMounted, reactive, ref, toRefs } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { getModelDetail } from '@/api/schema/model';
-import Base from './Base.vue';
+// import { getModelDetail } from '@/api/schema/model';
+import BaseInfo from './BaseInfo.vue';
+
 export default defineComponent({
   components: {
-    Base,
+    BaseInfo,
   },
   setup() {
     const activeTab = ref('base');
@@ -30,7 +31,7 @@ export default defineComponent({
     };
     const handleTabChange = () => 1;
 
-    const getModelInfo = async (id: number) => {
+    const getModelInfo = async () => {
       try {
         loading.value = true;
         // const {data} = await getModelDetail(id)
@@ -56,7 +57,7 @@ export default defineComponent({
       }
       isCreate.value = id === 0;
       if (id > 0) {
-        getModelInfo(id);
+        getModelInfo();
       } else {
         loading.value = false;
       }

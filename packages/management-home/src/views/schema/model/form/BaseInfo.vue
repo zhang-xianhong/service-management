@@ -14,12 +14,14 @@
     </el-form-item>
   </el-form>
 </template>
+
 <script lang="ts">
-import { defineComponent, ref, watchEffect } from 'vue';
-import ModelProperty from './Property.vue';
+import { ref, watchEffect } from 'vue';
+import ModelProperty from './ModelProperty.vue';
 import { createModel } from '../../../../api/schema/model';
 import { ElMessage } from 'element-plus';
-export default defineComponent({
+
+export default {
   components: {
     ModelProperty,
   },
@@ -28,7 +30,12 @@ export default defineComponent({
       type: Object,
     },
   },
-  setup(props) {
+  setup() {
+    // 表单相关数据
+    // const formState = {
+    //   name: '',
+    //   description: '',
+    // }
     const form = {};
     const propertyRef = ref();
     const formRef = ref();
@@ -88,5 +95,5 @@ export default defineComponent({
       deep: true,
     },
   },
-});
+};
 </script>
