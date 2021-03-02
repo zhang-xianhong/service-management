@@ -1,31 +1,16 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { Repository, Connection } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ApiException } from '../../shared/utils/api.exception';
-import { CommonCodes } from '../../shared/constants/code';
-import { ServicesEntity } from './services.entity';
+import { ServicesApiEntity } from './service-api.entity';
+import { ServicesDependencyEntity } from './service-dependency.entity';
 
 @Injectable()
 export class ServicesService {
   constructor(
-    @InjectRepository(ServicesEntity)
-    private readonly repository: Repository<ServicesEntity>,
+    @InjectRepository(ServicesApiEntity)
+    private readonly apiRepository: Repository<ServicesApiEntity>,
+    @InjectRepository(ServicesDependencyEntity)
+    private readonly depRepository: Repository<ServicesDependencyEntity>,
     private connection: Connection,
   ) {}
-
-
-  async findById(id: number) {
-    const model = await this.repository.findOne({
-      where: {
-        id,
-      },
-    });
-    if (!model) {
-      throw new ApiException({
-        code: CommonCodes.NOT_FOUND,
-        message: '服务不存在',
-      }, HttpStatus.NOT_FOUND);
-    }
-    return model;
-  }
 }
