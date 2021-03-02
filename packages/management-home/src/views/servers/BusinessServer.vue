@@ -51,12 +51,16 @@
       </template>
     </server-table>
   </data-list>
+  <el-dialog title="服务克隆" v-model="cloneDialogVisible" width="1000px" destroy-on-close>
+    <clone-dialog></clone-dialog>
+  </el-dialog>
 </template>
 
 <script lang="ts">
 import { reactive, toRefs, ref } from 'vue';
 import ServerTable from './common/ServerTable.vue';
 import { tableColumns, tableOperations } from './config/business-server-config';
+import CloneDialog from '@/views/servers/business-serve-dialog/Clone.vue';
 
 interface CategoryStateInterface {
   categories: Array<Record<string, any>>;
@@ -77,6 +81,7 @@ interface TableStateInterface {
 export default {
   components: {
     ServerTable,
+    CloneDialog,
   },
   setup() {
     // 分类相关状态
@@ -120,12 +125,14 @@ export default {
       console.log(scope);
     }
 
+    const cloneDialogVisible = ref(true);
     return {
       ...toRefs(categoryState),
       ...toRefs(tagState),
       ...toRefs(tableState),
       inputValue,
       openCodeQualtity,
+      cloneDialogVisible,
     };
   },
 };
@@ -135,7 +142,7 @@ export default {
 .configuration-button {
   width: 125px;
   margin-bottom: 10px;
-  margin-left: 0px;
+  margin-left: 0;
 }
 .business-server {
   &__select {
