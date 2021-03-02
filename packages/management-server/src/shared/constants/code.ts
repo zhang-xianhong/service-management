@@ -28,7 +28,11 @@ export enum CommonCodes {
   // 未找到
   NOT_FOUND = 10004,
   // 创建失败
-  CREATED_FAIL = 10005
+  CREATED_FAIL = 10005,
+  // 参数错误
+  PARAMETER_INVALID = 10006,
+  // 数据已存在
+  DATA_EXISTED = 10007
 }
 
 // 用户模块
@@ -54,3 +58,6 @@ export enum ModelCodes {
   // 无效的modelId
   MODEL_ID_INVALID = 30003
 }
+
+
+// 设置模块

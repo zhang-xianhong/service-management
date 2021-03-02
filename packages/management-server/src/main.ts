@@ -21,7 +21,7 @@ async function bootstrap() {
   // 应用全局中间件
   app.use(TraceMiddleware);
   // cors
-  app.enableCors(corsConfig);
+  // app.enableCors(corsConfig);
   // 统一前缀
   app.setGlobalPrefix('/api');
 

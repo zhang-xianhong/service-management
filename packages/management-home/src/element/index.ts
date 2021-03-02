@@ -40,6 +40,7 @@ import {
   ElCol,
   ElDialog,
   ElDrawer,
+  ElLink,
 } from 'element-plus';
 
 const components = [
@@ -78,6 +79,7 @@ const components = [
   ElCol,
   ElDialog,
   ElDrawer,
+  ElLink,
 ];
 const plugins = [ElInfiniteScroll, ElLoading, ElMessage, ElMessageBox, ElNotification];
 
