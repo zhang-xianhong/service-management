@@ -3,6 +3,9 @@
     <div class="drawer">
       <div class="drawer__title">{{ drawerTitle }}</div>
       <div class="drawer__content">
+        <p class="drawer__content-message">
+          {{ drawerMessage }}
+        </p>
         <!-- 抽屉中间插入内容 -->
         <div class="drawer__content-slot">
           <slot name="drawer__content-slot"></slot>
@@ -20,6 +23,7 @@ export default defineComponent({
   name: 'drawer',
   props: {
     title: String,
+    message: String,
   },
   setup(props) {
     const drawer = ref(false);
@@ -32,6 +36,7 @@ export default defineComponent({
 
     return {
       drawerTitle: props.title,
+      drawerMessage: props.message,
       drawer,
       openDrawer,
       closeDrawer,
@@ -48,7 +53,7 @@ export default defineComponent({
 .drawer {
   display: flex;
   flex-direction: column;
-  height: 100%;
+  height: 100vh;
   &__title {
     font-family: '微软雅黑 Bold', '微软雅黑', sans-serif;
     font-weight: 700;
@@ -57,11 +62,19 @@ export default defineComponent({
     color: #000000;
     padding: 20px;
     text-align: center;
+    flex-shrink: 0;
   }
   &__content {
     flex: 1;
+    overflow: hidden;
     padding: 0 20px;
-    overflow: auto;
+    &-message {
+      font-size: 12px;
+    }
+    &-slot {
+      overflow-y: auto;
+      max-height: 100%;
+    }
   }
   &__btns {
     display: flex;

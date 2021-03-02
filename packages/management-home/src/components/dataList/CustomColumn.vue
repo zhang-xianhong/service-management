@@ -1,9 +1,6 @@
 <template>
-  <Drawer ref="drawer" :title="title">
+  <Drawer ref="drawer" :title="title" :message="message">
     <template v-slot:drawer__content-slot>
-      <p class="drawer-message">
-        列项显示不小于5项，最多支持10个列项。灰色选中列不支持隐藏和排序。
-      </p>
       <p>不固定</p>
       <el-checkbox-group v-model="checkedTableColumns" :min="1" :max="10">
         <el-checkbox v-for="column in unfixedColumnsList" :label="column.prop" :key="column.prop">{{
@@ -45,6 +42,7 @@ export default defineComponent({
   emits: ['handelChange'],
   setup(props, { emit }) {
     const title = ref('自定义显示列项');
+    const message = ref('列项显示不小于5项，最多支持10个列项。灰色选中列不支持隐藏和排序。');
     // 自定义显示的列
     const checkedTableColumns = ref([]);
     // table显示的列
@@ -95,6 +93,7 @@ export default defineComponent({
 
     return {
       title,
+      message,
       tableColumnsList,
       openDrawer,
       closeDrawer,
