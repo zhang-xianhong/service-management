@@ -4,7 +4,7 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 // settings/columns/work
-@Entity({ name: 'settings-columns' })
+@Entity({ name: 'settings_columns' })
 export class ColumnsEntity {
   @PrimaryGeneratedColumn({
     type: 'bigint',
@@ -17,7 +17,6 @@ export class ColumnsEntity {
 
   @Column({
     type: 'tinytext',
-    nullable: true,
   })
   description: string;
 
@@ -33,7 +32,6 @@ export class ColumnsEntity {
   @Column({
     type: 'json',
     name: 'columns',
-    nullable: true,
   })
   columns: JSON;
 
@@ -47,7 +45,7 @@ export class ColumnsEntity {
   @Column({
     type: 'bigint',
     name: 'update_user',
-    nullable: true,
+    default: null,
   })
   createUser: number;
 }

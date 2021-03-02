@@ -14,9 +14,9 @@ export class UsersEntity {
   @Column('varchar')
   hash: string;
 
-  @Column({ length: 100, nullable: true })
+  @Column({ length: 100, default: '' })
   email: string;
 
-  @Column({ length: 20, nullable: true })
+  @Column({ length: 20, default: '' })
   mobile: string;
 }

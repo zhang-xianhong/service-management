@@ -31,6 +31,17 @@ export class ModelsService {
     return await Promise.all([total, list]);
   }
 
+  async findAllList(query) {
+    const where = {
+      isDelete: 0,
+    };
+    const list = await this.infoRepository.find({
+      ...query,
+      where,
+    });
+    return list;
+  }
+
   /**
    * 通过ID获取详情
    * @param id
@@ -57,6 +68,18 @@ export class ModelsService {
     await queryRunner.connect();
     await queryRunner.startTransaction();
     try {
+      // 验证是否有同名模块
+      const nameExisted = await this.infoRepository.findOne({
+        where: {
+          name: modelData.name,
+        },
+      });
+      if (nameExisted) {
+        throw new ApiException({
+          code: CommonCodes.DATA_EXISTED,
+          message: '模型名称已存在',
+        });
+      }
       const model: any = await queryRunner.manager.save(this.infoRepository.create(modelData));
       if (fields && Array.isArray(fields)) {
         const fieldsEntities = fields.map(field => this.fieldsRepository.create({
@@ -70,6 +93,7 @@ export class ModelsService {
         modelId: model.id,
       };
     } catch (error) {
+      console.log(error);
       await queryRunner.rollbackTransaction();
       throw new ApiException({
         code: CommonCodes.CREATED_FAIL,
