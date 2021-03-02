@@ -4,6 +4,7 @@
  */
 import { ArgumentMetadata, Injectable, PipeTransform } from '@nestjs/common';
 import { DEFAULT_PAGE_SIZE } from '../constants';
+import { SortType } from '../constants/sort-type';
 
 export interface SearchQuery {
   [propName: string]: any
@@ -29,8 +30,9 @@ export class QueryPipe implements PipeTransform <any, SearchQuery> {
     pageSize = parseInt(pageSize, 10);
     page = (isNaN(page) || page < 1) ? 1 : page;
     pageSize = (isNaN(pageSize) || pageSize < 1) ? DEFAULT_PAGE_SIZE : pageSize;
-    sortType = ['ascending', 'descending'].includes(sortType) ? sortType : 'descending';
-    sortType = sortType === 'descending' ? 'DESC' : 'ASC';
+    // sortType = ['ascending', 'descending'].includes(sortType) ? sortType : 'descending';
+    // sortType = sortType === 'descending' ? 'DESC' : 'ASC';
+    sortType = sortType === 'ascending' ? SortType.ASC : SortType.DESC;
     query.keyword = keyword ? keyword.trim() : '';
     // conditions可直接参与数据库查询
     query.conditions = {
