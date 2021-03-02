@@ -6,13 +6,8 @@
     <el-form-item prop="description" label="数据对象描述" required>
       <el-input v-model="form.description" placeholder="请输入中文名称"></el-input>
     </el-form-item>
-<<<<<<< HEAD
     <el-form-item label="属性" prop="fields">
       <model-property ref="propertyRef" />
-=======
-    <el-form-item label="属性">
-      <model-property />
->>>>>>> ac3522f07928bab4509780875e29a1b14cf6e753
     </el-form-item>
     <el-form-item>
       <el-button type="primary" @click="onSubmit">保存</el-button>
@@ -20,7 +15,6 @@
   </el-form>
 </template>
 <script lang="ts">
-<<<<<<< HEAD
 import { defineComponent, reactive, ref, toRef, toRefs, watch, watchEffect } from 'vue';
 import ModelProperty from './Property.vue';
 import { createModel } from '@/api/schema/model';
@@ -33,13 +27,6 @@ export default defineComponent({
     data: {
       type: Object
     }
-=======
-import { defineComponent, reactive } from 'vue';
-import ModelProperty from './Property.vue';
-export default defineComponent({
-  components: {
-    ModelProperty,
->>>>>>> ac3522f07928bab4509780875e29a1b14cf6e753
   },
   setup(props) {
     const propertyRef = ref();
@@ -83,7 +70,7 @@ export default defineComponent({
       // console.log(prop.value)
     }
     watchEffect(() => {
-      console.log(22222, props.data)
+      // console.log(22222, props.data)
     })
     const form = {}
     return {
