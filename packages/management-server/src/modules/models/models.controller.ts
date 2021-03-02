@@ -26,7 +26,7 @@ export class ModelsController {
 
 
   /**
-   * 获取指定用户信息
+   * 获取model详情
    * @param param0
    */
   @Get(':id')

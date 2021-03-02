@@ -36,10 +36,10 @@ export class ModelsFieldsEntity {
   modelId: number;
 
   @Column({
-    type: 'json',
+    type: 'varchar',
     nullable: true,
   })
-  extra: JSON;
+  extra: string;
 
   @Column({
     type: 'varchar',
@@ -54,19 +54,59 @@ export class ModelsFieldsEntity {
   })
   version: number;
 
-  // @Column({
-  //   type: 'datetime',
-  //   name: 'create_time',
-  //   default: () => 'NOW()',
-  // })
-  // createTime: Date;
+  @Column({
+    name: 'is_system',
+    type: 'bool',
+    default: false,
+  })
+  isSystem: boolean;
 
-  // @Column({
-  //   type: 'datetime',
-  //   name: 'update_time',
-  //   default: () => 'NOW()',
-  // })
-  // updateTime: Date;
+  @Column({
+    name: 'not_null',
+    type: 'bool',
+    default: false,
+  })
+  notNull: boolean;
+
+  @Column({
+    type: 'boolean',
+    default: false,
+  })
+  unique: boolean;
+
+  @Column({
+    type: 'bool',
+    default: false,
+  })
+  index: boolean;
+
+  @Column({
+    type: 'bool',
+    default: false,
+  })
+  participle: boolean;
+
+
+  @Column({
+    type: 'bool',
+    default: false,
+  })
+  pinyin: boolean;
+
+
+  @Column({
+    type: 'datetime',
+    name: 'create_time',
+    default: () => 'NOW()',
+  })
+  createTime: Date;
+
+  @Column({
+    type: 'datetime',
+    name: 'update_time',
+    default: () => 'NOW()',
+  })
+  updateTime: Date;
 
   @Column({
     type: 'bigint',
@@ -81,11 +121,4 @@ export class ModelsFieldsEntity {
     nullable: true,
   })
   updateUser: number;
-
-  @Column({
-    type: 'tinyint',
-    name: 'is_delete',
-    default: 0,
-  })
-  isDelete: number;
 }

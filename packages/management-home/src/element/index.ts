@@ -36,6 +36,7 @@ import {
   ElDropdownMenu,
   ElDropdownItem,
   ElDrawer,
+  ElLink,
 } from 'element-plus';
 
 const components = [
@@ -70,6 +71,7 @@ const components = [
   ElDropdownMenu,
   ElDropdownItem,
   ElDrawer,
+  ElLink,
 ];
 const plugins = [ElInfiniteScroll, ElLoading, ElMessage, ElMessageBox, ElNotification];
 

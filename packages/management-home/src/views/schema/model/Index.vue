@@ -13,17 +13,33 @@
       <el-button icon="el-icon-search" type="primary"></el-button>
     </template>
     <template v-slot:headRight>
-      <router-link to="/schema/model/create">
+      <router-link to="/schema/model/0">
         <el-button type="primary">新增</el-button>
       </router-link>
+      <el-button :disabled="!selections.length">克隆</el-button>
+      <el-button :disabled="!selections.length">删除</el-button>
+      <el-button>分类</el-button>
+      <el-button>标签</el-button>
+      <el-button>负责人</el-button>
     </template>
     <el-table
       :data="datasource"
       :default-sort="{ prop: 'name', order: 'descending' }"
       @sort-change="handleSortChange"
+      @selection-change="handleSelectionChange"
       style="width: 100%"
     >
       <el-table-column type="selection" width="55"> </el-table-column>
+      <el-table-column label="序号" fixed min-width="80" type="index">
+        <template #default="scope">
+          {{ scope.$index }}
+        </template>
+      </el-table-column>
+      <el-table-column label="数据名称" fixed min-width="100" prop="name">
+         <template #default="scope">
+          <router-link :to="`/schema/model/${scope.row.id}`">{{ scope.row.name }}</router-link>
+        </template>
+      </el-table-column>
       <el-table-column v-for="column in columns" :key="column.prop" v-bind="{ ...column }" />
       <el-table-column label="操作" fixed="right"> </el-table-column>
     </el-table>
@@ -41,6 +57,7 @@ export default defineComponent({
     const total = ref(100);
     const columns = ref(Columns);
     const datasource = ref([] as Array<object>);
+    const selections = ref([] as Array<object>);
     const searchParams = reactive({
       category: '',
       tags: [],
@@ -74,6 +91,11 @@ export default defineComponent({
       getList();
     };
 
+    const handleSelectionChange = (val: Array<object>) => {
+      selections.value = val;
+      console.log(val);
+    };
+
     onMounted(() => {
       getList();
     });
@@ -84,8 +106,10 @@ export default defineComponent({
       columns,
       searchParams,
       datasource,
+      selections,
       handlePageChange,
       handleSortChange,
+      handleSelectionChange,
     };
   },
 });

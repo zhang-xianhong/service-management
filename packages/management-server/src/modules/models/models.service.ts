@@ -31,7 +31,10 @@ export class ModelsService {
     return await Promise.all([total, list]);
   }
 
-
+  /**
+   * 通过ID获取详情
+   * @param id
+   */
   async findById(id: number) {
     const model = await this.infoRepository.findOne({
       where: {

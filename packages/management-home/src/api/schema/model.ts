@@ -8,3 +8,7 @@ export const getModelList = (payload?: object): Promise<DataListResponse> =>
   axios.get(getUrl(schema.GET_MODEL_LIST), {
     params: payload,
   });
+
+export const getModelDetail = (id: number) => axios.get(`${getUrl(schema.GET_MODEL_DETAIL)}/${id}`);
+
+export const createModel = (payload: object) => axios.post(getUrl(schema.CREATE_MODEL), payload);

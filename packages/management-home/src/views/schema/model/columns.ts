@@ -1,12 +1,5 @@
 export const Columns = [
   {
-    prop: 'name',
-    label: '对象名称',
-    minWidth: 100,
-    fixed: true,
-    sortable: true,
-  },
-  {
     prop: 'description',
     label: '对象描述',
     minWidth: 100,

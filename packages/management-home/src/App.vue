@@ -41,6 +41,12 @@ body {
     }
   }
 }
+
+a {
+  text-decoration: none;
+  color: #006eff;
+}
+
 </style>
 
 <style lang="scss" module>

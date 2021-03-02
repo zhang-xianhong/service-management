@@ -1,0 +1,128 @@
+{
+  "code": 0,
+  "data": [
+      {
+          "id": "1",
+          "value": "id",
+          "length": null,
+          "name": "UUID",
+          "description": null,
+          "createTime": "2021-03-01T06:20:25.000Z"
+      },
+      {
+          "id": "2",
+          "value": "date",
+          "length": null,
+          "name": "日期类型",
+          "description": null,
+          "createTime": "2021-03-01T06:21:18.000Z"
+      },
+      {
+          "id": "3",
+          "value": "time",
+          "length": null,
+          "name": "时间类型",
+          "description": null,
+          "createTime": "2021-03-01T06:21:27.000Z"
+      },
+      {
+          "id": "4",
+          "value": "datetime",
+          "length": null,
+          "name": "日期时间类型",
+          "description": null,
+          "createTime": "2021-03-01T06:22:01.000Z"
+      },
+      {
+          "id": "5",
+          "value": "text_10",
+          "length": "10",
+          "name": "文本(10)",
+          "description": null,
+          "createTime": "2021-03-01T06:23:20.000Z"
+      },
+      {
+          "id": "6",
+          "value": "text_20",
+          "length": "20",
+          "name": "文本(20)",
+          "description": null,
+          "createTime": "2021-03-01T06:23:33.000Z"
+      },
+      {
+          "id": "7",
+          "value": "text_50",
+          "length": "50",
+          "name": "文本(50)",
+          "description": null,
+          "createTime": "2021-03-01T06:23:48.000Z"
+      },
+      {
+          "id": "8",
+          "value": "text_100",
+          "length": "100",
+          "name": "文本(100)",
+          "description": null,
+          "createTime": "2021-03-01T06:24:00.000Z"
+      },
+      {
+          "id": "9",
+          "value": "text_255",
+          "length": "255",
+          "name": "文本(255)",
+          "description": null,
+          "createTime": "2021-03-01T06:24:11.000Z"
+      },
+      {
+          "id": "10",
+          "value": "text_2000",
+          "length": "2000",
+          "name": "文本(2000)",
+          "description": null,
+          "createTime": "2021-03-01T06:24:28.000Z"
+      },
+      {
+          "id": "11",
+          "value": "text_long",
+          "length": null,
+          "name": "长文本",
+          "description": null,
+          "createTime": "2021-03-01T06:25:14.000Z"
+      },
+      {
+          "id": "12",
+          "value": "byte_long",
+          "length": null,
+          "name": "长字节",
+          "description": null,
+          "createTime": "2021-03-01T06:25:26.000Z"
+      },
+      {
+          "id": "13",
+          "value": "bigint",
+          "length": null,
+          "name": "整数类型",
+          "description": null,
+          "createTime": "2021-03-01T06:25:49.000Z"
+      },
+      {
+          "id": "14",
+          "value": "double_2",
+          "length": "2",
+          "name": "小数(2)",
+          "description": null,
+          "createTime": "2021-03-01T06:26:28.000Z"
+      },
+      {
+          "id": "15",
+          "value": "double_6",
+          "length": "6",
+          "name": "小数(6)",
+          "description": null,
+          "createTime": "2021-03-01T06:26:45.000Z"
+      }
+  ],
+  "message": "successful",
+  "httpStatus": 200,
+  "timestamp": 1614580038015
+}
