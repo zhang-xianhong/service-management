@@ -1,16 +1,14 @@
 <template>
   <div class="data-list">
     <aside class="data-list__head" v-if="$slots.head || $slots.headLeft || $slots.headRight">
+      <slot name="head" />
       <div class="data-list__search" v-if="$slots.headLeft">
         <slot name="headLeft" />
       </div>
       <div class="data-list__actions" v-if="$slots.headRight">
         <slot name="headRight" />
-        <el-button v-if="showSeting" type="primary" size="mini" icon="el-icon-s-tools" @click="openDrawer()"
-          >设置</el-button
-        >
+        <el-button v-if="showSeting" plain icon="el-icon-s-tools" @click="openDrawer()"></el-button>
       </div>
-      <slot name="head" />
     </aside>
     <main class="data-list__body" v-loading="loading">
       <slot />
@@ -129,6 +127,20 @@ export default defineComponent({
   }
   &__actions {
     margin-left: auto;
+  }
+
+  @media screen and (max-width: 1024px) {
+    &__head {
+      flex-wrap: wrap;
+    }
+    &__search,
+    &__actions {
+      width: 100%;
+      margin: 0;
+    }
+    &__actions {
+      margin-top: 10px;
+    }
   }
 }
 </style>

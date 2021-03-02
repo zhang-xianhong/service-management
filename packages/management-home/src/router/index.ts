@@ -152,7 +152,7 @@ const routes: Array<RouteRecordRaw> = [
         },
       },
       {
-        path: 'model/create',
+        path: 'model/:id',
         component: () => import('@/views/schema/model/form/Index.vue'),
         name: 'ModelCreate',
         props: {

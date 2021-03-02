@@ -3,7 +3,7 @@ const Mock = require('mockjs')
 const path = require('path')
 
 module.exports = {
-  lintOnSave: false,
+  // lintOnSave: false,
   css: {
     loaderOptions: {
       sass: {

@@ -9,6 +9,7 @@ import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { ModelsModule } from './modules/models/models.module';
 import { SettingsModule } from './modules/settings/settings.module';
+import { ProjectsModule } from './modules/projects/projects.module';
 
 
 @Module({
@@ -30,6 +31,7 @@ import { SettingsModule } from './modules/settings/settings.module';
     AuthModule,
     ModelsModule,
     SettingsModule,
+    ProjectsModule,
   ],
 })
 
