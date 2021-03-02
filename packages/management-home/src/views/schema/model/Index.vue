@@ -36,7 +36,7 @@
         </template>
       </el-table-column>
       <el-table-column label="数据名称" fixed min-width="100" prop="name">
-         <template #default="scope">
+        <template #default="scope">
           <router-link :to="`/schema/model/${scope.row.id}`">{{ scope.row.name }}</router-link>
         </template>
       </el-table-column>

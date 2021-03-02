@@ -25,8 +25,8 @@ export default defineComponent({
   },
   props: {
     data: {
-      type: Object
-    }
+      type: Object,
+    },
   },
   setup(props) {
     const propertyRef = ref();
@@ -44,7 +44,7 @@ export default defineComponent({
           ...form,
           fields: [...propertyRef.value.properties],
         };
-        const isFieldError = saveData.fields.some((field:any) => {
+        const isFieldError = saveData.fields.some((field: any) => {
           if (!field.name) {
             ElMessage.error('属性名称不能为空');
             return true;
@@ -68,11 +68,11 @@ export default defineComponent({
     };
     const handleValueChange = () => {
       // console.log(prop.value)
-    }
+    };
     watchEffect(() => {
       // console.log(22222, props.data)
-    })
-    const form = {}
+    });
+    const form = {};
     return {
       form,
       onSubmit,
@@ -85,8 +85,8 @@ export default defineComponent({
   watch: {
     value: {
       handler: 'handleValueChange',
-      deep: true
-    }
+      deep: true,
+    },
   },
 });
 </script>
