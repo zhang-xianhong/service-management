@@ -1,7 +1,7 @@
 <template>
   <div class="add-project">
     <div class="add-project-btns_container">
-      <el-button type="primary">保存</el-button>
+      <el-button type="primary" @click="saveNewProject">保存</el-button>
       <el-button>取消</el-button>
     </div>
     <div class="add-project-tabs_container">
@@ -39,6 +39,8 @@ import AddCodeTemplate from '@/views/projectManagement/add-project/components/Ad
 import AddHeighSet from '@/views/projectManagement/add-project/components/AddHeighSet.vue';
 import AddCopyright from '@/views/projectManagement/add-project/components/AddCopyright.vue';
 
+import { baseInfoForm } from '@/views/projectManagement/add-project/components/addProjectBus';
+
 export default defineComponent({
   name: 'addProject',
   components: {
@@ -50,9 +52,13 @@ export default defineComponent({
     AddCopyright,
   },
   setup() {
-    const tabActive = ref('baseInfo');
+    const tabActive = ref('openSet');
+    const saveNewProject = () => {
+      console.log(baseInfoForm);
+    };
     return {
       tabActive,
+      saveNewProject,
     };
   },
 });
