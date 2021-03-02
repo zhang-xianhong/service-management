@@ -20,7 +20,12 @@
       <el-input v-model="searchParams.keyword" placeholder="请输入关键字" />
       <el-button icon="el-icon-search" type="primary"></el-button>
     </template>
-    <el-table :default-sort="{ prop: 'name', order: 'descending' }" @sort-change="handleSortChange" style="width: 100%">
+    <el-table
+      :data="datasource"
+      :default-sort="{ prop: 'name', order: 'descending' }"
+      @sort-change="handleSortChange"
+      style="width: 100%"
+    >
       <el-table-column type="selection" width="55"> </el-table-column>
       <el-table-column v-for="column in tableColumns" :key="column.prop" v-bind="{ ...column }" />
       <el-table-column label="操作" fixed="right"> </el-table-column>
@@ -31,6 +36,7 @@
 import { defineComponent, onMounted, reactive, ref } from 'vue';
 import { PageInfo, SortInfo } from '@/types/dataList';
 import { Columns } from './columns';
+import { getProjectList } from '@/api/project';
 export default defineComponent({
   name: 'projectMangement',
   setup() {
@@ -38,6 +44,7 @@ export default defineComponent({
     const showSeting = ref(true);
     const total = ref(100);
     const columns = ref(Columns);
+    const datasource = ref([] as Array<object>);
     const searchParams = reactive({
       category: '',
       tags: [],
@@ -57,17 +64,28 @@ export default defineComponent({
       console.log(prop, order);
     };
 
-    const tableColumns: any = ref([]);
+    const tableColumns: any = ref([] as Array<object>);
 
     // 自定义显示列
     const customColumns = (data: any) => {
       console.log(data);
       tableColumns.value = data;
     };
+
+    const getList = async () => {
+      loading.value = true;
+      try {
+        const { data } = await getProjectList(searchParams);
+        datasource.value = data.list;
+        total.value = data.total;
+      } catch (error) {}
+      loading.value = false;
+    };
     onMounted(() => {
       if (!showSeting.value) {
         tableColumns.value = columns.value;
       }
+      getList();
     });
     return {
       loading,
@@ -79,6 +97,7 @@ export default defineComponent({
       handleSortChange,
       customColumns,
       tableColumns,
+      datasource,
     };
   },
 });

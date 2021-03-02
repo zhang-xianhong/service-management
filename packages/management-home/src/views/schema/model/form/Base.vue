@@ -7,8 +7,8 @@
       <el-input v-model="form.description" placeholder="请输入中文名称"></el-input>
     </el-form-item>
     <el-form-item label="属性">
-      <model-property/>
-    </el-form-item>  
+      <model-property />
+    </el-form-item>
     <el-form-item>
       <el-button type="primary" @click="onSubmit">保存</el-button>
     </el-form-item>
@@ -16,10 +16,10 @@
 </template>
 <script lang="ts">
 import { defineComponent, reactive } from 'vue';
-import ModelProperty from './Property.vue'
+import ModelProperty from './Property.vue';
 export default defineComponent({
   components: {
-    ModelProperty
+    ModelProperty,
   },
   setup() {
     const form = reactive({});
