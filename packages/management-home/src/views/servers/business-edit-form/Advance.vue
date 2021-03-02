@@ -14,7 +14,7 @@
         ></el-input>
       </el-form-item>
       <el-form-item label="库依赖" prop="libDep">
-        <el-input placeholder="请输入库信息" :value="advanceForm.libDep.join()"></el-input>
+        <el-input placeholder="请输入库信息" type="textarea" :rows="5" v-model="advanceForm.libDep"></el-input>
       </el-form-item>
     </el-form>
     <el-dialog title="服务选择" v-model="svcDialogVisible" width="80%">
@@ -64,23 +64,12 @@
 </template>
 
 <script lang="ts">
-import { ref, Ref, defineComponent } from 'vue';
-
-interface AdvanceForm {
-  objDep: Array<Record<string, string>>;
-  svcDep: Array<Record<string, string>>;
-  libDep: Array<Record<string, string>>;
-}
+import { ref, defineComponent } from 'vue';
+import { advanceForm } from './form-data';
 
 export default defineComponent({
   name: 'BusinessEditAdvance',
   setup() {
-    const advanceForm: Ref<AdvanceForm> = ref({
-      objDep: [],
-      svcDep: [],
-      libDep: [],
-    });
-
     const svcDialogVisible = ref(false);
 
     const getValues = () => advanceForm.value;

@@ -123,6 +123,17 @@ const routes: Array<RouteRecordRaw> = [
         },
       },
       {
+        path: 'business-edit/:id',
+        name: 'BusinessEdit',
+        component: () => import(/* webpackChunkName: "business-server" */ '../views/servers/BusinessEdit.vue'),
+        meta: {
+          title: '业务服务编辑',
+          icon: 'el-icon-eleme',
+          hidden: true,
+        },
+        props: true,
+      },
+      {
         path: 'business-server',
         name: 'BusinessServer',
         component: () => import(/* webpackChunkName: "business-server" */ '../views/servers/BusinessServer.vue'),

@@ -7,6 +7,7 @@ export const tableColumns: Array<TableColumnsInterface> = [
     label: '服务名称',
     width: '200px',
     fixed: true,
+    isDefault: false,
   },
   {
     prop: 'desc',

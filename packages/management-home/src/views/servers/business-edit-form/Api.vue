@@ -40,68 +40,14 @@
 </template>
 
 <script lang="ts">
-import { ref, Ref, defineComponent } from 'vue';
-
-interface ApiRecord {
-  name: string;
-  desc: string;
-  method: string;
-  detail: string;
-  isDefault: boolean;
-}
-
-const defaultApi = [
-  {
-    name: 'save',
-    desc: '保存',
-    url: '/save',
-    method: 'POST',
-    detail: '',
-    isDefault: true,
-  },
-  {
-    name: 'insert',
-    desc: '新增',
-    method: 'POST',
-    detail: '',
-    isDefault: true,
-  },
-  {
-    name: 'delete',
-    desc: '删除',
-    method: 'POST',
-    detail: '',
-    isDefault: true,
-  },
-  {
-    name: 'update',
-    desc: '更新',
-    method: 'POST',
-    detail: '',
-    isDefault: true,
-  },
-  {
-    name: 'get',
-    desc: '查看',
-    method: 'GET',
-    detail: '',
-    isDefault: true,
-  },
-  {
-    name: 'list',
-    desc: '列表',
-    method: 'GET',
-    detail: '',
-    isDefault: true,
-  },
-];
+import { ref, defineComponent } from 'vue';
+import { apiRecords } from './form-data';
 
 export default defineComponent({
   name: 'BusinessEditApi',
   setup() {
     const apiTable: any = ref(null);
     // 计算列记录表格
-    const apiRecords: Ref<Array<ApiRecord>> = ref(defaultApi);
     const deleteRow = (rowIndex: number) => {
       apiRecords.value.splice(rowIndex, 1);
     };
@@ -120,7 +66,6 @@ export default defineComponent({
       apiTable.value.toggleRowExpansion(row);
     };
 
-    const getValues = () => apiRecords.value;
     return {
       apiRecords,
       deleteRow,
@@ -128,7 +73,6 @@ export default defineComponent({
       tableRowClass,
       detail,
       apiTable,
-      getValues,
     };
   },
 });

@@ -14,7 +14,7 @@
         <!-- 默认输出 -->
         <template v-if="item.isDefault">{{ scope.row[item.prop] }}</template>
         <!-- 自定义表格行内容 -->
-        <slot :name="item.prop" v-bind="{ [item.prop]: scope.row[item.prop] }"></slot>
+        <slot :name="item.prop" v-bind="{ [item.prop]: scope.row[item.prop], rowData: scope.row }"></slot>
         <!-- 表格行内容为按钮 -->
         <template v-if="item.isButton">
           <el-button v-for="(option, index) in item.buttonOptions" :key="index" type="primary" v-bind="option">{{

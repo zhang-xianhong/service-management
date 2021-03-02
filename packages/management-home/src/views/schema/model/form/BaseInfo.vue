@@ -65,6 +65,7 @@ export default {
             ElMessage.error('请选择数据类型');
             return true;
           }
+          return false;
         });
         if (isFieldError) {
           return;

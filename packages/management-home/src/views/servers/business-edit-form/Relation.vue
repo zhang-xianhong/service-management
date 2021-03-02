@@ -2,10 +2,12 @@
   <div class="business-edit-relation">
     <el-form label-position="top" :model="relationForm" :rules="rules" ref="relationFormRef">
       <el-form-item label="设置主对象" prop="objMain">
-        <el-select v-model="relationForm.objMain" placeholder="请选择主对象"></el-select>
+        <el-select v-model="relationForm.objMain" placeholder="请选择主对象">
+          <el-option v-for="obj in objs" :key="obj.id" :label="obj.name" :value="obj.id"></el-option>
+        </el-select>
         <el-button type="primary" class="el-icon-male"></el-button>
       </el-form-item>
-      <el-button type="primary" @click="addRelation"><i class="el-icon-plus"></i>添加关联</el-button>
+      <!--       <el-button type="primary" @click="addRelation"><i class="el-icon-plus"></i>添加关联</el-button>
       <el-table :data="relationForm.relationRecords">
         <el-table-column prop="type" label="关联类型">
           <template #default="scope">
@@ -44,36 +46,20 @@
             <el-button @click="deleteRow(scope.$index)">删除</el-button>
           </template>
         </el-table-column>
-      </el-table>
+      </el-table> -->
     </el-form>
   </div>
 </template>
 
 <script lang="ts">
-import { ref, Ref, defineComponent } from 'vue';
-
-interface RelationRecord {
-  type: 'include' | 'reference' | '';
-  obj: string;
-  objType: 'object' | 'list' | '';
-  objAttr: string;
-  objMainAttr: string;
-}
-interface RelationForm {
-  objMain: string;
-  relationRecords: Array<RelationRecord>;
-  isValid: boolean;
-}
+import { ref, Ref, defineComponent, onMounted } from 'vue';
+import { getModelList } from '@/api/schema/model';
+import { relationForm } from './form-data';
 
 export default defineComponent({
   name: 'BusinessEditRelation',
   setup() {
     const relationFormRef: any = ref(null);
-    const relationForm: Ref<RelationForm> = ref({
-      objMain: '',
-      relationRecords: [],
-      isValid: true,
-    });
 
     const rules = {
       objMain: [{ required: true, message: '请选择主对象', trigger: 'blur' }],
@@ -89,19 +75,18 @@ export default defineComponent({
       });
     };
 
-    const getValues = () => {
-      relationFormRef.value.validate((isValid: boolean) => {
-        relationForm.value.isValid = isValid;
-      });
-      return relationForm.value;
-    };
+    const objs: Ref<Array<Record<string, string>>> = ref([]);
+    onMounted(async () => {
+      const { data } = await getModelList();
+      objs.value = data.list;
+    });
 
     return {
       relationForm,
       rules,
       addRelation,
-      getValues,
       relationFormRef,
+      objs,
     };
   },
 });
