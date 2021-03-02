@@ -5,7 +5,7 @@ import { Column, Entity } from 'typeorm';
 import { BaseEntity } from '../base.entity';
 
 // settings/data-types
-@Entity({ name: 'settings_data_types' })
+@Entity({ name: 'settings_data_type' })
 export class DataTypesEntity extends BaseEntity {
   // 值
   @Column({

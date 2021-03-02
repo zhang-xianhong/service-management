@@ -10,13 +10,16 @@ import { REG_UPPER_CAMEL_CASE, REG_LOWER_CAMEL_CASE } from '../../shared/utils/r
 export class ModelsController {
   constructor(private readonly modelService: ModelsService) {}
 
-
+  /**
+   * 获取分页的模型列表
+   * @param query
+   */
   @Get()
   async findAll(@Query(new QueryPipe()) query: SearchQuery) {
     if (query.keyword) {
       // 处理 search
     }
-    const [total, list] = await this.modelService.findAll({
+    const [list, total] = await this.modelService.findAll({
       ...query.conditions,
     });
     return {
@@ -25,15 +28,18 @@ export class ModelsController {
     };
   }
 
+  /**
+   * 获取全部模型列表
+   * @param query
+   */
   @Get('all')
   async findAllWithoutPagination(@Query() query) {
     if (query.keyword) {
       // 处理 search
     }
-    const list = await this.modelService.findAllList({});
+    const list = await this.modelService.findAll({}, false);
     return list;
   }
-
 
   /**
    * 获取model详情
@@ -46,9 +52,48 @@ export class ModelsController {
   }
 
 
+  /**
+   * 创建一个模型
+   * @param postData
+   */
   @Post()
   async create(@Body() postData) {
+    this.validatePostData(postData);
     const { name, description, owner, isAllByExtend, modelRank, classification, tags, fields } = postData;
+    return await this.modelService.create({
+      name,
+      description,
+      owner,
+      isAllByExtend,
+      modelRank,
+      classification,
+      tags,
+      fields,
+    });
+  }
+
+  /**
+   * 更新模型
+   * @param postData
+   */
+  @Post(':id')
+  async updateModel(@Body() postData, @Param() { id }) {
+    this.validatePostData(postData);
+    const { name, description, owner = '', isAllByExtend = false, modelRank = '', classification = '', tags = '', fields } = postData;
+    return await this.modelService.updateModel(id, {
+      name,
+      description,
+      owner,
+      isAllByExtend,
+      modelRank,
+      classification,
+      tags,
+      fields,
+    });
+  }
+
+  private validatePostData(data) {
+    const { name, description, fields } = data;
     if (isEmpty(name) || !is(name, REG_UPPER_CAMEL_CASE)) {
       throw new ApiException({
         code: ModelCodes.NAME_INVALID,
@@ -95,16 +140,5 @@ export class ModelsController {
         message: 'fields字段不能为空',
       });
     }
-
-    return await this.modelService.create({
-      name,
-      description,
-      owner,
-      isAllByExtend,
-      modelRank,
-      classification,
-      tags,
-      fields,
-    });
   }
 }

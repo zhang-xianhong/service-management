@@ -2,7 +2,7 @@ import { Column,  Entity, JoinColumn, ManyToOne } from 'typeorm';
 import { BaseEntity } from '../base.entity';
 import { ModelsInfoEntity } from './models-info.entity';
 
-@Entity({ name: 'model_fields' })
+@Entity({ name: 'model_field' })
 export class ModelsFieldsEntity extends BaseEntity {
   // 管理模型ID
   @ManyToOne(() => ModelsInfoEntity, model => model.id)

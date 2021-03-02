@@ -5,7 +5,7 @@ import { Column, Entity } from 'typeorm';
 import { BaseEntity } from '../base.entity';
 
 // settings/dictionaries/:typeCode
-@Entity({ name: 'settings_dictionaries' })
+@Entity({ name: 'settings_dictionary' })
 export class DictionariesEntity extends BaseEntity {
   // 父级，为空则表示一级类型
   @Column({

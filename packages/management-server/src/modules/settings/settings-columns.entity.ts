@@ -4,7 +4,7 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 // settings/columns/work
-@Entity({ name: 'settings_columns' })
+@Entity({ name: 'settings_column' })
 export class ColumnsEntity {
   @PrimaryGeneratedColumn({
     type: 'bigint',

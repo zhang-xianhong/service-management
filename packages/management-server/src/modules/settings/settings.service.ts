@@ -1,8 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Repository, Connection } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ColumnsEntity } from './settings-columns.entity';
-import { DictionariesEntity } from './settings-dictionaries.entity';
 import { DataTypesEntity } from './settings-data-types.entity';
 import { ApiException } from '../../shared/utils/api.exception';
 import { CommonCodes } from '../../shared/constants/code';
@@ -11,10 +9,6 @@ import { CommonCodes } from '../../shared/constants/code';
 export class SettingsService {
   constructor(
     private connection: Connection,
-    @InjectRepository(ColumnsEntity)
-    private readonly columnRepository: Repository<ColumnsEntity>,
-    @InjectRepository(DictionariesEntity)
-    private readonly dictionaryRepository: Repository<DictionariesEntity>,
     @InjectRepository(DataTypesEntity)
     private readonly dataTypesRepository: Repository<DataTypesEntity>,
   ) {}
