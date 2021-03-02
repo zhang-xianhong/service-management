@@ -36,6 +36,39 @@ interface ApiRecord {
   isDefault: boolean;
 }
 
+interface EditObjRecord {
+  obj: string;
+  id: string;
+  desc: string;
+  type: '可编辑' | '只显示' | '隐藏';
+  name: string;
+  required: true | false;
+  component: string;
+  group: string;
+  order: string;
+}
+interface EditViewRecord {
+  name: string;
+  desc: string;
+  type: '编辑视图';
+  attrs: Array<EditObjRecord>;
+  methods: Array<string>;
+}
+interface ListObjRecord {
+  obj: string;
+  id: string;
+  desc: string;
+  show: true | false;
+  name: string;
+  order: string;
+}
+interface ListViewRecord {
+  name: string;
+  desc: string;
+  type: '列表视图';
+  attrs: Array<ListObjRecord>;
+}
+
 const defaultApi = [
   {
     name: 'save',
@@ -107,3 +140,21 @@ export const relationForm: Ref<RelationForm> = ref({
 });
 
 export const apiRecords: Ref<Array<ApiRecord>> = ref(defaultApi);
+
+export const viewData: Ref<Array<EditViewRecord | ListViewRecord>> = ref([]);
+
+const defaultEditForm: EditViewRecord = {
+  name: '',
+  desc: '',
+  type: '编辑视图',
+  attrs: [],
+  methods: [],
+};
+const defaultListForm: ListViewRecord = {
+  name: '',
+  desc: '',
+  type: '列表视图',
+  attrs: [],
+};
+export const editForm: Ref<EditViewRecord> = ref(defaultEditForm);
+export const listForm: Ref<ListViewRecord> = ref(defaultListForm);

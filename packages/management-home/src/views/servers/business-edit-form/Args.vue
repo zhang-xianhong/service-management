@@ -27,6 +27,7 @@
 </template>
 <script lang="ts">
 import { ref, defineComponent } from 'vue';
+import { argsRules } from './form-config';
 export default defineComponent({
   name: 'BusinessEditArgs',
   setup() {
@@ -40,15 +41,7 @@ export default defineComponent({
       svcBasePoolSize: '5',
     });
 
-    const rules = {
-      memory: [{ required: true, message: '请输入服务名称', trigger: 'blur' }],
-      syncSvcPoolSize: [{ required: true, message: '请输入服务描述', trigger: 'blur' }],
-      baseCtlPoolSize: [{ required: true, message: '请输入服务名称', trigger: 'blur' }],
-      rabitPoolSize: [{ required: true, message: '请输入服务描述', trigger: 'blur' }],
-      esSvcPoolSize: [{ required: true, message: '请输入服务名称', trigger: 'blur' }],
-      jpaPoolSize: [{ required: true, message: '请输入服务描述', trigger: 'blur' }],
-      svcBasePoolSize: [{ required: true, message: '请输入服务描述', trigger: 'blur' }],
-    };
+    const rules = argsRules;
 
     return {
       argsForm,

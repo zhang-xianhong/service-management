@@ -76,69 +76,16 @@
   </div>
 </template>
 <script lang="ts">
-import { ref, Ref, defineComponent } from 'vue';
-
-interface EditObjRecord {
-  obj: string;
-  id: string;
-  desc: string;
-  type: '可编辑' | '只显示' | '隐藏';
-  name: string;
-  required: true | false;
-  component: string;
-  group: string;
-  order: string;
-}
-interface EditViewRecord {
-  name: string;
-  desc: string;
-  type: '编辑视图';
-  attrs: Array<EditObjRecord>;
-  methods: Array<string>;
-}
-interface ListObjRecord {
-  obj: string;
-  id: string;
-  desc: string;
-  show: true | false;
-  name: string;
-  order: string;
-}
-interface ListViewRecord {
-  name: string;
-  desc: string;
-  type: '列表视图';
-  attrs: Array<ListObjRecord>;
-}
+import { ref, defineComponent } from 'vue';
+import { viewRules } from './form-config';
+import { viewData, editForm, listForm } from './form-data';
 
 export default defineComponent({
   name: 'BusinessEditView',
   setup() {
-    const viewData: Ref<Array<EditViewRecord | ListViewRecord>> = ref([]);
-
-    const defaultEditForm: EditViewRecord = {
-      name: '',
-      desc: '',
-      type: '编辑视图',
-      attrs: [],
-      methods: [],
-    };
-    const defaultListForm: ListViewRecord = {
-      name: '',
-      desc: '',
-      type: '列表视图',
-      attrs: [],
-    };
-    const editForm: Ref<EditViewRecord> = ref(defaultEditForm);
-    const listForm: Ref<ListViewRecord> = ref(defaultListForm);
-
     const editDialogVisible = ref(false);
     const listDialogVisible = ref(false);
-
-    const rules = {
-      name: [{ required: true, message: '请输入名称', trigger: 'blur' }],
-      desc: [{ required: true, message: '请输入描述', trigger: 'blur' }],
-    };
+    const rules = viewRules;
     return {
       viewData,
       editForm,

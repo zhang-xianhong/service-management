@@ -18,9 +18,9 @@
       </el-form-item>
     </el-form>
     <el-dialog title="服务选择" v-model="svcDialogVisible" width="80%">
-      <el-row gutter="10">
+      <el-row :gutter="10">
         <el-col :span="10">
-          <el-input placeholder="请选择服务"></el-input>
+          <el-input placeholder="请选择服务" :value="advanceForm.svcDep.join()"></el-input>
         </el-col>
         <el-col :span="4">
           <el-select v-model="filterForm.svc">
@@ -39,16 +39,18 @@
       </el-row>
       <el-row>
         <el-col :span="4" :offset="20" class="btn-row">
-          <el-button type="primary">添加所有</el-button>
-          <el-button>清除所有</el-button>
+          <el-button type="primary" @click="addAll(svcList)">添加所有</el-button>
+          <el-button @click="clear">清除所有</el-button>
         </el-col>
       </el-row>
       <el-row>
         <el-table :data="svcList">
           <el-table-column v-for="col in columns" :key="col.name" :prop="col.name" :label="col.label"></el-table-column>
           <el-table-column prop="operation" label="操作" :width="130">
-            <template #default="scope">
-              <el-button type="primary" @click="add(scope.row)">添加</el-button>
+            <template #default="{ row }">
+              <el-button type="primary" @click="add(row.name)" :disabled="advanceForm.svcDep.includes(row.name)">
+                添加
+              </el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -64,22 +66,25 @@
 </template>
 
 <script lang="ts">
-import { ref, defineComponent } from 'vue';
+import { ref, Ref, defineComponent } from 'vue';
 import { advanceForm } from './form-data';
+import { getServiceList } from '@/api/servers';
+import { svcFormColumns } from './form-config';
+import _ from 'lodash/fp';
 
 export default defineComponent({
   name: 'BusinessEditAdvance',
   setup() {
     const svcDialogVisible = ref(false);
-
     const getValues = () => advanceForm.value;
-
     const saveSvcDep = () => {
-      // todo
+      svcDialogVisible.value = false;
     };
-
-    const showSvcDialog = () => {
+    const svcList: Ref<Array<Record<string, any>>> = ref([]);
+    const showSvcDialog = async () => {
       svcDialogVisible.value = true;
+      const { data: serviceList } = await getServiceList({ pageNum: 0, pageSize: 10 });
+      svcList.value = serviceList.list;
     };
     const filterForm = ref({
       tag: '',
@@ -87,42 +92,14 @@ export default defineComponent({
       search: '',
       svc: 'businessSvc',
     });
-    const columns = [
-      {
-        name: 'name',
-        label: '服务名称',
-      },
-      {
-        name: 'desc',
-        label: '服务描述',
-      },
-      {
-        name: 'type',
-        label: '分类',
-      },
-      {
-        name: 'tag',
-        label: '标签',
-      },
-      {
-        name: 'project',
-        label: '所属项目',
-      },
-      {
-        name: 'dependence',
-        label: '服务依赖',
-      },
-      {
-        name: 'level',
-        label: '服务级别',
-      },
-      {
-        name: 'modified',
-        label: '修改次数',
-      },
-    ];
-    const add = () => {
-      // todo
+    const columns = svcFormColumns;
+    const add = (payload: any) => {
+      advanceForm.value.svcDep = advanceForm.value.svcDep.concat(payload);
+    };
+
+    const addAll = _.flow(_.map('name'), add);
+    const clear = () => {
+      advanceForm.value.svcDep = [];
     };
 
     return {
@@ -134,6 +111,9 @@ export default defineComponent({
       filterForm,
       columns,
       add,
+      svcList,
+      addAll,
+      clear,
     };
   },
 });

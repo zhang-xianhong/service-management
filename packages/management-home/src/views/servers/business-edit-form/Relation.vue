@@ -53,17 +53,16 @@
 
 <script lang="ts">
 import { ref, Ref, defineComponent, onMounted } from 'vue';
-import { getModelList } from '@/api/schema/model';
+import { getModelListAll } from '@/api/schema/model';
 import { relationForm } from './form-data';
+import { relationRules } from './form-config';
 
 export default defineComponent({
   name: 'BusinessEditRelation',
   setup() {
     const relationFormRef: any = ref(null);
 
-    const rules = {
-      objMain: [{ required: true, message: '请选择主对象', trigger: 'blur' }],
-    };
+    const rules = relationRules;
 
     const addRelation = () => {
       relationForm.value.relationRecords.push({
@@ -77,7 +76,7 @@ export default defineComponent({
 
     const objs: Ref<Array<Record<string, string>>> = ref([]);
     onMounted(async () => {
-      const { data } = await getModelList();
+      const { data } = await getModelListAll();
       objs.value = data.list;
     });
 

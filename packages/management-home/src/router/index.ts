@@ -134,8 +134,8 @@ const routes: Array<RouteRecordRaw> = [
         props: true,
       },
       {
-        path: 'business-server',
-        name: 'BusinessServer',
+        path: 'other-server',
+        name: 'OtherServer',
         component: () => import(/* webpackChunkName: "business-server" */ '../views/servers/BusinessServer.vue'),
         meta: {
           title: '其他服务',
