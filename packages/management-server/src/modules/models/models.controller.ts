@@ -1,10 +1,11 @@
 import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
 import { ApiException } from 'src/shared/utils/api.exception';
 import { is, isEmpty } from '../../shared/utils/validator';
-import { CommonCodes, ModelCodes } from '../../shared/constants/code';
+import { CommonCodes } from '../../shared/constants/code';
 import { ModelsService } from './models.service';
 import { QueryPipe, SearchQuery } from '../../shared/pipes/query.pipe';
 import { REG_UPPER_CAMEL_CASE, REG_LOWER_CAMEL_CASE } from '../../shared/utils/rules';
+// import { ModelInfoDto } from './model-info.dto';
 @Controller('models')
 
 export class ModelsController {
@@ -92,18 +93,22 @@ export class ModelsController {
     });
   }
 
+  /**
+   * 暂时先用这个去校验参数
+   * @param data
+   */
   private validatePostData(data) {
     const { name, description, fields } = data;
     if (isEmpty(name) || !is(name, REG_UPPER_CAMEL_CASE)) {
       throw new ApiException({
-        code: ModelCodes.NAME_INVALID,
+        code: CommonCodes.PARAMETER_INVALID,
         message: '无效的模型名称',
       });
     }
 
     if (isEmpty(description)) {
       throw new ApiException({
-        code: ModelCodes.NAME_INVALID,
+        code: CommonCodes.PARAMETER_INVALID,
         message: '无效的模型描述',
       });
     }
@@ -130,7 +135,7 @@ export class ModelsController {
       }
       if (names.length !== fields.length) {
         throw new ApiException({
-          code: ModelCodes.NAME_INVALID,
+          code: CommonCodes.PARAMETER_INVALID,
           message: '存在重复的字段名',
         });
       }
