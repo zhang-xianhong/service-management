@@ -6,15 +6,19 @@ import { ArgumentMetadata, Injectable, PipeTransform } from '@nestjs/common';
 import { DEFAULT_PAGE_SIZE } from '../constants';
 import { SortType } from '../constants/sort-type';
 
-export interface SearchQuery {
+export interface PlainObject {
   [propName: string]: any
-  conditions: {
-    skip: number
-    take: number
-    order: undefined | {
-      [fieldName: string]: string
-    }
-  }
+}
+export interface SearchConditions extends PlainObject{
+  skip: number
+  take: number
+  order: undefined | {
+    [fieldName: string]: string
+  },
+}
+
+export interface SearchQuery extends PlainObject {
+  conditions: SearchConditions
 }
 
 @Injectable()

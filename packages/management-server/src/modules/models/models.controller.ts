@@ -17,29 +17,19 @@ export class ModelsController {
    */
   @Get()
   async findAll(@Query(new QueryPipe()) query: SearchQuery) {
-    if (query.keyword) {
-      // 处理 search
-    }
-    const [list, total] = await this.modelService.findAll({
-      ...query.conditions,
-    });
+    const [list, total] = await this.modelService.findAll(query);
     return {
-      total,
       list,
+      total,
     };
   }
 
   /**
    * 获取全部模型列表
-   * @param query
    */
   @Get('all')
-  async findAllWithoutPagination(@Query() query) {
-    if (query.keyword) {
-      // 处理 search
-    }
-    const list = await this.modelService.findAll({}, false);
-    return list;
+  async findAllWithoutPagination() {
+    return await this.modelService.findAll({}, false);
   }
 
   /**
@@ -48,8 +38,7 @@ export class ModelsController {
    */
   @Get(':id')
   async findOneById(@Param() { id }) {
-    const res = await this.modelService.findById(Number(id));
-    return res;
+    return await this.modelService.findById(Number(id));
   }
 
 
@@ -91,6 +80,15 @@ export class ModelsController {
       tags,
       fields,
     });
+  }
+
+  /**
+   * 删除模型
+   * @param param0
+   */
+  @Post('/delete/:id')
+  async deleteModel(@Param() { id }) {
+    return await this.modelService.deleteModel(id);
   }
 
   /**
