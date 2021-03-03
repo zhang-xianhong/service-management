@@ -32,7 +32,7 @@
       <el-table-column prop="operator" label="操作" width="150">
         <template #default="scope">
           <el-button :disabled="scope.row.isDefault" @click="deleteRow(scope.$index)">删除</el-button>
-          <el-button class="el-icon-male" type="primary" @click="detail(scope.row)"></el-button>
+          <el-button class="el-icon-male" type="primary" @click="apiTable.toggleRowExpansion(scope.row)"></el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -40,71 +40,15 @@
 </template>
 
 <script lang="ts">
-import { ref, Ref, defineComponent } from 'vue';
-
-interface ApiRecord {
-  name: string;
-  desc: string;
-  method: string;
-  detail: string;
-  isDefault: boolean;
-}
-
-const defaultApi = [
-  {
-    name: 'save',
-    desc: '保存',
-    url: '/save',
-    method: 'POST',
-    detail: '',
-    isDefault: true,
-  },
-  {
-    name: 'insert',
-    desc: '新增',
-    method: 'POST',
-    detail: '',
-    isDefault: true,
-  },
-  {
-    name: 'delete',
-    desc: '删除',
-    method: 'POST',
-    detail: '',
-    isDefault: true,
-  },
-  {
-    name: 'update',
-    desc: '更新',
-    method: 'POST',
-    detail: '',
-    isDefault: true,
-  },
-  {
-    name: 'get',
-    desc: '查看',
-    method: 'GET',
-    detail: '',
-    isDefault: true,
-  },
-  {
-    name: 'list',
-    desc: '列表',
-    method: 'GET',
-    detail: '',
-    isDefault: true,
-  },
-];
+import { ref, defineComponent } from 'vue';
+import { apiRecords } from './form-data';
 
 export default defineComponent({
   name: 'BusinessEditApi',
   setup() {
     const apiTable: any = ref(null);
     // 计算列记录表格
-    const apiRecords: Ref<Array<ApiRecord>> = ref(defaultApi);
-    const deleteRow = (rowIndex: number) => {
-      apiRecords.value.splice(rowIndex, 1);
-    };
+    const deleteRow = (index: number) => apiRecords.value.splice(index, 1);
     const addRow = () => {
       apiRecords.value.push({
         name: '',
@@ -116,19 +60,12 @@ export default defineComponent({
     };
     const tableRowClass = ({ row: { isDefault = false } }) => (isDefault ? 'default-row' : 'normal-row');
 
-    const detail = (row: any) => {
-      apiTable.value.toggleRowExpansion(row);
-    };
-
-    const getValues = () => apiRecords.value;
     return {
       apiRecords,
       deleteRow,
       addRow,
       tableRowClass,
-      detail,
       apiTable,
-      getValues,
     };
   },
 });

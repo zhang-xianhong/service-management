@@ -1,7 +1,7 @@
 <template>
   <data-list>
     <template #headLeft>
-      <el-button type="primary">新增</el-button>
+      <el-button type="primary" @click="goCreatePage">新增</el-button>
       <el-button>克隆</el-button>
       <el-button>继承</el-button>
       <el-button>启动</el-button>
@@ -33,6 +33,10 @@
       </el-popover>
     </template>
     <server-table :data="tableData" :columns="tableColumns" :operations="tableOperations">
+      <!-- 服务名称栏 -->
+      <template #name="{ rowData }">
+        <router-link :to="`/serve/business-edit/${rowData.id}`">{{ rowData.name }}</router-link>
+      </template>
       <!-- 自定义负责人栏显示样式 -->
       <template #owner="data">
         <el-tag>{{ data.owner }}</el-tag>
@@ -56,6 +60,7 @@
 <script lang="ts">
 import { reactive, toRefs, ref } from 'vue';
 import ServerTable from '@/components/packaged-table/PackagedTable.vue';
+import { useRouter } from 'vue-router';
 import { tableColumns, tableOperations } from './config/business-server-config';
 
 interface CategoryStateInterface {
@@ -79,6 +84,7 @@ export default {
     ServerTable,
   },
   setup() {
+    const router = useRouter();
     // 分类相关状态
     const categoryState: CategoryStateInterface = reactive({
       categories: [],
@@ -102,6 +108,7 @@ export default {
     });
 
     tableState.tableData.push({
+      id: 1,
       name: '李三',
       desc: '码农',
       owner: '老板',
@@ -120,12 +127,17 @@ export default {
       console.log(scope);
     }
 
+    const goCreatePage = () => {
+      router.push({ path: '/serve/business-add' });
+    };
+
     return {
       ...toRefs(categoryState),
       ...toRefs(tagState),
       ...toRefs(tableState),
       inputValue,
       openCodeQualtity,
+      goCreatePage,
     };
   },
 };

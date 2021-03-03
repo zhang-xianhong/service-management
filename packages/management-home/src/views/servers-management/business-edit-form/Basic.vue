@@ -31,35 +31,13 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, Ref } from 'vue';
-
-interface BasicForm {
-  name: string;
-  description: string;
-  demand: Array<string>;
-  principal: Array<string>;
-  versionManagement: boolean;
-  classification: string;
-  tags: Array<string>;
-  detail: string;
-  isValid: boolean;
-}
+import { defineComponent, ref } from 'vue';
+import { basicForm } from './form-data';
 
 export default defineComponent({
   name: 'BusinessEditBasic',
   setup() {
     const basicFormRef: any = ref(null);
-    const basicForm: Ref<BasicForm> = ref({
-      name: '',
-      description: '',
-      demand: [],
-      principal: [],
-      versionManagement: false,
-      classification: '',
-      tags: [],
-      detail: '',
-      isValid: true,
-    });
 
     const rules = {
       name: [{ required: true, message: '请输入服务名称', trigger: 'blur' }],

@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@types/js-cookie": "^2.2.6",
+    "@types/lodash": "^4.14.168",
     "@types/mockjs": "^1.0.3",
     "@types/path-to-regexp": "^1.7.0",
     "axios": "^0.21.1",
@@ -18,6 +19,7 @@
     "core-js": "^3.6.5",
     "element-plus": "^1.0.2-beta.32",
     "js-cookie": "^2.2.1",
+    "lodash": "^4.17.21",
     "nprogress": "^0.2.0",
     "path": "^0.12.7",
     "path-to-regexp": "^6.2.0",
