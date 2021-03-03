@@ -11,7 +11,7 @@
         <el-select placeholder="请选择对应需求" v-model="basicForm.demand" multiple></el-select>
       </el-form-item>
       <el-form-item label="负责人">
-        <el-select placeholder="请选择负责人" v-model="basicForm.principal" multiple></el-select>
+        <el-select placeholder="请选择负责人" v-model="basicForm.owner"></el-select>
       </el-form-item>
       <el-form-item>
         支持版本管理
@@ -21,7 +21,7 @@
         <el-select placeholder="请选择分类" v-model="basicForm.classification"></el-select>
       </el-form-item>
       <el-form-item label="标签定义">
-        <el-select placeholder="请选择标签" v-model="basicForm.tags" multiple></el-select>
+        <el-select placeholder="请选择标签" v-model="tags" multiple></el-select>
       </el-form-item>
       <el-form-item label="服务详情">
         <el-input v-model="basicForm.detail" type="textarea" :rows="5"></el-input>
@@ -31,7 +31,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue';
+import { defineComponent, ref, Ref, watch } from 'vue';
 import { basicForm } from './form-data';
 
 export default defineComponent({
@@ -51,11 +51,22 @@ export default defineComponent({
       return basicForm.value;
     };
 
+    const tags: Ref<Array<string>> = ref([]);
+    watch(basicForm, (newForm) => {
+      tags.value = newForm.tag.split(',');
+    });
+    watch(tags, (newTags) => {
+      if (newTags.join() !== basicForm.value.tag) {
+        basicForm.value.tag = tags.value.join();
+      }
+    });
+
     return {
       basicForm,
       rules,
       getValues,
       basicFormRef,
+      tags,
     };
   },
 });

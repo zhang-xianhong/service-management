@@ -4,16 +4,16 @@ interface BasicForm {
   name: string;
   description: string;
   demand: Array<string>;
-  principal: Array<string>;
+  owner: string;
   versionManagement: boolean;
   classification: string;
-  tags: Array<string>;
+  tag: string;
   detail: string;
   isValid: boolean;
 }
 interface AdvanceForm {
   objDep: Array<Record<string, string>>;
-  svcDep: Array<Record<string, string>>;
+  dependencies: Array<Record<string, string>>;
   libDep: string;
 }
 interface RelationRecord {
@@ -24,13 +24,13 @@ interface RelationRecord {
   objMainAttr: string;
 }
 interface RelationForm {
-  objMain: string;
+  moduleDependencyId: string;
   relationRecords: Array<RelationRecord>;
   isValid: boolean;
 }
-interface ApiRecord {
+export interface ApiRecord {
   name: string;
-  desc: string;
+  description: string;
   method: string;
   detail: string;
   isDefault: boolean;
@@ -72,7 +72,7 @@ interface ListViewRecord {
 const defaultApi = [
   {
     name: 'save',
-    desc: '保存',
+    description: '保存',
     url: '/save',
     method: 'POST',
     detail: '',
@@ -80,35 +80,35 @@ const defaultApi = [
   },
   {
     name: 'insert',
-    desc: '新增',
+    description: '新增',
     method: 'POST',
     detail: '',
     isDefault: true,
   },
   {
     name: 'delete',
-    desc: '删除',
+    description: '删除',
     method: 'POST',
     detail: '',
     isDefault: true,
   },
   {
     name: 'update',
-    desc: '更新',
+    description: '更新',
     method: 'POST',
     detail: '',
     isDefault: true,
   },
   {
     name: 'get',
-    desc: '查看',
+    description: '查看',
     method: 'GET',
     detail: '',
     isDefault: true,
   },
   {
     name: 'list',
-    desc: '列表',
+    description: '列表',
     method: 'GET',
     detail: '',
     isDefault: true,
@@ -119,27 +119,27 @@ export const basicForm: Ref<BasicForm> = ref({
   name: '',
   description: '',
   demand: [],
-  principal: [],
+  owner: '',
   versionManagement: false,
   classification: '',
-  tags: [],
+  tag: '',
   detail: '',
   isValid: true,
 });
 
 export const advanceForm: Ref<AdvanceForm> = ref({
   objDep: [],
-  svcDep: [],
+  dependencies: [],
   libDep: '',
 });
 
 export const relationForm: Ref<RelationForm> = ref({
-  objMain: '',
+  moduleDependencyId: '',
   relationRecords: [],
   isValid: true,
 });
 
-export const apiRecords: Ref<Array<ApiRecord>> = ref(defaultApi);
+export const apis: Ref<Array<ApiRecord>> = ref(defaultApi);
 
 export const viewData: Ref<Array<EditViewRecord | ListViewRecord>> = ref([]);
 

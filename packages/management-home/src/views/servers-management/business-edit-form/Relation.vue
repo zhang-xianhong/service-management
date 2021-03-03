@@ -1,8 +1,8 @@
 <template>
   <div class="business-edit-relation">
     <el-form label-position="top" :model="relationForm" :rules="rules" ref="relationFormRef">
-      <el-form-item label="设置主对象" prop="objMain">
-        <el-select v-model="relationForm.objMain" placeholder="请选择主对象">
+      <el-form-item label="设置主对象" prop="moduleDependencyId">
+        <el-select v-model="relationForm.moduleDependencyId" placeholder="请选择主对象">
           <el-option v-for="obj in objs" :key="obj.id" :label="obj.name" :value="obj.id"></el-option>
         </el-select>
         <el-button type="primary" class="el-icon-male"></el-button>
@@ -77,7 +77,7 @@ export default defineComponent({
     const objs: Ref<Array<Record<string, string>>> = ref([]);
     onMounted(async () => {
       const { data } = await getModelListAll();
-      objs.value = data.list;
+      objs.value = data;
     });
 
     return {
