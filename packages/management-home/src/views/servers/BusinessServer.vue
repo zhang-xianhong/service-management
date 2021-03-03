@@ -32,7 +32,7 @@
         <el-button class="configuration-button">标签</el-button>
       </el-popover>
     </template>
-    <server-table :data="tableData" :columns="tableColumns" :operations="tableOperations">
+    <server-table :data="serveList" :columns="tableColumns" :operations="tableOperations">
       <!-- 自定义负责人栏显示样式 -->
       <template #owner="data">
         <el-tag>{{ data.owner }}</el-tag>
@@ -61,6 +61,7 @@ import { reactive, toRefs, ref } from 'vue';
 import ServerTable from './common/ServerTable.vue';
 import { tableColumns, tableOperations } from './config/business-server-config';
 import CloneDialog from '@/views/servers/business-serve-dialog/Clone.vue';
+import { getServeList, serveList } from '@/views/servers/business-serve-dialog/form-data';
 
 interface CategoryStateInterface {
   categories: Array<Record<string, any>>;
@@ -125,7 +126,9 @@ export default {
       console.log(scope);
     }
 
-    const cloneDialogVisible = ref(true);
+    getServeList(1, 5);
+
+    const cloneDialogVisible = ref(false);
     return {
       ...toRefs(categoryState),
       ...toRefs(tagState),
@@ -133,6 +136,7 @@ export default {
       inputValue,
       openCodeQualtity,
       cloneDialogVisible,
+      serveList,
     };
   },
 };
