@@ -19,6 +19,7 @@
     "core-js": "^3.6.5",
     "element-plus": "^1.0.2-beta.32",
     "js-cookie": "^2.2.1",
+    "loadsh": "^0.0.4",
     "lodash": "^4.17.21",
     "nprogress": "^0.2.0",
     "path": "^0.12.7",

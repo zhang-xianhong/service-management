@@ -65,8 +65,8 @@ import { reactive, toRefs, ref } from 'vue';
 import ServerTable from '@/components/packaged-table/PackagedTable.vue';
 import { useRouter } from 'vue-router';
 import { tableColumns, tableOperations } from './config/business-server-config';
-import CloneDialog from '@/views/servers/business-serve-dialog/Clone.vue';
-import { getServeList, serveList } from '@/views/servers/business-serve-dialog/form-data';
+import CloneDialog from '@/views/servers-management/business-serve-dialog/Clone.vue';
+import { getServeList, serveList } from '@/views/servers-management/business-serve-dialog/form-data';
 
 interface CategoryStateInterface {
   categories: Array<Record<string, any>>;
