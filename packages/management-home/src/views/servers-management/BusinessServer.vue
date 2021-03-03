@@ -1,5 +1,5 @@
 <template>
-  <data-list>
+  <data-list :page="currentPage" :page-size="pageSize" :total="serveList.total" @pageChange="getPageChange">
     <template #headLeft>
       <el-button type="primary" @click="goCreatePage">新增</el-button>
       <el-button>克隆</el-button>
@@ -32,7 +32,7 @@
         <el-button class="configuration-button">标签</el-button>
       </el-popover>
     </template>
-    <server-table :data="serveList" :columns="tableColumns" :operations="tableOperations">
+    <server-table :data="serveList.list" :columns="tableColumns" :operations="tableOperations" @delete="deleteColum">
       <!-- 服务名称栏 -->
       <template #name="{ rowData }">
         <router-link :to="`/serve/business-edit/${rowData.id}`">{{ rowData.name }}</router-link>
@@ -65,8 +65,8 @@ import { reactive, toRefs, ref } from 'vue';
 import ServerTable from '@/components/packaged-table/PackagedTable.vue';
 import { useRouter } from 'vue-router';
 import { tableColumns, tableOperations } from './config/business-server-config';
-import CloneDialog from '@/views/servers-management/business-serve-dialog/Clone.vue';
-import { getServeList, serveList } from '@/views/servers-management/business-serve-dialog/form-data';
+import CloneDialog from '@/views/servers-management/business-serve-tools/Clone.vue';
+import { getServeList, serveList, deleteServe } from '@/views/servers-management/business-serve-tools/serve-data-utils';
 
 interface CategoryStateInterface {
   categories: Array<Record<string, any>>;
@@ -133,12 +133,25 @@ export default {
       console.log(scope);
     }
 
-    getServeList(1, 5);
     const cloneDialogVisible = ref(false);
     const goCreatePage = () => {
       router.push({ path: '/serve/business-add' });
     };
-
+    const currentPage = ref(1);
+    const pageSize = ref(10);
+    const reloadList = () => {
+      getServeList(currentPage.value, pageSize.value);
+    };
+    const getPageChange = (obj: any) => {
+      obj.key === 'page' ? (currentPage.value = obj.value) : (pageSize.value = obj.value);
+      reloadList();
+    };
+    const deleteColum = (index: number, obj: any) => {
+      deleteServe(obj.id).then(() => {
+        reloadList();
+      });
+    };
+    reloadList();
     return {
       ...toRefs(categoryState),
       ...toRefs(tagState),
@@ -148,6 +161,10 @@ export default {
       cloneDialogVisible,
       serveList,
       goCreatePage,
+      currentPage,
+      pageSize,
+      getPageChange,
+      deleteColum,
     };
   },
 };
