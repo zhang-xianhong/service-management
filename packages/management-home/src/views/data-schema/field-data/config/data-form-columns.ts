@@ -1,4 +1,5 @@
-export const Columns = [
+// 数据对象表格项配置
+const DataFormColumns = [
   {
     prop: 'description',
     label: '对象描述',
@@ -34,3 +35,5 @@ export const Columns = [
     label: '克隆源',
   },
 ];
+
+export default DataFormColumns;

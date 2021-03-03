@@ -2,6 +2,7 @@ import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
 
 import Layout from '@/layout/Index.vue';
 import { setRouterRef } from '@/layout/messageCenter/routerRef';
+import { h } from 'vue';
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -48,7 +49,7 @@ const routes: Array<RouteRecordRaw> = [
     children: [
       {
         path: 'project-list',
-        component: () => import('@/views/projectManagement/Index.vue'),
+        component: () => import('@/views/project-management/Index.vue'),
         name: 'projectList',
         props: {
           isRouteLevel: false,
@@ -60,7 +61,7 @@ const routes: Array<RouteRecordRaw> = [
       },
       {
         path: 'add-project',
-        component: () => import('@/views/projectManagement/add-project/AddProject.vue'),
+        component: () => import('@/views/project-management/add-project/AddProject.vue'),
         name: 'addProject',
         props: {
           isRouteLevel: false,
@@ -73,7 +74,7 @@ const routes: Array<RouteRecordRaw> = [
       },
       {
         path: 'user-list',
-        component: () => import('@/views/userManagement/Index.vue'),
+        component: () => import('@/views/user-management/Index.vue'),
         name: 'userList',
         props: {
           isRouteLevel: false,
@@ -100,7 +101,8 @@ const routes: Array<RouteRecordRaw> = [
       {
         path: 'business-server',
         name: 'BusinessServer',
-        component: () => import(/* webpackChunkName: "business-server" */ '../views/servers/BusinessServer.vue'),
+        component: () =>
+          import(/* webpackChunkName: "business-server" */ '../views/servers-management/BusinessServer.vue'),
         meta: {
           title: '业务服务',
           icon: 'el-icon-eleme',
@@ -112,7 +114,8 @@ const routes: Array<RouteRecordRaw> = [
       {
         path: 'business-add',
         name: 'BusinessAdd',
-        component: () => import(/* webpackChunkName: "business-server" */ '../views/servers/BusinessEdit.vue'),
+        component: () =>
+          import(/* webpackChunkName: "business-server" */ '../views/servers-management/BusinessEdit.vue'),
         meta: {
           title: '业务服务新增',
           icon: 'el-icon-eleme',
@@ -123,9 +126,11 @@ const routes: Array<RouteRecordRaw> = [
         },
       },
       {
-        path: 'business-server',
-        name: 'BusinessServer',
-        component: () => import(/* webpackChunkName: "business-server" */ '../views/servers/BusinessServer.vue'),
+        path: 'other-server',
+        name: 'OtherServer',
+        component: {
+          render: () => h('div', {}, '敬请期待'),
+        },
         meta: {
           title: '其他服务',
           icon: 'el-icon-eleme',
@@ -139,7 +144,7 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/schema',
     name: 'Schema',
-    redirect: '/model',
+    redirect: '/data-object',
     component: Layout,
     props: {
       isRouteLevel: true,
@@ -150,9 +155,9 @@ const routes: Array<RouteRecordRaw> = [
     },
     children: [
       {
-        path: 'model',
-        component: () => import('@/views/schema/model/Index.vue'),
-        name: 'Model',
+        path: 'data-object',
+        component: () => import('@/views/data-schema/field-data/data-object/Index.vue'),
+        name: 'DataObject',
         meta: {
           title: '数据对象',
           icon: 'el-icon-eleme',
@@ -162,9 +167,9 @@ const routes: Array<RouteRecordRaw> = [
         },
       },
       {
-        path: 'model/:id',
-        component: () => import('@/views/schema/model/form/Index.vue'),
-        name: 'ModelCreate',
+        path: 'data-object/:id',
+        component: () => import('@/views/data-schema/field-data/data-object/data-object-edit/Index.vue'),
+        name: 'DataObjectEdit',
         props: {
           isRouteLevel: false,
         },
@@ -172,6 +177,20 @@ const routes: Array<RouteRecordRaw> = [
           title: '数据对象',
           icon: 'el-icon-eleme',
           hidden: true,
+        },
+      },
+      {
+        path: 'other-object',
+        component: {
+          render: () => h('div', {}, '敬请期待'),
+        },
+        name: 'Model',
+        meta: {
+          title: '其他对象',
+          icon: 'el-icon-eleme',
+        },
+        props: {
+          isRouteLevel: false,
         },
       },
     ],

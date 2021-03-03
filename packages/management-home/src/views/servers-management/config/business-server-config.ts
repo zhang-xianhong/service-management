@@ -1,5 +1,5 @@
-import TableColumnsInterface from '../types/table-columns-interface';
-import TableOperationInterface from '../types/table-operation-interface';
+import TableColumnsInterface from '@/components/packaged-table/types/table-columns-interface';
+import TableOperationInterface from '@/components/packaged-table/types/table-operation-interface';
 
 export const tableColumns: Array<TableColumnsInterface> = [
   {

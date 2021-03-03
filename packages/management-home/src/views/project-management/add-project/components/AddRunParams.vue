@@ -28,7 +28,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import { runParamsForm } from '@/views/projectManagement/add-project/components/addProjectBus';
+import { runParamsForm } from '@/views/project-management/add-project/components/addProjectBus';
 
 export default defineComponent({
   name: 'AddRunParams',

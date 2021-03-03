@@ -55,7 +55,7 @@
 
 <script lang="ts">
 import { reactive, toRefs, ref } from 'vue';
-import ServerTable from './common/ServerTable.vue';
+import ServerTable from '@/components/packaged-table/PackagedTable.vue';
 import { tableColumns, tableOperations } from './config/business-server-config';
 
 interface CategoryStateInterface {

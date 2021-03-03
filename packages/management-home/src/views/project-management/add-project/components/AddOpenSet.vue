@@ -19,7 +19,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import { openSetForm } from '@/views/projectManagement/add-project/components/addProjectBus';
+import { openSetForm } from '@/views/project-management/add-project/components/addProjectBus';
 
 export default defineComponent({
   name: 'AddOpenSet',

@@ -2,7 +2,7 @@
   <form-panel>
     <el-tabs v-model="activeTab" @tab-click="handleTabChange">
       <el-tab-pane label="基本信息" name="base">
-        <base-info :data="form" />
+        <base-info :data="baseInfo" />
       </el-tab-pane>
       <el-tab-pane label="对象分析" name="analysis">对象分析</el-tab-pane>
       <el-tab-pane label="相似度分析" name="similarity">相似度分析</el-tab-pane>
@@ -11,9 +11,9 @@
 </template>
 <script lang="ts">
 import { ElMessage } from 'element-plus';
-import { defineComponent, onMounted, reactive, ref, toRefs } from 'vue';
+import { defineComponent, onMounted, reactive, toRefs } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-// import { getModelDetail } from '@/api/schema/model';
+import { getModelDetail } from '@/api/schema/model';
 import BaseInfo from './BaseInfo.vue';
 
 export default defineComponent({
@@ -21,30 +21,28 @@ export default defineComponent({
     BaseInfo,
   },
   setup() {
-    const activeTab = ref('base');
+    // 页面相关状态信息
+    const state = reactive({
+      activeTab: 'base',
+      isCreate: true,
+      loading: true,
+      baseInfo: {},
+    });
+
     const route = useRoute();
     const router = useRouter();
-    const isCreate = ref(true);
-    const loading = ref(true);
-    const baseData = {
-      form: reactive({}),
-    };
+
     const handleTabChange = () => 1;
 
-    const getModelInfo = async () => {
+    const getModelInfo = async (id: number) => {
       try {
-        loading.value = true;
-        // const {data} = await getModelDetail(id)
-        setTimeout(() => {
-          console.log(6666);
-          baseData.form = {
-            value: 234,
-          };
-        }, 2000);
+        state.loading = true;
+        const { data = {} } = await getModelDetail(id);
+        state.baseInfo = data;
       } catch (error) {
         ElMessage.error(error.message);
       } finally {
-        loading.value = false;
+        state.loading = false;
       }
     };
 
@@ -55,17 +53,15 @@ export default defineComponent({
         router.back();
         return;
       }
-      isCreate.value = id === 0;
+      state.isCreate = id === 0;
       if (id > 0) {
-        getModelInfo();
+        getModelInfo(id);
       } else {
-        loading.value = false;
+        state.loading = false;
       }
     });
     return {
-      ...toRefs(baseData.form),
-      activeTab,
-      isCreate,
+      ...toRefs(state),
       handleTabChange,
     };
   },

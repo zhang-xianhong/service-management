@@ -13,7 +13,7 @@
       <el-button icon="el-icon-search" type="primary"></el-button>
     </template>
     <template v-slot:headRight>
-      <router-link to="/schema/model/0">
+      <router-link to="/schema/data-object/0">
         <el-button type="primary">新增</el-button>
       </router-link>
       <el-button :disabled="!selections.length">克隆</el-button>
@@ -22,6 +22,7 @@
       <el-button>标签</el-button>
       <el-button>负责人</el-button>
     </template>
+    <packaged-table :data="datasource" :columns="tableColumns" :operations="tableOperations"></packaged-table>
     <el-table
       :data="datasource"
       :default-sort="{ prop: 'name', order: 'descending' }"
@@ -37,7 +38,7 @@
       </el-table-column>
       <el-table-column label="数据名称" fixed min-width="100" prop="name">
         <template #default="scope">
-          <router-link :to="`/schema/model/${scope.row.id}`">{{ scope.row.name }}</router-link>
+          <router-link :to="`/schema/data-object/${scope.row.id}`">{{ scope.row.name }}</router-link>
         </template>
       </el-table-column>
       <el-table-column v-for="column in columns" :key="column.prop" v-bind="{ ...column }" />
@@ -46,16 +47,27 @@
   </data-list>
 </template>
 <script lang="ts">
-import { defineComponent, reactive, ref, onMounted } from 'vue';
+import { defineComponent, reactive, ref, onMounted, toRefs } from 'vue';
 import { PageInfo, SortInfo } from '@/types/dataList';
-import { Columns } from './columns';
+import DataFormColumns from '../config/data-form-columns';
 import { getModelList } from '@/api/schema/model';
+import PackagedTable from '@/components/packaged-table/PackagedTable.vue';
+import { tableColumns, tableOperations } from '../config/data-object-management-table';
+
 export default defineComponent({
   name: 'dashboard',
+  components: {
+    PackagedTable,
+  },
   setup() {
+    const tableState = reactive({
+      data: [],
+      columns: tableColumns,
+      operations: tableOperations,
+    });
     const loading = ref(false);
     const total = ref(100);
-    const columns = ref(Columns);
+    const columns = DataFormColumns;
     const datasource = ref([] as Array<object>);
     const selections = ref([] as Array<object>);
     const searchParams = reactive({
@@ -101,6 +113,7 @@ export default defineComponent({
     });
 
     return {
+      ...toRefs(tableState),
       loading,
       total,
       columns,
