@@ -59,5 +59,15 @@ export enum ModelCodes {
   MODEL_ID_INVALID = 30003
 }
 
+// 模型模块
+export enum ServiceCodes {
+  // 名称已存在
+  NAME_EXISTED = 40001,
+  // 名称无效
+  NAME_INVALID = 40002,
+  // 无效的modelId
+  MODEL_ID_INVALID = 40003
+}
+
 
 // 设置模块
