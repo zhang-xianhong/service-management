@@ -48,12 +48,28 @@
           <el-table-column v-for="col in columns" :key="col.name" :prop="col.name" :label="col.label"></el-table-column>
           <el-table-column prop="operation" label="操作" :width="130">
             <template #default="{ row }">
-              <el-button type="primary" @click="add(row)" :disabled="mapId(advanceForm.dependencies).includes(row.id)">
+              <el-button
+                type="primary"
+                @click="add(row)"
+                :disabled="mapId(advanceForm.dependencies).includes(row.dependencyId)">
                 添加
               </el-button>
             </template>
           </el-table-column>
         </el-table>
+      </el-row>
+      <el-row>
+        <el-pagination
+          background
+          :current-page="page"
+          :page-size="pageSize"
+          :page-sizes="[5, 10]"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="total"
+          @size-change="onSizeChange"
+          @current-change="onCurrentChange"
+        >
+        </el-pagination>
       </el-row>
       <template #footer>
         <span class="dialog-footer">
@@ -77,13 +93,29 @@ export default defineComponent({
     const svcDialogVisible = ref(false);
     const getValues = () => advanceForm.value;
     const svcList: Ref<Array<Record<string, any>>> = ref([]);
-    const showSvcDialog = async () => {
-      svcDialogVisible.value = true;
-      const { data: serviceList } = await getServiceList({ pageNum: 0, pageSize: 10 });
+    const total = ref(0);
+    const page = ref(1);
+    const pageSize = ref(5);
+    const querySvcList = async () => {
+      const { data: serviceList } = await getServiceList({ page: page.value, pageSize: pageSize.value });
       svcList.value = _.map((svc: any) => ({
         dependencyId: svc.id,
         name: svc.name,
       }))(serviceList.list);
+      total.value = serviceList.total;
+    };
+    const onSizeChange = (size: number) => {
+      pageSize.value = size;
+      querySvcList();
+    };
+    const onCurrentChange = (current: number) => {
+      page.value = current;
+      querySvcList();
+    };
+
+    const showSvcDialog = () => {
+      svcDialogVisible.value = true;
+      querySvcList();
     };
     const filterForm = ref({
       tag: '',
@@ -109,6 +141,12 @@ export default defineComponent({
       add,
       svcList,
       clear,
+      total,
+      page,
+      pageSize,
+      onSizeChange,
+      onCurrentChange,
+      querySvcList,
       mapName: _.map('name'),
       mapId: _.map('dependencyId'),
     };
