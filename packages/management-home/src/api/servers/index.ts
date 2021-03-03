@@ -10,4 +10,4 @@ export const getServiceById: (payload: object) => Promise<SuccessResponse<any>> 
   request.get(getUrl(URL.service.GET_SERVICE_BY_ID, payload.id));
 
 export const getServiceList: (payload: object) => Promise<SuccessResponse<any>> = (payload: any) =>
-  request.get(getUrl(URL.service.GET_SERVICE_LIST), payload);
+  request.get(getUrl(URL.service.GET_SERVICE_LIST), { params: payload });
