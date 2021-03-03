@@ -65,10 +65,12 @@ export default defineComponent({
         value: 'publicService',
       },
     ]);
-    const labelOptions = ref([{
-      label: '项目结构配置',
-      value: 'statics',
-    }]);
+    const labelOptions = ref([
+      {
+        label: '项目结构配置',
+        value: 'statics',
+      },
+    ]);
     const searchCharObj = reactive({
       classChar: '',
       labelChar: '',
