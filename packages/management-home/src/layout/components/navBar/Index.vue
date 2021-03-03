@@ -89,7 +89,7 @@
 
 <script lang="ts">
 import { defineComponent, reactive } from 'vue';
-import breadCurmb from '@/components/breadCurmb/Index.vue';
+import breadCurmb from '@/components/bread-curmb/Index.vue';
 
 export default defineComponent({
   name: 'navBar',
