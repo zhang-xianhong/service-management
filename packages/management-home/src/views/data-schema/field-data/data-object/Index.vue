@@ -44,12 +44,12 @@ import { RouterLink } from 'vue-router';
 import PackagedTable from '@/components/packaged-table/PackagedTable.vue';
 import { tableColumns, tableOperations } from '../config/data-object-management-table';
 import TableColumnInterface from '@/components/packaged-table/types/table-columns-interface';
-import TableOperationInterface from '@/components/packaged-table/types/table-operation-interface';
+import TableButtonInterface from '@/components/packaged-table/types/table-button-interface';
 
 interface TableStateInterface {
   data: any[];
   columns: TableColumnInterface[];
-  operations: TableOperationInterface[];
+  operations: TableButtonInterface[];
   selections: any[];
   total: number;
 }
