@@ -1,4 +1,7 @@
 import 'element-plus/lib/theme-chalk/index.css';
+import lang from 'element-plus/lib/locale/lang/zh-cn';
+import locale from 'element-plus/lib/locale';
+
 import {
   ElButton,
   ElIcon,
@@ -84,6 +87,9 @@ const components = [
   ElLink,
 ];
 const plugins = [ElInfiniteScroll, ElLoading, ElMessage, ElMessageBox, ElNotification];
+
+// 设置语言
+locale.use(lang);
 
 export default {
   // element-plus UI组件按需引入

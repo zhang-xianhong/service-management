@@ -1,25 +1,30 @@
 <template>
-  <el-table :data="tableData" :style="style" v-bind="$attrs">
-    <el-table-column v-if="isSelectAble" type="selection" width="55" fixed> </el-table-column>
+  <el-table :data="tableData" :style="style" :selection="selecion" :ref="tableRef" v-bind="$attrs">
+    <el-table-column v-if="isSelectAble" type="selection" width="55" fixed></el-table-column>
     <el-table-column v-if="isShowIndex" prop="index" label="序号" width="60" fixed> </el-table-column>
     <el-table-column
-      v-for="(item, index) in tableColumns"
+      v-for="({ prop, label, width, fixed, isButton, isDefault, buttonOptions, ...restArgs }, index) in tableColumns"
       :key="index"
-      :prop="item.prop"
-      :label="item.label"
-      :width="item.width"
-      :fixed="item.fixed"
+      :prop="prop"
+      :label="label"
+      :width="width"
+      :fixed="fixed"
+      v-bind="restArgs"
     >
       <template #default="scope">
         <!-- 默认输出 -->
-        <template v-if="item.isDefault">{{ scope.row[item.prop] }}</template>
+        <template v-if="isDefault">{{ scope.row[prop] }}</template>
         <!-- 自定义表格行内容 -->
-        <slot :name="item.prop" v-bind="{ [item.prop]: scope.row[item.prop], rowData: scope.row }"></slot>
+        <slot :name="prop" v-bind="{ [prop]: scope.row[prop], rowData: scope.row }"></slot>
         <!-- 表格行内容为按钮 -->
-        <template v-if="item.isButton">
-          <el-button v-for="(option, index) in item.buttonOptions" :key="index" type="primary" v-bind="option">{{
-            option.label ? option.label : scope.row[item.prop]
-          }}</el-button>
+        <template v-if="isButton">
+          <el-button
+            v-for="(option, index) in buttonOptions"
+            :key="index"
+            type="primary"
+            v-bind="optionsHandler(option, prop, scope.row)"
+            >{{ option.label ? option.label : scope.row[prop] }}</el-button
+          >
         </template>
       </template>
     </el-table-column>
@@ -28,11 +33,10 @@
         <el-button
           v-for="(item, index) in tableOperations"
           :key="index"
-          size="mini"
           :type="item.type"
           v-bind="item.options"
-          @click="handleOperate(item, scope.$index, scope.row)"
-          >{{ item.label ? item.label : scope.row[item.prop] }}</el-button
+          @click="handleOperate(item, scope.row)"
+          >{{ item.label ? item.label : '' }}</el-button
         >
       </template>
     </el-table-column>
@@ -40,18 +44,8 @@
 </template>
 
 <script lang="ts">
-import { SetupContext, computed } from 'vue';
-
-type ButtonType = 'primary' | 'success' | 'warning' | 'danger' | 'info' | 'text';
-
-// 操作项数据接口
-interface OperationItemInterface {
-  name: string; // 操作名称，例如'edit'等
-  label: string; // 按钮名称，例如 '编辑'等
-  type: ButtonType; // 按钮类型
-  eventName?: string; // emit事件名称
-  [index: string]: any;
-}
+import { SetupContext, computed, watchEffect, ref } from 'vue';
+import ButtonOptionInterface from './types/table-button-interface';
 
 export default {
   name: 'PackagedTable',
@@ -65,6 +59,11 @@ export default {
     style: {
       type: String,
       default: 'width: 100%',
+    },
+    // 表格勾选项
+    selecion: {
+      type: Array,
+      default: () => [],
     },
     // 是否显示勾选框，默认开启
     isSelectAble: {
@@ -107,7 +106,7 @@ export default {
     // 表格操作项预处理
     const tableOperations = computed(() => {
       if (Array.isArray(props.operations)) {
-        return props.operations.map((item: OperationItemInterface) => ({
+        return props.operations.map((item: ButtonOptionInterface) => ({
           ...item,
           name: item.name || '',
           label: item.label || '',
@@ -132,22 +131,72 @@ export default {
       return [];
     });
 
-    // 操作栏处理函数，如果操作配置项有eventName则emit该事件，否则emit 'operate: {name}'事件
-    function handleOperate(operationItem: OperationItemInterface, index: number, row: number): undefined {
+    // 操作栏按钮处理
+    function handleOperate(operationItem: ButtonOptionInterface, rowData: any): void {
       if (operationItem) {
         if (operationItem.eventName) {
-          ctx.emit(operationItem.eventName, index, row);
-          return undefined;
+          ctx.emit(operationItem.eventName, rowData);
+          return;
         }
-        ctx.emit(`operate:${operationItem.name}`, index, row);
+        ctx.emit(`operate:${operationItem.name}`, rowData);
+      }
+    }
+
+    // table组件引用
+    const tableRef = ref();
+
+    // 监听传入勾选项勾选并勾选，不过需注意会触发check事件
+    watchEffect(() => {
+      props.selecion.forEach((item: number) => {
+        tableRef.value.toggleRowSelection(props.data[item]);
+      });
+    });
+
+    // 表格内按钮事件触发
+    function buttonEventHandler(option: ButtonOptionInterface, prop: string, rowData: any) {
+      if (option.eventName) {
+        ctx.emit(option.eventName, prop, rowData);
+      } else {
+        ctx.emit(`${option.trigger || 'click'}:${option.name || ''}`, rowData);
+      }
+    }
+
+    // 按钮选项参数处理
+    function optionsHandler(option: ButtonOptionInterface, prop: string, rowData: any): object {
+      const { trigger = 'click', name, eventName, label, ...restOptions } = option;
+      // 对按钮触发事件类型进行限制，仅支持'hover'｜'click'｜'dbclick'｜'focus'类型
+      switch (trigger) {
+        case 'hover':
+          return {
+            '@hover': buttonEventHandler(option, prop, rowData),
+            ...restOptions,
+          };
+        case 'dbclick':
+          return {
+            '@dbclick': buttonEventHandler(option, prop, rowData),
+            ...restOptions,
+          };
+        case 'focus':
+          return {
+            '@focus': buttonEventHandler(option, prop, rowData),
+            ...restOptions,
+          };
+        default:
+          return {
+            '@click': buttonEventHandler(option, prop, rowData),
+            ...restOptions,
+          };
       }
     }
 
     return {
+      selection: props.selecion,
+      tableRef,
       tableData,
       tableOperations,
       tableColumns,
       handleOperate,
+      optionsHandler,
     };
   },
 };

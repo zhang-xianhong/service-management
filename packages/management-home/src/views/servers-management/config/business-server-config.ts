@@ -1,5 +1,5 @@
 import TableColumnsInterface from '@/components/packaged-table/types/table-columns-interface';
-import TableOperationInterface from '@/components/packaged-table/types/table-operation-interface';
+import TableButtonInterface from '@/components/packaged-table/types/table-button-interface';
 
 export const tableColumns: Array<TableColumnsInterface> = [
   {
@@ -193,7 +193,7 @@ export const tableColumns: Array<TableColumnsInterface> = [
   },
 ];
 
-export const tableOperations: Array<TableOperationInterface> = [
+export const tableOperations: Array<TableButtonInterface> = [
   {
     name: 'edit',
     label: '编辑',

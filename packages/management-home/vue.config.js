@@ -21,7 +21,7 @@ module.exports = {
       // 代理所有请求
       '/api': {
         // 后端rest服务
-        target: 'http://10.95.22.34:3000/',
+        target: 'http://10.91.21.35:3000',
         ws: true,
         changeOrigin: true
         // 添加所有请求路径前缀/api/
@@ -31,7 +31,7 @@ module.exports = {
       warnings: false,
       errors: true
     },
-    before (app) {
+    before(app) {
       // add mockjs request
       app.use('/api/mock/*', (req, res, next) => {
         const filePath = path.resolve(__dirname, './mock', req.params[0])

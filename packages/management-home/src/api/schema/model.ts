@@ -17,3 +17,5 @@ export const getModelListAll = (payload?: object): Promise<SuccessResponse<any>>
 export const getModelDetail = (id: number) => axios.get(`${getUrl(schema.GET_MODEL_DETAIL)}/${id}`);
 
 export const createModel = (payload: object) => axios.post(getUrl(schema.CREATE_MODEL), payload);
+
+export const updateModel = (payload: object, id: number) => axios.post(`${getUrl(schema.UPDATE_MODEL)}/${id}`, payload);

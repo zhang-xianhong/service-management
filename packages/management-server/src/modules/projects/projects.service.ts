@@ -3,12 +3,12 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { CommonCodes } from 'src/shared/constants/code';
 import { ApiException } from 'src/shared/utils/api.exception';
 import { Repository } from 'typeorm';
-import { projectEntity } from './project.entity';
+import { ProjectEntity } from './project.entity';
 
 @Injectable()
 export class ProjectsService {
-  constructor(@InjectRepository(projectEntity)
-  private readonly repository: Repository<projectEntity>) {}
+  constructor(@InjectRepository(ProjectEntity)
+  private readonly repository: Repository<ProjectEntity>) {}
 
   async findAll(query) {
     return await this.repository.findAndCount(query);

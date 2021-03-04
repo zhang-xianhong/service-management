@@ -93,7 +93,6 @@ export default {
 
     // 监听属性信息发生变化通知父组件
     watchEffect(() => {
-      console.log(properties, 666);
       emit('update:modelValue', properties);
     });
 

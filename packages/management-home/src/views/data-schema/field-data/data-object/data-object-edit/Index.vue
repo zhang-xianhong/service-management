@@ -2,7 +2,7 @@
   <form-panel>
     <el-tabs v-model="activeTab" @tab-click="handleTabChange">
       <el-tab-pane label="基本信息" name="base">
-        <base-info :data="baseInfo" />
+        <base-info :data="baseInfo" :isCreate="isCreate" />
       </el-tab-pane>
       <el-tab-pane label="对象分析" name="analysis">对象分析</el-tab-pane>
       <el-tab-pane label="相似度分析" name="similarity">相似度分析</el-tab-pane>
@@ -11,7 +11,7 @@
 </template>
 <script lang="ts">
 import { ElMessage } from 'element-plus';
-import { defineComponent, onMounted, reactive, toRefs } from 'vue';
+import { defineComponent, reactive, toRefs } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { getModelDetail } from '@/api/schema/model';
 import BaseInfo from './BaseInfo.vue';
@@ -34,6 +34,7 @@ export default defineComponent({
 
     const handleTabChange = () => 1;
 
+    // 获取数据对象模型详细信息
     const getModelInfo = async (id: number) => {
       try {
         state.loading = true;
@@ -46,7 +47,8 @@ export default defineComponent({
       }
     };
 
-    onMounted(() => {
+    // 初始化获取模型信息
+    function initializeModelInfo(): void {
       const id = Number(route.params.id);
       if (isNaN(id)) {
         ElMessage.error('无效的ID');
@@ -59,7 +61,10 @@ export default defineComponent({
       } else {
         state.loading = false;
       }
-    });
+    }
+
+    initializeModelInfo();
+
     return {
       ...toRefs(state),
       handleTabChange,
