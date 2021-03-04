@@ -10,6 +10,9 @@ import { TraceMiddleware } from './shared/middleware/trace.middleware';
 import { ResponseInterceptor } from './shared/interceptors/response.interceptor';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { AuthorityGuard } from './shared/guards/auth.guard';
+import { HttpStatus, ValidationPipe } from '@nestjs/common';
+import { ApiException } from './shared/utils/api.exception';
+import { CommonCodes } from './shared/constants/code';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     // logger: false,
@@ -31,6 +34,19 @@ async function bootstrap() {
   app.useGlobalFilters(new AllExceptionsFilter(nestWinston.logger));
   // 全局拦截器
   app.useGlobalInterceptors(new ResponseInterceptor());
+  // 全局过滤管道
+  app.useGlobalPipes(new ValidationPipe({
+    transform: true,
+    stopAtFirstError: true,
+    whitelist: true,
+    errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
+    exceptionFactory: (errors) => {
+      throw new ApiException({
+        code: CommonCodes.PARAMETER_INVALID,
+        message: Object.values(errors[0].constraints)[0],
+      });
+    },
+  }));
   // 全局守卫
   // 暂时无需鉴权，待使用时在开启
   // app.useGlobalGuards(new AuthorityGuard(app.get(Reflector)));
