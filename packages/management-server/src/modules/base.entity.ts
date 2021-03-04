@@ -1,9 +1,10 @@
-import { BeforeUpdate, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { BeforeUpdate, Column, PrimaryColumn } from 'typeorm';
 
 export class BaseEntity {
   // 自增ID
-  @PrimaryGeneratedColumn({
+  @PrimaryColumn({
     type: 'bigint',
+    generated: true,
   })
   id: number;
 
