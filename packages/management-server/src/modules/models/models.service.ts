@@ -93,7 +93,7 @@ export class ModelsService {
         const fieldsEntities = fields.map((field) => {
           const newField = { ...field };
           delete newField.id;
-          this.fieldsRepository.create({
+          return this.fieldsRepository.create({
             ...newField,
             modelId: model.id,
           });
