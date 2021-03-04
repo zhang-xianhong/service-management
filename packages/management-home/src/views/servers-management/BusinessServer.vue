@@ -32,7 +32,15 @@
         <el-button class="configuration-button">标签</el-button>
       </el-popover>
     </template>
-    <server-table :data="serveList.list" :columns="tableColumns" :operations="tableOperations" @delete="deleteColum">
+    <server-table
+      :data="serveList.list"
+      :columns="tableColumns"
+      :operations="tableOperations"
+      @delete="deleteColum"
+      @edit="editRow"
+      @build="buildRow"
+      @initialize="initRow"
+    >
       <!-- 服务名称栏 -->
       <template #name="{ rowData }">
         <router-link :to="`/serve/business-edit/${rowData.id}`">{{ rowData.name }}</router-link>
@@ -61,7 +69,7 @@
 </template>
 
 <script lang="ts">
-import { reactive, toRefs, ref } from 'vue';
+import { reactive, toRefs, ref, nextTick } from 'vue';
 import ServerTable from '@/components/packaged-table/PackagedTable.vue';
 import { useRouter } from 'vue-router';
 import { tableColumns, tableOperations } from './config/business-server-config';
@@ -71,6 +79,8 @@ import {
   serveList,
   deleteServe,
 } from '@/views/servers-management/business-serve-tools/serve-data-utils';
+import { buildService, initService } from '@/api/servers';
+import { ElMessage, ElLoading } from 'element-plus';
 
 interface CategoryStateInterface {
   categories: Array<Record<string, any>>;
@@ -150,12 +160,35 @@ export default {
       obj.key === 'page' ? (currentPage.value = obj.value) : (pageSize.value = obj.value);
       reloadList();
     };
-    const deleteColum = (index: number, obj: any) => {
+    const deleteColum = (obj: any) => {
       deleteServe(obj.id).then(() => {
         reloadList();
       });
     };
     reloadList();
+
+    const editRow = (index: number, obj: any) => {
+      router.push({ path: `/serve/business-edit/${obj.id}` });
+    };
+    const buildRow = async (index: number, obj: any) => {
+      const { code } = await buildService({
+        serviceId: obj.id,
+        branch: 'master',
+      });
+      if (!code) return;
+      ElMessage.success('成功开始构建！');
+    };
+    const initRow = async (index: number, obj: any) => {
+      const loadingInstance = ElLoading.service();
+      const res = await initService({
+        serviceId: obj.id,
+      });
+      nextTick(() => {
+        loadingInstance.close();
+      });
+      if (!res || res.code) return;
+      ElMessage.success('成功初始化！');
+    };
     return {
       ...toRefs(categoryState),
       ...toRefs(tagState),
@@ -169,6 +202,9 @@ export default {
       pageSize,
       getPageChange,
       deleteColum,
+      editRow,
+      initRow,
+      buildRow,
     };
   },
 };

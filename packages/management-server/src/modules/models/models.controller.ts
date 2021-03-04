@@ -116,7 +116,7 @@ export class ModelsController {
       const isInvalid = fields.some((field) => {
         if (isEmpty(field.name)
         || isEmpty(field.description)
-        || isEmpty(field.type)
+        || isEmpty(field.typeId)
         || !is(field.name, REG_LOWER_CAMEL_CASE)) {
           return true;
         }

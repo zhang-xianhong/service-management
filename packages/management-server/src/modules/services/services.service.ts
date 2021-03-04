@@ -246,18 +246,19 @@ export class ServicesService {
    * 构建服务
    * @param id
    */
-  async buildService() {
+  async buildService(data: any) {
+    const { serviceId, branch } = data;
+
     try {
       return await this.httpService.post(`${BUILD_SERVICE_URL}`, {
         token: '6c850f80c9b1f80b12e0361ef6c36e',
-        ref: 'develop',
+        ref: branch,
         applicationName: 'sa',
-        projectId: 11,
+        projectId: serviceId,
       }).toPromise();
     } catch (error) {
-      console.log('error', error);
       throw new ApiException({
-        code: CommonCodes.INITIALIZE_FAIL,
+        code: CommonCodes.BUILD_FAIL,
         message: '构建失败',
       });
     }

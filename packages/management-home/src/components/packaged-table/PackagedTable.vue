@@ -21,16 +21,13 @@
         <slot :name="prop" v-bind="{ [prop]: scope.row[prop], rowData: scope.row }"></slot>
         <!-- 表格行内容为按钮 -->
         <template v-if="isButton">
-          <template v-for="(option, index) in buttonOptions">
-            <el-button
-              v-if="option.label || scope.row[prop]"
-              :key="index"
-              type="primary"
-              v-bind="optionsHandler(option, prop, scope.row)"
-            >
-              {{ option.label ? option.label : scope.row[prop] }}
-            </el-button>
-          </template>
+          <el-button
+            v-for="(option, index) in buttonOptions"
+            :key="index"
+            type="primary"
+            v-on="optionsHandler(option, prop, scope.row)"
+            >{{ option.label ? option.label : scope.row[prop] }}</el-button
+          >
         </template>
       </template>
     </el-table-column>
@@ -176,22 +173,22 @@ export default {
       switch (trigger) {
         case 'hover':
           return {
-            '@hover': buttonEventHandler(option, prop, rowData),
+            hover: () => buttonEventHandler(option, prop, rowData),
             ...restOptions,
           };
         case 'dbclick':
           return {
-            '@dbclick': buttonEventHandler(option, prop, rowData),
+            dbclick: () => buttonEventHandler(option, prop, rowData),
             ...restOptions,
           };
         case 'focus':
           return {
-            '@focus': buttonEventHandler(option, prop, rowData),
+            focus: () => buttonEventHandler(option, prop, rowData),
             ...restOptions,
           };
         default:
           return {
-            '@click': buttonEventHandler(option, prop, rowData),
+            click: () => buttonEventHandler(option, prop, rowData),
             ...restOptions,
           };
       }
