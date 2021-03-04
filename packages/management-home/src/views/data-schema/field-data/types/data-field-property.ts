@@ -3,7 +3,7 @@ interface DataFieldProperty {
   index: number;
   name: string;
   description: string;
-  type: number;
+  type: number | string;
   notNull: boolean;
   isUnique: boolean;
   isIndex: boolean;
