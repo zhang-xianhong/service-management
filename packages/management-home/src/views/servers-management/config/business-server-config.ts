@@ -8,6 +8,7 @@ export const tableColumns: Array<TableColumnsInterface> = [
     width: '200px',
     fixed: true,
     isDefault: false,
+    sortable: true,
   },
   {
     prop: 'description',

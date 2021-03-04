@@ -62,7 +62,11 @@ export class ServicesController {
         });
       }
     }
-    return await this.service.create(postData);
+    const service = await this.service.create(postData);
+    // 调用java接口初始化服务工程
+    const data = await this.service.initService(service.serviceId);
+    console.log('data', data);
+    return service;
   }
 
   @Post('/build')

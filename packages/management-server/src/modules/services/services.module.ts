@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { HttpModule, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ServicesApiEntity } from './service-api.entity';
 import { ServicesDependencyEntity } from './service-dependency.entity';
@@ -7,7 +7,7 @@ import { ServicesController } from './services.controller';
 import { ServicesService } from './services.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([ServicesInfoEntity, ServicesApiEntity, ServicesDependencyEntity])],
+  imports: [TypeOrmModule.forFeature([ServicesInfoEntity, ServicesApiEntity, ServicesDependencyEntity]), HttpModule],
   controllers: [ServicesController],
   providers: [ServicesService],
   exports: [ServicesService],
