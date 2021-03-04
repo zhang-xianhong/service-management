@@ -12,11 +12,11 @@
     <el-form-item prop="owner" label="负责人">
       <el-select v-model="form.owner" placeholder="请选择" multiple></el-select>
     </el-form-item>
-    <el-form-item prop="category" label="分类">
-      <el-select v-model="form.category" placeholder="请选择" multiple></el-select>
+    <el-form-item prop="classification" label="分类">
+      <el-select v-model="form.classification" placeholder="请选择" multiple></el-select>
     </el-form-item>
-    <el-form-item prop="tag" label="标签">
-      <el-select v-model="form.tag" placeholder="请选择" multiple></el-select>
+    <el-form-item prop="tags" label="标签">
+      <el-select v-model="form.tags" placeholder="请选择" multiple></el-select>
     </el-form-item>
     <el-form-item prop="detail" label="对象详情">
       <el-input type="textarea" :rows="3" placeholder="请输入数据对象描述，最多支持225个字符" v-model="form.detail">
@@ -33,36 +33,45 @@
 </template>
 
 <script lang="ts">
-import { ref, reactive } from 'vue';
+import { ref, reactive, watchEffect } from 'vue';
 import ModelProperty from './ModelProperty.vue';
-import { createModel } from '@/api/schema/model';
+import { createModel, updateModel } from '@/api/schema/model';
 import { ElMessage } from 'element-plus';
 import { useRouter } from 'vue-router';
 
 export default {
+  name: 'BaseInfo',
   components: {
     ModelProperty,
   },
   props: {
     data: {
       type: Object,
-      default: () => ({}),
+      default: () => ({ data: {} }),
+    },
+    isCreate: {
+      type: Boolean,
+      default: true,
     },
   },
-  setup() {
+  setup(props: { data: any; isCreate: boolean }) {
     // 路由器获取
     const router = useRouter();
     const formRef = ref();
+
     // 表单内容相关数据
-    const form = reactive({
-      name: '',
-      description: '',
-      demand: '',
-      owner: [],
-      classification: [],
-      tags: [],
-      detail: '',
-      properties: [],
+    const form = reactive({} as any);
+
+    watchEffect(() => {
+      form.id = props.data?.id || 0;
+      form.name = props.data?.name || '';
+      form.description = props.data?.description || '';
+      form.demand = props.data?.demand || '';
+      form.owner = props.data.owner ? props.data.owner.split(',') : [];
+      form.classification = props.data.classification ? props.data.classification.split(',') : [];
+      form.tags = props.data.tags ? props.data.tags.split(',') : [];
+      form.detail = props.data?.detail || '';
+      form.properties = props.data?.fields || [];
     });
 
     // 表单校验规则
@@ -95,6 +104,34 @@ export default {
       return popertiesValidatorResult;
     }
 
+    // 新建数据对象模型
+    async function createDataModel(data: object) {
+      try {
+        const result = await createModel(data);
+        if ((result as any).code === 0) {
+          ElMessage.success('保存成功');
+          router.back();
+        }
+      } catch (error) {
+        ElMessage.error('保存异常');
+      }
+    }
+
+    // 更新数据对象模型
+    async function updateDataModel(data: any) {
+      console.log('lalalala');
+      try {
+        const result = await updateModel(data, data.id);
+        console.log(result, 'result');
+        if ((result as any).code === 0) {
+          ElMessage.success('保存成功');
+          router.back();
+        }
+      } catch (error) {
+        ElMessage.error('更新异常');
+      }
+    }
+
     // 表单提交
     function onSubmit(): void {
       formRef.value.validate(async (valid: boolean) => {
@@ -108,17 +145,13 @@ export default {
           tags: form.tags.join(','),
           fields: [...form.properties],
         };
-        console.log(saveData, 'data');
-        if (!validator(saveData)) {
-          return;
-        }
-        try {
-          const data = await createModel(saveData);
-          if ((data as any).code === 0) {
-            ElMessage.success('保存成功');
-            router.back();
+        if (validator(saveData)) {
+          if (props.isCreate) {
+            await createDataModel(saveData);
+          } else {
+            await updateDataModel(saveData);
           }
-        } catch (error) {}
+        }
       });
     }
 

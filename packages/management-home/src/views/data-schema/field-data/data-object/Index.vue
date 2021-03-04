@@ -22,55 +22,59 @@
       <el-button>标签</el-button>
       <el-button>负责人</el-button>
     </template>
-    <packaged-table :data="datasource" :columns="tableColumns" :operations="tableOperations"></packaged-table>
-    <el-table
-      :data="datasource"
+    <packaged-table
+      :data="data"
+      :columns="columns"
+      :operations="operations"
       :default-sort="{ prop: 'name', order: 'descending' }"
-      @sort-change="handleSortChange"
       @selection-change="handleSelectionChange"
-      style="width: 100%"
+      @sort-change="handleSortChange"
     >
-      <el-table-column type="selection" width="55"> </el-table-column>
-      <el-table-column label="序号" fixed min-width="80" type="index">
-        <template #default="scope">
-          {{ scope.$index }}
-        </template>
-      </el-table-column>
-      <el-table-column label="数据名称" fixed min-width="100" prop="name">
-        <template #default="scope">
-          <router-link :to="`/schema/data-object/${scope.row.id}`">{{ scope.row.name }}</router-link>
-        </template>
-      </el-table-column>
-      <el-table-column v-for="column in columns" :key="column.prop" v-bind="{ ...column }" />
-      <el-table-column label="操作" fixed="right"> </el-table-column>
-    </el-table>
+      <template #name="{ rowData }">
+        <router-link :to="`/schema/data-object/${rowData.id}`">{{ rowData.name }} </router-link>
+      </template>
+    </packaged-table>
   </data-list>
 </template>
 <script lang="ts">
-import { defineComponent, reactive, ref, onMounted, toRefs } from 'vue';
+import { reactive, ref, onMounted, toRefs } from 'vue';
 import { PageInfo, SortInfo } from '@/types/dataList';
-import DataFormColumns from '../config/data-form-columns';
 import { getModelList } from '@/api/schema/model';
+import { RouterLink } from 'vue-router';
 import PackagedTable from '@/components/packaged-table/PackagedTable.vue';
 import { tableColumns, tableOperations } from '../config/data-object-management-table';
+import TableColumnInterface from '@/components/packaged-table/types/table-columns-interface';
+import TableOperationInterface from '@/components/packaged-table/types/table-operation-interface';
 
-export default defineComponent({
+interface TableStateInterface {
+  data: any[];
+  columns: TableColumnInterface[];
+  operations: TableOperationInterface[];
+  selections: any[];
+  total: number;
+}
+
+export default {
   name: 'dashboard',
   components: {
     PackagedTable,
+    RouterLink,
   },
   setup() {
-    const tableState = reactive({
+    // 表格相关数据
+    const tableState: TableStateInterface = reactive({
       data: [],
       columns: tableColumns,
       operations: tableOperations,
+      selections: [],
+      total: 0,
     });
+
+    // 加载中
     const loading = ref(false);
-    const total = ref(100);
-    const columns = DataFormColumns;
-    const datasource = ref([] as Array<object>);
-    const selections = ref([] as Array<object>);
-    const searchParams = reactive({
+
+    // 获取表格数据参数
+    const searchParams = {
       category: '',
       tags: [],
       keyword: '',
@@ -78,14 +82,15 @@ export default defineComponent({
       pageSize: 10,
       sortField: '',
       sortType: '',
-    });
+    };
 
+    // 获取数据对象列表
     const getList = async () => {
       loading.value = true;
       try {
         const { data } = await getModelList(searchParams);
-        datasource.value = data.list;
-        total.value = data.total;
+        tableState.data = data.list;
+        tableState.total = data.total;
       } catch (error) {}
       loading.value = false;
     };
@@ -103,9 +108,9 @@ export default defineComponent({
       getList();
     };
 
+    // 勾选数据对象项
     const handleSelectionChange = (val: Array<object>) => {
-      selections.value = val;
-      console.log(val);
+      tableState.selections = val;
     };
 
     onMounted(() => {
@@ -115,15 +120,11 @@ export default defineComponent({
     return {
       ...toRefs(tableState),
       loading,
-      total,
-      columns,
       searchParams,
-      datasource,
-      selections,
       handlePageChange,
       handleSortChange,
       handleSelectionChange,
     };
   },
-});
+};
 </script>
