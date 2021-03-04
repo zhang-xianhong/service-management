@@ -3,28 +3,34 @@
     <el-table-column v-if="isSelectAble" type="selection" width="55" fixed></el-table-column>
     <el-table-column v-if="isShowIndex" prop="index" label="序号" width="60" fixed> </el-table-column>
     <el-table-column
-      v-for="({ prop, label, width, fixed, isButton, isDefault, buttonOptions, ...restArgs }, index) in tableColumns"
+      v-for="({ prop, label, fixed, isButton, isDefault, isDate, buttonOptions, ...restArgs }, index) in tableColumns"
       :key="index"
       :prop="prop"
       :label="label"
-      :width="width"
       :fixed="fixed"
       v-bind="restArgs"
     >
       <template #default="scope">
         <!-- 默认输出 -->
-        <template v-if="isDefault">{{ scope.row[prop] }}</template>
+        <template v-if="isDefault">
+          <!-- 如果为日期类型自动格式化处理 -->
+          <template v-if="isDate">{{ dateFormat(scope.row[prop]) }}</template>
+          <template v-else>{{ scope.row[prop] }}</template>
+        </template>
         <!-- 自定义表格行内容 -->
         <slot :name="prop" v-bind="{ [prop]: scope.row[prop], rowData: scope.row }"></slot>
         <!-- 表格行内容为按钮 -->
         <template v-if="isButton">
-          <el-button
-            v-for="(option, index) in buttonOptions"
-            :key="index"
-            type="primary"
-            v-bind="optionsHandler(option, prop, scope.row)"
-            >{{ option.label ? option.label : scope.row[prop] }}</el-button
-          >
+          <template v-for="(option, index) in buttonOptions">
+            <el-button
+              v-if="option.label || scope.row[prop]"
+              :key="index"
+              type="primary"
+              v-bind="optionsHandler(option, prop, scope.row)"
+            >
+              {{ option.label ? option.label : scope.row[prop] }}
+            </el-button>
+          </template>
         </template>
       </template>
     </el-table-column>
@@ -46,6 +52,7 @@
 <script lang="ts">
 import { SetupContext, computed, watchEffect, ref } from 'vue';
 import ButtonOptionInterface from './types/table-button-interface';
+import dateFormat from './date-format';
 
 export default {
   name: 'PackagedTable',
@@ -124,6 +131,7 @@ export default {
       if (Array.isArray(props.columns)) {
         return props.columns.map((item: any) => ({
           isDefault: !item.isButton,
+          isDate: false,
           ...item,
           buttonOptions: item.buttonOptions || [],
         }));
@@ -138,7 +146,7 @@ export default {
           ctx.emit(operationItem.eventName, rowData);
           return;
         }
-        ctx.emit(`operate:${operationItem.name}`, rowData);
+        ctx.emit(`${operationItem.trigger || 'click'}:${operationItem.name || ''}`, rowData);
       }
     }
 
@@ -197,6 +205,7 @@ export default {
       tableColumns,
       handleOperate,
       optionsHandler,
+      dateFormat,
     };
   },
 };

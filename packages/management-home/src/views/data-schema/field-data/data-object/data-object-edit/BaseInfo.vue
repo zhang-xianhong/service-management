@@ -22,10 +22,10 @@
       <el-input type="textarea" :rows="3" placeholder="请输入数据对象描述，最多支持225个字符" v-model="form.detail">
       </el-input>
     </el-form-item>
-    <el-form-item label="属性" prop="fields">
+    <el-form-item label="属性" prop="properties">
       <model-property v-model="form.properties" />
     </el-form-item>
-    <el-form-item>
+    <el-form-item prop="operation">
       <el-button type="primary" @click="onSubmit">保存</el-button>
       <el-button type="text" @click="onCancel">取消</el-button>
     </el-form-item>
@@ -95,7 +95,7 @@ export default {
           ElMessage.error('属性描述不能为空！');
           return false;
         }
-        if (!field.type) {
+        if (!field.typeId) {
           ElMessage.error('属性数据类型不能为空！');
           return false;
         }
@@ -119,10 +119,8 @@ export default {
 
     // 更新数据对象模型
     async function updateDataModel(data: any) {
-      console.log('lalalala');
       try {
         const result = await updateModel(data, data.id);
-        console.log(result, 'result');
         if ((result as any).code === 0) {
           ElMessage.success('保存成功');
           router.back();

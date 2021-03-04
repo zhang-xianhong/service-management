@@ -51,7 +51,7 @@
       </template>
       <!-- 自定义服务代码栏显示样式 -->
       <template #code="data">
-        <el-button type="primary" icon="el-icon-download">{{ data.code }}</el-button>
+        <el-button v-if="data.code" type="primary" icon="el-icon-download">{{ data.code }}</el-button>
       </template>
     </server-table>
   </data-list>
@@ -66,7 +66,11 @@ import ServerTable from '@/components/packaged-table/PackagedTable.vue';
 import { useRouter } from 'vue-router';
 import { tableColumns, tableOperations } from './config/business-server-config';
 import CloneDialog from '@/views/servers-management/business-serve-tools/Clone.vue';
-import { getServeListForTable, serveList, deleteServe } from '@/views/servers-management/business-serve-tools/serve-data-utils';
+import {
+  getServeListForTable,
+  serveList,
+  deleteServe,
+} from '@/views/servers-management/business-serve-tools/serve-data-utils';
 
 interface CategoryStateInterface {
   categories: Array<Record<string, any>>;

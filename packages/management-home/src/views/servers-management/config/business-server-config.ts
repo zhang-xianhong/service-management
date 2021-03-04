@@ -30,7 +30,7 @@ export const tableColumns: Array<TableColumnsInterface> = [
   {
     prop: 'management',
     label: '服务管理',
-    width: '800px',
+    width: 600,
     isButton: true,
     buttonOptions: [
       {
@@ -165,6 +165,7 @@ export const tableColumns: Array<TableColumnsInterface> = [
   {
     prop: 'createdTime',
     label: '创建时间',
+    isDate: true,
     width: '400px',
   },
   {
@@ -180,6 +181,7 @@ export const tableColumns: Array<TableColumnsInterface> = [
   {
     prop: 'changedTime',
     label: '修改时间或启动时间',
+    isDate: true,
     width: '400px',
   },
   {
