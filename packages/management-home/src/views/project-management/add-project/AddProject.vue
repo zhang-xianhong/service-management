@@ -39,7 +39,7 @@ import AddCodeTemplate from '@/views/project-management/add-project/components/A
 import AddHeighSet from '@/views/project-management/add-project/components/AddHeighSet.vue';
 import AddCopyright from '@/views/project-management/add-project/components/AddCopyright.vue';
 
-import { baseInfoForm } from '@/views/projectManagement/add-project/components/addProjectBus';
+import { baseInfoForm } from '@/views/project-management/add-project/components/addProjectBus';
 
 export default defineComponent({
   name: 'addProject',

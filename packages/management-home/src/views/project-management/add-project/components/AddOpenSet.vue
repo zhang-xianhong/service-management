@@ -76,7 +76,7 @@ import { defineComponent, ref } from 'vue';
 import { openSetForm, setOpenSetFrom } from './addProjectBus';
 import { ProjectInfo, HeighLightObject } from '../types';
 import { ElMessage } from 'element-plus';
-import HeightLight from '@/views/projectManagement/add-project/components/HeightLight.vue';
+import HeightLight from '@/views/project-management/add-project/components/HeightLight.vue';
 
 export default defineComponent({
   name: 'AddOpenSet',

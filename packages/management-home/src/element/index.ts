@@ -38,10 +38,8 @@ import {
   ElTag,
   ElRow,
   ElCol,
-  ElDialog,
   ElDrawer,
   ElDialog,
-  ElTag,
   ElLink,
 } from 'element-plus';
 
