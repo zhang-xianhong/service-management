@@ -5,6 +5,7 @@ import { AxiosResponse } from 'axios';
 export const serveList = ref([]);
 
 export function getServeList(page: number, pageSize: number) {
+  console.log(123);
   request
     .get('services', {
       params: {
@@ -13,7 +14,12 @@ export function getServeList(page: number, pageSize: number) {
       },
     })
     .then((res: AxiosResponse) => {
-      console.log(res);
-      serveList.value = res.data.list;
+      serveList.value = res.data;
     });
+}
+
+export function deleteServe(id: string | number) {
+  return request.post(`services/delete/${id}`).then((res) => {
+    console.log(res, 'this is delete');
+  });
 }

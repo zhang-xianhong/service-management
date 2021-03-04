@@ -32,16 +32,21 @@ service.interceptors.response.use(
       });
       return Promise.reject(error);
     }
-    const { data, status } = error.response;
-    // 登录失效处理
-    if (status === 401) {
+    const { data } = error.response; // status
+    const { httpStatus, message } = data;
+    // 错误状态处理
+    if (httpStatus) {
       ElMessage({
-        message: '登录状态失效，请重新登录',
+        message,
         type: 'error',
         duration: 5 * 1000,
         onClose() {
-          removeToken();
-          window.location.href = '/login';
+          // 登录失效处理
+          if (httpStatus === 401) {
+            removeToken();
+            // window.location.href = '/login';
+            location.reload();
+          }
         },
       });
     } else {
