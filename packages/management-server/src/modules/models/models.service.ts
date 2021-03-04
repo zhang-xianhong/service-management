@@ -122,7 +122,7 @@ export class ModelsService {
    * @param data
    */
   async updateModel(id, data) {
-    await this.findModelById(id);
+    const currentModel = await this.findModelById(id);
     const { fields, ...modelData } = data;
     // 验证是否有同名模块
     const nameExisted = await this.infoRepository.findOne({
@@ -152,13 +152,18 @@ export class ModelsService {
       await queryRunner.manager.update(ModelsInfoEntity, id, {
         ...modelData,
         updateTime: new Date(),
+        version: currentModel.version + 1,
       });
       // 生成新的fields
       if (fields && Array.isArray(fields)) {
-        const fieldsEntities = fields.map(field => this.fieldsRepository.create({
-          ...field,
-          modelId: id,
-        }));
+        const fieldsEntities = fields.map((field) => {
+          const newField = { ...field };
+          delete newField.id;
+          return this.fieldsRepository.create({
+            ...newField,
+            modelId: id,
+          });
+        });
         await queryRunner.manager.save(fieldsEntities);
       }
       await queryRunner.commitTransaction();
