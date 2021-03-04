@@ -1,10 +1,11 @@
 import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
 import { ApiException } from 'src/shared/utils/api.exception';
 import { is, isEmpty } from '../../shared/utils/validator';
-import { CommonCodes, ModelCodes } from '../../shared/constants/code';
+import { CommonCodes } from '../../shared/constants/code';
 import { ModelsService } from './models.service';
 import { QueryPipe, SearchQuery } from '../../shared/pipes/query.pipe';
 import { REG_UPPER_CAMEL_CASE, REG_LOWER_CAMEL_CASE } from '../../shared/utils/rules';
+// import { ModelInfoDto } from './model-info.dto';
 @Controller('models')
 
 export class ModelsController {
@@ -16,29 +17,19 @@ export class ModelsController {
    */
   @Get()
   async findAll(@Query(new QueryPipe()) query: SearchQuery) {
-    if (query.keyword) {
-      // 处理 search
-    }
-    const [list, total] = await this.modelService.findAll({
-      ...query.conditions,
-    });
+    const [list, total] = await this.modelService.findAll(query);
     return {
-      total,
       list,
+      total,
     };
   }
 
   /**
    * 获取全部模型列表
-   * @param query
    */
   @Get('all')
-  async findAllWithoutPagination(@Query() query) {
-    if (query.keyword) {
-      // 处理 search
-    }
-    const list = await this.modelService.findAll({}, false);
-    return list;
+  async findAllWithoutPagination() {
+    return await this.modelService.findAll({}, false);
   }
 
   /**
@@ -47,8 +38,7 @@ export class ModelsController {
    */
   @Get(':id')
   async findOneById(@Param() { id }) {
-    const res = await this.modelService.findById(Number(id));
-    return res;
+    return await this.modelService.findById(Number(id));
   }
 
 
@@ -92,18 +82,31 @@ export class ModelsController {
     });
   }
 
+  /**
+   * 删除模型
+   * @param param0
+   */
+  @Post('/delete/:id')
+  async deleteModel(@Param() { id }) {
+    return await this.modelService.deleteModel(id);
+  }
+
+  /**
+   * 暂时先用这个去校验参数
+   * @param data
+   */
   private validatePostData(data) {
     const { name, description, fields } = data;
     if (isEmpty(name) || !is(name, REG_UPPER_CAMEL_CASE)) {
       throw new ApiException({
-        code: ModelCodes.NAME_INVALID,
+        code: CommonCodes.PARAMETER_INVALID,
         message: '无效的模型名称',
       });
     }
 
     if (isEmpty(description)) {
       throw new ApiException({
-        code: ModelCodes.NAME_INVALID,
+        code: CommonCodes.PARAMETER_INVALID,
         message: '无效的模型描述',
       });
     }
@@ -130,7 +133,7 @@ export class ModelsController {
       }
       if (names.length !== fields.length) {
         throw new ApiException({
-          code: ModelCodes.NAME_INVALID,
+          code: CommonCodes.PARAMETER_INVALID,
           message: '存在重复的字段名',
         });
       }

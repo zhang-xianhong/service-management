@@ -1,10 +1,11 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
-import { Repository, Connection, Not } from 'typeorm';
+import { Repository, Connection, Not, ILike } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ApiException } from '../../shared/utils/api.exception';
 import { CommonCodes } from '../../shared/constants/code';
 import { ModelsInfoEntity } from './models-info.entity';
 import { ModelsFieldsEntity } from './models-fields.entity';
+import { PlainObject } from 'src/shared/pipes/query.pipe';
 
 @Injectable()
 export class ModelsService {
@@ -22,21 +23,25 @@ export class ModelsService {
    * @param getTotal
    */
   async findAll(query, getTotal = true) {
-    const where = {
-      isDelete: 0,
+    const where: PlainObject = {
+      isDelete: false,
     };
-    if (getTotal) {
-      return await this.infoRepository.findAndCount({
-        ...query,
-        where,
-      });
+    if (query.classification) {
+      where.classification = query.classification;
     }
-    return await this.infoRepository.find({
-      ...query,
-      where,
-    });
+    if (query.tags) {
+      where.tags = ILike(`%${query.tags}%`);
+    }
+    const { conditions } = query;
+    if (query.keyword) {
+      where.name = ILike(`%${query.keyword}%`);
+    }
+    conditions.where = where;
+    if (!getTotal) {
+      return await this.infoRepository.find(where);
+    }
+    return await this.infoRepository.findAndCount(conditions);
   }
-
 
   /**
    * 通过ID获取详情
@@ -46,6 +51,7 @@ export class ModelsService {
     const model = await this.infoRepository.findOne({
       where: {
         id,
+        isDelete: false,
       },
       relations: ['fields'],
     });
@@ -111,18 +117,7 @@ export class ModelsService {
    * @param data
    */
   async updateModel(id, data) {
-    const modelExisted = await this.infoRepository.findOne({
-      where: {
-        id,
-        isDelete: false,
-      },
-    });
-    if (!modelExisted) {
-      throw new ApiException({
-        code: CommonCodes.NOT_FOUND,
-        message: '模型不存在',
-      });
-    }
+    await this.findModelById(id);
     const { fields, ...modelData } = data;
     // 验证是否有同名模块
     const nameExisted = await this.infoRepository.findOne({
@@ -169,12 +164,69 @@ export class ModelsService {
       console.log(error);
       await queryRunner.rollbackTransaction();
       throw new ApiException({
-        code: CommonCodes.CREATED_FAIL,
+        code: CommonCodes.UPDATED_FAIL,
         message: '更新失败',
         stack: error.stack,
       });
     } finally {
       await queryRunner.release();
     }
+  }
+
+  /**
+   * 删除模型
+   * @param id
+   */
+  async deleteModel(id) {
+    await this.findModelById(id);
+    const queryRunner = this.connection.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    try {
+      // 将管理fields设置为删除状态
+      await queryRunner.manager.update(ModelsFieldsEntity, {
+        modelId: id,
+      }, {
+        isDelete: true,
+      });
+      // 更新model为删除状态
+      await queryRunner.manager.update(ModelsInfoEntity, id, {
+        isDelete: true,
+      });
+      await queryRunner.commitTransaction();
+      return {
+        modelId: id,
+      };
+    } catch (error) {
+      console.log(error);
+      await queryRunner.rollbackTransaction();
+      throw new ApiException({
+        code: CommonCodes.DELETED_FAIL,
+        message: '删除失败',
+        stack: error.stack,
+      });
+    } finally {
+      await queryRunner.release();
+    }
+  }
+
+  /**
+   * 通过ID查找模型
+   * @param id
+   */
+  private async findModelById(id) {
+    const model = await this.infoRepository.findOne({
+      where: {
+        id,
+        isDelete: false,
+      },
+    });
+    if (!model) {
+      throw new ApiException({
+        code: CommonCodes.NOT_FOUND,
+        message: '模型不存在',
+      });
+    }
+    return model;
   }
 }

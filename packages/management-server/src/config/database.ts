@@ -18,4 +18,5 @@ export default {
   database: DATABASE_DB,
   entities: [join(__dirname, '../', '**/*.entity{.ts,.js}')],
   synchronize: true,
+  logging: true,
 };

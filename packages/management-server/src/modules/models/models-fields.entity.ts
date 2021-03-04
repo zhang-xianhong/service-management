@@ -30,9 +30,28 @@ export class ModelsFieldsEntity extends BaseEntity {
   // 字段顺序号
   @Column({
     type: 'int',
+    name: 'field_order',
     default: 0,
+    comment: '决定属性的排序，从0依次递减',
   })
-  order: number;
+  fieldOrder: number;
+
+  // 字段长度
+  @Column({
+    type: 'int',
+    default: 10000,
+    comment: '字段长度',
+  })
+  length: number;
+
+  // 字段长度
+  @Column({
+    type: 'varchar',
+    default: '',
+    name: 'default_value',
+    comment: '默认值',
+  })
+  defaultValue: string;
 
   // 是否主键
   @Column({
