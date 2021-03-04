@@ -80,7 +80,7 @@ export default {
         index: 1,
         name: 'id',
         description: '编号',
-        type: 'id',
+        type: 1,
         notNull: true,
         isUnique: true,
         isIndex: true,
