@@ -30,10 +30,11 @@ export class ModelsFieldsEntity extends BaseEntity {
   // 字段顺序号
   @Column({
     type: 'int',
+    name: 'field_order',
     default: 0,
     comment: '决定属性的排序，从0依次递减',
   })
-  order: number;
+  fieldOrder: number;
 
   // 字段长度
   @Column({
