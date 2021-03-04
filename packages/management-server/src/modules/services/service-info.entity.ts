@@ -1,10 +1,10 @@
 /**
  * 服务信息实体
  */
-import { BaseEntity, Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { ServicesApiEntity } from './service-api.entity';
 import { ServicesDependencyEntity } from './service-dependency.entity';
-
+import { BaseEntity } from 'src/modules/base.entity';
 @Entity({ name: 'service_info' })
 export class ServicesInfoEntity extends BaseEntity {
   // 自增ID
@@ -12,6 +12,7 @@ export class ServicesInfoEntity extends BaseEntity {
     type: 'bigint',
   })
   id: number;
+
   // 项目服务
   @Column({
     type: 'varchar',
@@ -180,16 +181,6 @@ export class ServicesInfoEntity extends BaseEntity {
     default: '',
   })
   cloneBy: string;
-
-  // 是否删除
-  @Column({
-    name: 'is_delete',
-    type: 'tinyint',
-    width: 1,
-    default: 0,
-    select: false,
-  })
-  isDelete: number;
 
   @OneToMany(() => ServicesApiEntity, api => api.serviceId)
   apis: ServicesApiEntity[];

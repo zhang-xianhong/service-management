@@ -1,8 +1,9 @@
 /**
  * 项目实体
  */
-import { BaseEntity, Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { ServicesInfoEntity } from './service-info.entity';
+import { BaseEntity } from 'src/modules/base.entity';
 
 export enum methodType {
   Get = 'GET',
@@ -78,14 +79,4 @@ export class ServicesApiEntity extends BaseEntity {
     default: 0,
   })
   version: number;
-
-  // 是否删除
-  @Column({
-    name: 'is_delete',
-    type: 'tinyint',
-    width: 1,
-    default: 0,
-    select: false,
-  })
-  isDelete: number;
 }

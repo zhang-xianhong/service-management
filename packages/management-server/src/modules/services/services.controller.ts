@@ -4,6 +4,7 @@ import { ApiException } from 'src/shared/utils/api.exception';
 import { isEmpty } from 'src/shared/utils/validator';
 import { ServicesService } from './services.service';
 import { ServiceCodes } from 'src/shared/constants/code';
+import { ILike } from 'typeorm';
 
 @Controller('services')
 export class ServicesController {
@@ -13,8 +14,14 @@ export class ServicesController {
   @Get('')
   async serviceList(@Query(new QueryPipe) query: SearchQuery) {
     const where: any = {};
+    if (query.classification) {
+      where.classification = query.classification;
+    }
+    if (query.tags) {
+      where.tags = query.tags;
+    }
     if (query.keyword) {
-      where.name = query.keyword;
+      where.name = ILike(`%${query.keyword}%`);
     }
     const [list, total] = await this.service.findAll({
       ...query.conditions,
@@ -42,8 +49,8 @@ export class ServicesController {
       });
     }
     if (apis && Array.isArray(apis)) {
-      const isInvalid = apis.some((field) => {
-        if (isEmpty(field.name)) {
+      const isInvalid = apis.some((service) => {
+        if (isEmpty(service.name)) {
           return true;
         }
         return false;

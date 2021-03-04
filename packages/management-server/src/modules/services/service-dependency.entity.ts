@@ -1,8 +1,9 @@
 /**
  * 项目实体
  */
-import { BaseEntity, Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { ServicesInfoEntity } from './service-info.entity';
+import { BaseEntity } from 'src/modules/base.entity';
 
 @Entity({ name: 'service_dependency' })
 export class ServicesDependencyEntity extends BaseEntity {
@@ -42,16 +43,6 @@ export class ServicesDependencyEntity extends BaseEntity {
     name: 'service_id',
   })
   serviceId: number;
-
-  // 是否删除
-  @Column({
-    name: 'is_delete',
-    type: 'tinyint',
-    width: 1,
-    default: 0,
-    select: false,
-  })
-  isDelete: number;
 
   @ManyToOne(() => ServicesInfoEntity, info => info.id)
   @JoinColumn({

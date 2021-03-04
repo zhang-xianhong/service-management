@@ -2,7 +2,7 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CommonCodes } from 'src/shared/constants/code';
 import { ApiException } from 'src/shared/utils/api.exception';
-import { Connection, Repository } from 'typeorm';
+import { Connection, Not, Repository } from 'typeorm';
 import { ServicesApiEntity } from './service-api.entity';
 import { ServicesDependencyEntity } from './service-dependency.entity';
 import { ServicesInfoEntity } from './service-info.entity';
@@ -58,6 +58,19 @@ export class ServicesService {
 
   async create(data: any) {
     const { apis, dependencies, ...serviceData } = data;
+    // 验证是否有同名服务
+    const nameExisted = await this.infoRepository.findOne({
+      where: {
+        name: serviceData.name,
+        isDelete: false,
+      },
+    });
+    if (nameExisted) {
+      throw new ApiException({
+        code: CommonCodes.DATA_EXISTED,
+        message: '服务名称已存在',
+      });
+    }
     const queryRunner = this.connection.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
@@ -101,19 +114,21 @@ export class ServicesService {
    * @param data 更新服务
    */
   async update(id: number, data: any) {
-    const service = await this.infoRepository.findOne({
+    const { apis, dependencies, ...serviceData } = data;
+    // 验证是否有同名模块
+    const nameExisted = await this.infoRepository.findOne({
       where: {
-        id,
-        isDelete: 0,
+        name: serviceData.name,
+        isDelete: false,
+        id: Not(id),
       },
     });
-    if (!service) {
+    if (nameExisted) {
       throw new ApiException({
-        code: CommonCodes.NOT_FOUND,
-        message: '服务不存在',
-      }, HttpStatus.NOT_FOUND);
+        code: CommonCodes.DATA_EXISTED,
+        message: '模型名称已存在',
+      });
     }
-    const { apis, dependencies, ...serviceData } = data;
     const queryRunner = this.connection.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
@@ -126,7 +141,7 @@ export class ServicesService {
         await queryRunner.manager.delete(ServicesApiEntity, { serviceId: id });
         const apisEntities = apis.map(api => this.apiRepository.create({
           ...api,
-          serviceId: service.id,
+          serviceId: id,
         }));
         await queryRunner.manager.save(apisEntities);
       }
@@ -136,13 +151,13 @@ export class ServicesService {
         const dependenciesEntities = dependencies.map(dependency => this.dependencyRepository.create({
           ...dependency,
           dependencyId: dependency.dependencyId,
-          serviceId: service.id,
+          serviceId: id,
         }));
         await queryRunner.manager.save(dependenciesEntities);
       }
       await queryRunner.commitTransaction();
       return {
-        serviceId: service.id,
+        serviceId: id,
       };
     } catch (error) {
       console.log(error);
@@ -182,19 +197,19 @@ export class ServicesService {
       const serviceInfo: any = await queryRunner.manager.update(ServicesInfoEntity, {
         id,
       }, {
-        isDelete: 1,
+        isDelete: true,
       });
       // 更新api表数据，isDelete置为1
       await queryRunner.manager.update(ServicesApiEntity, {
         serviceId: id,
       }, {
-        isDelete: 1,
+        isDelete: true,
       });
       // 更新dependency表数据，isDelete置为1
       await queryRunner.manager.update(ServicesDependencyEntity, {
         serviceId: id,
       }, {
-        isDelete: 1,
+        isDelete: true,
       });
       await queryRunner.commitTransaction();
       return {

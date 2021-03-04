@@ -36,10 +36,10 @@ export class ModelsService {
     if (query.keyword) {
       where.name = ILike(`%${query.keyword}%`);
     }
-    conditions.where = where;
     if (!getTotal) {
       return await this.infoRepository.find(where);
     }
+    conditions.where = where;
     return await this.infoRepository.findAndCount(conditions);
   }
 
