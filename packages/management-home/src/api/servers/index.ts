@@ -24,5 +24,3 @@ export const buildService: (payload: object) => Promise<SuccessResponse<any>> = 
 
 export const initService: (payload: object) => Promise<SuccessResponse<any>> = (payload: any) =>
   request.get(getUrl(URL.service.INIT_SERVICE, payload.serviceId));
-export const deleteService: (id: string, payload: any) => Promise<SuccessResponse<any>> = (id: string, payload: any) =>
-  request.post(getUrl(URL.service.DELETE_SERVICR, id), payload);
