@@ -1,18 +1,12 @@
 /**
  * 服务信息实体
  */
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, OneToMany } from 'typeorm';
 import { ServicesApiEntity } from './service-api.entity';
 import { ServicesDependencyEntity } from './service-dependency.entity';
 import { BaseEntity } from 'src/modules/base.entity';
 @Entity({ name: 'service_info' })
 export class ServicesInfoEntity extends BaseEntity {
-  // 自增ID
-  @PrimaryGeneratedColumn({
-    type: 'bigint',
-  })
-  id: number;
-
   // 项目服务
   @Column({
     type: 'varchar',

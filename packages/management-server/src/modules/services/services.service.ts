@@ -6,7 +6,7 @@ import { Connection, Not, Repository } from 'typeorm';
 import { ServicesApiEntity } from './service-api.entity';
 import { ServicesDependencyEntity } from './service-dependency.entity';
 import { ServicesInfoEntity } from './service-info.entity';
-import { INIT_SERVICE_URL } from 'src/shared/constants/url';
+import { BUILD_SERVICE_URL, INIT_SERVICE_URL } from 'src/shared/constants/url';
 @Injectable()
 export class ServicesService {
   constructor(
@@ -240,6 +240,27 @@ export class ServicesService {
       throw new ApiException({
         code: CommonCodes.INITIALIZE_FAIL,
         message: '初始化失败',
+      });
+    }
+  }
+
+  /**
+   * 构建服务
+   * @param id
+   */
+  async buildService() {
+    try {
+      return await this.httpService.post(`${BUILD_SERVICE_URL}`, {
+        token: '6c850f80c9b1f80b12e0361ef6c36e',
+        ref: 'develop',
+        applicationName: 'sa',
+        projectId: 11,
+      }).toPromise();
+    } catch (error) {
+      console.log('error', error);
+      throw new ApiException({
+        code: CommonCodes.INITIALIZE_FAIL,
+        message: '构建失败',
       });
     }
   }

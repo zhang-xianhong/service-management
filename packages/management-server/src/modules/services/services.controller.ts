@@ -71,7 +71,7 @@ export class ServicesController {
 
   @Post('/build')
   async buildService() {
-    return 1;
+    return this.service.buildService();
   }
 
   /**
