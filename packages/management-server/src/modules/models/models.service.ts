@@ -87,12 +87,17 @@ export class ModelsService {
     await queryRunner.connect();
     await queryRunner.startTransaction();
     try {
+      delete modelData.id;
       const model: any = await queryRunner.manager.save(this.infoRepository.create(modelData));
       if (fields && Array.isArray(fields)) {
-        const fieldsEntities = fields.map(field => this.fieldsRepository.create({
-          ...field,
-          modelId: model.id,
-        }));
+        const fieldsEntities = fields.map((field) => {
+          const newField = { ...field };
+          delete newField.id;
+          return this.fieldsRepository.create({
+            ...newField,
+            modelId: model.id,
+          });
+        });
         await queryRunner.manager.save(fieldsEntities);
       }
       await queryRunner.commitTransaction();
