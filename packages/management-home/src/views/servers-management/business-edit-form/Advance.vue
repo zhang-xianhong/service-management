@@ -44,14 +44,15 @@
         </el-col>
       </el-row>
       <el-row>
-        <el-table :data="svcList">
+        <el-table :data="svcList" v-loading="loading">
           <el-table-column v-for="col in columns" :key="col.name" :prop="col.name" :label="col.label"></el-table-column>
           <el-table-column prop="operation" label="操作" :width="130">
             <template #default="{ row }">
               <el-button
                 type="primary"
                 @click="add(row)"
-                :disabled="mapId(advanceForm.dependencies).includes(row.dependencyId)">
+                :disabled="mapId(advanceForm.dependencies).includes(row.dependencyId)"
+              >
                 添加
               </el-button>
             </template>
@@ -96,13 +97,21 @@ export default defineComponent({
     const total = ref(0);
     const page = ref(1);
     const pageSize = ref(5);
+    const loading = ref(false);
     const querySvcList = async () => {
-      const { data: serviceList } = await getServiceList({ page: page.value, pageSize: pageSize.value });
-      svcList.value = _.map((svc: any) => ({
-        dependencyId: svc.id,
-        name: svc.name,
-      }))(serviceList.list);
-      total.value = serviceList.total;
+      loading.value = true;
+      try {
+        const { data: serviceList } = await getServiceList({ page: page.value, pageSize: pageSize.value });
+        svcList.value = _.map((svc: any) => ({
+          dependencyId: svc.id,
+          name: svc.name,
+        }))(serviceList.list);
+        total.value = serviceList.total;
+      } catch (error) {
+        console.error(error);
+      } finally {
+        loading.value = false;
+      }
     };
     const onSizeChange = (size: number) => {
       pageSize.value = size;
@@ -147,6 +156,7 @@ export default defineComponent({
       onSizeChange,
       onCurrentChange,
       querySvcList,
+      loading,
       mapName: _.map('name'),
       mapId: _.map('dependencyId'),
     };
