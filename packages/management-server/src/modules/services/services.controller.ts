@@ -65,6 +65,11 @@ export class ServicesController {
     return await this.service.create(postData);
   }
 
+  @Post('/build')
+  async buildService() {
+    return 1;
+  }
+
   /**
    * 更新服务
    * @param param0

@@ -15,6 +15,14 @@ export class ModelsFieldsEntity extends BaseEntity {
   @Column({ length: 64 })
   name: string;
 
+  // 关联数据类型ID
+  @Column({
+    name: 'type_id',
+    type: 'varchar',
+    comment: '关联数据类型ID, 方便前端回读',
+  })
+  typeId: string;
+
   // 数据类型
   @Column({
     type: 'varchar',
@@ -125,11 +133,21 @@ export class ModelsFieldsEntity extends BaseEntity {
   })
   extra: string;
 
-  // 外联关系
+  // 外联模型ID
+  @Column({
+    type: 'varchar',
+    name: 'foreign_model_id',
+    default: null,
+    comment: '外联模型ID',
+  })
+  foreignModelId: string;
+
+  // 外联字段ID
   @Column({
     type: 'varchar',
     name: 'foreign_id',
-    default: '',
+    default: null,
+    comment: '外联字段ID',
   })
   foreignId: string;
 
