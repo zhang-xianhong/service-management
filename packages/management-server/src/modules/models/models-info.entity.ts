@@ -23,6 +23,7 @@ export class ModelsInfoEntity extends BaseEntity {
   @Column({
     type: 'int',
     default: 0,
+    comment: '版本号/修改次数',
   })
   version: number;
 
