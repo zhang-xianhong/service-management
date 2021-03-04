@@ -25,7 +25,7 @@
     <el-table-column prop="type" label="数据类型" min-width="100">
       <template #default="scope">
         <el-select v-model="scope.row.type" placeholder="请选择" :disabled="scope.row.isSystem">
-          <el-option v-for="item in dataTypes" :key="item.value" :label="item.name" :value="item.value"> </el-option>
+          <el-option v-for="item in dataTypes" :key="item.id" :label="item.name" :value="item.id"> </el-option>
         </el-select>
       </template>
     </el-table-column>
@@ -80,7 +80,7 @@ export default {
         index: 1,
         name: 'id',
         description: '编号',
-        type: 'id',
+        type: 1,
         notNull: true,
         isUnique: true,
         isIndex: true,

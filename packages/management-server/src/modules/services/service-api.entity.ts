@@ -1,7 +1,7 @@
 /**
  * 项目实体
  */
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 import { ServicesInfoEntity } from './service-info.entity';
 import { BaseEntity } from 'src/modules/base.entity';
 
@@ -19,12 +19,6 @@ export enum paramType {
 
 @Entity({ name: 'service_api' })
 export class ServicesApiEntity extends BaseEntity {
-  // 自增ID
-  @PrimaryGeneratedColumn({
-    type: 'bigint',
-  })
-  id: number;
-
   // 接口URL
   @Column({
     type: 'varchar',

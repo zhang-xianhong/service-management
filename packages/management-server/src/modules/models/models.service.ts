@@ -6,7 +6,7 @@ import { CommonCodes } from '../../shared/constants/code';
 import { ModelsInfoEntity } from './models-info.entity';
 import { ModelsFieldsEntity } from './models-fields.entity';
 import { PlainObject } from 'src/shared/pipes/query.pipe';
-
+import { DataTypesEntity } from '../settings/settings-data-types.entity';
 @Injectable()
 export class ModelsService {
   constructor(
@@ -14,6 +14,8 @@ export class ModelsService {
     private readonly infoRepository: Repository<ModelsInfoEntity>,
     @InjectRepository(ModelsFieldsEntity)
     private readonly fieldsRepository: Repository<ModelsFieldsEntity>,
+    @InjectRepository(DataTypesEntity)
+    private readonly dataTypesEntity: Repository<DataTypesEntity>,
     private connection: Connection,
   ) {}
 
@@ -64,6 +66,7 @@ export class ModelsService {
     return model;
   }
 
+
   /**
    * 创建模型
    * @param data
@@ -87,12 +90,11 @@ export class ModelsService {
     await queryRunner.connect();
     await queryRunner.startTransaction();
     try {
+      delete modelData.id;
       const model: any = await queryRunner.manager.save(this.infoRepository.create(modelData));
-      if (fields && Array.isArray(fields)) {
-        const fieldsEntities = fields.map(field => this.fieldsRepository.create({
-          ...field,
-          modelId: model.id,
-        }));
+      const fieldsEntities = await this.createFieldsEntities(fields, model.id);
+      // 生成新的fields
+      if (fieldsEntities) {
         await queryRunner.manager.save(fieldsEntities);
       }
       await queryRunner.commitTransaction();
@@ -117,7 +119,7 @@ export class ModelsService {
    * @param data
    */
   async updateModel(id, data) {
-    await this.findModelById(id);
+    const currentModel = await this.findModelById(id);
     const { fields, ...modelData } = data;
     // 验证是否有同名模块
     const nameExisted = await this.infoRepository.findOne({
@@ -147,13 +149,11 @@ export class ModelsService {
       await queryRunner.manager.update(ModelsInfoEntity, id, {
         ...modelData,
         updateTime: new Date(),
+        version: currentModel.version + 1,
       });
+      const fieldsEntities = await this.createFieldsEntities(fields, id);
       // 生成新的fields
-      if (fields && Array.isArray(fields)) {
-        const fieldsEntities = fields.map(field => this.fieldsRepository.create({
-          ...field,
-          modelId: id,
-        }));
+      if (fieldsEntities) {
         await queryRunner.manager.save(fieldsEntities);
       }
       await queryRunner.commitTransaction();
@@ -228,5 +228,40 @@ export class ModelsService {
       });
     }
     return model;
+  }
+
+
+  private async getDataTypes() {
+    const dataTypes = await this.dataTypesEntity.find({
+      isDelete: false,
+    });
+    return dataTypes;
+  }
+
+  /**
+   * 生成表字段
+   * @param fields
+   * @param modelID
+   */
+  private async createFieldsEntities(fields, modelID) {
+    const fieldTypes = await this.getDataTypes();
+    if (fields && Array.isArray(fields)) {
+      const fieldsEntities = fields.map((field) => {
+        const newField = { ...field };
+        delete newField.id;
+        const { type, extra, length, isKey } = fieldTypes.find(item => Number(item.id) === Number(field.type));
+        return this.fieldsRepository.create({
+          ...newField,
+          type,
+          extra,
+          length,
+          isKey,
+          typeId: field.type,
+          modelId: modelID,
+        });
+      });
+      return fieldsEntities;
+    }
+    return null;
   }
 }

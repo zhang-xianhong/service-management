@@ -1,4 +1,4 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
+import { HttpService, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CommonCodes } from 'src/shared/constants/code';
 import { ApiException } from 'src/shared/utils/api.exception';
@@ -6,7 +6,7 @@ import { Connection, Not, Repository } from 'typeorm';
 import { ServicesApiEntity } from './service-api.entity';
 import { ServicesDependencyEntity } from './service-dependency.entity';
 import { ServicesInfoEntity } from './service-info.entity';
-
+import { BUILD_SERVICE_URL, INIT_SERVICE_URL } from 'src/shared/constants/url';
 @Injectable()
 export class ServicesService {
   constructor(
@@ -17,6 +17,7 @@ export class ServicesService {
     @InjectRepository(ServicesDependencyEntity)
     private readonly dependencyRepository: Repository<ServicesDependencyEntity>,
     private connection: Connection,
+    private httpService: HttpService,
   ) {}
 
   /**
@@ -164,7 +165,7 @@ export class ServicesService {
 
       await queryRunner.rollbackTransaction();
       throw new ApiException({
-        code: CommonCodes.CREATED_FAIL,
+        code: CommonCodes.UPDATED_FAIL,
         message: '更新失败',
       });
     } finally {
@@ -218,11 +219,47 @@ export class ServicesService {
     } catch (error) {
       await queryRunner.rollbackTransaction();
       throw new ApiException({
-        code: CommonCodes.CREATED_FAIL,
+        code: CommonCodes.DELETED_FAIL,
         message: '删除失败',
       });
     } finally {
       await queryRunner.release();
+    }
+  }
+
+  /**
+   * 调用后端接口，初始化服务
+   * @param id
+   */
+  async initService(id: number) {
+    try {
+      return await this.httpService.get(`${INIT_SERVICE_URL}${id}`).toPromise();
+    } catch (error) {
+      throw new ApiException({
+        code: CommonCodes.INITIALIZE_FAIL,
+        message: '初始化失败',
+      });
+    }
+  }
+
+  /**
+   * 构建服务
+   * @param id
+   */
+  async buildService() {
+    try {
+      return await this.httpService.post(`${BUILD_SERVICE_URL}`, {
+        token: '6c850f80c9b1f80b12e0361ef6c36e',
+        ref: 'develop',
+        applicationName: 'sa',
+        projectId: 11,
+      }).toPromise();
+    } catch (error) {
+      console.log('error', error);
+      throw new ApiException({
+        code: CommonCodes.INITIALIZE_FAIL,
+        message: '构建失败',
+      });
     }
   }
 }

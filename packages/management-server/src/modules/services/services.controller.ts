@@ -33,7 +33,7 @@ export class ServicesController {
   }
 
   // 获取服务详情
-  @Get(':id')
+  @Get('/:id')
   async findOneById(@Param() { id }) {
     return await this.service.findById(Number(id));
   }
@@ -62,7 +62,22 @@ export class ServicesController {
         });
       }
     }
-    return await this.service.create(postData);
+    const service = await this.service.create(postData);
+
+    return service;
+  }
+
+  // 构建服务
+  @Get('/init/:id')
+  async initService(@Param() { id }) {
+    // 调用java接口初始化服务工程
+    return await this.service.initService(id);
+  }
+
+  // 构建服务
+  @Post('/build')
+  async buildService() {
+    return this.service.buildService();
   }
 
   /**
