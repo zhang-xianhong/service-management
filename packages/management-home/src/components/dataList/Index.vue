@@ -1,7 +1,6 @@
 <template>
   <div class="data-list">
     <aside class="data-list__head" v-if="$slots.head || $slots.headLeft || $slots.headRight">
-      <slot name="head" />
       <div class="data-list__search" v-if="$slots.headLeft">
         <slot name="headLeft" />
       </div>
@@ -102,6 +101,7 @@ export default defineComponent({
 <style scoped lang="scss">
 .data-list {
   &__head {
+    padding: 16px;
     margin-bottom: 20px;
     display: flex;
     align-items: center;
@@ -127,6 +127,9 @@ export default defineComponent({
   }
   &__actions {
     margin-left: auto;
+  }
+  &__tag {
+    margin-bottom: 20px;
   }
 
   @media screen and (max-width: 1024px) {
