@@ -41,7 +41,7 @@ export class ServicesService {
    * @param id
    */
   async findById(id: number) {
-    const service = await this.infoRepository.find({
+    const service = await this.infoRepository.findOne({
       where: {
         id,
       },
