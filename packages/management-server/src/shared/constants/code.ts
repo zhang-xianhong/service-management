@@ -36,7 +36,11 @@ export enum CommonCodes {
   // 参数错误
   PARAMETER_INVALID = 10008,
   // 数据已存在
-  DATA_EXISTED = 10009
+  DATA_EXISTED = 10009,
+  // 初始化失败
+  INITIALIZE_FAIL = 100010,
+  // 初始化失败
+  BUILD_FAIL = 100011,
 }
 
 // 用户模块

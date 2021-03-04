@@ -2,12 +2,12 @@
   <div class="business-edit-advance">
     <el-form label-position="top" :model="advanceForm">
       <el-form-item label="对象依赖" prop="objDep">
-        <el-input :value="advanceForm.objDep.join()" disabled readonly class="readonly-input"></el-input>
+        <el-input :model-value="advanceForm.objDep.join()" disabled readonly class="readonly-input"></el-input>
       </el-form-item>
       <el-form-item label="服务依赖" prop="dependencies">
         <el-input
           placeholder="请选择服务"
-          :value="mapName(advanceForm.dependencies).join()"
+          :model-value="mapName(advanceForm.dependencies).join()"
           readonly
           @click="showSvcDialog"
           class="readonly-input"
@@ -20,7 +20,7 @@
     <el-dialog title="服务选择" v-model="svcDialogVisible" width="80%">
       <el-row :gutter="10">
         <el-col :span="10">
-          <el-input placeholder="请选择服务" :value="mapName(advanceForm.dependencies).join()"></el-input>
+          <el-input placeholder="请选择服务" :model-value="mapName(advanceForm.dependencies).join()"></el-input>
         </el-col>
         <el-col :span="4">
           <el-select v-model="filterForm.svc">

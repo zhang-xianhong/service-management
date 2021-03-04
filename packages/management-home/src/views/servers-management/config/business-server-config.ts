@@ -30,12 +30,18 @@ export const tableColumns: Array<TableColumnsInterface> = [
   {
     prop: 'management',
     label: '服务管理',
-    width: '800px',
+    width: '850px',
     isButton: true,
     buttonOptions: [
       {
         name: 'initialize',
         label: '初始化',
+        eventName: 'initialize',
+      },
+      {
+        name: 'build',
+        label: '构建包',
+        eventName: 'build',
       },
       {
         name: 'start',
