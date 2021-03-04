@@ -3,7 +3,7 @@ import { QueryPipe, SearchQuery } from 'src/shared/pipes/query.pipe';
 import { ApiException } from 'src/shared/utils/api.exception';
 import { isEmpty } from 'src/shared/utils/validator';
 import { ServicesService } from './services.service';
-import { ServiceCodes } from 'src/shared/constants/code';
+import { CommonCodes, ServiceCodes } from 'src/shared/constants/code';
 import { ILike } from 'typeorm';
 
 @Controller('services')
@@ -67,17 +67,32 @@ export class ServicesController {
     return service;
   }
 
-  // 构建服务
+  // 初始化服务
   @Get('/init/:id')
   async initService(@Param() { id }) {
     // 调用java接口初始化服务工程
-    return await this.service.initService(id);
+    const result = await this.service.initService(id);
+    if (result.data?.success) {
+      return result.data;
+    }
+    throw new ApiException({
+      code: CommonCodes.INITIALIZE_FAIL,
+      message: '服务初始化失败',
+    });
   }
 
   // 构建服务
   @Post('/build')
-  async buildService() {
-    return this.service.buildService();
+  async buildService(@Body() postData) {
+    // 调用java接口初始化服务工程
+    const result = await this.service.buildService(postData);
+    if (result.data?.success) {
+      return result.data;
+    }
+    throw new ApiException({
+      code: CommonCodes.BUILD_FAIL,
+      message: '服务构建失败',
+    });
   }
 
   /**
