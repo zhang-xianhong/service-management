@@ -28,15 +28,16 @@ import ComputedForm from './business-edit-form/Computed.vue';
 import ApiForm from './business-edit-form/Api.vue';
 import ViewForm from './business-edit-form/View.vue';
 import ArgsForm from './business-edit-form/Args.vue';
-import { addService, getServiceById } from '@/api/servers';
+import { addService, updateService, getServiceById } from '@/api/servers';
 import * as formData from './business-edit-form/form-data';
+import _ from 'lodash/fp';
 
 export default defineComponent({
   name: 'BusinessEdit',
   components: { BasicForm, AdvanceForm, RelationForm, ComputedForm, ApiForm, ViewForm, ArgsForm },
   props: {
     id: {
-      type: Number,
+      type: String,
     },
   },
   setup(props) {
@@ -48,6 +49,7 @@ export default defineComponent({
     const currentTab = ref('basic');
 
     const save = async () => {
+      const { id } = props;
       const basicValues = formData.basicForm.value;
       if (!basicValues.isValid) {
         currentTab.value = 'basic';
@@ -59,16 +61,23 @@ export default defineComponent({
         currentTab.value = 'relation';
         return;
       }
-      const apiValues = formData.apiRecords.value;
+      const apiValues = formData.apis.value;
       const params = {
-        name: basicValues.name,
-        description: basicValues.description,
-        dependencies: advanceValues.svcDep,
-        objMain: relationValues.objMain,
-        apis: apiValues,
+        ..._.pick(['name', 'description', 'owner', 'tag', 'classification'])(basicValues),
+        ..._.pick(['moduleDependencyId'])(relationValues),
+        dependencies: _.map('dependencyId')(advanceValues.dependencies),
+        apis: _.map((api: any) => ({
+          name: api.name,
+          description: api.description,
+          url: `/${api.name}`,
+          method: api.method,
+          paramType: 'REQUEST_BODY',
+        }))(apiValues),
       };
-      const addRes = await addService(params);
-      if (addRes.code === 0) console.log(addRes.data);
+      const postRes = id ? await updateService(id, params) : await addService(params);
+      if (postRes.code === 0) {
+        backToList();
+      }
     };
 
     onMounted(async () => {
@@ -76,6 +85,18 @@ export default defineComponent({
       if (id) {
         const { data: serviceDetail } = await getServiceById({ id });
         Object.assign(formData.basicForm.value, serviceDetail);
+        formData.advanceForm.value.dependencies = _.map((dep: any) => ({
+          dependencyId: dep.dependencyId,
+          name: dep.service.name,
+        }))(serviceDetail.dependencies);
+        formData.apis.value = serviceDetail.apis.map((api: formData.ApiRecord, index: number) => {
+          const isDefault = index < 6;
+          return {
+            ...api,
+            isDefault,
+          };
+        });
+        Object.assign(formData.relationForm.value, serviceDetail);
       }
     });
     return {

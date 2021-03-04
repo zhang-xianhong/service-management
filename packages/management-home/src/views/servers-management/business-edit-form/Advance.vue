@@ -4,10 +4,10 @@
       <el-form-item label="对象依赖" prop="objDep">
         <el-input :value="advanceForm.objDep.join()" disabled readonly class="readonly-input"></el-input>
       </el-form-item>
-      <el-form-item label="服务依赖" prop="svcDep">
+      <el-form-item label="服务依赖" prop="dependencies">
         <el-input
           placeholder="请选择服务"
-          :value="advanceForm.svcDep.join()"
+          :value="mapName(advanceForm.dependencies).join()"
           readonly
           @click="showSvcDialog"
           class="readonly-input"
@@ -20,7 +20,7 @@
     <el-dialog title="服务选择" v-model="svcDialogVisible" width="80%">
       <el-row :gutter="10">
         <el-col :span="10">
-          <el-input placeholder="请选择服务" :value="advanceForm.svcDep.join()"></el-input>
+          <el-input placeholder="请选择服务" :value="mapName(advanceForm.dependencies).join()"></el-input>
         </el-col>
         <el-col :span="4">
           <el-select v-model="filterForm.svc">
@@ -39,26 +39,42 @@
       </el-row>
       <el-row>
         <el-col :span="4" :offset="20" class="btn-row">
-          <el-button type="primary" @click="addAll(svcList)">添加所有</el-button>
+          <el-button type="primary" @click="add(svcList)">添加所有</el-button>
           <el-button @click="clear">清除所有</el-button>
         </el-col>
       </el-row>
       <el-row>
-        <el-table :data="svcList">
+        <el-table :data="svcList" v-loading="loading">
           <el-table-column v-for="col in columns" :key="col.name" :prop="col.name" :label="col.label"></el-table-column>
           <el-table-column prop="operation" label="操作" :width="130">
             <template #default="{ row }">
-              <el-button type="primary" @click="add(row.name)" :disabled="advanceForm.svcDep.includes(row.name)">
+              <el-button
+                type="primary"
+                @click="add(row)"
+                :disabled="mapId(advanceForm.dependencies).includes(row.dependencyId)"
+              >
                 添加
               </el-button>
             </template>
           </el-table-column>
         </el-table>
       </el-row>
+      <el-row>
+        <el-pagination
+          background
+          :current-page="page"
+          :page-size="pageSize"
+          :page-sizes="[5, 10]"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="total"
+          @size-change="onSizeChange"
+          @current-change="onCurrentChange"
+        >
+        </el-pagination>
+      </el-row>
       <template #footer>
         <span class="dialog-footer">
-          <el-button type="primary" @click="saveSvcDep()">确定</el-button>
-          <el-button @click="svcDialogVisible = false">取消</el-button>
+          <el-button @click="svcDialogVisible = false" type="primary">确定</el-button>
         </span>
       </template>
     </el-dialog>
@@ -77,14 +93,38 @@ export default defineComponent({
   setup() {
     const svcDialogVisible = ref(false);
     const getValues = () => advanceForm.value;
-    const saveSvcDep = () => {
-      svcDialogVisible.value = false;
-    };
     const svcList: Ref<Array<Record<string, any>>> = ref([]);
-    const showSvcDialog = async () => {
+    const total = ref(0);
+    const page = ref(1);
+    const pageSize = ref(5);
+    const loading = ref(false);
+    const querySvcList = async () => {
+      loading.value = true;
+      try {
+        const { data: serviceList } = await getServiceList({ page: page.value, pageSize: pageSize.value });
+        svcList.value = _.map((svc: any) => ({
+          dependencyId: svc.id,
+          name: svc.name,
+        }))(serviceList.list);
+        total.value = serviceList.total;
+      } catch (error) {
+        console.error(error);
+      } finally {
+        loading.value = false;
+      }
+    };
+    const onSizeChange = (size: number) => {
+      pageSize.value = size;
+      querySvcList();
+    };
+    const onCurrentChange = (current: number) => {
+      page.value = current;
+      querySvcList();
+    };
+
+    const showSvcDialog = () => {
       svcDialogVisible.value = true;
-      const { data: serviceList } = await getServiceList({ pageNum: 0, pageSize: 10 });
-      svcList.value = serviceList.list;
+      querySvcList();
     };
     const filterForm = ref({
       tag: '',
@@ -94,26 +134,31 @@ export default defineComponent({
     });
     const columns = svcFormColumns;
     const add = (payload: any) => {
-      advanceForm.value.svcDep = advanceForm.value.svcDep.concat(payload);
+      advanceForm.value.dependencies = advanceForm.value.dependencies.concat(payload);
     };
-
-    const addAll = _.flow(_.map('name'), add);
     const clear = () => {
-      advanceForm.value.svcDep = [];
+      advanceForm.value.dependencies = [];
     };
 
     return {
       advanceForm,
       getValues,
       svcDialogVisible,
-      saveSvcDep,
       showSvcDialog,
       filterForm,
       columns,
       add,
       svcList,
-      addAll,
       clear,
+      total,
+      page,
+      pageSize,
+      onSizeChange,
+      onCurrentChange,
+      querySvcList,
+      loading,
+      mapName: _.map('name'),
+      mapId: _.map('dependencyId'),
     };
   },
 });

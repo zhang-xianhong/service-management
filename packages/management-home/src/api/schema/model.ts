@@ -1,7 +1,7 @@
 import axios from '@/utils/request';
 import URL from '@/shared/constant/url';
 import { getUrl } from '../utils';
-import { DataListResponse } from '@/types/response';
+import { DataListResponse, SuccessResponse } from '@/types/response';
 const { schema } = URL;
 
 export const getModelList = (payload?: object): Promise<DataListResponse> =>
@@ -9,7 +9,7 @@ export const getModelList = (payload?: object): Promise<DataListResponse> =>
     params: payload,
   });
 
-export const getModelListAll = (payload?: object): Promise<DataListResponse> =>
+export const getModelListAll = (payload?: object): Promise<SuccessResponse<any>> =>
   axios.get(getUrl(schema.GET_MODEL_LIST_ALL), {
     params: payload,
   });

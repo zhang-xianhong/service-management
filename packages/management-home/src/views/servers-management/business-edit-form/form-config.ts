@@ -49,5 +49,5 @@ export const viewRules = {
 };
 
 export const relationRules = {
-  objMain: [{ required: true, message: '请选择主对象', trigger: 'blur' }],
+  moduleDependencyId: [{ required: true, message: '请选择主对象', trigger: 'blur' }],
 };

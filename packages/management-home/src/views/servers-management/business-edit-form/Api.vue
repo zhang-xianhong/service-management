@@ -1,7 +1,7 @@
 <template>
   <div class="business-edit-api">
     <el-button type="primary" @click="addRow"><i class="el-icon-plus"></i>新增接口</el-button>
-    <el-table :data="apiRecords" :row-class-name="tableRowClass" ref="apiTable">
+    <el-table :data="apis" :row-class-name="tableRowClass" ref="apiTable">
       <el-table-column type="expand" width="1">
         <template #default="{ row }">
           <p>使用说明:</p>
@@ -14,9 +14,9 @@
           <el-input :disabled="row.isDefault" v-model="row.name" />
         </template>
       </el-table-column>
-      <el-table-column prop="desc" label="描述">
+      <el-table-column prop="description" label="描述">
         <template #default="{ row }">
-          <el-input :disabled="row.isDefault" v-model="row.desc" />
+          <el-input :disabled="row.isDefault" v-model="row.description" />
         </template>
       </el-table-column>
       <el-table-column prop="url" label="URL">
@@ -26,7 +26,11 @@
       </el-table-column>
       <el-table-column prop="method" label="请求方式">
         <template #default="{ row }">
-          <el-input :disabled="row.isDefault" v-model="row.method" />
+          <el-select :disabled="row.isDefault" v-model="row.method" placeholder="请选择请求方式">
+            <el-option label="POST" value="POST"></el-option>
+            <el-option label="PUT" value="PUT"></el-option>
+            <el-option label="GET" value="GET"></el-option>
+          </el-select>
         </template>
       </el-table-column>
       <el-table-column prop="operator" label="操作" width="150">
@@ -41,18 +45,18 @@
 
 <script lang="ts">
 import { ref, defineComponent } from 'vue';
-import { apiRecords } from './form-data';
+import { apis } from './form-data';
 
 export default defineComponent({
   name: 'BusinessEditApi',
   setup() {
     const apiTable: any = ref(null);
     // 计算列记录表格
-    const deleteRow = (index: number) => apiRecords.value.splice(index, 1);
+    const deleteRow = (index: number) => apis.value.splice(index, 1);
     const addRow = () => {
-      apiRecords.value.push({
+      apis.value.push({
         name: '',
-        desc: '',
+        description: '',
         method: '',
         detail: '',
         isDefault: false,
@@ -61,7 +65,7 @@ export default defineComponent({
     const tableRowClass = ({ row: { isDefault = false } }) => (isDefault ? 'default-row' : 'normal-row');
 
     return {
-      apiRecords,
+      apis,
       deleteRow,
       addRow,
       tableRowClass,

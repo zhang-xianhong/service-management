@@ -38,8 +38,8 @@ import {
   ElTag,
   ElRow,
   ElCol,
-  ElDialog,
   ElDrawer,
+  ElDialog,
   ElLink,
 } from 'element-plus';
 
@@ -79,6 +79,8 @@ const components = [
   ElCol,
   ElDialog,
   ElDrawer,
+  ElDialog,
+  ElTag,
   ElLink,
 ];
 const plugins = [ElInfiniteScroll, ElLoading, ElMessage, ElMessageBox, ElNotification];
