@@ -8,6 +8,7 @@ export interface ApiExceptionInfo {
   error?: ErrorTypes
   // 具体错误信息
   message?: string
+  stack?: any
 }
 
 /**
@@ -21,10 +22,11 @@ export interface ApiExceptionInfo {
  *
  */
 export class ApiException extends HttpException {
-  constructor({ code, error, message }: ApiExceptionInfo, status: HttpStatus = HttpStatus.UNPROCESSABLE_ENTITY) {
+  constructor({ code, error, message, stack }: ApiExceptionInfo, status: HttpStatus = HttpStatus.UNPROCESSABLE_ENTITY) {
     super({
       code,
       error: error || ErrorTypes.INVALID_PARAMETER,
+      stack,
       message: message || 'bad request',
     }, status);
   }

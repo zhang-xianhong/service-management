@@ -65,3 +65,6 @@ export const isNumeric = (value: unknown): boolean => {
   }
   return !isNaN(Number(value));
 };
+
+// 正则校验
+export const is = (value: string, reg: RegExp) => !!reg.test(value);

@@ -1,16 +1,12 @@
 /**
  * 数据类型表
  */
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity } from 'typeorm';
+import { BaseEntity } from '../base.entity';
 
 // settings/data-types
-@Entity({ name: 'settings-data-types' })
-export class DataTypesEntity {
-  @PrimaryGeneratedColumn({
-    type: 'bigint',
-  })
-  id: number;
-
+@Entity({ name: 'settings_data_type' })
+export class DataTypesEntity extends BaseEntity {
   // 值
   @Column({
     type: 'varchar',
@@ -21,9 +17,9 @@ export class DataTypesEntity {
   // 字段长度
   @Column({
     type: 'bigint',
-    nullable: true,
+    default: 0,
   })
-  length: string;
+  length: number;
 
   // 名称
   @Column({
@@ -34,15 +30,6 @@ export class DataTypesEntity {
   // 描述
   @Column({
     type: 'tinytext',
-    nullable: true,
   })
   description: string;
-
-  // 创建时间
-  @Column({
-    type: 'datetime',
-    name: 'create_time',
-    default: () => 'NOW()',
-  })
-  createTime: Date;
 }

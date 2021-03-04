@@ -4,7 +4,7 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity({ name: 'project' })
-export class projectEntity {
+export class ProjectEntity {
   @PrimaryGeneratedColumn({
     type: 'bigint',
   })

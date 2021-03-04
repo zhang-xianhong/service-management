@@ -29,10 +29,14 @@ export enum CommonCodes {
   NOT_FOUND = 10004,
   // 创建失败
   CREATED_FAIL = 10005,
+  // 更新失败
+  UPDATED_FAIL = 10006,
+  // 删除失败
+  DELETED_FAIL = 10007,
   // 参数错误
-  PARAMETER_INVALID = 10006,
+  PARAMETER_INVALID = 10008,
   // 数据已存在
-  DATA_EXISTED = 10007
+  DATA_EXISTED = 10009
 }
 
 // 用户模块
@@ -57,6 +61,16 @@ export enum ModelCodes {
   NAME_INVALID = 30002,
   // 无效的modelId
   MODEL_ID_INVALID = 30003
+}
+
+// 模型模块
+export enum ServiceCodes {
+  // 名称已存在
+  NAME_EXISTED = 40001,
+  // 名称无效
+  NAME_INVALID = 40002,
+  // 无效的modelId
+  MODEL_ID_INVALID = 40003
 }
 
 
