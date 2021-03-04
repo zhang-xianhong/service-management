@@ -65,7 +65,7 @@ export default defineComponent({
       const params = {
         ..._.pick(['name', 'description', 'owner', 'tag', 'classification'])(basicValues),
         ..._.pick(['moduleDependencyId'])(relationValues),
-        dependencies: _.map('dependencyId')(advanceValues.dependencies),
+        dependencies: _.map(({ dependencyId = '' }) => ({ dependencyId }))(advanceValues.dependencies),
         apis: _.map((api: any) => ({
           name: api.name,
           description: api.description,

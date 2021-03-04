@@ -13,7 +13,7 @@
       <el-button icon="el-icon-search" type="primary"></el-button>
     </template>
     <template v-slot:headRight>
-      <router-link to="/schema/data-object/0">
+      <router-link to="/schema/model/0">
         <el-button type="primary">新增</el-button>
       </router-link>
       <el-button :disabled="!selections.length">克隆</el-button>
@@ -31,7 +31,7 @@
       @sort-change="handleSortChange"
     >
       <template #name="{ rowData }">
-        <router-link :to="`/schema/data-object/${rowData.id}`">{{ rowData.name }} </router-link>
+        <router-link :to="`/schema/model/${rowData.id}`">{{ rowData.name }} </router-link>
       </template>
     </packaged-table>
   </data-list>

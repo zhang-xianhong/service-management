@@ -66,7 +66,7 @@ import ServerTable from '@/components/packaged-table/PackagedTable.vue';
 import { useRouter } from 'vue-router';
 import { tableColumns, tableOperations } from './config/business-server-config';
 import CloneDialog from '@/views/servers-management/business-serve-tools/Clone.vue';
-import { getServeList, serveList, deleteServe } from '@/views/servers-management/business-serve-tools/serve-data-utils';
+import { getServeListForTable, serveList, deleteServe } from '@/views/servers-management/business-serve-tools/serve-data-utils';
 
 interface CategoryStateInterface {
   categories: Array<Record<string, any>>;
@@ -140,7 +140,7 @@ export default {
     const currentPage = ref(1);
     const pageSize = ref(10);
     const reloadList = () => {
-      getServeList(currentPage.value, pageSize.value);
+      getServeListForTable(currentPage.value, pageSize.value);
     };
     const getPageChange = (obj: any) => {
       obj.key === 'page' ? (currentPage.value = obj.value) : (pageSize.value = obj.value);

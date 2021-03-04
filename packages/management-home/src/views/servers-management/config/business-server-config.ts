@@ -8,9 +8,10 @@ export const tableColumns: Array<TableColumnsInterface> = [
     width: '200px',
     fixed: true,
     isDefault: false,
+    sortable: true,
   },
   {
-    prop: 'desc',
+    prop: 'description',
     label: '服务描述',
     width: '200px',
   },
