@@ -152,6 +152,7 @@ export class ModelsService {
         version: currentModel.version + 1,
       });
       const fieldsEntities = await this.createFieldsEntities(fields, id);
+      console.log(fieldsEntities);
       // 生成新的fields
       if (fieldsEntities) {
         await queryRunner.manager.save(fieldsEntities);
@@ -244,19 +245,20 @@ export class ModelsService {
    * @param modelID
    */
   private async createFieldsEntities(fields, modelID) {
+    console.log(fields);
     const fieldTypes = await this.getDataTypes();
     if (fields && Array.isArray(fields)) {
       const fieldsEntities = fields.map((field) => {
         const newField = { ...field };
         delete newField.id;
-        const { type, extra, length, isKey } = fieldTypes.find(item => Number(item.id) === Number(field.type));
+        const { type, extra, length, isKey } = fieldTypes.find(item => Number(item.id) === Number(field.typeId));
         return this.fieldsRepository.create({
           ...newField,
           type,
           extra,
           length,
           isKey,
-          typeId: field.type,
+          typeId: field.typeId,
           modelId: modelID,
         });
       });
