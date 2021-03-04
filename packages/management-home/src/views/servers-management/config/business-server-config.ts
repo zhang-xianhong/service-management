@@ -205,5 +205,6 @@ export const tableOperations: Array<TableButtonInterface> = [
     type: 'text',
     label: '删除',
     eventName: 'delete',
+    trigger: 'click',
   },
 ];

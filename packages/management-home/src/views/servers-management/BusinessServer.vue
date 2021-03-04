@@ -146,7 +146,7 @@ export default {
       obj.key === 'page' ? (currentPage.value = obj.value) : (pageSize.value = obj.value);
       reloadList();
     };
-    const deleteColum = (index: number, obj: any) => {
+    const deleteColum = (obj: any) => {
       deleteServe(obj.id).then(() => {
         reloadList();
       });
