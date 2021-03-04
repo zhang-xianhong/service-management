@@ -156,7 +156,7 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/schema',
     name: 'Schema',
-    redirect: '/data-object',
+    redirect: '/model',
     component: Layout,
     props: {
       isRouteLevel: true,
@@ -167,7 +167,7 @@ const routes: Array<RouteRecordRaw> = [
     },
     children: [
       {
-        path: 'data-object',
+        path: 'model',
         component: () => import('@/views/data-schema/field-data/data-object/Index.vue'),
         name: 'DataObject',
         meta: {
@@ -179,7 +179,7 @@ const routes: Array<RouteRecordRaw> = [
         },
       },
       {
-        path: 'data-object/:id',
+        path: 'model/:id',
         component: () => import('@/views/data-schema/field-data/data-object/data-object-edit/Index.vue'),
         name: 'DataObjectEdit',
         props: {

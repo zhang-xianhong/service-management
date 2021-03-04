@@ -4,8 +4,7 @@ import { AxiosResponse } from 'axios';
 
 export const serveList = ref([]);
 
-export function getServeList(page: number, pageSize: number) {
-  console.log(123);
+export function getServeListForTable(page: number, pageSize: number) {
   request
     .get('services', {
       params: {
