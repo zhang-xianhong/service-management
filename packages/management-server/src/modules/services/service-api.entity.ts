@@ -2,7 +2,7 @@
  * 项目实体
  */
 import { BaseEntity, Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { ServicesInfoEntity } from './services-info.entity';
+import { ServicesInfoEntity } from './service-info.entity';
 
 export enum methodType {
   Get = 'GET',
@@ -23,6 +23,7 @@ export class ServicesApiEntity extends BaseEntity {
     type: 'bigint',
   })
   id: number;
+
   // 接口URL
   @Column({
     type: 'varchar',
@@ -64,11 +65,11 @@ export class ServicesApiEntity extends BaseEntity {
   description: string;
 
   // 隶属服务
-  // @Column({
-  //   type: 'bigint',
-  //   name: 'service_id',
-  // })
-  // serviceId: number;
+  @ManyToOne(() => ServicesInfoEntity, info => info.id)
+  @JoinColumn({
+    name: 'service_id',
+  })
+  serviceId: number;
 
   // 版本号
   @Column({
@@ -87,11 +88,4 @@ export class ServicesApiEntity extends BaseEntity {
     select: false,
   })
   isDelete: number;
-
-  // 隶属服务
-  @ManyToOne(() => ServicesInfoEntity, info => info.id)
-  @JoinColumn({
-    name: 'service_id',
-  })
-  serviceId: number;
 }

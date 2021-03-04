@@ -3,9 +3,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { CommonCodes } from 'src/shared/constants/code';
 import { ApiException } from 'src/shared/utils/api.exception';
 import { Connection, Repository } from 'typeorm';
-import { ServicesApiEntity } from './services-api.entity';
-import { ServicesDependencyEntity } from './services-dependency.entity';
-import { ServicesInfoEntity } from './services-info.entity';
+import { ServicesApiEntity } from './service-api.entity';
+import { ServicesDependencyEntity } from './service-dependency.entity';
+import { ServicesInfoEntity } from './service-info.entity';
 
 @Injectable()
 export class ServicesService {

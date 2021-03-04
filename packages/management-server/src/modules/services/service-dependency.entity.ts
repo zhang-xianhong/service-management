@@ -2,9 +2,9 @@
  * 项目实体
  */
 import { BaseEntity, Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { ServicesInfoEntity } from './services-info.entity';
+import { ServicesInfoEntity } from './service-info.entity';
 
-@Entity({ name: 'services_dependency' })
+@Entity({ name: 'service_dependency' })
 export class ServicesDependencyEntity extends BaseEntity {
   // 自增ID
   @PrimaryGeneratedColumn({

@@ -2,10 +2,10 @@
  * 服务信息实体
  */
 import { BaseEntity, Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { ServicesApiEntity } from './services-api.entity';
-import { ServicesDependencyEntity } from './services-dependency.entity';
+import { ServicesApiEntity } from './service-api.entity';
+import { ServicesDependencyEntity } from './service-dependency.entity';
 
-@Entity({ name: 'services_info' })
+@Entity({ name: 'service_info' })
 export class ServicesInfoEntity extends BaseEntity {
   // 自增ID
   @PrimaryGeneratedColumn({

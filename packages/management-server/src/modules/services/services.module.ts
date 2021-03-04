@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ServicesApiEntity } from './services-api.entity';
-import { ServicesDependencyEntity } from './services-dependency.entity';
-import { ServicesInfoEntity } from './services-info.entity';
+import { ServicesApiEntity } from './service-api.entity';
+import { ServicesDependencyEntity } from './service-dependency.entity';
+import { ServicesInfoEntity } from './service-info.entity';
 import { ServicesController } from './services.controller';
 import { ServicesService } from './services.service';
 
