@@ -38,7 +38,9 @@ export enum CommonCodes {
   // 数据已存在
   DATA_EXISTED = 10009,
   // 初始化失败
-  INITIALIZE_FAIL = 100010
+  INITIALIZE_FAIL = 100010,
+  // 初始化失败
+  BUILD_FAIL = 100011,
 }
 
 // 用户模块
