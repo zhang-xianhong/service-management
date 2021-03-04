@@ -235,8 +235,6 @@ export class ServicesService {
     try {
       return await this.httpService.get(`${INIT_SERVICE_URL}${id}`).toPromise();
     } catch (error) {
-      console.log('error', error);
-
       throw new ApiException({
         code: CommonCodes.INITIALIZE_FAIL,
         message: '初始化失败',
