@@ -1,4 +1,4 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
+import { HttpStatus, Inject, Injectable, Logger, LoggerService } from '@nestjs/common';
 import { Repository, Connection, Not, ILike } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ApiException } from '../../shared/utils/api.exception';
@@ -10,6 +10,8 @@ import { DataTypesEntity } from '../settings/settings-data-types.entity';
 @Injectable()
 export class ModelsService {
   constructor(
+    @Inject(Logger)
+    private readonly logger: LoggerService,
     @InjectRepository(ModelsInfoEntity)
     private readonly infoRepository: Repository<ModelsInfoEntity>,
     @InjectRepository(ModelsFieldsEntity)
@@ -34,14 +36,18 @@ export class ModelsService {
     if (query.tags) {
       where.tags = ILike(`%${query.tags}%`);
     }
-    const { conditions } = query;
     if (query.keyword) {
       where.name = ILike(`%${query.keyword}%`);
     }
-    if (!getTotal) {
-      return await this.infoRepository.find(where);
-    }
+    const { conditions = {} } = query;
     conditions.where = where;
+    if (query.getFields) {
+      conditions.relations = ['fields'];
+    }
+    if (!getTotal) {
+      conditions.select = ['id', 'name', 'description'];
+      return await this.infoRepository.find(conditions);
+    }
     return await this.infoRepository.findAndCount(conditions);
   }
 
@@ -71,7 +77,7 @@ export class ModelsService {
    * 创建模型
    * @param data
    */
-  async create(data) {
+  async create(data: PlainObject) {
     const { fields, ...modelData } = data;
     // 验证是否有同名模块
     const nameExisted = await this.infoRepository.findOne({
@@ -102,7 +108,7 @@ export class ModelsService {
         modelId: model.id,
       };
     } catch (error) {
-      console.log(error);
+      this.logger.error(error);
       await queryRunner.rollbackTransaction();
       throw new ApiException({
         code: CommonCodes.CREATED_FAIL,
@@ -118,7 +124,7 @@ export class ModelsService {
    * 更新模型
    * @param data
    */
-  async updateModel(id, data) {
+  async updateModel(id: number, data: PlainObject) {
     const currentModel = await this.findModelById(id);
     const { fields, ...modelData } = data;
     // 验证是否有同名模块
@@ -162,7 +168,7 @@ export class ModelsService {
         modelId: id,
       };
     } catch (error) {
-      console.log(error);
+      this.logger.error(error);
       await queryRunner.rollbackTransaction();
       throw new ApiException({
         code: CommonCodes.UPDATED_FAIL,
@@ -178,7 +184,7 @@ export class ModelsService {
    * 删除模型
    * @param id
    */
-  async deleteModel(id) {
+  async deleteModel(id: number) {
     await this.findModelById(id);
     const queryRunner = this.connection.createQueryRunner();
     await queryRunner.connect();
@@ -199,7 +205,7 @@ export class ModelsService {
         modelId: id,
       };
     } catch (error) {
-      console.log(error);
+      this.logger.error(error);
       await queryRunner.rollbackTransaction();
       throw new ApiException({
         code: CommonCodes.DELETED_FAIL,
@@ -215,7 +221,7 @@ export class ModelsService {
    * 通过ID查找模型
    * @param id
    */
-  private async findModelById(id) {
+  private async findModelById(id: number) {
     const model = await this.infoRepository.findOne({
       where: {
         id,
@@ -231,7 +237,9 @@ export class ModelsService {
     return model;
   }
 
-
+  /**
+   * 获取字段类型列表
+   */
   private async getDataTypes() {
     const dataTypes = await this.dataTypesEntity.find({
       isDelete: false,
@@ -242,24 +250,31 @@ export class ModelsService {
   /**
    * 生成表字段
    * @param fields
-   * @param modelID
+   * @param modelId
    */
-  private async createFieldsEntities(fields, modelID) {
-    console.log(fields);
+  private async createFieldsEntities(fields: Array<unknown>, modelId: number) {
     const fieldTypes = await this.getDataTypes();
     if (fields && Array.isArray(fields)) {
       const fieldsEntities = fields.map((field) => {
         const newField = { ...field };
         delete newField.id;
-        const { type, extra, length, isKey } = fieldTypes.find(item => Number(item.id) === Number(field.typeId));
+        const { typeId } = newField;
+        const fieldType = fieldTypes.find(item => Number(item.id) === Number(typeId));
+        if (!fieldType) {
+          throw new ApiException({
+            code: CommonCodes.PARAMETER_INVALID,
+            message: '无效的字段类型',
+          });
+        }
+        const { type, extra, length, isKey } = fieldType;
         return this.fieldsRepository.create({
           ...newField,
           type,
           extra,
           length,
           isKey,
-          typeId: field.typeId,
-          modelId: modelID,
+          typeId,
+          modelId,
         });
       });
       return fieldsEntities;
