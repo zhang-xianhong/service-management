@@ -171,6 +171,7 @@ export const tableColumns: Array<TableColumnsInterface> = [
   {
     prop: 'createdTime',
     label: '创建时间',
+    isDate: true,
     width: '400px',
   },
   {
@@ -186,6 +187,7 @@ export const tableColumns: Array<TableColumnsInterface> = [
   {
     prop: 'changedTime',
     label: '修改时间或启动时间',
+    isDate: true,
     width: '400px',
   },
   {
@@ -211,5 +213,6 @@ export const tableOperations: Array<TableButtonInterface> = [
     type: 'text',
     label: '删除',
     eventName: 'delete',
+    trigger: 'click',
   },
 ];

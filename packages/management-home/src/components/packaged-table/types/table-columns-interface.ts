@@ -8,6 +8,7 @@ export default interface TableColumnsInterface {
   fixed?: boolean;
   isDefault?: boolean;
   isButton?: boolean;
+  isDate?: boolean;
   buttonOptions?: Array<ButtonOptionInterface>;
   [key: string]: unknown;
 }

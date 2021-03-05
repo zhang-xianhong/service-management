@@ -59,7 +59,7 @@
       </template>
       <!-- 自定义服务代码栏显示样式 -->
       <template #code="data">
-        <el-button type="primary" icon="el-icon-download">{{ data.code }}</el-button>
+        <el-button v-if="data.code" type="primary" icon="el-icon-download">{{ data.code }}</el-button>
       </template>
     </server-table>
   </data-list>
@@ -160,7 +160,7 @@ export default {
       obj.key === 'page' ? (currentPage.value = obj.value) : (pageSize.value = obj.value);
       reloadList();
     };
-    const deleteColum = (index: number, obj: any) => {
+    const deleteColum = (obj: any) => {
       deleteServe(obj.id).then(() => {
         reloadList();
       });

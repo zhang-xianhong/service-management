@@ -56,6 +56,7 @@ export const tableColumns: Array<TableColumnsInterface> = [
     prop: 'createTime',
     label: '创建时间',
     width: 200,
+    isDate: true,
   },
   {
     prop: 'changedByAccount',
@@ -71,9 +72,10 @@ export const tableColumns: Array<TableColumnsInterface> = [
     prop: 'updateTime',
     label: '修改时间或启动时间',
     width: 400,
+    isDate: true,
   },
   {
-    prop: 'changedCounts',
+    prop: 'version',
     label: '修改次数',
     width: 200,
   },
