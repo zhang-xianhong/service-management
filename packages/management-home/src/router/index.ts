@@ -9,16 +9,16 @@ const routes: Array<RouteRecordRaw> = [
     path: '/login',
     name: 'login',
     component: () => import('@/views/login/Index.vue'),
-    props: {
-      isRouteLevel: false,
+    meta: {
+      isRootLevel: false,
     },
   },
   {
     path: '/',
     redirect: '/dashboard',
     component: Layout,
-    props: {
-      isRouteLevel: true,
+    meta: {
+      isRootLevel: true,
     },
     children: [
       {
@@ -28,9 +28,7 @@ const routes: Array<RouteRecordRaw> = [
         meta: {
           title: '首页',
           icon: 'el-icon-eleme',
-        },
-        props: {
-          isRouteLevel: false,
+          isRootLevel: false,
         },
       },
     ],
@@ -39,76 +37,64 @@ const routes: Array<RouteRecordRaw> = [
     path: '/project',
     component: Layout,
     name: 'project',
-    props: {
-      isRouteLevel: true,
-    },
     meta: {
       title: '项目管理',
       icon: 'el-icon-eleme',
+      isRootLevel: true,
     },
     children: [
       {
         path: 'project-list',
         component: () => import('@/views/project-management/Index.vue'),
         name: 'projectList',
-        props: {
-          isRouteLevel: false,
-        },
         meta: {
           title: '项目列表',
           icon: 'el-icon-eleme',
+          isRootLevel: false,
         },
       },
       {
         path: 'add-project',
         component: () => import('@/views/project-management/add-project/AddProject.vue'),
         name: 'addProject',
-        props: {
-          isRouteLevel: false,
-        },
         meta: {
           title: '新增项目',
           icon: 'el-icon-eleme',
           hidden: false,
+          isRootLevel: false,
         },
       },
       {
         path: 'user-list',
         component: () => import('@/views/user-management/Index.vue'),
         name: 'userList',
-        props: {
-          isRouteLevel: false,
-        },
         meta: {
           title: '用户列表',
           icon: 'el-icon-eleme',
+          isRootLevel: false,
         },
       },
     ],
   },
   {
-    path: '/serve',
-    name: 'Server',
+    path: '/service',
+    name: 'Service',
     component: Layout,
-    props: {
-      isRouteLevel: true,
-    },
     meta: {
       title: '服务管理',
       icon: 'el-icon-eleme',
+      isRootLevel: true,
     },
     children: [
       {
-        path: 'business-server',
-        name: 'BusinessServer',
+        path: 'business',
+        name: 'Business',
         component: () =>
           import(/* webpackChunkName: "business-server" */ '../views/servers-management/BusinessServer.vue'),
         meta: {
           title: '业务服务',
           icon: 'el-icon-eleme',
-        },
-        props: {
-          isRouteLevel: false,
+          isRootLevel: false,
         },
       },
       {
@@ -120,9 +106,7 @@ const routes: Array<RouteRecordRaw> = [
           title: '业务服务新增',
           icon: 'el-icon-eleme',
           hidden: true,
-        },
-        props: {
-          isRouteLevel: false,
+          isRootLevel: false,
         },
       },
       {
@@ -134,6 +118,7 @@ const routes: Array<RouteRecordRaw> = [
           title: '业务服务编辑',
           icon: 'el-icon-eleme',
           hidden: true,
+          isRootLevel: false,
         },
         props: true,
       },
@@ -146,9 +131,7 @@ const routes: Array<RouteRecordRaw> = [
         meta: {
           title: '其他服务',
           icon: 'el-icon-eleme',
-        },
-        props: {
-          isRouteLevel: false,
+          isRootLevel: false,
         },
       },
     ],
@@ -158,12 +141,10 @@ const routes: Array<RouteRecordRaw> = [
     name: 'Schema',
     redirect: '/model',
     component: Layout,
-    props: {
-      isRouteLevel: true,
-    },
     meta: {
       title: '数据建模',
       icon: 'el-icon-eleme',
+      isRootLevel: true,
     },
     children: [
       {
@@ -173,22 +154,18 @@ const routes: Array<RouteRecordRaw> = [
         meta: {
           title: '数据对象',
           icon: 'el-icon-eleme',
-        },
-        props: {
-          isRouteLevel: false,
+          isRootLevel: false,
         },
       },
       {
         path: 'model/:id',
         component: () => import('@/views/data-schema/field-data/data-object/data-object-edit/Index.vue'),
         name: 'DataObjectEdit',
-        props: {
-          isRouteLevel: false,
-        },
         meta: {
           title: '数据对象',
           icon: 'el-icon-eleme',
           hidden: true,
+          isRootLevel: false,
         },
       },
       {
@@ -200,9 +177,7 @@ const routes: Array<RouteRecordRaw> = [
         meta: {
           title: '其他对象',
           icon: 'el-icon-eleme',
-        },
-        props: {
-          isRouteLevel: false,
+          isRootLevel: false,
         },
       },
     ],

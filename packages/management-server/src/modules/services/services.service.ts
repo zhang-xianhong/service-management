@@ -247,15 +247,9 @@ export class ServicesService {
    * @param id
    */
   async buildService(data: any) {
-    const { serviceId, branch } = data;
-
+    const { serviceId, branch, userId } = data;
     try {
-      return await this.httpService.post(`${BUILD_SERVICE_URL}`, {
-        token: '6c850f80c9b1f80b12e0361ef6c36e',
-        ref: branch,
-        applicationName: 'sa',
-        projectId: serviceId,
-      }).toPromise();
+      return await this.httpService.get(`${BUILD_SERVICE_URL}?serverId=${serviceId}&ref=${branch}&userId=${userId}`).toPromise();
     } catch (error) {
       throw new ApiException({
         code: CommonCodes.BUILD_FAIL,
