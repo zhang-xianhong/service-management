@@ -235,6 +235,7 @@ export class ServicesService {
     try {
       return await this.httpService.get(`${INIT_SERVICE_URL}${id}`).toPromise();
     } catch (error) {
+      console.log(error);
       throw new ApiException({
         code: CommonCodes.INITIALIZE_FAIL,
         message: '初始化失败',
@@ -251,6 +252,7 @@ export class ServicesService {
     try {
       return await this.httpService.get(`${BUILD_SERVICE_URL}?serverId=${serviceId}&ref=${branch}&userId=${userId}`).toPromise();
     } catch (error) {
+      console.log(error);
       throw new ApiException({
         code: CommonCodes.BUILD_FAIL,
         message: '构建失败',
