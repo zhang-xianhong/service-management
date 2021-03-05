@@ -14,7 +14,7 @@ export enum methodType {
 export enum paramType {
   RequestBody = 'REQUEST_BODY',
   PathVariable = 'PATH_VARIABLE',
-  PequestParam = 'REQUEST_PARAM'
+  RequestParam = 'REQUEST_PARAM'
 }
 
 @Entity({ name: 'service_api' })
@@ -41,7 +41,7 @@ export class ServicesApiEntity extends BaseEntity {
     type: 'enum',
     enum: paramType,
     name: 'param_type',
-    default: paramType.PequestParam,
+    default: paramType.RequestParam,
   })
   paramType: paramType;
 
