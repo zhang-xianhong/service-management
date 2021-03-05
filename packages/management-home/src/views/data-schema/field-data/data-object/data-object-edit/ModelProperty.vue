@@ -48,7 +48,11 @@
 
     <el-table-column label="关联数据对象" min-width="100">
       <template #default="scope">
-        <el-cascader :options="cascaderOptions" @change="changeHandler(scope.row, $event)"></el-cascader>
+        <el-cascader
+          :options="cascaderOptions"
+          @change="changeHandler(scope.row, $event)"
+          v-model="scope.row.releatedData"
+        ></el-cascader>
       </template>
     </el-table-column>
     <el-table-column prop="operation" label="" align="center" fixed="right" width="50">
@@ -90,6 +94,7 @@ export default {
         return props.modelValue.map((item, index) => ({
           ...item,
           index: index + 1,
+          releatedData: item.foreignModelId ? [item.foreignModelId, item.foreignId] : [],
         }));
       }
       return [
@@ -105,6 +110,7 @@ export default {
           isPinyinSupport: false,
           foreignId: '',
           isSystem: true,
+          releatedData: [],
         },
       ];
     });
@@ -124,6 +130,7 @@ export default {
           isParticipleSupport: false,
           isPinyinSupport: false,
           foreignId: '',
+          releatedData: [],
         },
       ]);
     };
