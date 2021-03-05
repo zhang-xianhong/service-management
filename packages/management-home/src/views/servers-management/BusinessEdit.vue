@@ -43,7 +43,7 @@ export default defineComponent({
   setup(props) {
     const router = useRouter();
     const backToList = () => {
-      router.push({ path: '/serve/business-server' });
+      router.push({ path: '/service/business' });
     };
 
     const currentTab = ref('basic');

@@ -14,10 +14,10 @@ export const getComputedRoutes = () =>
   routerRef.value
     .getRoutes()
     .map((x): undefined | RouteRecordNormalized => {
-      const data = x?.props.default as {
-        isRouteLevel: boolean;
+      const data = x?.meta as {
+        isRootLevel: boolean;
       };
-      if (data.isRouteLevel) {
+      if (data.isRootLevel) {
         return x;
       }
       return undefined;
