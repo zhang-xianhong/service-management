@@ -77,7 +77,7 @@ export default {
     // 获取表格数据参数
     const searchParams = {
       category: '',
-      tags: [],
+      tags: '',
       keyword: '',
       page: 1,
       pageSize: 10,

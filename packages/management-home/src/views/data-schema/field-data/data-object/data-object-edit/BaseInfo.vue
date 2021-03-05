@@ -1,29 +1,29 @@
 <template>
-  <el-form ref="formRef" :model="form" :rules="formRules" label-width="120px">
+  <el-form :ref="formRef" :model="formData" :rules="formRules" label-width="120px">
     <el-form-item prop="name" label="数据对象名称" required>
-      <el-input v-model="form.name" placeholder="请输入英文名称，作为唯一标识，不可重复"></el-input>
+      <el-input v-model="formData.name" placeholder="请输入英文名称，作为唯一标识，不可重复"></el-input>
     </el-form-item>
     <el-form-item prop="description" label="数据对象描述" required>
-      <el-input v-model="form.description" placeholder="请输入中文名称"></el-input>
+      <el-input v-model="formData.description" placeholder="请输入中文名称"></el-input>
     </el-form-item>
     <el-form-item prop="demand" label="需求">
-      <el-select v-model="form.demand" placeholder="请选择"></el-select>
+      <el-select v-model="formData.demand" placeholder="请选择"></el-select>
     </el-form-item>
     <el-form-item prop="owner" label="负责人">
-      <el-select v-model="form.owner" placeholder="请选择" multiple></el-select>
+      <el-select v-model="formData.owner" placeholder="请选择" multiple></el-select>
     </el-form-item>
     <el-form-item prop="classification" label="分类">
-      <el-select v-model="form.classification" placeholder="请选择" multiple></el-select>
+      <el-select v-model="formData.classification" placeholder="请选择" multiple></el-select>
     </el-form-item>
     <el-form-item prop="tags" label="标签">
-      <el-select v-model="form.tags" placeholder="请选择" multiple></el-select>
+      <el-select v-model="formData.tags" placeholder="请选择" multiple></el-select>
     </el-form-item>
-    <el-form-item prop="detail" label="对象详情">
-      <el-input type="textarea" :rows="3" placeholder="请输入数据对象描述，最多支持225个字符" v-model="form.detail">
+    <el-form-item prop="remark" label="对象详情">
+      <el-input type="textarea" :rows="3" placeholder="请输入数据对象描述，最多支持225个字符" v-model="formData.remark">
       </el-input>
     </el-form-item>
-    <el-form-item label="属性" prop="properties">
-      <model-property v-model="form.properties" />
+    <el-form-item label="属性" prop="fields">
+      <model-property v-model="formData.fields" />
     </el-form-item>
     <el-form-item prop="operation">
       <el-button type="primary" @click="onSubmit">保存</el-button>
@@ -33,7 +33,7 @@
 </template>
 
 <script lang="ts">
-import { ref, reactive, watchEffect } from 'vue';
+import { ref, watch, reactive, toRefs } from 'vue';
 import ModelProperty from './ModelProperty.vue';
 import { createModel, updateModel } from '@/api/schema/model';
 import { ElMessage } from 'element-plus';
@@ -47,7 +47,7 @@ export default {
   props: {
     data: {
       type: Object,
-      default: () => ({ data: {} }),
+      default: () => ({}),
     },
     isCreate: {
       type: Boolean,
@@ -59,20 +59,35 @@ export default {
     const router = useRouter();
     const formRef = ref();
 
-    // 表单内容相关数据
-    const form = reactive({} as any);
-
-    watchEffect(() => {
-      form.id = props.data?.id || 0;
-      form.name = props.data?.name || '';
-      form.description = props.data?.description || '';
-      form.demand = props.data?.demand || '';
-      form.owner = props.data.owner ? props.data.owner.split(',') : [];
-      form.classification = props.data.classification ? props.data.classification.split(',') : [];
-      form.tags = props.data.tags ? props.data.tags.split(',') : [];
-      form.detail = props.data?.detail || '';
-      form.properties = props.data?.fields || [];
+    // 表单状态相关数据
+    const formState = reactive({
+      formRef,
+      formData: {
+        name: '',
+        description: '',
+        demand: '',
+        owner: [],
+        classification: [],
+        tags: [],
+        remark: '',
+        fields: [],
+      },
     });
+
+    watch(
+      () => props.data,
+      () => {
+        const { data } = props;
+        formState.formData = {
+          ...data,
+          owner: data.owner ? data.owner.split(',') : [],
+          classification: data.classification ? data.classification.split(',') : [],
+          tags: data.tags ? data.tags.split(',') : [],
+          remark: data.remark || '',
+          demand: data.demand || '',
+        };
+      },
+    );
 
     // 表单校验规则
     const formRules = {
@@ -131,26 +146,21 @@ export default {
     }
 
     // 表单提交
-    function onSubmit(): void {
-      formRef.value.validate(async (valid: boolean) => {
-        if (!valid) {
-          return;
-        }
-        const saveData = {
-          ...form,
-          owner: form.owner.join(','),
-          classification: form.classification.join(','),
-          tags: form.tags.join(','),
-          fields: [...form.properties],
-        };
-        if (validator(saveData)) {
-          if (props.isCreate) {
-            await createDataModel(saveData);
-          } else {
-            await updateDataModel(saveData);
-          }
-        }
-      });
+    async function onSubmit() {
+      const saveData = {
+        ...formState.formData,
+        owner: formState.formData.owner.join(','),
+        classification: formState.formData.classification.join(','),
+        tags: formState.formData.tags.join(','),
+      };
+      if (!validator(saveData)) {
+        return;
+      }
+      if (props.isCreate) {
+        await createDataModel(saveData);
+      } else {
+        await updateDataModel(saveData);
+      }
     }
 
     // 取消修改
@@ -159,8 +169,7 @@ export default {
     }
 
     return {
-      form,
-      formRef,
+      ...toRefs(formState),
       formRules,
       onSubmit,
       onCancel,

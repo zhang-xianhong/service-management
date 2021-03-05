@@ -8,7 +8,7 @@
           placeholder="请输入属性名称"
           maxlength="64"
           :disabled="scope.row.isSystem"
-          @change="validatePropertyName(scope.row.name)"
+          @change="validatePropertyName(scope.row.name, scope.$index)"
         />
       </template>
     </el-table-column>
@@ -19,12 +19,18 @@
           maxlength="255"
           placeholder="请输入属性描述"
           :disabled="scope.row.isSystem"
+          @change="descriptionChange(scope.row.description, scope.$index)"
         />
       </template>
     </el-table-column>
     <el-table-column prop="typeId" label="数据类型" min-width="100">
       <template #default="scope">
-        <el-select v-model="scope.row.typeId" placeholder="请选择" :disabled="scope.row.isSystem">
+        <el-select
+          v-model="scope.row.typeId"
+          placeholder="请选择"
+          :disabled="scope.row.isSystem"
+          @change="handleChange('typeId', scope.row, scope.$index)"
+        >
           <el-option v-for="item in dataTypes" :key="item.id" :label="item.name" :value="item.id"> </el-option>
         </el-select>
       </template>
@@ -32,19 +38,17 @@
 
     <el-table-column width="70" v-for="column in checkableColumns" :key="column.prop" v-bind="{ ...column }">
       <template #default="scope">
-        <el-checkbox v-model="scope.row[column.prop]" :disabled="scope.row.isSystem" />
+        <el-checkbox
+          v-model="scope.row[column.prop]"
+          :disabled="scope.row.isSystem"
+          @change="handleChange(column.prop, scope.row, scope.$index)"
+        />
       </template>
     </el-table-column>
 
     <el-table-column label="关联数据对象" min-width="100">
       <template #default="scope">
-        <!-- <el-cascader
-          :value="
-            scope.row.foreignModelId && scope.row.foreignId ? [scope.row.foreignModelId, scope.row.foreignId] : []
-          "
-          :props="relatedDatatModelProps"
-        ></el-cascader> -->
-        {{ scope.row.foreignId }}
+        <el-cascader :options="cascaderOptions" @change="changeHandler(scope.row, $event)"></el-cascader>
       </template>
     </el-table-column>
     <el-table-column prop="operation" label="" align="center" fixed="right" width="50">
@@ -60,13 +64,12 @@
   </div>
 </template>
 <script lang="ts">
-import { reactive, watchEffect, toRefs } from 'vue';
-import DataFieldProperty from '../../types/data-field-property';
+import { reactive, computed, onMounted } from 'vue';
 import DataCheckableColumns from '../../config/data-checkable-columns';
 import { getDataTypes } from '@/api/settings/data-types';
 import { ElMessage } from 'element-plus';
-import { getModelDetail } from '@/api/schema/model';
-// import { useRoute } from 'vue-router';
+import { getModelListAll } from '@/api/schema/model';
+import { useRoute } from 'vue-router';
 
 export default {
   name: 'ModelProperty',
@@ -77,54 +80,52 @@ export default {
     },
   },
   setup(props: { modelValue: Array<any> }, { emit }: { emit: (event: string, ...args: any[]) => void }) {
+    const route = useRoute();
     // 属性可勾选配置项
     const checkableColumns = DataCheckableColumns;
 
-    // const route = useRoute();
-
-    const tableData: { properties: Array<DataFieldProperty> } = reactive({
-      properties: [],
-    });
-
-    setTimeout(() => {
-      tableData.properties = props.modelValue.map((item, index) => ({ ...item, index: index + 1 }));
-    }, 1000);
-
-    if (tableData.properties.length === 0) {
-      tableData.properties.push({
-        index: 1,
-        name: 'id',
-        description: '编号',
-        typeId: '1',
-        notNull: true,
-        isUnique: true,
-        isIndex: true,
-        isParticipleSupport: false,
-        isPinyinSupport: false,
-        foreignId: '',
-        isSystem: true,
-      });
-    }
-
-    // 监听属性信息发生变化通知父组件
-    watchEffect(() => {
-      emit('update:modelValue', tableData.properties);
+    // 数据属性，如果是新建数据对象默认生成id属性
+    const properties = computed(() => {
+      if (props.modelValue.length) {
+        return props.modelValue.map((item, index) => ({
+          ...item,
+          index: index + 1,
+        }));
+      }
+      return [
+        {
+          index: 1,
+          name: 'id',
+          description: '编号',
+          typeId: '1',
+          notNull: true,
+          isUnique: true,
+          isIndex: true,
+          isParticipleSupport: false,
+          isPinyinSupport: false,
+          foreignId: '',
+          isSystem: true,
+        },
+      ];
     });
 
     // 新增属性
     const hadnleAddField = () => {
-      tableData.properties.push({
-        index: tableData.properties.length + 1,
-        name: '',
-        description: '',
-        typeId: '',
-        notNull: false,
-        isUnique: false,
-        isIndex: false,
-        isParticipleSupport: false,
-        isPinyinSupport: false,
-        foreignId: '',
-      });
+      emit('update:modelValue', [
+        ...properties.value,
+        {
+          index: properties.value.length + 1,
+          name: '',
+          description: '',
+          typeId: '',
+          notNull: false,
+          isUnique: false,
+          isIndex: false,
+          isParticipleSupport: false,
+          isPinyinSupport: false,
+          foreignId: '',
+        },
+      ]);
     };
 
     // 数据类型选项
@@ -142,12 +143,17 @@ export default {
 
     // 属性移除
     function handleRemoveField(index: number): void {
-      tableData.properties.splice(index, 1);
+      const result = properties.value;
+      result.splice(index, 1);
+      emit('update:modelValue', result);
     }
 
     // 属性名校验，仅支持小驼峰命名规则
-    function validatePropertyName(name: string): void {
+    function validatePropertyName(name: string, index: number): void {
       if (typeof name === 'string' && /^[a-z]/g.test(name)) {
+        const result = properties.value;
+        result[index].name = name;
+        emit('update:modelValue', result);
         return;
       }
       ElMessage({
@@ -157,58 +163,70 @@ export default {
       });
     }
 
-    // 获取数据对象级联下拉框的选项
-    async function getDataModelOptions(level: number, modelId?: number) {
-      // 获取目标模型的属性列表
-      if (level === 1 && modelId) {
-        const { data } = await getModelDetail(modelId);
-        return data.fields.map((item: any) => ({
-          value: item.foreignId,
-          label: item.name,
-          leaf: true,
-        }));
-      }
+    function descriptionChange(desc: string, index: number): void {
+      const result = properties.value;
+      result[index].description = desc;
+      emit('update:modelValue', result);
     }
 
+    function handleChange(field: string, row: any, index: number): void {
+      const result = properties.value;
+      result[index][field] = row[field];
+      emit('update:modelValue', result);
+    }
+
+    const cascaderOptions = reactive([] as any[]);
+
+    // 获取级联框选项
+    const getCascaderOptions = async () => {
+      const { data } = await getModelListAll({ fields: 1 });
+      const models = data
+        .filter((item: any) => item.id !== route.params.id)
+        .map((item: any) => ({
+          ...item,
+          value: item.id,
+          label: item.name,
+          leaf: false,
+          children: item.fields.map((field: any) => ({
+            value: field.id,
+            label: field.name,
+            leaf: true,
+          })),
+        }));
+      cascaderOptions.push(...models);
+    };
+
+    function changeHandler(data: any, node: any[]) {
+      const result = properties.value;
+      const [foreignModelId, foreignId] = node;
+      const finalResult = result.map((item) => {
+        if (data.index === item.index) {
+          return { ...item, foreignModelId, foreignId };
+        }
+        return { ...item };
+      });
+      emit('update:modelValue', finalResult);
+    }
     // 所有数据模型列表
     const allModelList: any[] = [];
 
-    // 关联数据对象配置参数
-    const relatedDatatModelProps = {
-      lazy: true,
-      async lazyLoad(node: any, resolve: (node: any) => void) {
-        const { level } = node;
-        if (level === 0) {
-          resolve(allModelList);
-        } else if (level === 1) {
-          const nodes = await getDataModelOptions(level, node.data.value);
-          resolve(nodes);
-        }
-      },
-    };
-
-    // onMounted(() => {
-    //   获取数据类型列表
-    //   获取所有的数据模型列表
-    //   const { data } = await getModelListAll();
-    //   allModelList = data
-    //     .map((item: any) => ({
-    //       children: [],
-    //       value: item.id,
-    //       label: item.name,
-    //       leaf: false,
-    //     }))
-    //     .filter((item: any) => item.value !== route.params.id);
-    // });
+    // 获取所有模型列表
+    onMounted(() => {
+      getCascaderOptions();
+    });
 
     return {
-      ...toRefs(tableData),
+      properties,
       checkableColumns,
       dataTypes,
-      relatedDatatModelProps,
       hadnleAddField,
       handleRemoveField,
       validatePropertyName,
+      descriptionChange,
+      handleChange,
+      allModelList,
+      cascaderOptions,
+      changeHandler,
     };
   },
 };
