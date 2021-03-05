@@ -24,7 +24,8 @@
 | ------------- | -------------------------------------------- | ------------------------------------- | --------------- | -------- | ------ | --------------------------------------------------------------------------------- |
 | prop          | 对应列内容的字段名                           | 'name'                                | string          | true     | ''     |                                                                                   |
 | label         | 对应列的标题                                 | '姓名'                                | string          | true     | ''     |                                                                                   |
-| width         | 对应列的宽度                                 | 200                                   | number/string   | false    | 自适应 |                                                                                   |
+| width         | 对应列的宽度                                 | 200                                   | number/string   | false    | 自适应 |
+| isDate        | 是否为日期类型                               | true                                  | boolean         | false    | -      | 如果属性值为 true 自动格式化输出为 yyyy/mm/dd HH:mm:ss 格式                       |
 | isDefault     | 是否按照默认规则显示，即只显示具体列内容字段 | false                                 | boolean         | false    | true   | 如果想要通过插槽自定义列内容必须将该属性设为 false                                |
 | isButton      | 列内容是否为按钮                             | false                                 | boolean         | false    | false  | 该属性只能标识列内容是否为按钮，按钮内容的具体配置需要通过 buttonOptions 选项说明 |
 | buttonOptions | 按钮选项配置                                 | `[{ name: 'delete', label: '删除' }]` | `Array<object>` | false    | []     | 解析配置生成具体列内容按钮                                                        |

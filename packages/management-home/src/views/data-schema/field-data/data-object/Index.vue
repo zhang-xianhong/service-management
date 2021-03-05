@@ -29,6 +29,7 @@
       :default-sort="{ prop: 'name', order: 'descending' }"
       @selection-change="handleSelectionChange"
       @sort-change="handleSortChange"
+      @click:edit="editDataItem"
     >
       <template #name="{ rowData }">
         <router-link :to="`/schema/model/${rowData.id}`">{{ rowData.name }} </router-link>
@@ -40,7 +41,7 @@
 import { reactive, ref, onMounted, toRefs } from 'vue';
 import { PageInfo, SortInfo } from '@/types/dataList';
 import { getModelList } from '@/api/schema/model';
-import { RouterLink } from 'vue-router';
+import { RouterLink, useRouter } from 'vue-router';
 import PackagedTable from '@/components/packaged-table/PackagedTable.vue';
 import { tableColumns, tableOperations } from '../config/data-object-management-table';
 import TableColumnInterface from '@/components/packaged-table/types/table-columns-interface';
@@ -113,6 +114,12 @@ export default {
       tableState.selections = val;
     };
 
+    // 编辑数据模型项
+    const editDataItem = (rowData: any) => {
+      const router = useRouter();
+      router.resolve(`/schema/data-object/${rowData.id}`);
+    };
+
     onMounted(() => {
       getList();
     });
@@ -124,6 +131,7 @@ export default {
       handlePageChange,
       handleSortChange,
       handleSelectionChange,
+      editDataItem,
     };
   },
 };

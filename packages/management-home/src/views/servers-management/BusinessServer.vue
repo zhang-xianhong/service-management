@@ -43,7 +43,7 @@
     >
       <!-- 服务名称栏 -->
       <template #name="{ rowData }">
-        <router-link :to="`/serve/business-edit/${rowData.id}`">{{ rowData.name }}</router-link>
+        <router-link :to="`/service/business-edit/${rowData.id}`">{{ rowData.name }}</router-link>
       </template>
       <!-- 自定义负责人栏显示样式 -->
       <template #owner="data">
@@ -59,7 +59,7 @@
       </template>
       <!-- 自定义服务代码栏显示样式 -->
       <template #code="data">
-        <el-button type="primary" icon="el-icon-download">{{ data.code }}</el-button>
+        <el-button v-if="data.code" type="primary" icon="el-icon-download">{{ data.code }}</el-button>
       </template>
     </server-table>
   </data-list>
@@ -149,7 +149,7 @@ export default {
 
     const cloneDialogVisible = ref(false);
     const goCreatePage = () => {
-      router.push({ path: '/serve/business-add' });
+      router.push({ path: '/service/business-add' });
     };
     const currentPage = ref(1);
     const pageSize = ref(10);
@@ -168,7 +168,7 @@ export default {
     reloadList();
 
     const editRow = (index: number, obj: any) => {
-      router.push({ path: `/serve/business-edit/${obj.id}` });
+      router.push({ path: `/service/business-edit/${obj.id}` });
     };
     const buildRow = async (index: number, obj: any) => {
       const { code } = await buildService({
