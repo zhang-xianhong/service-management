@@ -4,13 +4,18 @@ import { ModelsFieldsEntity } from './models-fields.entity';
 
 @Entity({ name: 'model_info' })
 export class ModelsInfoEntity extends BaseEntity {
-  @Column({ length: 64 })
+  @Column({ length: 64, comment: '模型名称，大驼峰格式' })
   name: string;
 
-  @Column({
-    type: 'tinytext',
-  })
+  @Column({ length: 100, comment: '模型中文描述' })
   description: string;
+
+  @Column({
+    type: 'varchar',
+    length: 255,
+    comment: '模型详情，备注信息',
+  })
+  remark: string;
 
   // 建表引擎
   @Column({

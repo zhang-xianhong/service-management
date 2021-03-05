@@ -28,8 +28,10 @@ export class ModelsController {
    * 获取全部模型列表
    */
   @Get('all')
-  async findAllWithoutPagination() {
-    return await this.modelService.findAll({}, false);
+  async findAllWithoutPagination(@Query(new QueryPipe()) query: SearchQuery) {
+    return await this.modelService.findAll({
+      getFields: Number(query.fields) === 1,
+    }, false);
   }
 
   /**
@@ -49,17 +51,7 @@ export class ModelsController {
   @Post()
   async create(@Body() postData) {
     this.validatePostData(postData);
-    const { name, description, owner, isAllByExtend, modelRank, classification, tags, fields } = postData;
-    return await this.modelService.create({
-      name,
-      description,
-      owner,
-      isAllByExtend,
-      modelRank,
-      classification,
-      tags,
-      fields,
-    });
+    return await this.modelService.create(this.getPostData(postData));
   }
 
   /**
@@ -69,17 +61,7 @@ export class ModelsController {
   @Post(':id')
   async updateModel(@Body() postData, @Param() { id }) {
     this.validatePostData(postData);
-    const { name, description, owner = '', isAllByExtend = false, modelRank = '', classification = '', tags = '', fields } = postData;
-    return await this.modelService.updateModel(id, {
-      name,
-      description,
-      owner,
-      isAllByExtend,
-      modelRank,
-      classification,
-      tags,
-      fields,
-    });
+    return await this.modelService.updateModel(id, this.getPostData(postData));
   }
 
   /**
@@ -143,5 +125,35 @@ export class ModelsController {
         message: 'fields字段不能为空',
       });
     }
+  }
+
+
+  /**
+   * 获取存储数据
+   * @param postData
+   */
+  private getPostData(postData) {
+    const {
+      name,
+      description,
+      fields,
+      remark = '',
+      owner  = '',
+      isAllByExtend = false,
+      modelRank = '',
+      classification = '',
+      tags = '',
+    } = postData;
+    return {
+      name,
+      description,
+      remark,
+      owner,
+      isAllByExtend,
+      modelRank,
+      classification,
+      tags,
+      fields,
+    };
   }
 }
