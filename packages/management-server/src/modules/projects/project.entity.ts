@@ -14,6 +14,7 @@ export class ProjectEntity {
   @Column({
     type: 'varchar',
     length: 64,
+    default: '',
   })
   name: string;
 
@@ -21,6 +22,7 @@ export class ProjectEntity {
   @Column({
     type: 'varchar',
     length: 64,
+    default: '',
   })
   description: string;
 
@@ -29,49 +31,56 @@ export class ProjectEntity {
   status: string;
 
   // 是否只读
-  @Column('boolean')
+  @Column({
+    type: 'boolean',
+    name: 'read_nly',
+  })
   readOnly: boolean;
 
   // 代码生成器类型
   @Column({
-    type: 'tinytext',
-    nullable: true,
+    type: 'varchar',
+    name: 'generator_type',
+    default: '',
   })
   generatorType: string;
 
   // 负责人
   @Column({
     type: 'varchar',
-    nullable: true,
+    default: '',
   })
-  principal: string;
+  owner: string;
 
   // 代码质量
   @Column({
     type: 'varchar',
-    nullable: true,
+    name: 'code_quality',
+    default: '',
   })
-  sonarQubeAddress: string;
+  codeQuality: string;
 
   // 级别名称
   @Column({
     type: 'varchar',
-    nullable: true,
+    name: 'level_name',
+    default: '',
   })
   levelName: string;
 
   // 级别
   @Column({
-    type: 'tinytext',
-    nullable: true,
+    type: 'int',
+    default: null,
   })
-  levelNum: string;
+  level: number;
 
   // 创建账号
   @Column({
     type: 'varchar',
     length: 64,
-    nullable: true,
+    name: 'create_user',
+    default: '',
   })
   createUser: string;
 
@@ -79,22 +88,24 @@ export class ProjectEntity {
   @Column({
     type: 'varchar',
     length: 64,
-    nullable: true,
+    name: 'create_user_name',
   })
   createUserName: string;
 
   // 创建日期
   @Column({
     type: 'datetime',
-    nullable: true,
+    name: 'create_date',
+    default: () => 'NOW()',
   })
-  createsDate: Date;
+  createDate: Date;
 
   // 更新账号
   @Column({
     type: 'varchar',
     length: 64,
-    nullable: true,
+    name: 'update_user',
+    default: '',
   })
   updateUser: string;
 
@@ -102,119 +113,133 @@ export class ProjectEntity {
   @Column({
     type: 'varchar',
     length: 64,
-    nullable: true,
+    name: 'update_user_name',
+    default: '',
   })
   updateUserName: string;
 
   // 更新日期
   @Column({
     type: 'datetime',
-    nullable: true,
+    name: 'update_date',
+    default: null,
   })
   updateDate: Date;
 
   // 更新次数
   @Column({
     type: 'int',
-    nullable: true,
+    default: 0,
   })
   version: number;
 
   // 数据库IP
   @Column({
     type: 'varchar',
-    nullable: true,
+    name: 'database_ip',
+    default: '',
   })
   databaseIp: string;
 
   // 数据库端口
   @Column({
     type: 'varchar',
-    nullable: true,
+    name: 'database_port',
+    default: '',
   })
   databasePort: string;
 
   // 数据库名称
   @Column({
     type: 'varchar',
-    nullable: true,
+    name: 'database_name',
+    default: '',
   })
   databaseName: string;
 
   // 数据库用户
   @Column({
     type: 'varchar',
-    nullable: true,
+    name: 'database_user_name',
+    default: '',
   })
   databaseUserName: string;
 
   // 数据库密码
   @Column({
     type: 'varchar',
-    nullable: true,
+    name: 'database_user_password',
+    default: '',
   })
   databaseUserPassword: string;
 
   // TOKEN
   @Column({
     type: 'varchar',
-    nullable: true,
+    default: '',
   })
   token: string;
 
   // 已分配用户
   @Column({
     type: 'varchar',
-    nullable: true,
+    default: '',
   })
   assigned: string;
 
   // 每日冻结时段
   @Column({
     type: 'varchar',
-    nullable: true,
+    name: 'freeze_hours',
+    default: '',
   })
   freezeHours: string;
 
   // 开放微对象给项目
   @Column({
     type: 'varchar',
-    nullable: true,
+    name: 'can_access_micro_objects',
+    default: '',
   })
   canAccessMicroObjects: string;
 
   // 开放微服务给项目
   @Column({
     type: 'varchar',
-    nullable: true,
+    name: 'can_access_micro_services',
+    default: '',
   })
   canAccessMicroServices: string;
 
   // 开放微模块给项目
   @Column({
     type: 'varchar',
-    nullable: true,
+    name: 'can_access_micro_modules',
+    default: '',
   })
   canAccessMicroModules: string;
 
   // 能访问微对象的项目
   @Column({
     type: 'varchar',
-    nullable: true,
+    name: 'open_micro_object_to_projects',
+    default: '',
   })
   openMicroObjectToProjects: string;
 
   // 能访问微服务的项目
   @Column({
     type: 'varchar',
-    nullable: true,
+    name: 'open_micro_service_to_projects',
+    default: '',
   })
   openMicroServiceToProjects: string;
 
   // 能访问微模块的项目
   @Column({
     type: 'varchar',
-    nullable: true,
+    name: 'open_micro_module_to_projects',
+    default: '',
   })
   openMicroModuleToProjects: string;
 
