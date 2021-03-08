@@ -54,7 +54,6 @@ export class ServicesApiEntity extends BaseEntity {
   // 接口描述
   @Column({
     type: 'varchar',
-    nullable: true,
     default: '',
   })
   description: string;
@@ -69,7 +68,6 @@ export class ServicesApiEntity extends BaseEntity {
   // 版本号
   @Column({
     type: 'int',
-    nullable: true,
     default: 0,
   })
   version: number;

@@ -70,7 +70,7 @@ export class ServicesInfoEntity extends BaseEntity {
   // 服务描述
   @Column({
     type: 'varchar',
-    nullable: true,
+    default: '',
   })
   description: string;
 
@@ -111,7 +111,6 @@ export class ServicesInfoEntity extends BaseEntity {
   @Column({
     type: 'varchar',
     length: 64,
-    nullable: true,
     default: '',
   })
   classification: string;
@@ -119,7 +118,6 @@ export class ServicesInfoEntity extends BaseEntity {
   // 标签
   @Column({
     type: 'varchar',
-    nullable: true,
     default: '',
   })
   tag: string;
@@ -128,7 +126,6 @@ export class ServicesInfoEntity extends BaseEntity {
   @Column({
     type: 'varchar',
     name: 'code_quality',
-    nullable: true,
     default: '',
   })
   codeQuality: string;
@@ -137,7 +134,6 @@ export class ServicesInfoEntity extends BaseEntity {
   @Column({
     type: 'varchar',
     name: 'service_rank',
-    nullable: true,
     default: '',
   })
   serviceRank: string;
@@ -162,7 +158,6 @@ export class ServicesInfoEntity extends BaseEntity {
   @Column({
     type: 'datetime',
     name: 'start_time',
-    nullable: true,
     default: null,
   })
   startTime: Date;
@@ -171,7 +166,6 @@ export class ServicesInfoEntity extends BaseEntity {
   @Column({
     type: 'varchar',
     name: 'clone_by',
-    nullable: true,
     default: '',
   })
   cloneBy: string;
