@@ -1,10 +1,10 @@
 <template>
   <div class="tag-input-container" ref="container" @click="focusInput">
-    <el-tag v-for="tag in modelValue" :key="tag.value" closable @close="handleClose(tag)">
-      {{ tag.label }}
+    <el-tag v-for="tag in modelValue" :key="tag[valueKey]" closable @close="handleClose(tag)">
+      {{ tag[labelKey] }}
     </el-tag>
     <div class="input-wrap">
-      <input type="text" @keydown.enter="onEnterKey" v-model="text" />
+      <input type="text" @keydown.enter="onEnterKey" v-model="text" :readonly="!editable" />
       <!-- 通过span自动撑开来动态input宽度 -->
       <span>{{ text }}</span>
     </div>
@@ -24,23 +24,34 @@ export default defineComponent({
       type: Boolean,
       default: true,
     },
+    labelKey: {
+      type: String,
+      default: 'label',
+    },
+    valueKey: {
+      type: String,
+      default: 'value',
+    },
   },
   setup(props, { emit }) {
     const container: any = ref(null);
     const text = ref(' ');
 
-    const handleClose = ({ value = '' }) => {
-      emit('update:modelValue', _.reject({ value })(props.modelValue));
-    };
-
-    const onEnterKey = () => {
-      if (!text.value.trim()) return;
-      emit('update:modelValue', props.modelValue.concat({ value: text.value, label: text.value }));
-      text.value = ' ';
+    const handleClose = (tag: any) => {
+      emit('update:modelValue', _.reject({ [props.valueKey]: tag[props.valueKey] })(props.modelValue));
     };
 
     const focusInput = () => {
       container.value.querySelector('input').focus();
+    };
+
+    const onEnterKey = () => {
+      if (!text.value.trim()) return;
+      emit(
+        'update:modelValue',
+        props.modelValue.concat({ [props.valueKey]: text.value, [props.labelKey]: text.value }),
+      );
+      text.value = ' ';
     };
 
     return {
