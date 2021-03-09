@@ -72,6 +72,8 @@ export class ServicesController {
   async initService(@Param() { id }) {
     // 调用java接口初始化服务工程
     const { data } = await this.service.initService(id);
+    console.log('data', data);
+
     if (data?.success) {
       return data;
     }

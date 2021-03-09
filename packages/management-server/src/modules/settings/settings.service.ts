@@ -1,11 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { Repository, Connection, ILike } from 'typeorm';
+import { Repository, Connection, ILike, TreeRepository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataTypesEntity } from './settings-data-types.entity';
 import { SettingsTagsEntity } from './settings-tags.entity';
 import { PlainObject } from 'src/shared/pipes/query.pipe';
 import { ApiException } from 'src/shared/utils/api.exception';
-import { CommonCodes } from 'src/shared/constants/code';
+import { CommonCodes, SettingCodes } from 'src/shared/constants/code';
+import { SettingsCategoryEntity } from './settings-category.entity';
 
 @Injectable()
 export class SettingsService {
@@ -15,6 +16,8 @@ export class SettingsService {
     private readonly dataTypesRepository: Repository<DataTypesEntity>,
     @InjectRepository(SettingsTagsEntity)
     private readonly tagsRepository: Repository<SettingsTagsEntity>,
+    @InjectRepository(SettingsCategoryEntity)
+    private readonly categoryRepository: TreeRepository<SettingsCategoryEntity>,
   ) {}
 
   async findDataTypes() {
@@ -62,5 +65,90 @@ export class SettingsService {
     return {
       tagId: res.id,
     };
+  }
+
+  /**
+   * 获取所有分类
+   * @param query
+   * @param getTotal
+   */
+  async findAllCategorys() {
+    return await this.categoryRepository.find({
+      isDelete: false,
+    });
+  }
+
+  /**
+   * 获取分类详情
+   * @param query
+   * @param getTotal
+   */
+  async findCategorysById(id: number) {
+    return await this.categoryRepository.findOne({
+      isDelete: false,
+      id,
+    });
+  }
+
+  /**
+   * 获取分类树
+   * @param query
+   * @param getTotal
+   */
+  async findCategorysTree() {
+    return await this.categoryRepository.findTrees();
+  }
+
+  /**
+   * 新增分类
+   * @param data
+   */
+  async createCategory(data: any) {
+    const { parentId, ...category } = data;
+    const parent = await this.categoryRepository.findOne({ id: data.parentId });
+    category.parent = parent;
+    return this.categoryRepository.save(category);
+  }
+
+  /**
+   * 更新分类
+   * @param data
+   */
+  async updateCategory(id: number, data: any) {
+    const category = await this.categoryRepository.findOne({
+      where: {
+        isDelete: false,
+        id,
+      },
+    });
+    if (!category) {
+      throw new ApiException({
+        code: SettingCodes.SETTING_ID_INVALID,
+        message: '分类不存在',
+      });
+    }
+    const result = await this.categoryRepository.update(id, data);
+    return result.affected === 1;
+  }
+
+  /**
+   * 删除分类
+   * @param data
+   */
+  async deleteCategory(id: number) {
+    const category = await this.categoryRepository.findOne({
+      where: {
+        isDelete: false,
+        id,
+      },
+    });
+    if (!category) {
+      throw new ApiException({
+        code: SettingCodes.SETTING_ID_INVALID,
+        message: '分类不存在',
+      });
+    }
+    const result = await this.categoryRepository.update(id, { isDelete: true });
+    return result.affected === 1;
   }
 }
