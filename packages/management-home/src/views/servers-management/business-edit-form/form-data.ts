@@ -14,7 +14,7 @@ interface BasicForm {
 interface AdvanceForm {
   objDep: Array<Record<string, string>>;
   dependencies: Array<Record<string, string>>;
-  libDep: string;
+  libDep: Array<Record<string, string>>;
 }
 interface RelationRecord {
   type: 'include' | 'reference' | '';
@@ -130,7 +130,7 @@ export const basicForm: Ref<BasicForm> = ref({
 export const advanceForm: Ref<AdvanceForm> = ref({
   objDep: [],
   dependencies: [],
-  libDep: '',
+  libDep: [],
 });
 
 export const relationForm: Ref<RelationForm> = ref({
