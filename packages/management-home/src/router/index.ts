@@ -149,7 +149,7 @@ const routes: Array<RouteRecordRaw> = [
     children: [
       {
         path: 'model',
-        component: () => import('@/views/data-schema/field-data/data-object/Index.vue'),
+        component: () => import(/* webpackChunkName: "data-schema" */ '@/views/data-schema/data-object/Index.vue'),
         name: 'DataObject',
         meta: {
           title: '数据对象',
@@ -159,7 +159,8 @@ const routes: Array<RouteRecordRaw> = [
       },
       {
         path: 'model/:id',
-        component: () => import('@/views/data-schema/field-data/data-object/data-object-edit/Index.vue'),
+        component: () =>
+          import(/* webpackChunkName: "data-schema" */ '@/views/data-schema/data-object/data-object-edit/Index.vue'),
         name: 'DataObjectEdit',
         meta: {
           title: '数据对象',

@@ -45,7 +45,7 @@
 
 <script lang="ts">
 import { defineComponent, reactive, ref } from 'vue';
-import DataList from '@/components/dataList/Index.vue';
+import DataList from '@/components/data-list/Index.vue';
 export default defineComponent({
   name: 'Clone',
   components: {

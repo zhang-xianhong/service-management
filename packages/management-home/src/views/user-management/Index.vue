@@ -28,7 +28,7 @@
 </template>
 <script lang="ts">
 import { defineComponent, onMounted, reactive, ref } from 'vue';
-import { PageInfo, SortInfo } from '@/types/dataList';
+import { PageInfo, SortInfo } from '@/components/data-list/types/data-list';
 import { Columns } from './columns';
 export default defineComponent({
   name: 'userManagerment',
