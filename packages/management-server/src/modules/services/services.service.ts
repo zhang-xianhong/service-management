@@ -41,11 +41,9 @@ export class ServicesService {
     if (query.keyword) {
       where.name = ILike(`%${query.keyword}%`);
     }
-
-    const list =  this.infoRepository.findAndCount({
-      ...query,
-      where,
-    });
+    const { conditions = {} } = query;
+    conditions.where = where;
+    const list =  this.infoRepository.findAndCount(conditions);
     return list;
   }
 
