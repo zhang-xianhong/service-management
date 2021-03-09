@@ -72,6 +72,7 @@ export class ServicesController {
   async initService(@Param() { id }) {
     // 调用java接口初始化服务工程
     const { data } = await this.service.initService(id);
+    console.log('init', data);
     if (data?.code === 0) {
       return data.data;
     }
@@ -86,6 +87,8 @@ export class ServicesController {
   async buildService(@Body() postData) {
     // 调用java接口初始化服务工程
     const { data } = await this.service.buildService(postData);
+    console.log('build', data);
+
     if (data?.code === 0) {
       return data.data;
     }
