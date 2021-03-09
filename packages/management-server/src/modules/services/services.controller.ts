@@ -72,8 +72,8 @@ export class ServicesController {
   async initService(@Param() { id }) {
     // 调用java接口初始化服务工程
     const { data } = await this.service.initService(id);
-    if (data?.success) {
-      return data;
+    if (data?.code === 0) {
+      return data.data;
     }
     throw new ApiException({
       code: CommonCodes.INITIALIZE_FAIL,
