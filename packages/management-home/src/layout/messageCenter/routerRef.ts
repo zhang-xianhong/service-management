@@ -32,6 +32,7 @@ export const getPermissionRoutes = function(config = getComputedRoutes() as any)
     // 存在meta和permission属性
     if (item.meta && item.meta.permission) {
       // 有权限
+      // TODO 权限校验规则待定
       if (permissionArr.includes(item.meta.permission)) {
         obj = Object.assign({}, item);
         if (item.children && item.children.length > 0) {

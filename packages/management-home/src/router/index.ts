@@ -21,6 +21,14 @@ const baseRoutes: Array<RouteRecordRaw> = [
       isRootLevel: false,
     },
   },
+  {
+    path: '/not-found',
+    name: 'notFound',
+    component: () => import('@/views/not-found/Index.vue'),
+    meta: {
+      isRootLevel: false,
+    },
+  },
 ];
 
 const routes: Array<RouteRecordRaw> = [
@@ -52,7 +60,6 @@ const routes: Array<RouteRecordRaw> = [
       title: '项目管理',
       icon: 'el-icon-eleme',
       isRootLevel: true,
-      permission: 'Dashboard',
     },
     children: [
       {
@@ -63,6 +70,7 @@ const routes: Array<RouteRecordRaw> = [
           title: '项目列表',
           icon: 'el-icon-eleme',
           isRootLevel: false,
+          permission: 'Dashboard',
         },
       },
       {
@@ -211,7 +219,6 @@ localStorage.setItem('permissionArr', JSON.stringify(['Dashboard']));
 
 if (localStorage.permissionArr) {
   router = reCreateRouter(getPermissionRoutes([...routes, ...baseRoutes]));
-  console.log(getPermissionRoutes([...routes, ...baseRoutes]), 123);
 }
 
 export const resetRouter = (routes: Array<RouteRecordRaw>): void => {
@@ -219,6 +226,7 @@ export const resetRouter = (routes: Array<RouteRecordRaw>): void => {
   setRouterRef(router);
 };
 
+export const alloverRouter = () => reCreateRouter([...baseRoutes, ...routes]);
 setRouterRef(router);
 
 export default router;

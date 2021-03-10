@@ -1,14 +1,12 @@
 <template>
-  <div>
-    没有权限
-  </div>
+  <div>404 Not Found</div>
 </template>
 
-<script>
+<script lang="ts">
 import { defineComponent } from 'vue';
 export default defineComponent({
-  name: 'NoRight',
+  name: 'NotFound',
 });
 </script>
 
-<style scoped></style>
+<style lang="scss"></style>
