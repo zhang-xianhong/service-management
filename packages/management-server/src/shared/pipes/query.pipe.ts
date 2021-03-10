@@ -29,7 +29,7 @@ export class QueryPipe implements PipeTransform <any, SearchQuery> {
     }
     const query: SearchQuery = { ...value };
     let { page, pageSize, sortType } = value;
-    const { sortField, keyword } = value;
+    const { sortField = 'updateTime', keyword } = value;
     page = parseInt(page, 10);
     pageSize = parseInt(pageSize, 10);
     page = (isNaN(page) || page < 1) ? 1 : page;

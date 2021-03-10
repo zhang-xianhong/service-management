@@ -63,7 +63,7 @@ export class ServicesInfoEntity extends BaseEntity {
   @Column({
     type: 'tinyint',
     comment: '是否初始化，决定是否要追加更新',
-    default: null,
+    default: 0,
   })
   status: number;
 

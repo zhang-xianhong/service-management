@@ -19,8 +19,9 @@ export const getServiceList: (payload: object) => Promise<SuccessResponse<any>> 
 
 export const deleteService: (id: string) => Promise<SuccessResponse<any>> = (id: string) =>
   request.post(getUrl(URL.service.DELETE_SERVICR, id));
+
 export const buildService: (payload: object) => Promise<SuccessResponse<any>> = (payload: any) =>
-  request.post(getUrl(URL.service.BUILD_SERVICE), payload);
+  request.post(getUrl(URL.service.BUILD_SERVICE), payload, { timeout: 60000 });
 
 export const initService: (payload: object) => Promise<SuccessResponse<any>> = (payload: any) =>
-  request.get(getUrl(URL.service.INIT_SERVICE, payload.serviceId));
+  request.get(getUrl(URL.service.INIT_SERVICE, payload.serviceId), { timeout: 60000 });
