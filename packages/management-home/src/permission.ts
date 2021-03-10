@@ -1,4 +1,4 @@
-import router, { alloverRouter } from '@/router';
+import router, { alloverRouter, baseRoutes } from '@/router';
 
 import NProgress from 'nprogress';
 import 'nprogress/nprogress.css';
@@ -7,7 +7,7 @@ import { getToken } from '@/utils/todoToken';
 
 NProgress.configure({ showSpinner: false });
 
-const whiteList = ['/login', '/not-found', '/no-right'];
+const whiteList = baseRoutes.map((x) => x.path);
 
 router.beforeEach(async (to, from, next) => {
   NProgress.start();

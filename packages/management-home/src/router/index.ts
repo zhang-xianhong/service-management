@@ -4,7 +4,7 @@ import Layout from '@/layout/Index.vue';
 import { setRouterRef, getPermissionRoutes } from '@/layout/messageCenter/routerRef';
 import { h } from 'vue';
 
-const baseRoutes: Array<RouteRecordRaw> = [
+export const baseRoutes: Array<RouteRecordRaw> = [
   {
     path: '/login',
     name: 'login',
