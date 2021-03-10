@@ -86,5 +86,7 @@ export enum SettingCodes {
   // 名称无效
   NAME_INVALID = 50002,
   // 无效的Id
-  SETTING_ID_INVALID = 50003
+  SETTING_ID_INVALID = 50003,
+  // 存在叶子节点
+  EXIST_CHILD_NODES = 50004,
 }

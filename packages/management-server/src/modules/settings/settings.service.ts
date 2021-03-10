@@ -107,7 +107,10 @@ export class SettingsService {
     const { parentId, ...category } = data;
     const parent = await this.categoryRepository.findOne({ id: data.parentId });
     category.parent = parent;
-    return this.categoryRepository.save(category);
+    const result = await this.categoryRepository.save(category);
+    return {
+      categoryId: result.id,
+    };
   }
 
   /**
@@ -148,7 +151,14 @@ export class SettingsService {
         message: '分类不存在',
       });
     }
-    const result = await this.categoryRepository.update(id, { isDelete: true });
+    const data = await this.categoryRepository.findDescendantsTree(category);
+    if (data.children.length) {
+      throw new ApiException({
+        code: SettingCodes.EXIST_CHILD_NODES,
+        message: '存在子节点',
+      });
+    }
+    const result = await this.categoryRepository.delete(id);
     return result.affected === 1;
   }
 }
