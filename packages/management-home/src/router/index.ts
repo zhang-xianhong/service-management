@@ -1,10 +1,10 @@
-import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
+import { createRouter, createWebHistory, Router, RouteRecordRaw, createRouterMatcher, RouterMatcher } from 'vue-router';
 
 import Layout from '@/layout/Index.vue';
-import { setRouterRef } from '@/layout/messageCenter/routerRef';
+import { setRouterRef, getPermissionRoutes } from '@/layout/messageCenter/routerRef';
 import { h } from 'vue';
 
-const routes: Array<RouteRecordRaw> = [
+const baseRoutes: Array<RouteRecordRaw> = [
   {
     path: '/login',
     name: 'login',
@@ -13,6 +13,17 @@ const routes: Array<RouteRecordRaw> = [
       isRootLevel: false,
     },
   },
+  {
+    path: '/no-right',
+    name: 'noRight',
+    component: () => import('@/views/no-right/Index.vue'),
+    meta: {
+      isRootLevel: false,
+    },
+  },
+];
+
+const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
     redirect: '/dashboard',
@@ -41,6 +52,7 @@ const routes: Array<RouteRecordRaw> = [
       title: '项目管理',
       icon: 'el-icon-eleme',
       isRootLevel: true,
+      permission: 'Dashboard',
     },
     children: [
       {
@@ -184,10 +196,28 @@ const routes: Array<RouteRecordRaw> = [
   },
 ];
 
-const router = createRouter({
-  history: createWebHistory(process.env.BASE_URL),
-  routes,
-});
+export const reCreateRouter = (routes: Array<RouteRecordRaw>): Router =>
+  createRouter({
+    history: createWebHistory(process.env.BASE_URL),
+    routes,
+  });
+
+export const reCreateRouterMatcher = (routes: Array<RouteRecordRaw>): RouterMatcher => createRouterMatcher(routes, {});
+
+// eslint-disable-next-line
+let router = reCreateRouter([...baseRoutes]);
+
+localStorage.setItem('permissionArr', JSON.stringify(['Dashboard']));
+
+if (localStorage.permissionArr) {
+  router = reCreateRouter(getPermissionRoutes([...routes, ...baseRoutes]));
+  console.log(getPermissionRoutes([...routes, ...baseRoutes]), 123);
+}
+
+export const resetRouter = (routes: Array<RouteRecordRaw>): void => {
+  router = reCreateRouter(routes);
+  setRouterRef(router);
+};
 
 setRouterRef(router);
 

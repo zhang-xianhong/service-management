@@ -12,3 +12,4 @@
         isRootLevel<boolen>         是否左边栏顶级节点，router数组直接对象中，必为true
         icon<string>                图标
         title<string>               左边栏标题
+        permission<string | number> 权限信息，非必填，有此属性则开启页面权限校验
