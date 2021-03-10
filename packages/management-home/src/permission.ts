@@ -30,7 +30,6 @@ router.beforeEach(async (to, from, next) => {
           next('/not-found');
         }
       }
-      console.log('this is permission_router place todo');
     }
   } else {
     if (whiteList.indexOf(to.path) !== -1) {
