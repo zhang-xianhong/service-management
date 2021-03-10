@@ -45,6 +45,9 @@ import {
   ElDialog,
   ElLink,
   ElCascader,
+  ElTimeline,
+  ElTimelineItem,
+  ElCard,
 } from 'element-plus';
 
 const components = [
@@ -87,6 +90,9 @@ const components = [
   ElTag,
   ElLink,
   ElCascader,
+  ElTimeline,
+  ElTimelineItem,
+  ElCard,
 ];
 const plugins = [ElInfiniteScroll, ElLoading, ElMessage, ElMessageBox, ElNotification];
 

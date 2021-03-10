@@ -1,10 +1,10 @@
 <template>
-  <div class="tag-input-container" ref="container" @click="focusInput">
-    <el-tag v-for="tag in modelValue" :key="tag[valueKey]" closable @close="handleClose(tag)">
+  <div class="tag-input-container" ref="container" @click="focusInput" :class="{ disabled }">
+    <el-tag v-for="tag in modelValue" :key="tag[valueKey]" :closable="!disabled" @close="handleClose(tag)">
       {{ tag[labelKey] }}
     </el-tag>
     <div class="input-wrap">
-      <input type="text" @keydown.enter="onEnterKey" v-model="text" :readonly="!editable" />
+      <input type="text" @keydown.enter="onEnterKey" v-model="text" :readonly="!editable" :disabled="disabled" />
       <!-- 通过span自动撑开来动态input宽度 -->
       <span>{{ text }}</span>
     </div>
@@ -24,6 +24,10 @@ export default defineComponent({
       type: Boolean,
       default: true,
     },
+    disabled: {
+      type: Boolean,
+      default: false,
+    },
     labelKey: {
       type: String,
       default: 'label',
@@ -42,6 +46,7 @@ export default defineComponent({
     };
 
     const focusInput = () => {
+      if (props.disabled) return;
       container.value.querySelector('input').focus();
     };
 
@@ -108,6 +113,11 @@ export default defineComponent({
       visibility: hidden;
       height: 0;
     }
+  }
+  &.disabled {
+    background: #f5f7fa;
+    border-color: #e4e7ed;
+    cursor: not-allowed;
   }
 }
 </style>

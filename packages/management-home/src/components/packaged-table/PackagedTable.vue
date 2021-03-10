@@ -25,6 +25,7 @@
             v-for="(option, index) in buttonOptions"
             :key="index"
             type="primary"
+            v-bind="option.customAttr && option.customAttr(scope.row)"
             v-on="optionsHandler(option, prop, scope.row)"
             >{{ option.label ? option.label : scope.row[prop] }}</el-button
           >

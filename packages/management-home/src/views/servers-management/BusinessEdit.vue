@@ -13,6 +13,9 @@
         <el-tab-pane label="接口配置" name="api"><api-form></api-form></el-tab-pane>
         <el-tab-pane label="视图设计" name="view"><view-form></view-form></el-tab-pane>
         <el-tab-pane label="运行参数" name="args"><args-form></args-form></el-tab-pane>
+        <el-tab-pane v-if="id" label="服务配置" name="conf"><conf-form></conf-form></el-tab-pane>
+        <el-tab-pane v-if="id" label="变更时间线" name="timeline"><timeline></timeline></el-tab-pane>
+        <el-tab-pane v-if="id" label="服务分析" name="analysis"><svc-analysis></svc-analysis></el-tab-pane>
       </el-tabs>
     </el-row>
   </div>
@@ -28,13 +31,27 @@ import ComputedForm from './business-edit-form/Computed.vue';
 import ApiForm from './business-edit-form/Api.vue';
 import ViewForm from './business-edit-form/View.vue';
 import ArgsForm from './business-edit-form/Args.vue';
+import ConfForm from './business-edit-form/Configuration.vue';
+import Timeline from './business-edit-form/Timeline.vue';
+import SvcAnalysis from './business-edit-form/Analysis.vue';
 import { addService, updateService, getServiceById } from '@/api/servers';
 import * as formData from './business-edit-form/form-data';
 import _ from 'lodash/fp';
 
 export default defineComponent({
   name: 'BusinessEdit',
-  components: { BasicForm, AdvanceForm, RelationForm, ComputedForm, ApiForm, ViewForm, ArgsForm },
+  components: {
+    BasicForm,
+    AdvanceForm,
+    RelationForm,
+    ComputedForm,
+    ApiForm,
+    ViewForm,
+    ArgsForm,
+    ConfForm,
+    Timeline,
+    SvcAnalysis,
+  },
   props: {
     id: {
       type: String,
@@ -82,6 +99,7 @@ export default defineComponent({
 
     onMounted(async () => {
       const { id } = props;
+      formData.resetForm();
       if (id) {
         const { data: serviceDetail } = await getServiceById({ id });
         Object.assign(formData.basicForm.value, serviceDetail);
