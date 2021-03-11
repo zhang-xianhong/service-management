@@ -47,7 +47,7 @@
       </template>
       <!-- 自定义负责人栏显示样式 -->
       <template #owner="data">
-        <el-tag>{{ data.owner }}</el-tag>
+        <el-tag v-if="data.owner">{{ data.owner }}</el-tag>
       </template>
       <!-- 自定义服务状态栏显示样式 -->
       <template #status="data">

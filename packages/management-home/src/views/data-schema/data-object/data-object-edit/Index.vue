@@ -7,7 +7,9 @@
       <el-tab-pane label="对象分析" name="analysis">
         <object-analysis></object-analysis>
       </el-tab-pane>
-      <el-tab-pane label="相似度分析" name="similarity">相似度分析</el-tab-pane>
+      <el-tab-pane label="相似度分析" name="similarity">
+        <similarity-analtsis></similarity-analtsis>
+      </el-tab-pane>
     </el-tabs>
   </form-panel>
 </template>
@@ -18,11 +20,13 @@ import { useRoute, useRouter } from 'vue-router';
 import { getModelDetail } from '@/api/schema/model';
 import BaseInfo from './BaseInfo.vue';
 import ObjectAnalysis from './ObjectAnalysis.vue';
+import SimilarityAnaltsis from './SimilarityAnalysis.vue';
 
 export default defineComponent({
   components: {
     BaseInfo,
     ObjectAnalysis,
+    SimilarityAnaltsis,
   },
   setup() {
     // 页面相关状态信息

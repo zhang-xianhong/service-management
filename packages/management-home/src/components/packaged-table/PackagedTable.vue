@@ -3,31 +3,32 @@
     <el-table-column v-if="isSelectAble" type="selection" width="55" fixed></el-table-column>
     <el-table-column v-if="isShowIndex" prop="index" label="序号" width="60" fixed> </el-table-column>
     <el-table-column
-      v-for="({ prop, label, fixed, isButton, isDefault, isDate, buttonOptions, ...restArgs }, index) in tableColumns"
+      v-for="({ isButton, isDefault, prop, isDate, buttonOptions, ...restArgs }, index) in tableColumns"
       :key="index"
-      :prop="prop"
-      :label="label"
-      :fixed="fixed"
       v-bind="restArgs"
     >
       <template #default="scope">
         <!-- 默认输出 -->
         <template v-if="isDefault">
           <!-- 如果为日期类型自动格式化处理 -->
-          <template v-if="isDate">{{ dateFormat(scope.row[prop]) }}</template>
+          <template v-if="isDate && scope.row[prop]">{{ dateFormat(scope.row[prop]) }}</template>
           <template v-else>{{ scope.row[prop] }}</template>
         </template>
         <!-- 自定义表格行内容 -->
         <slot :name="prop" v-bind="{ [prop]: scope.row[prop], rowData: scope.row }"></slot>
         <!-- 表格行内容为按钮 -->
         <template v-if="isButton">
-          <el-button
-            v-for="(option, index) in buttonOptions"
-            :key="index"
-            type="primary"
-            v-on="optionsHandler(option, prop, scope.row)"
-            >{{ option.label ? option.label : scope.row[prop] }}</el-button
-          >
+          <template v-for="({ trigger, name, eventName, label, ...restOptions }, index) in buttonOptions" :key="index">
+            <el-button
+              v-if="label || scope.row[prop]"
+              :key="index"
+              type="primary"
+              v-on="buttonEventHandler(trigger, prop, scope.row, name, eventName)"
+              v-bind="restOptions"
+            >
+              {{ label ? label : scope.row[prop] }}
+            </el-button>
+          </template>
         </template>
       </template>
     </el-table-column>
@@ -158,38 +159,35 @@ export default {
     });
 
     // 表格内按钮事件触发
-    function buttonEventHandler(option: ButtonOptionInterface, prop: string, rowData: any) {
-      if (option.eventName) {
-        ctx.emit(option.eventName, prop, rowData);
-      } else {
-        ctx.emit(`${option.trigger || 'click'}:${option.name || ''}`, rowData);
+    function buttonEventHandler(trigger: any, prop: string, rowData: any, name: string, eventName?: string): object {
+      if (!trigger) {
+        return {};
       }
-    }
-
-    // 按钮选项参数处理
-    function optionsHandler(option: ButtonOptionInterface, prop: string, rowData: any): object {
-      const { trigger = 'click', name, eventName, label, ...restOptions } = option;
       // 对按钮触发事件类型进行限制，仅支持'hover'｜'click'｜'dbclick'｜'focus'类型
       switch (trigger) {
         case 'hover':
           return {
-            hover: () => buttonEventHandler(option, prop, rowData),
-            ...restOptions,
+            hover: () => {
+              ctx.emit(`${eventName || `hover:${name}`}`, prop, rowData);
+            },
           };
         case 'dbclick':
           return {
-            dbclick: () => buttonEventHandler(option, prop, rowData),
-            ...restOptions,
+            dbclick: () => {
+              ctx.emit(`${eventName || `dbclick:${name}`}`, prop, rowData);
+            },
           };
         case 'focus':
           return {
-            focus: () => buttonEventHandler(option, prop, rowData),
-            ...restOptions,
+            focus: () => {
+              ctx.emit(`${eventName || `focus:${name}`}`, prop, rowData);
+            },
           };
         default:
           return {
-            click: () => buttonEventHandler(option, prop, rowData),
-            ...restOptions,
+            click: () => {
+              ctx.emit(`${eventName || `click:${name}`}`, prop, rowData);
+            },
           };
       }
     }
@@ -201,7 +199,7 @@ export default {
       tableOperations,
       tableColumns,
       handleOperate,
-      optionsHandler,
+      buttonEventHandler,
       dateFormat,
     };
   },
