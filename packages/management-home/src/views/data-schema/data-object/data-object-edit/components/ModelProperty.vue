@@ -102,7 +102,7 @@ export default {
           index: 1,
           name: 'id',
           description: '编号',
-          typeId: '1',
+          typeId: '0',
           notNull: true,
           isUnique: true,
           isIndex: true,
