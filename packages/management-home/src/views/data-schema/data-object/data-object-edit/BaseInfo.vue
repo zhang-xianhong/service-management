@@ -1,5 +1,5 @@
 <template>
-  <el-form :ref="formRef" :model="formData" :rules="formRules" label-width="120px">
+  <el-form ref="formRef" :model="formData" :rules="formRules" label-width="120px">
     <el-form-item prop="name" label="数据对象名称" required>
       <el-input v-model="formData.name" placeholder="请输入英文名称，作为唯一标识，不可重复"></el-input>
     </el-form-item>
@@ -57,7 +57,7 @@ export default {
   setup(props: { data: any; isCreate: boolean }) {
     // 路由器获取
     const router = useRouter();
-    const formRef = ref();
+    const formRef: any = ref(null);
 
     // 表单状态相关数据
     const formState = reactive({
@@ -100,7 +100,8 @@ export default {
         ElMessage.error('数据对象名称必须遵守大驼峰命名规则！');
         return false;
       }
-      const popertiesValidatorResult: boolean = data.fields.some((field: any) => {
+      let popertiesValidatorResult = true;
+      popertiesValidatorResult = data.fields.some((field: any) => {
         if (!field.name || typeof field.name !== 'string' || !/^[a-z]/g.test(field.name)) {
           ElMessage.error('属性名称不能为空且必须遵守小驼峰命名规则！');
           return false;
@@ -152,7 +153,7 @@ export default {
         classification: formState.formData.classification.join(','),
         tags: formState.formData.tags.join(','),
       };
-      formRef.value.validator((valid: boolean) => {
+      formRef.value.validate((valid: boolean) => {
         if (!valid) {
           return undefined;
         }
