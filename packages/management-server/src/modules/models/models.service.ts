@@ -7,6 +7,7 @@ import { ModelsInfoEntity } from './models-info.entity';
 import { ModelsFieldsEntity } from './models-fields.entity';
 import { PlainObject } from 'src/shared/pipes/query.pipe';
 import { DataTypesEntity } from '../settings/settings-data-types.entity';
+import { FIELD_TYPE, SYSTEM_FIELD_TYPES } from 'src/shared/constants/field-types';
 @Injectable()
 export class ModelsService {
   constructor(
@@ -244,7 +245,7 @@ export class ModelsService {
     const dataTypes = await this.dataTypesEntity.find({
       isDelete: false,
     });
-    return dataTypes;
+    return [...SYSTEM_FIELD_TYPES, ...dataTypes];
   }
 
   /**
@@ -253,7 +254,7 @@ export class ModelsService {
    * @param modelId
    */
   private async createFieldsEntities(fields: Array<unknown>, modelId: number) {
-    const fieldTypes = await this.getDataTypes();
+    const fieldTypes = (await this.getDataTypes()) as FIELD_TYPE[];
     if (fields && Array.isArray(fields)) {
       const fieldsEntities = fields.map((field) => {
         const newField = { ...field };

@@ -8,6 +8,7 @@ import { ApiException } from 'src/shared/utils/api.exception';
 import { CommonCodes, SettingCodes } from 'src/shared/constants/code';
 import { SettingsCategoriesEntity } from './settings-categories.entity';
 import { ErrorTypes } from 'src/shared/constants/error';
+import { SYSTEM_FIELD_TYPES } from 'src/shared/constants/field-types';
 
 @Injectable()
 export class SettingsService {
@@ -21,10 +22,15 @@ export class SettingsService {
     private readonly categoriesRepository: TreeRepository<SettingsCategoriesEntity>,
   ) {}
 
+  /**
+   * 获取数据类型列表
+   * @returns
+   */
   async findDataTypes() {
-    return (await this.dataTypesRepository.find({
+    const types = await this.dataTypesRepository.find({
       isDelete: false,
-    }));
+    });
+    return [...SYSTEM_FIELD_TYPES, ...types];
   }
 
   /**
