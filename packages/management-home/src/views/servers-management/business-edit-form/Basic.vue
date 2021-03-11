@@ -2,7 +2,10 @@
   <div class="business-edit-basic">
     <el-form label-position="top" :model="basicForm" :rules="rules" ref="basicFormRef">
       <el-form-item label="服务名称" prop="name">
-        <el-input placeholder="请输入英文命名，并以Svc结尾" v-model="basicForm.name"></el-input>
+        <el-input
+          placeholder="请输入英文命名，以srv-开头, 支持小写字母、数字及中划线, 不能以中划线结尾"
+          v-model="basicForm.name"
+        ></el-input>
       </el-form-item>
       <el-form-item label="服务描述" prop="description">
         <el-input placeholder="请输入中文命名" v-model="basicForm.description"></el-input>
@@ -40,7 +43,19 @@ export default defineComponent({
     const basicFormRef: any = ref(null);
 
     const rules = {
-      name: [{ required: true, message: '请输入服务名称', trigger: 'blur' }],
+      name: [
+        { required: true, message: '请输入服务名称', trigger: 'blur' },
+        {
+          validator(rule: any, value: string, callback: (error?: string) => {}) {
+            if (value.length > 45) return callback('最长支持45个字符');
+            if (!value.startsWith('srv-')) return callback('服务名需要以srv-开头');
+            if (!/^[a-z0-9-]+$/.test(value)) return callback('只能包含小写字母、数字及中划线');
+            if (/-$/.test(value)) return callback('服务名不能以中划线结尾');
+            callback();
+          },
+          trigger: 'blur',
+        },
+      ],
       description: [{ required: true, message: '请输入服务描述', trigger: 'blur' }],
     };
 
