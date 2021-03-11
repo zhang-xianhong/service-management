@@ -61,4 +61,8 @@ a {
 .primary {
   background-color: #006eff;
 }
+#nprogress .bar {
+  background-image: linear-gradient(to right, red, blue);
+  height: 8px !important;
+}
 </style>
