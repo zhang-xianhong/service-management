@@ -25,4 +25,6 @@ export enum ErrorTypes {
   EXPIRED = 'Expired',
   // 服务错误
   INTERNAL_SERVER_ERROR = 'Internal Server Error',
+  // 不存在
+  NOT_FOUND = 'Not Found',
 }

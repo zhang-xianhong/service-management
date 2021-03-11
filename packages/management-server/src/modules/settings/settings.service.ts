@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { Repository, Connection, ILike, TreeRepository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataTypesEntity } from './settings-data-types.entity';
@@ -6,7 +6,9 @@ import { SettingsTagsEntity } from './settings-tags.entity';
 import { PlainObject } from 'src/shared/pipes/query.pipe';
 import { ApiException } from 'src/shared/utils/api.exception';
 import { CommonCodes, SettingCodes } from 'src/shared/constants/code';
-import { SettingsCategoryEntity } from './settings-category.entity';
+import { SettingsCategoriesEntity } from './settings-categories.entity';
+import { ErrorTypes } from 'src/shared/constants/error';
+import { SYSTEM_FIELD_TYPES } from 'src/shared/constants/field-types';
 
 @Injectable()
 export class SettingsService {
@@ -16,14 +18,19 @@ export class SettingsService {
     private readonly dataTypesRepository: Repository<DataTypesEntity>,
     @InjectRepository(SettingsTagsEntity)
     private readonly tagsRepository: Repository<SettingsTagsEntity>,
-    @InjectRepository(SettingsCategoryEntity)
-    private readonly categoryRepository: TreeRepository<SettingsCategoryEntity>,
+    @InjectRepository(SettingsCategoriesEntity)
+    private readonly categoriesRepository: TreeRepository<SettingsCategoriesEntity>,
   ) {}
 
+  /**
+   * 获取数据类型列表
+   * @returns
+   */
   async findDataTypes() {
-    return (await this.dataTypesRepository.find({
+    const types = await this.dataTypesRepository.find({
       isDelete: false,
-    }));
+    });
+    return [...SYSTEM_FIELD_TYPES, ...types];
   }
 
   /**
@@ -72,8 +79,8 @@ export class SettingsService {
    * @param query
    * @param getTotal
    */
-  async findAllCategorys() {
-    return await this.categoryRepository.find({
+  async findAllCategories() {
+    return await this.categoriesRepository.find({
       isDelete: false,
     });
   }
@@ -83,8 +90,8 @@ export class SettingsService {
    * @param query
    * @param getTotal
    */
-  async findCategorysById(id: number) {
-    return await this.categoryRepository.findOne({
+  async findCategoryById(id: number) {
+    return await this.categoriesRepository.findOne({
       isDelete: false,
       id,
     });
@@ -95,8 +102,8 @@ export class SettingsService {
    * @param query
    * @param getTotal
    */
-  async findCategorysTree() {
-    return await this.categoryRepository.findTrees();
+  async findCategoriesTree() {
+    return await this.categoriesRepository.findTrees();
   }
 
   /**
@@ -105,9 +112,18 @@ export class SettingsService {
    */
   async createCategory(data: any) {
     const { parentId, ...category } = data;
-    const parent = await this.categoryRepository.findOne({ id: data.parentId });
-    category.parent = parent;
-    const result = await this.categoryRepository.save(category);
+    if (parentId) {
+      const parent = await this.categoriesRepository.findOne({ id: parentId });
+      if (!parent) {
+        throw new ApiException({
+          code: CommonCodes.NOT_FOUND,
+          message: '父级分类不存在',
+          error: ErrorTypes.NOT_FOUND,
+        }, HttpStatus.NOT_FOUND);
+      }
+      category.parent = parent;
+    }
+    const result = await this.categoriesRepository.save(category);
     return {
       categoryId: result.id,
     };
@@ -118,7 +134,7 @@ export class SettingsService {
    * @param data
    */
   async updateCategory(id: number, data: any) {
-    const category = await this.categoryRepository.findOne({
+    const category = await this.categoriesRepository.findOne({
       where: {
         isDelete: false,
         id,
@@ -126,11 +142,12 @@ export class SettingsService {
     });
     if (!category) {
       throw new ApiException({
-        code: SettingCodes.SETTING_ID_INVALID,
+        code: CommonCodes.NOT_FOUND,
         message: '分类不存在',
-      });
+        error: ErrorTypes.NOT_FOUND,
+      }, HttpStatus.NOT_FOUND);
     }
-    const result = await this.categoryRepository.update(id, data);
+    const result = await this.categoriesRepository.update(id, data);
     return result.affected === 1;
   }
 
@@ -139,7 +156,7 @@ export class SettingsService {
    * @param data
    */
   async deleteCategory(id: number) {
-    const category = await this.categoryRepository.findOne({
+    const category = await this.categoriesRepository.findOne({
       where: {
         isDelete: false,
         id,
@@ -147,18 +164,19 @@ export class SettingsService {
     });
     if (!category) {
       throw new ApiException({
-        code: SettingCodes.SETTING_ID_INVALID,
+        code: CommonCodes.NOT_FOUND,
         message: '分类不存在',
-      });
+        error: ErrorTypes.NOT_FOUND,
+      }, HttpStatus.NOT_FOUND);
     }
-    const data = await this.categoryRepository.findDescendantsTree(category);
+    const data = await this.categoriesRepository.findDescendantsTree(category);
     if (data.children.length) {
       throw new ApiException({
         code: SettingCodes.EXIST_CHILD_NODES,
         message: '存在子节点',
       });
     }
-    const result = await this.categoryRepository.delete(id);
+    const result = await this.categoriesRepository.delete(id);
     return result.affected === 1;
   }
 }

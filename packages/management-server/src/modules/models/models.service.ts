@@ -1,5 +1,5 @@
 import { HttpStatus, Inject, Injectable, Logger, LoggerService } from '@nestjs/common';
-import { Repository, Connection, Not, ILike } from 'typeorm';
+import { Repository, Connection, Not, ILike, In } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ApiException } from '../../shared/utils/api.exception';
 import { CommonCodes } from '../../shared/constants/code';
@@ -7,6 +7,7 @@ import { ModelsInfoEntity } from './models-info.entity';
 import { ModelsFieldsEntity } from './models-fields.entity';
 import { PlainObject } from 'src/shared/pipes/query.pipe';
 import { DataTypesEntity } from '../settings/settings-data-types.entity';
+import { FIELD_TYPE, SYSTEM_FIELD_TYPES } from 'src/shared/constants/field-types';
 @Injectable()
 export class ModelsService {
   constructor(
@@ -182,27 +183,29 @@ export class ModelsService {
 
   /**
    * 删除模型
+   * 支持批量删除
    * @param id
    */
-  async deleteModel(id: number) {
-    await this.findModelById(id);
+  async deleteModel(deleteIds: string[]) {
     const queryRunner = this.connection.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
     try {
-      // 将管理fields设置为删除状态
+      // 将关联fields设置为删除状态
       await queryRunner.manager.update(ModelsFieldsEntity, {
-        modelId: id,
+        modelId: In(deleteIds),
       }, {
         isDelete: true,
       });
       // 更新model为删除状态
-      await queryRunner.manager.update(ModelsInfoEntity, id, {
+      await queryRunner.manager.update(ModelsInfoEntity, {
+        id: In(deleteIds),
+      }, {
         isDelete: true,
       });
       await queryRunner.commitTransaction();
       return {
-        modelId: id,
+        deleted: deleteIds,
       };
     } catch (error) {
       this.logger.error(error);
@@ -244,7 +247,7 @@ export class ModelsService {
     const dataTypes = await this.dataTypesEntity.find({
       isDelete: false,
     });
-    return dataTypes;
+    return [...SYSTEM_FIELD_TYPES, ...dataTypes];
   }
 
   /**
@@ -253,7 +256,7 @@ export class ModelsService {
    * @param modelId
    */
   private async createFieldsEntities(fields: Array<unknown>, modelId: number) {
-    const fieldTypes = await this.getDataTypes();
+    const fieldTypes = (await this.getDataTypes()) as FIELD_TYPE[];
     if (fields && Array.isArray(fields)) {
       const fieldsEntities = fields.map((field) => {
         const newField = { ...field };

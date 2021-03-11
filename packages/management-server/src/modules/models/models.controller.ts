@@ -1,11 +1,10 @@
 import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
 import { ApiException } from 'src/shared/utils/api.exception';
-import { is, isEmpty } from '../../shared/utils/validator';
+import { is, isEmpty, isNumeric } from '../../shared/utils/validator';
 import { CommonCodes } from '../../shared/constants/code';
 import { ModelsService } from './models.service';
 import { QueryPipe, SearchQuery } from '../../shared/pipes/query.pipe';
 import { REG_UPPER_CAMEL_CASE, REG_LOWER_CAMEL_CASE } from '../../shared/utils/rules';
-// import { ModelInfoDto } from './model-info.dto';
 @Controller('models')
 
 export class ModelsController {
@@ -55,6 +54,22 @@ export class ModelsController {
   }
 
   /**
+    * 批量删除模型
+    * @param param0
+    */
+  @Post('/delete')
+  async deleteModels(@Body() { ids = [] }) {
+    const deleteIds = ids.filter(id => isNumeric(id));
+    if (!deleteIds.length) {
+      throw new ApiException({
+        code: CommonCodes.DELETED_FAIL,
+        message: '无效的ID',
+      });
+    }
+    return await this.modelService.deleteModel(deleteIds);
+  }
+
+  /**
    * 更新模型
    * @param postData
    */
@@ -62,15 +77,6 @@ export class ModelsController {
   async updateModel(@Body() postData, @Param() { id }) {
     this.validatePostData(postData);
     return await this.modelService.updateModel(id, this.getPostData(postData));
-  }
-
-  /**
-   * 删除模型
-   * @param param0
-   */
-  @Post('/delete/:id')
-  async deleteModel(@Param() { id }) {
-    return await this.modelService.deleteModel(id);
   }
 
   /**

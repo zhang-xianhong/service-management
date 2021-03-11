@@ -5,7 +5,7 @@ export interface ApiExceptionInfo {
   // 业务错误码
   code: number
   // 错误类型
-  error?: ErrorTypes
+  error?: ErrorTypes | Error
   // 具体错误信息
   message?: string
   stack?: any

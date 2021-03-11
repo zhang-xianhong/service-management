@@ -1,6 +1,7 @@
 /**
  * 数据类型表
  */
+import { FIELD_TYPES } from 'src/shared/constants/field-types';
 import { Column, Entity } from 'typeorm';
 import { BaseEntity } from '../base.entity';
 
@@ -11,7 +12,7 @@ export class DataTypesEntity extends BaseEntity {
   @Column({
     type: 'varchar',
   })
-  type: string;
+  type: FIELD_TYPES;
 
   // 字段长度
   @Column({
@@ -31,20 +32,4 @@ export class DataTypesEntity extends BaseEntity {
     type: 'tinytext',
   })
   description: string;
-
-  // 是否主键
-  @Column({
-    name: 'is_key',
-    type: 'bool',
-    width: 1,
-    default: false,
-  })
-  isKey: boolean;
-
-  // 扩展信息
-  @Column({
-    type: 'varchar',
-    default: '',
-  })
-  extra: string;
 }

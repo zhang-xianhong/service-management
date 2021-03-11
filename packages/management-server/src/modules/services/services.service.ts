@@ -284,13 +284,14 @@ export class ServicesService {
       throw new ApiException({
         code: CommonCodes.INITIALIZE_FAIL,
         message: data.message,
-      });
+      }, HttpStatus.BAD_REQUEST);
     } catch (error) {
       this.logger.error(error);
       throw new ApiException({
         code: CommonCodes.INITIALIZE_FAIL,
         message: '服务初始化失败',
-      });
+        error,
+      }, HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -314,7 +315,8 @@ export class ServicesService {
       throw new ApiException({
         code: CommonCodes.BUILD_FAIL,
         message: '服务构建失败',
-      });
+        error,
+      }, HttpStatus.BAD_REQUEST);
     }
   }
 }
