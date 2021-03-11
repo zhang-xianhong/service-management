@@ -8,7 +8,7 @@ const param = process.argv[process.argv.length - 1]; // 获取git commit消息�
 let contentsStr = fs.readFileSync(param).toString();
 contentsStr = contentsStr.trim();
 //用户提交的msg格式
-const customTypeArr = ["--bug", "--story", "--bug"];
+const customTypeArr = ["--bug", "--story", "--task"];
 const customType = contentsStr.split('=')[0];
 // 标准的格式
 const standardTypeArr = ['upd', 'feat', 'fix', 'refactor', 'docs', 'chore', 'style', 'revert'];

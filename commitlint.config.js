@@ -6,10 +6,10 @@ module.exports = {
             'upd', 'feat', 'fix', 'refactor', 'docs', 'chore', 'style', 'revert'
         ]],
         'body-leading-blank': [0, 'never'],
-        'body-max-line-length': [2, 'always', 100],
+        'body-max-line-length': [2, 'always', 200],
         'footer-leading-blank': [1, 'always'],
         'footer-max-line-length': [2, 'always', 100],
-        'header-max-length': [2, 'always', 100],
+        'header-max-length': [2, 'always', 200],
         'scope-case': [0, 'never', 'lower-case'],
         'subject-case': [
             0,

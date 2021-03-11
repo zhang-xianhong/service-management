@@ -34,7 +34,7 @@
 
 <script lang="ts">
 import { ref, watch, reactive, toRefs } from 'vue';
-import ModelProperty from './ModelProperty.vue';
+import ModelProperty from './components/ModelProperty.vue';
 import { createModel, updateModel } from '@/api/schema/model';
 import { ElMessage } from 'element-plus';
 import { useRouter } from 'vue-router';
@@ -61,7 +61,6 @@ export default {
 
     // 表单状态相关数据
     const formState = reactive({
-      formRef,
       formData: {
         name: '',
         description: '',
@@ -153,8 +152,13 @@ export default {
         classification: formState.formData.classification.join(','),
         tags: formState.formData.tags.join(','),
       };
+      formRef.value.validator((valid: boolean) => {
+        if (!valid) {
+          return undefined;
+        }
+      });
       if (!validator(saveData)) {
-        return;
+        return undefined;
       }
       if (props.isCreate) {
         await createDataModel(saveData);
@@ -170,6 +174,7 @@ export default {
 
     return {
       ...toRefs(formState),
+      formRef,
       formRules,
       onSubmit,
       onCancel,

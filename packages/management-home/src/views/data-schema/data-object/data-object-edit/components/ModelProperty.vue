@@ -19,7 +19,7 @@
           maxlength="255"
           placeholder="请输入属性描述"
           :disabled="scope.row.isSystem"
-          @change="descriptionChange(scope.row.description, scope.$index)"
+          @change="handleChange('description', scope.row, scope.$index)"
         />
       </template>
     </el-table-column>
@@ -69,7 +69,7 @@
 </template>
 <script lang="ts">
 import { reactive, computed, onMounted } from 'vue';
-import DataCheckableColumns from '../../config/data-checkable-columns';
+import DataCheckableColumns from '../../../config/data-checkable-columns';
 import { getDataTypes } from '@/api/settings/data-types';
 import { ElMessage } from 'element-plus';
 import { getModelListAll } from '@/api/schema/model';
@@ -88,9 +88,9 @@ export default {
     // 属性可勾选配置项
     const checkableColumns = DataCheckableColumns;
 
-    // 数据属性，如果是新建数据对象默认生成id属性
-    const properties = computed(() => {
-      if (props.modelValue.length) {
+    // 数据对象属性初始化，如果传入属性为空则默认指定id属性
+    function initializeProperties() {
+      if (props.modelValue?.length) {
         return props.modelValue.map((item, index) => ({
           ...item,
           index: index + 1,
@@ -113,11 +113,19 @@ export default {
           releatedData: [],
         },
       ];
+    }
+
+    // 属性列表
+    const properties = computed({
+      get: () => initializeProperties(),
+      set: (value: any[]) => {
+        emit('update:modelValue', value);
+      },
     });
 
     // 新增属性
     const hadnleAddField = () => {
-      emit('update:modelValue', [
+      properties.value = [
         ...properties.value,
         {
           index: properties.value.length + 1,
@@ -132,8 +140,37 @@ export default {
           foreignId: '',
           releatedData: [],
         },
-      ]);
+      ];
     };
+
+    // 属性移除
+    function handleRemoveField(index: number): void {
+      const result = properties.value;
+      result.splice(index, 1);
+      properties.value = result;
+    }
+
+    // 属性名校验，仅支持小驼峰命名规则
+    function validatePropertyName(name: string, index: number): void {
+      if (typeof name === 'string' && /^[a-z]/g.test(name)) {
+        const result = properties.value;
+        result[index].name = name;
+        properties.value = result;
+        return;
+      }
+      ElMessage({
+        message: '参数命名必须遵守小驼峰规则！',
+        type: 'error',
+        duration: 5 * 1000,
+      });
+    }
+
+    // 属性修改
+    function handleChange(field: string, row: any, index: number): void {
+      const result = properties.value;
+      result[index][field] = row[field];
+      emit('update:modelValue', result);
+    }
 
     // 数据类型选项
     const dataTypes: any[] = reactive([]);
@@ -148,40 +185,7 @@ export default {
 
     fetchDataTypes();
 
-    // 属性移除
-    function handleRemoveField(index: number): void {
-      const result = properties.value;
-      result.splice(index, 1);
-      emit('update:modelValue', result);
-    }
-
-    // 属性名校验，仅支持小驼峰命名规则
-    function validatePropertyName(name: string, index: number): void {
-      if (typeof name === 'string' && /^[a-z]/g.test(name)) {
-        const result = properties.value;
-        result[index].name = name;
-        emit('update:modelValue', result);
-        return;
-      }
-      ElMessage({
-        message: '参数命名必须遵守小驼峰规则！',
-        type: 'error',
-        duration: 5 * 1000,
-      });
-    }
-
-    function descriptionChange(desc: string, index: number): void {
-      const result = properties.value;
-      result[index].description = desc;
-      emit('update:modelValue', result);
-    }
-
-    function handleChange(field: string, row: any, index: number): void {
-      const result = properties.value;
-      result[index][field] = row[field];
-      emit('update:modelValue', result);
-    }
-
+    // 数据关联对象级联框选项
     const cascaderOptions = reactive([] as any[]);
 
     // 获取级联框选项
@@ -194,7 +198,7 @@ export default {
           value: item.id,
           label: item.name,
           leaf: false,
-          children: item.fields.map((field: any) => ({
+          children: item.fields?.map((field: any) => ({
             value: field.id,
             label: field.name,
             leaf: true,
@@ -203,6 +207,7 @@ export default {
       cascaderOptions.push(...models);
     };
 
+    // 关联对象勾选级联框选择
     function changeHandler(data: any, node: any[]) {
       const result = properties.value;
       const [foreignModelId, foreignId] = node;
@@ -212,10 +217,8 @@ export default {
         }
         return { ...item };
       });
-      emit('update:modelValue', finalResult);
+      properties.value = finalResult;
     }
-    // 所有数据模型列表
-    const allModelList: any[] = [];
 
     // 获取所有模型列表
     onMounted(() => {
@@ -229,9 +232,7 @@ export default {
       hadnleAddField,
       handleRemoveField,
       validatePropertyName,
-      descriptionChange,
       handleChange,
-      allModelList,
       cascaderOptions,
       changeHandler,
     };

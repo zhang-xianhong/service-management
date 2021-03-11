@@ -6,7 +6,7 @@ import './permission';
 import Element from './element';
 import Store from './store';
 import Router from './router';
-import DataList from './components/dataList/Index.vue';
+import DataList from './components/data-list/Index.vue';
 import FormPanel from './components/form-panel/Index.vue';
 const app: Vue.App = createApp(App);
 

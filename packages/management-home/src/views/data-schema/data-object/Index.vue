@@ -9,8 +9,8 @@
     <template v-slot:headLeft>
       <el-select v-model="searchParams.category" placeholder="请选择"> </el-select>
       <el-select v-model="searchParams.tags" placeholder="请选择"> </el-select>
-      <el-input v-model="searchParams.keyword" placeholder="请输入关键字" />
-      <el-button icon="el-icon-search" type="primary"></el-button>
+      <el-input v-model="searchParams.keyword" placeholder="请输入数据名称" />
+      <el-button icon="el-icon-search" type="primary" @click="getList"></el-button>
     </template>
     <template v-slot:headRight>
       <router-link to="/schema/model/0">
@@ -39,7 +39,7 @@
 </template>
 <script lang="ts">
 import { reactive, ref, onMounted, toRefs } from 'vue';
-import { PageInfo, SortInfo } from '@/types/dataList';
+import { PageInfo, SortInfo } from '@/components/data-list/types/data-list';
 import { getModelList } from '@/api/schema/model';
 import { RouterLink, useRouter } from 'vue-router';
 import PackagedTable from '@/components/packaged-table/PackagedTable.vue';
@@ -75,7 +75,7 @@ export default {
     const loading = ref(false);
 
     // 获取表格数据参数
-    const searchParams = {
+    const searchParams = reactive({
       category: '',
       tags: '',
       keyword: '',
@@ -83,7 +83,7 @@ export default {
       pageSize: 10,
       sortField: '',
       sortType: '',
-    };
+    });
 
     // 获取数据对象列表
     const getList = async () => {
@@ -132,6 +132,7 @@ export default {
       handleSortChange,
       handleSelectionChange,
       editDataItem,
+      getList,
     };
   },
 };
