@@ -5,22 +5,29 @@
         <el-input :model-value="advanceForm.objDep.join()" disabled readonly class="readonly-input"></el-input>
       </el-form-item>
       <el-form-item label="服务依赖" prop="dependencies">
-        <el-input
-          placeholder="请选择服务"
-          :model-value="mapName(advanceForm.dependencies).join()"
-          readonly
+        <tag-input
+          :editable="false"
+          labelKey="name"
+          valueKey="dependencyId"
+          v-model="advanceForm.dependencies"
           @click="showSvcDialog"
           class="readonly-input"
-        ></el-input>
+        ></tag-input>
       </el-form-item>
       <el-form-item label="库依赖" prop="libDep">
-        <el-input placeholder="请输入库信息" type="textarea" :rows="5" v-model="advanceForm.libDep"></el-input>
+        <tag-input :editable="true" labelKey="name" valueKey="libId" v-model="advanceForm.libDep"></tag-input>
       </el-form-item>
     </el-form>
     <el-dialog title="服务选择" v-model="svcDialogVisible" width="80%">
       <el-row :gutter="10">
         <el-col :span="10">
-          <el-input placeholder="请选择服务" :model-value="mapName(advanceForm.dependencies).join()"></el-input>
+          <tag-input
+            :editable="false"
+            labelKey="name"
+            valueKey="dependencyId"
+            v-model="advanceForm.dependencies"
+            class="readonly-input"
+          ></tag-input>
         </el-col>
         <el-col :span="4">
           <el-select v-model="filterForm.svc">
@@ -87,9 +94,11 @@ import { advanceForm } from './form-data';
 import { getServiceList } from '@/api/servers';
 import { svcFormColumns } from './form-config';
 import _ from 'lodash/fp';
+import TagInput from '@/components/tag-input/index.vue';
 
 export default defineComponent({
   name: 'BusinessEditAdvance',
+  components: { TagInput },
   setup() {
     const svcDialogVisible = ref(false);
     const getValues = () => advanceForm.value;
@@ -157,7 +166,6 @@ export default defineComponent({
       onCurrentChange,
       querySvcList,
       loading,
-      mapName: _.map('name'),
       mapId: _.map('dependencyId'),
     };
   },

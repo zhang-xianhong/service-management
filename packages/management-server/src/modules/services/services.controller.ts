@@ -1,11 +1,6 @@
 import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
 import { QueryPipe, SearchQuery } from 'src/shared/pipes/query.pipe';
-import { ApiException } from 'src/shared/utils/api.exception';
-import { isEmpty } from 'src/shared/utils/validator';
 import { ServicesService } from './services.service';
-import { CommonCodes, ServiceCodes } from 'src/shared/constants/code';
-import { ILike } from 'typeorm';
-
 @Controller('services')
 export class ServicesController {
   constructor(private readonly service: ServicesService) {}
@@ -13,19 +8,7 @@ export class ServicesController {
   // 获取服务列表
   @Get('')
   async serviceList(@Query(new QueryPipe) query: SearchQuery) {
-    const where: any = {};
-    if (query.classification) {
-      where.classification = query.classification;
-    }
-    if (query.tags) {
-      where.tags = query.tags;
-    }
-    if (query.keyword) {
-      where.name = ILike(`%${query.keyword}%`);
-    }
-    const [list, total] = await this.service.findAll({
-      ...query.conditions,
-    }, where);
+    const [list, total] = await this.service.findAll(query);
     return {
       total,
       list,
@@ -41,65 +24,22 @@ export class ServicesController {
   // 新增服务
   @Post()
   async create(@Body() postData) {
-    const { name, apis } = postData;
-    if (isEmpty(name)) {
-      throw new ApiException({
-        code: ServiceCodes.NAME_INVALID,
-        message: '无效的服务名称',
-      });
-    }
-    if (apis && Array.isArray(apis)) {
-      const isInvalid = apis.some((service) => {
-        if (isEmpty(service.name)) {
-          return true;
-        }
-        return false;
-      });
-      if (isInvalid) {
-        throw new ApiException({
-          code: ServiceCodes.NAME_INVALID,
-          message: '无效的接口名',
-        });
-      }
-    }
-    const service = await this.service.create(postData);
-
-    return service;
+    return await this.service.create(postData);
   }
 
   // 初始化服务
   @Get('/init/:id')
   async initService(@Param() { id }) {
-    // 调用java接口初始化服务工程
-    const { data } = await this.service.initService(id);
-    if (data?.success) {
-      return data;
-    }
-    throw new ApiException({
-      code: CommonCodes.INITIALIZE_FAIL,
-      message: '服务初始化失败',
-    });
+    return await this.service.initService(id);
   }
 
   // 构建服务
   @Post('/build')
   async buildService(@Body() postData) {
-    // 调用java接口初始化服务工程
-    const { data } = await this.service.buildService(postData);
-    if (data?.code === 0) {
-      return data.data;
-    }
-    throw new ApiException({
-      code: CommonCodes.BUILD_FAIL,
-      message: '服务构建失败',
-    });
+    return  await this.service.buildService(postData);
   }
 
-  /**
-   * 更新服务
-   * @param param0
-   * @param body
-   */
+  // 更新服务
   @Post('/:id')
   async update(@Param() { id }, @Body() body) {
     return await this.service.update(id, body);

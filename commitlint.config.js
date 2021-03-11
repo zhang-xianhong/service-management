@@ -1,29 +1,21 @@
 module.exports = {
+    extends: ['@commitlint/config-conventional'],
     parserPreset: 'conventional-changelog-conventionalcommits',
     rules: {
+        'type-enum': [2, 'always', [
+            'upd', 'feat', 'fix', 'refactor', 'docs', 'chore', 'style', 'revert'
+        ]],
         'body-leading-blank': [0, 'never'],
-        'body-max-line-length': [2, 'always', 100],
+        'body-max-line-length': [2, 'always', 200],
         'footer-leading-blank': [1, 'always'],
         'footer-max-line-length': [2, 'always', 100],
-        'header-max-length': [2, 'always', 100],
-        'scope-case': [2, 'always', 'lower-case'],
+        'header-max-length': [2, 'always', 200],
+        'scope-case': [0, 'never', 'lower-case'],
         'subject-case': [
-            2,
-            'never',
-            ['sentence-case', 'start-case', 'pascal-case', 'upper-case'],
+            0,
+            'never'
         ],
-        'subject-empty': [2, 'always'],
-        'subject-full-stop': [2, 'never', '.'],
-        'type-case': [2, 'always', 'kebab-case'],
-        'type-empty': [2, 'always'],
-        'type-enum': [
-            2,
-            'always',
-            [
-                '--bug',
-                '--story',
-                '--feature',
-            ],
-        ],
+        'subject-full-stop': [0, 'never', '.'],
+        'type-case': [0, 'always', 'kebab-case'],
     },
 };

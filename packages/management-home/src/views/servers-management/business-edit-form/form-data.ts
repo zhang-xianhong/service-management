@@ -1,4 +1,5 @@
 import { ref, Ref } from 'vue';
+import _ from 'lodash';
 
 interface BasicForm {
   name: string;
@@ -14,7 +15,7 @@ interface BasicForm {
 interface AdvanceForm {
   objDep: Array<Record<string, string>>;
   dependencies: Array<Record<string, string>>;
-  libDep: string;
+  libDep: Array<Record<string, string>>;
 }
 interface RelationRecord {
   type: 'include' | 'reference' | '';
@@ -69,6 +70,50 @@ interface ListViewRecord {
   attrs: Array<ListObjRecord>;
 }
 
+export interface ChangeRecord {
+  time: string;
+  type: string;
+  message: string;
+}
+
+const setDefault: Array<Function> = [];
+
+const defaultBasicForm = {
+  name: '',
+  description: '',
+  demand: [],
+  owner: '',
+  versionManagement: false,
+  classification: '',
+  tag: '',
+  detail: '',
+  isValid: true,
+};
+export const basicForm: Ref<BasicForm> = ref(_.cloneDeep(defaultBasicForm));
+setDefault.push(() => {
+  basicForm.value = _.cloneDeep(defaultBasicForm);
+});
+
+const defaultAdvanceForm = {
+  objDep: [],
+  dependencies: [],
+  libDep: [],
+};
+export const advanceForm: Ref<AdvanceForm> = ref(_.cloneDeep(defaultAdvanceForm));
+setDefault.push(() => {
+  advanceForm.value = _.cloneDeep(defaultAdvanceForm);
+});
+
+const defaultRelationForm = {
+  moduleDependencyId: '',
+  relationRecords: [],
+  isValid: true,
+};
+export const relationForm: Ref<RelationForm> = ref(_.cloneDeep(defaultRelationForm));
+setDefault.push(() => {
+  relationForm.value = _.cloneDeep(defaultRelationForm);
+});
+
 const defaultApi = [
   {
     name: 'save',
@@ -114,34 +159,16 @@ const defaultApi = [
     isDefault: true,
   },
 ];
-
-export const basicForm: Ref<BasicForm> = ref({
-  name: '',
-  description: '',
-  demand: [],
-  owner: '',
-  versionManagement: false,
-  classification: '',
-  tag: '',
-  detail: '',
-  isValid: true,
+export const apis: Ref<Array<ApiRecord>> = ref(_.cloneDeep(defaultApi));
+setDefault.push(() => {
+  apis.value = _.cloneDeep(defaultApi);
 });
 
-export const advanceForm: Ref<AdvanceForm> = ref({
-  objDep: [],
-  dependencies: [],
-  libDep: '',
+const defaultViewData: Array<EditViewRecord | ListViewRecord> = [];
+export const viewData: Ref<Array<EditViewRecord | ListViewRecord>> = ref(_.cloneDeep(defaultViewData));
+setDefault.push(() => {
+  viewData.value = _.cloneDeep(defaultViewData);
 });
-
-export const relationForm: Ref<RelationForm> = ref({
-  moduleDependencyId: '',
-  relationRecords: [],
-  isValid: true,
-});
-
-export const apis: Ref<Array<ApiRecord>> = ref(defaultApi);
-
-export const viewData: Ref<Array<EditViewRecord | ListViewRecord>> = ref([]);
 
 const defaultEditForm: EditViewRecord = {
   name: '',
@@ -150,11 +177,53 @@ const defaultEditForm: EditViewRecord = {
   attrs: [],
   methods: [],
 };
+export const editForm: Ref<EditViewRecord> = ref(_.cloneDeep(defaultEditForm));
+setDefault.push(() => {
+  editForm.value = _.cloneDeep(defaultEditForm);
+});
+
 const defaultListForm: ListViewRecord = {
   name: '',
   desc: '',
   type: '列表视图',
   attrs: [],
 };
-export const editForm: Ref<EditViewRecord> = ref(defaultEditForm);
-export const listForm: Ref<ListViewRecord> = ref(defaultListForm);
+
+export const listForm: Ref<ListViewRecord> = ref(_.cloneDeep(defaultListForm));
+setDefault.push(() => {
+  listForm.value = _.cloneDeep(defaultListForm);
+});
+
+export const changes: Ref<Array<ChangeRecord>> = ref([
+  {
+    time: '2021-01-22 23:43:40',
+    type: 'change',
+    message: '狗蛋_启动服务',
+  },
+  {
+    time: '2021-01-22 23:43:16',
+    type: 'commit',
+    message: '狗蛋_删除代码',
+  },
+]);
+
+export const analysisData = ref({
+  changes: 1,
+  svcDep: [{ label: 'testSvc', value: 1 }],
+  objDep: [{ label: 'testObj', value: 1 }],
+  directDep: [{ label: 'testDep', value: 1 }],
+  indirectDep: [{ label: 'testDep2', value: 1 }],
+  reverseDep: [
+    { label: 'testDep', value: 1 },
+    { label: 'testDep2', value: 1 },
+  ],
+  extend: [{ label: 'testExtend', value: 1 }],
+  extended: [],
+  history: ['狗蛋_新增_2021-01-22 22:40:16'],
+});
+
+export function resetForm() {
+  setDefault.forEach((func) => {
+    func();
+  });
+}

@@ -16,15 +16,21 @@ export const tableColumns: Array<TableColumnsInterface> = [
     width: '200px',
   },
   {
+    prop: 'deposit',
+    label: '仓库地址',
+    width: '300px',
+    isDefault: false,
+  },
+  {
     prop: 'owner',
     label: '负责人',
-    width: '200px',
+    width: '100px',
     isDefault: false,
   },
   {
     prop: 'status',
     label: '服务状态',
-    width: '300px',
+    width: '100px',
     isDefault: false,
   },
   {
@@ -37,6 +43,11 @@ export const tableColumns: Array<TableColumnsInterface> = [
         name: 'initialize',
         label: '初始化',
         eventName: 'initialize',
+        customAttr(row: any) {
+          return {
+            disabled: row.status,
+          };
+        },
       },
       {
         name: 'build',

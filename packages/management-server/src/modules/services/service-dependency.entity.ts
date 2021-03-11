@@ -18,7 +18,6 @@ export class ServicesDependencyEntity extends BaseEntity {
   // 备注
   @Column({
     type: 'varchar',
-    nullable: true,
     default: '',
   })
   remark: string;
@@ -26,7 +25,6 @@ export class ServicesDependencyEntity extends BaseEntity {
   // 版本号
   @Column({
     type: 'int',
-    nullable: true,
     default: 0,
   })
   version: number;

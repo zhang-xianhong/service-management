@@ -17,6 +17,6 @@ export default {
   password: DATABASE_PASSWORD,
   database: DATABASE_DB,
   entities: [join(__dirname, '../', '**/*.entity{.ts,.js}')],
-  synchronize: process.env.NODE_ENV !== 'production',
+  synchronize: true,
   logging: process.env.NODE_ENV !== 'production',
 };

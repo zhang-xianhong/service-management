@@ -45,6 +45,10 @@
       <template #name="{ rowData }">
         <router-link :to="`/service/business-edit/${rowData.id}`">{{ rowData.name }}</router-link>
       </template>
+      <!-- 仓库地址栏 -->
+      <template #deposit="{ rowData }">
+        <a :href="rowData.deposit">{{ rowData.deposit }}</a>
+      </template>
       <!-- 自定义负责人栏显示样式 -->
       <template #owner="data">
         <el-tag v-if="data.owner">{{ data.owner }}</el-tag>
