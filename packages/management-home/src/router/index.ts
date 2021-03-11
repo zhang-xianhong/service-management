@@ -1,10 +1,10 @@
-import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
+import { createRouter, createWebHistory, Router, RouteRecordRaw, createRouterMatcher, RouterMatcher } from 'vue-router';
 
 import Layout from '@/layout/Index.vue';
-import { setRouterRef } from '@/layout/messageCenter/routerRef';
+import { setRouterRef, getPermissionRoutes } from '@/layout/messageCenter/routerRef';
 import { h } from 'vue';
 
-const routes: Array<RouteRecordRaw> = [
+export const baseRoutes: Array<RouteRecordRaw> = [
   {
     path: '/login',
     name: 'login',
@@ -13,6 +13,25 @@ const routes: Array<RouteRecordRaw> = [
       isRootLevel: false,
     },
   },
+  {
+    path: '/no-right',
+    name: 'noRight',
+    component: () => import('@/views/no-right/Index.vue'),
+    meta: {
+      isRootLevel: false,
+    },
+  },
+  {
+    path: '/not-found',
+    name: 'notFound',
+    component: () => import('@/views/not-found/Index.vue'),
+    meta: {
+      isRootLevel: false,
+    },
+  },
+];
+
+const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
     redirect: '/dashboard',
@@ -51,6 +70,7 @@ const routes: Array<RouteRecordRaw> = [
           title: '项目列表',
           icon: 'el-icon-eleme',
           isRootLevel: false,
+          permission: 'Dashboard',
         },
       },
       {
@@ -185,11 +205,29 @@ const routes: Array<RouteRecordRaw> = [
   },
 ];
 
-const router = createRouter({
-  history: createWebHistory(process.env.BASE_URL),
-  routes,
-});
+export const reCreateRouter = (routes: Array<RouteRecordRaw>): Router =>
+  createRouter({
+    history: createWebHistory(process.env.BASE_URL),
+    routes,
+  });
 
+export const reCreateRouterMatcher = (routes: Array<RouteRecordRaw>): RouterMatcher => createRouterMatcher(routes, {});
+
+// eslint-disable-next-line
+let router = reCreateRouter([...baseRoutes]);
+
+localStorage.setItem('permissionArr', JSON.stringify(['Dashboard']));
+
+if (localStorage.permissionArr) {
+  router = reCreateRouter(getPermissionRoutes([...routes, ...baseRoutes]));
+}
+
+export const resetRouter = (routes: Array<RouteRecordRaw>): void => {
+  router = reCreateRouter(routes);
+  setRouterRef(router);
+};
+
+export const alloverRouter = () => reCreateRouter([...baseRoutes, ...routes]);
 setRouterRef(router);
 
 export default router;

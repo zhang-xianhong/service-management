@@ -8,7 +8,7 @@ module.exports = {
   extends: [
     '@vue/standard',
     '@vue/typescript/recommended',
-    '@tencent/eslint-config-tencent', 
+    '@tencent/eslint-config-tencent',
     '@tencent/eslint-config-tencent/ts',
     'plugin:vue/vue3-essential',
   ],
@@ -22,6 +22,7 @@ module.exports = {
     'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
     '@typescript-eslint/no-var-requires': 'off',
     '@typescript-eslint/no-explicit-any': 'off',
-    'comma-dangle': 0
+    'comma-dangle': 0,
+    'standard/no-callback-literal': 0
   }
 }
