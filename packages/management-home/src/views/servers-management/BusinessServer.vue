@@ -33,6 +33,7 @@
       </el-popover>
     </template>
     <server-table
+      ref="serverTableRef"
       :data="serveList.list"
       :columns="tableColumns"
       :operations="tableOperations"
@@ -108,6 +109,7 @@ export default {
     CloneDialog,
   },
   setup() {
+    const serverTableRef: any = ref(null);
     const router = useRouter();
     // 分类相关状态
     const categoryState: CategoryStateInterface = reactive({
@@ -129,17 +131,6 @@ export default {
       tableData: [],
       tableColumns: [],
       tableOperations: [],
-    });
-
-    tableState.tableData.push({
-      id: 1,
-      name: '李三',
-      desc: '码农',
-      owner: '老板',
-      status: '运行中_2021-02-26 09:51:02_0',
-      code: ' git@106.55.94.55:tencent-citybase/ProjectDocumentsSvc.git',
-      address: 'http://42.194.218.202:21351/swagger-ui.html',
-      druid: 'http://42.194.218.202:21351/swagger-ui.html',
     });
 
     tableState.tableColumns = tableColumns || [];
@@ -197,6 +188,7 @@ export default {
       ...toRefs(categoryState),
       ...toRefs(tagState),
       ...toRefs(tableState),
+      serverTableRef,
       inputValue,
       openCodeQualtity,
       cloneDialogVisible,

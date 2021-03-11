@@ -1,5 +1,5 @@
 <template>
-  <el-table :data="tableData" :style="style" :selection="selecion" :ref="tableRef" v-bind="$attrs">
+  <el-table :data="tableData" :style="style" :selection="selecion" ref="tableRef" v-bind="$attrs">
     <el-table-column v-if="isSelectAble" type="selection" width="55" fixed></el-table-column>
     <el-table-column v-if="isShowIndex" prop="index" label="序号" width="60" fixed> </el-table-column>
     <el-table-column
@@ -18,13 +18,18 @@
         <slot :name="prop" v-bind="{ [prop]: scope.row[prop], rowData: scope.row }"></slot>
         <!-- 表格行内容为按钮 -->
         <template v-if="isButton">
-          <template v-for="({ trigger, name, eventName, label, ...restOptions }, index) in buttonOptions" :key="index">
+          <template v-for="({ name, label, trigger, eventName, ...restOptions }, index) in buttonOptions" :key="index">
             <el-button
               v-if="label || scope.row[prop]"
               :key="index"
               type="primary"
               v-on="buttonEventHandler(trigger, prop, scope.row, name, eventName)"
-              v-bind="restOptions"
+              v-bind="handleButtonOptions(restOptions, scope.row)"
+              :ref="
+                (el) => {
+                  buttonsRef[name] = el;
+                }
+              "
             >
               {{ label ? label : scope.row[prop] }}
             </el-button>
@@ -97,6 +102,10 @@ export default {
     },
   },
   setup(props: any, ctx: SetupContext) {
+    // table组件引用
+    const tableRef: any = ref(null);
+    // 表格内按钮引用
+    const buttonsRef: any = ref({});
     // 表格内容预处理
     const tableData = computed(() => {
       if (Array.isArray(props.data)) {
@@ -137,7 +146,7 @@ export default {
       return [];
     });
 
-    // 操作栏按钮处理
+    // 操作栏按钮事件触发
     function handleOperate(operationItem: ButtonOptionInterface, rowData: any): void {
       if (operationItem) {
         if (operationItem.eventName) {
@@ -147,9 +156,6 @@ export default {
         ctx.emit(`${operationItem.trigger || 'click'}:${operationItem.name || ''}`, rowData);
       }
     }
-
-    // table组件引用
-    const tableRef = ref();
 
     // 监听传入勾选项勾选并勾选，不过需注意会触发check事件
     watchEffect(() => {
@@ -192,14 +198,32 @@ export default {
       }
     }
 
+    // 表单内按钮选项处理
+    function handleButtonOptions(options: object, rowData: any) {
+      const result: any = { ...options };
+      Object.entries(options).forEach(([key, value]) => {
+        if (typeof value === 'function') {
+          result[key] = value(rowData);
+        }
+      });
+      return result;
+    }
+
+    // 组件向外暴露按钮引用
+    ctx.expose({
+      buttonsRef,
+    });
+
     return {
       selection: props.selecion,
       tableRef,
+      buttonsRef,
       tableData,
       tableOperations,
       tableColumns,
       handleOperate,
       buttonEventHandler,
+      handleButtonOptions,
       dateFormat,
     };
   },

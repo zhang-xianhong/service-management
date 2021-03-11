@@ -44,10 +44,11 @@ export const tableColumns: Array<TableColumnsInterface> = [
         label: '初始化',
         eventName: 'initialize',
         trigger: 'click',
-        customAttr(row: any) {
-          return {
-            disabled: row.status,
-          };
+        disabled(rowData: any) {
+          return !!rowData.status;
+        },
+        visibility(rowData: any) {
+          return rowData.status;
         },
       },
       {
