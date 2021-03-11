@@ -43,6 +43,7 @@ export const tableColumns: Array<TableColumnsInterface> = [
         name: 'initialize',
         label: '初始化',
         eventName: 'initialize',
+        trigger: 'click',
         customAttr(row: any) {
           return {
             disabled: row.status,
