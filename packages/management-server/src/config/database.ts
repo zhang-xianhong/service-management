@@ -1,6 +1,8 @@
 import { join } from 'path';
 import getConfig from './';
 
+const IS_PRODUCTION = process.env.NODE_ENV === 'production';
+
 const {
   DATABASE_HOST,
   DATABASE_PORT,
@@ -17,6 +19,6 @@ export default {
   password: DATABASE_PASSWORD,
   database: DATABASE_DB,
   entities: [join(__dirname, '../', '**/*.entity{.ts,.js}')],
-  synchronize: true,
-  logging: process.env.NODE_ENV !== 'production',
+  synchronize: !IS_PRODUCTION,
+  logging: !IS_PRODUCTION,
 };

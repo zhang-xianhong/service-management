@@ -63,35 +63,35 @@ export class SettingsController {
   }
 
   // 获取分类树
-  @Get('/categorys/tree')
+  @Get('/categories/tree')
   async getCategoryTree() {
-    return this.service.findCategorysTree();
+    return this.service.findCategoriesTree();
   }
   // 获取所有分类
-  @Get('/categorys')
-  async getCategorys() {
-    return this.service.findAllCategorys();
+  @Get('/categories')
+  async getCategories() {
+    return this.service.findAllCategories();
   }
   // 获取分类详情
-  @Get('/categorys/:id')
+  @Get('/categories/:id')
   async getCategory(@Param() { id }) {
-    return this.service.findCategorysById(id);
+    return this.service.findCategoryById(id);
   }
 
   // 更新分类
-  @Post('/categorys/:id')
+  @Post('/categories/:id')
   async updateCategory(@Param(){ id }, @Body() body) {
     return await this.service.updateCategory(id, body);
   }
 
   // 更新分类
-  @Post('/categorys/delete/:id')
+  @Post('/categories/delete/:id')
   async deleteCategory(@Param(){ id }) {
     return await this.service.deleteCategory(id);
   }
   // 新增分类
-  @Post('/categorys')
-  async createCatepory(@Body() body) {
+  @Post('/categories')
+  async createCategory(@Body() body) {
     return await this.service.createCategory(body);
   }
 }
