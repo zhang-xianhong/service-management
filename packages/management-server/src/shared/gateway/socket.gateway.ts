@@ -16,10 +16,14 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   sendMessage(event: string, data: any) {
-    this.client.send(JSON.stringify({
-      event,
-      data,
-    }));
+    try {
+      this.client?.send(JSON.stringify({
+        event,
+        data,
+      }));
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   @SubscribeMessage('serviceUpdate')
