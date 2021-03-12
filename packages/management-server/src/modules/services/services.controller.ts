@@ -1,5 +1,6 @@
 import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
 import { QueryPipe, SearchQuery } from 'src/shared/pipes/query.pipe';
+import { ServiceInfoDto } from './dto/service-info.dto';
 import { ServicesService } from './services.service';
 @Controller('services')
 export class ServicesController {
@@ -20,10 +21,15 @@ export class ServicesController {
   async findOneById(@Param() { id }) {
     return await this.service.findById(Number(id));
   }
+  // 删除接口
+  @Post('/delete')
+  async deleteData(@Body() { ids }) {
+    return await this.service.delete(ids);
+  }
 
   // 新增服务
   @Post()
-  async create(@Body() postData) {
+  async create(@Body() postData: ServiceInfoDto) {
     return await this.service.create(postData);
   }
 
@@ -43,10 +49,5 @@ export class ServicesController {
   @Post('/:id')
   async update(@Param() { id }, @Body() body) {
     return await this.service.update(id, body);
-  }
-  // 删除接口
-  @Post('/delete/:id')
-  async deleteData(@Param() { id }) {
-    return await this.service.delete(Number(id));
   }
 }

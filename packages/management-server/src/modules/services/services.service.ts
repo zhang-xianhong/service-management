@@ -2,7 +2,7 @@ import { HttpService, HttpStatus, Inject, Injectable, Logger, LoggerService } fr
 import { InjectRepository } from '@nestjs/typeorm';
 import { CommonCodes, ServiceCodes } from 'src/shared/constants/code';
 import { ApiException } from 'src/shared/utils/api.exception';
-import { Connection, ILike, Not, Repository } from 'typeorm';
+import { Connection, ILike, In, Not, Repository } from 'typeorm';
 import { ServicesApiEntity } from './service-api.entity';
 import { ServicesDependencyEntity } from './service-dependency.entity';
 import { ServicesInfoEntity } from './service-info.entity';
@@ -76,8 +76,8 @@ export class ServicesService {
       });
     }
     if (apis && Array.isArray(apis)) {
-      const isInvalid = apis.some((service) => {
-        if (isEmpty(service.name)) {
+      const isInvalid = apis.some((api) => {
+        if (isEmpty(api.name)) {
           return true;
         }
         return false;
@@ -215,44 +215,33 @@ export class ServicesService {
    * 删除服务
    * @param id
    */
-  async delete(id: number) {
-    const service = await this.infoRepository.findOne({
-      where: {
-        id,
-        isDelete: false,
-      },
-    });
-    if (!service) {
-      throw new ApiException({
-        code: CommonCodes.NOT_FOUND,
-        message: '服务不存在',
-      }, HttpStatus.NOT_FOUND);
-    }
+  async delete(ids: string[]) {
+    const deleteIds = ids.filter(id => Number(id));
     const queryRunner = this.connection.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
     try {
       // 更新info表数据，isDelete置为ture
-      const serviceInfo: any = await queryRunner.manager.update(ServicesInfoEntity, {
-        id,
+      await queryRunner.manager.update(ServicesInfoEntity, {
+        id: In(deleteIds),
       }, {
         isDelete: true,
       });
       // 更新api表数据，isDelete置为ture
       await queryRunner.manager.update(ServicesApiEntity, {
-        serviceId: id,
+        serviceId: In(deleteIds),
       }, {
         isDelete: true,
       });
       // 更新dependency表数据，isDelete置为ture
       await queryRunner.manager.update(ServicesDependencyEntity, {
-        serviceId: id,
+        serviceId: In(deleteIds),
       }, {
         isDelete: true,
       });
       await queryRunner.commitTransaction();
       return {
-        affected: serviceInfo.affected,
+        id: In(deleteIds),
       };
     } catch (error) {
       this.logger.error(error);
