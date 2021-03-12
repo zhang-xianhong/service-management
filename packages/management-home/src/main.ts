@@ -11,7 +11,6 @@ import FormPanel from './components/form-panel/Index.vue';
 import { showModule } from '@/utils/permission-show-module';
 
 const app: Vue.App = createApp(App);
-// app.showModal = showModule;
 
 app.component('DataList', DataList);
 app.component('FormPanel', FormPanel);
@@ -20,6 +19,7 @@ app.component('FormPanel', FormPanel);
 app.config.globalProperties.$ELEMENT = {
   size: 'small',
 };
+// 权限点鉴权，控制页面中按钮/模块显隐函数
 app.config.globalProperties.$showModule = showModule;
 
 app

@@ -4,6 +4,7 @@ interface UserInterface {
   token: string;
   permission: Permisson;
   pages: string[];
+  roles: string[];
 }
 interface Permisson {
   [k: string]: string[];
@@ -18,6 +19,7 @@ export default {
       Dashboard: ['test'],
     },
     pages: [],
+    roles: ['admin'],
   },
   getters: {
     token: (state: UserInterface) => state.token,
