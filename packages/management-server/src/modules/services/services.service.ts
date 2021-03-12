@@ -270,10 +270,7 @@ export class ServicesService {
         });
         return true;
       }
-      throw new ApiException({
-        code: CommonCodes.INITIALIZE_FAIL,
-        message: data.message,
-      }, HttpStatus.BAD_REQUEST);
+      throw data.message;
     } catch (error) {
       this.logger.error(error);
       throw new ApiException({
@@ -291,14 +288,11 @@ export class ServicesService {
   async buildService(data: any) {
     const { serviceId, branch, userId } = data;
     try {
-      const { data } =  await this.httpService.get(`${BUILD_SERVICE_URL}?serverId=${serviceId}&ref=${branch}&userId=${userId}`).toPromise();
+      const { data } = await this.httpService.get(`${BUILD_SERVICE_URL}?serverId=${serviceId}&ref=${branch}&userId=${userId}`).toPromise();
       if (data?.code === 0) {
         return data.data;
       }
-      throw new ApiException({
-        code: CommonCodes.BUILD_FAIL,
-        message: data.message,
-      });
+      throw data.message;
     } catch (error) {
       this.logger.error(error);
       throw new ApiException({

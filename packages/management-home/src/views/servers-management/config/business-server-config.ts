@@ -44,16 +44,18 @@ export const tableColumns: Array<TableColumnsInterface> = [
         label: '初始化',
         eventName: 'initialize',
         trigger: 'click',
-        customAttr(row: any) {
-          return {
-            disabled: row.status,
-          };
+        disabled(rowData: any) {
+          return !!rowData.status;
+        },
+        visibility(rowData: any) {
+          return rowData.status;
         },
       },
       {
         name: 'build',
         label: '构建包',
         eventName: 'build',
+        trigger: 'click',
       },
       {
         name: 'start',
