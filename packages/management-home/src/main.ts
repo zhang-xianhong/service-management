@@ -8,7 +8,10 @@ import Store from './store';
 import Router from './router';
 import DataList from './components/dataList/Index.vue';
 import FormPanel from './components/form-panel/Index.vue';
+import { showModule } from '@/utils/permission-show-module';
+
 const app: Vue.App = createApp(App);
+// app.showModal = showModule;
 
 app.component('DataList', DataList);
 app.component('FormPanel', FormPanel);
@@ -17,6 +20,7 @@ app.component('FormPanel', FormPanel);
 app.config.globalProperties.$ELEMENT = {
   size: 'small',
 };
+app.config.globalProperties.$showModule = showModule;
 
 app
   .use(Element)
