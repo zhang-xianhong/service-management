@@ -8,11 +8,12 @@ import customConfig from './config';
 import { AllExceptionsFilter } from './shared/filters/exceptions.filter';
 import { TraceMiddleware } from './shared/middleware/trace.middleware';
 import { ResponseInterceptor } from './shared/interceptors/response.interceptor';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 // import { AuthorityGuard } from './shared/guards/auth.guard';
 import { HttpStatus, ValidationPipe } from '@nestjs/common';
 import { ApiException } from './shared/utils/api.exception';
 import { CommonCodes } from './shared/constants/code';
+import { WsAdapter } from '@nestjs/platform-ws';
+
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const config = customConfig();
@@ -44,10 +45,12 @@ async function bootstrap() {
       });
     },
   }));
+
+  app.useWebSocketAdapter(new WsAdapter(app));
   // 全局守卫
   // 暂时无需鉴权，待使用时在开启
   // app.useGlobalGuards(new AuthorityGuard(app.get(Reflector)));
-
   await app.listen(Number(config.HTTP_PORT));
+  console.log(`Application is running on: ${await app.getUrl()}`);
 }
 bootstrap();

@@ -122,6 +122,23 @@ export class ServicesInfoEntity extends BaseEntity {
   })
   tag: string;
 
+
+  // 初始化次数
+  @Column({
+    type: 'int',
+    name: 'init_times',
+    default: 0,
+  })
+  initTimes: number;
+
+  // 构建次数
+  @Column({
+    type: 'int',
+    name: 'built_times',
+    default: 0,
+  })
+  builtTimes: number;
+
   // 代码质量
   @Column({
     type: 'varchar',
