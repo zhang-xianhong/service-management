@@ -125,7 +125,9 @@ export class ServicesService {
         message: '服务名称已存在',
       });
     }
+    const transaction = await this.sequelize.transaction();
     try {
+<<<<<<< HEAD
       await this.sequelize.transaction(async (t) => {
         const transactionHost = { transaction: t };
 
@@ -138,19 +140,35 @@ export class ServicesService {
           }));
           await this.apiRepository.bulkCreate(apisEntities, transactionHost);
         }
+=======
+      serviceData.serverPort = Number(serviceMaxPort?.serverPort) + 1 || 8080;
+      const service: any = await this.infoRepository.create(serviceData, { transaction });
+      if (apis && Array.isArray(apis)) {
+        const apisEntities = apis.map(api => ({
+          ...api,
+          serviceId: service.id,
+        }));
+        await this.apiRepository.bulkCreate(apisEntities, { transaction });
+      }
+>>>>>>> a09abd928ac6049b80c69c24413dca4b122b1f41
 
-        if (dependencies && Array.isArray(dependencies)) {
-          const dependenciesEntities = dependencies.map(dependency => ({
-            ...dependency,
-            dependencyId: dependency.dependencyId,
-            serviceId: service.id,
-          }));
-          console.log(dependenciesEntities);
-          await this.dependencyRepository.bulkCreate(dependenciesEntities, transactionHost);
-        }
-      });
+      if (dependencies && Array.isArray(dependencies)) {
+        const dependenciesEntities = dependencies.map(dependency => ({
+          ...dependency,
+          dependencyId: dependency.dependencyId,
+          serviceId: service.id,
+        }));
+        console.log(dependenciesEntities);
+        await this.dependencyRepository.bulkCreate(dependenciesEntities, { transaction });
+      }
+      await transaction.commit();
     } catch (err) {
       // 一旦发生错误，事务会回滚
+      await transaction.rollback();
+      throw new ApiException({
+        code: CommonCodes.CREATED_FAIL,
+        message: '服务创建失败',
+      });
     }
   }
 
@@ -174,42 +192,46 @@ export class ServicesService {
         message: '模型名称已存在',
       });
     }
+    const transaction = await this.sequelize.transaction();
     try {
-      await this.sequelize.transaction(async (t) => {
-        const transactionHost = { transaction: t };
-
-        // 更新serviceApi信息
-        if (apis && Array.isArray(apis)) {
-          await this.apiRepository.destroy<ServicesApiModel>({
-            where: {
-              serviceId: id,
-            },
-          });
-          const apisEntities = apis.map(api => (
-            {
-              ...api,
-              serviceId: id,
-            }
-          ));
-          await this.apiRepository.bulkCreate(apisEntities, transactionHost);
-        }
-
-        if (dependencies && Array.isArray(dependencies)) {
-          await this.dependencyRepository.destroy({
-            where: {
-              serviceId: id,
-            },
-          });
-          const dependenciesEntities = dependencies.map(dependency => ({
-            ...dependency,
-            dependencyId: dependency.dependencyId,
+      // 更新serviceApi信息
+      if (apis && Array.isArray(apis)) {
+        await this.apiRepository.destroy<ServicesApiModel>({
+          where: {
             serviceId: id,
-          }));
-          await this.dependencyRepository.bulkCreate(dependenciesEntities, transactionHost);
-        }
-      });
+          },
+          transaction,
+        });
+        const apisEntities = apis.map(api => (
+          {
+            ...api,
+            serviceId: id,
+          }
+        ));
+        await this.apiRepository.bulkCreate(apisEntities, { transaction });
+      }
+
+      if (dependencies && Array.isArray(dependencies)) {
+        await this.dependencyRepository.destroy({
+          where: {
+            serviceId: id,
+          },
+        });
+        const dependenciesEntities = dependencies.map(dependency => ({
+          ...dependency,
+          dependencyId: dependency.dependencyId,
+          serviceId: id,
+        }));
+        await this.dependencyRepository.bulkCreate(dependenciesEntities, { transaction });
+      }
+      await transaction.commit();
     } catch (err) {
       // 一旦发生错误，事务会回滚
+      await transaction.rollback();
+      throw new ApiException({
+        code: CommonCodes.UPDATED_FAIL,
+        message: '服务更新失败',
+      });
     }
   }
 
@@ -253,6 +275,10 @@ export class ServicesService {
     } catch (err) {
       // 一旦发生错误，事务会回滚
       await transaction.rollback();
+      throw new ApiException({
+        code: CommonCodes.DELETED_FAIL,
+        message: '服务删除失败',
+      });
     }
   }
 
