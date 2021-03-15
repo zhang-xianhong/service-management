@@ -123,7 +123,6 @@ export default {
     onMounted(() => {
       getList();
     });
-
     return {
       ...toRefs(tableState),
       loading,

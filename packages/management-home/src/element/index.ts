@@ -48,6 +48,7 @@ import {
   ElTimeline,
   ElTimelineItem,
   ElCard,
+  ElTree,
 } from 'element-plus';
 
 const components = [
@@ -93,6 +94,7 @@ const components = [
   ElTimeline,
   ElTimelineItem,
   ElCard,
+  ElTree,
 ];
 const plugins = [ElInfiniteScroll, ElLoading, ElMessage, ElMessageBox, ElNotification];
 
