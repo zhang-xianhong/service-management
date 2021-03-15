@@ -74,7 +74,7 @@
 </template>
 
 <script lang="ts">
-import { reactive, toRefs, ref, nextTick } from 'vue';
+import { reactive, toRefs, ref, nextTick, onBeforeUnmount } from 'vue';
 import ServerTable from '@/components/packaged-table/PackagedTable.vue';
 import { useRouter } from 'vue-router';
 import { tableColumns, tableOperations } from './config/business-server-config';
@@ -86,6 +86,7 @@ import {
 } from '@/views/servers-management/business-serve-tools/serve-data-utils';
 import { buildService, initService } from '@/api/servers';
 import { ElMessage, ElLoading } from 'element-plus';
+import * as ws from '@/utils/ws';
 
 interface CategoryStateInterface {
   categories: Array<Record<string, any>>;
@@ -184,6 +185,18 @@ export default {
       if (!res || res.code) return;
       ElMessage.success('成功初始化！');
     };
+
+    // 建立ws连接，后台有变化是刷新列表
+    ws.initWebSocket(`ws://${location.hostname}:3000`);
+    ws.addWsHandler('serviceUpdate', (msgEvt: MessageEvent) => {
+      if (JSON.parse(msgEvt.data).event === 'serviceUpdate') {
+        reloadList();
+      }
+    });
+    onBeforeUnmount(() => {
+      ws.removeWsHandler('serviceUpdate');
+    });
+
     return {
       ...toRefs(categoryState),
       ...toRefs(tagState),

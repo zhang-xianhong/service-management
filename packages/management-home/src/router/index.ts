@@ -203,6 +203,38 @@ const routes: Array<RouteRecordRaw> = [
       },
     ],
   },
+  {
+    path: '/conf',
+    name: 'Configuration',
+    component: Layout,
+    meta: {
+      title: '配置管理',
+      icon: 'el-icon-eleme',
+      isRootLevel: true,
+    },
+    children: [
+      {
+        path: 'classification',
+        component: () => import(/* webpackChunkName: "conf" */ '@/views/conf-management/Classification.vue'),
+        name: 'Classification',
+        meta: {
+          title: '分类信息',
+          icon: 'el-icon-eleme',
+          isRootLevel: false,
+        },
+      },
+      {
+        path: 'tag',
+        component: () => import(/* webpackChunkName: "conf" */ '@/views/conf-management/Tag.vue'),
+        name: 'Tag',
+        meta: {
+          title: '标签信息',
+          icon: 'el-icon-eleme',
+          isRootLevel: false,
+        },
+      },
+    ],
+  },
 ];
 
 export const reCreateRouter = (routes: Array<RouteRecordRaw>): Router =>
