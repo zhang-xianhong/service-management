@@ -100,11 +100,15 @@ export class ModelsService {
     const transaction = await this.sequelize.transaction();
     try {
       delete modelData.id;
-      const model: any = await this.infoRepository.create(modelData);
+      const model: any = await this.infoRepository.create(modelData, {
+        transaction,
+      });
       const fieldsEntities = await this.createFieldsEntities(fields, model.id);
       // 生成新的fields
       if (fieldsEntities) {
-        await this.fieldsRepository.create(fieldsEntities);
+        await this.fieldsRepository.create(fieldsEntities, {
+          transaction,
+        });
       }
       await transaction.commit();
       return {
@@ -148,6 +152,7 @@ export class ModelsService {
       // 删除原有的fields
       await this.fieldsRepository.destroy({
         where: { modelId: id },
+        transaction,
       });
       // 更新model
       await this.fieldsRepository.update({
@@ -155,11 +160,14 @@ export class ModelsService {
         updateTime: new Date(),
         version: currentModel.version + 1,
       }, {
-        where: { id } });
+        where: { id },
+        transaction });
       const fieldsEntities = await this.createFieldsEntities(fields, id);
       // 生成新的fields
       if (fieldsEntities) {
-        await this.fieldsRepository.create(fieldsEntities);
+        await this.fieldsRepository.create(fieldsEntities, {
+          transaction,
+        });
       }
       await transaction.commit();
       return {
@@ -175,6 +183,51 @@ export class ModelsService {
     }
   }
 
+  /**
+   * 删除模型
+   * 支持批量删除
+   * @param id
+   */
+  async deleteModel(deleteIds: string[]) {
+    const transaction = await this.sequelize.transaction();
+    try {
+      // 将关联fields设置为删除状态
+      await this.fieldsRepository.update({
+        isDelete: true,
+      }, {
+        where: {
+          modelId: {
+            [Op.in]: deleteIds,
+          },
+        },
+        transaction,
+      });
+
+      // 更新model为删除状态
+      await this.infoRepository.update({
+        isDelete: true,
+      }, {
+        where: {
+          id: {
+            [Op.in]: deleteIds,
+          },
+        },
+        transaction,
+      });
+      await transaction.commit();
+      return {
+        deleted: deleteIds,
+      };
+    } catch (error) {
+      this.logger.error(error);
+      await transaction.rollback();
+      throw new ApiException({
+        code: CommonCodes.DELETED_FAIL,
+        message: '删除失败',
+        stack: error.stack,
+      });
+    }
+  }
 
   /**
    * 通过ID查找模型
