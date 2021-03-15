@@ -7,16 +7,16 @@ import { PlainObject } from 'src/shared/pipes/query.pipe';
 import { DataTypesModel } from '../settings/settings-data-types.entity';
 import { FIELD_TYPE, SYSTEM_FIELD_TYPES } from 'src/shared/constants/field-types';
 import { InjectModel } from '@nestjs/sequelize';
-import { Op } from 'sequelize';
+import { Op, Sequelize } from 'sequelize';
 @Injectable()
 export class ModelsService {
   constructor(
     @Inject(Logger)
     private readonly logger: LoggerService,
-
+    private sequelize: Sequelize,
     @InjectModel(ModelsInfoModel) private readonly infoRepository: typeof ModelsInfoModel,
     @InjectModel(ModelsFieldsModel) private readonly fieldsRepository: typeof ModelsFieldsModel,
-    @InjectModel(DataTypesModel) private readonly dataTypesModel: typeof DataTypesModel,
+    @InjectModel(DataTypesModel) private readonly dataTypesRepository: typeof DataTypesModel,
   ) {}
 
   /**
@@ -79,6 +79,104 @@ export class ModelsService {
 
 
   /**
+   * 创建模型
+   * @param data
+   */
+  async create(data: PlainObject) {
+    const { fields, ...modelData } = data;
+    // 验证是否有同名模块
+    const nameExisted = await this.infoRepository.findOne({
+      where: {
+        name: modelData.name,
+        isDelete: false,
+      },
+    });
+    if (nameExisted) {
+      throw new ApiException({
+        code: CommonCodes.DATA_EXISTED,
+        message: '模型名称已存在',
+      });
+    }
+    const transaction = await this.sequelize.transaction();
+    try {
+      delete modelData.id;
+      const model: any = await this.infoRepository.create(modelData);
+      const fieldsEntities = await this.createFieldsEntities(fields, model.id);
+      // 生成新的fields
+      if (fieldsEntities) {
+        await this.fieldsRepository.create(fieldsEntities);
+      }
+      await transaction.commit();
+      return {
+        modelId: model.id,
+      };
+    } catch (error) {
+      await transaction.rollback();
+      this.logger.error(error);
+      throw new ApiException({
+        code: CommonCodes.UPDATED_FAIL,
+        message: '新增失败',
+        stack: error.stack,
+      });
+    }
+  }
+
+  /**
+   * 更新模型
+   * @param data
+   */
+  async updateModel(id: number, data: PlainObject) {
+    const currentModel = await this.findModelById(id);
+    const { fields, ...modelData } = data;
+    // 验证是否有同名模块
+    const nameExisted = await this.infoRepository.findOne({
+      where: {
+        name: modelData.name,
+        isDelete: false,
+        id: { [Op.notIn]: id },
+      },
+    });
+    if (nameExisted) {
+      throw new ApiException({
+        code: CommonCodes.DATA_EXISTED,
+        message: '模型名称已存在',
+      });
+    }
+
+    const transaction = await this.sequelize.transaction();
+    try {
+      // 删除原有的fields
+      await this.fieldsRepository.destroy({
+        where: { modelId: id },
+      });
+      // 更新model
+      await this.fieldsRepository.update({
+        ...modelData,
+        updateTime: new Date(),
+        version: currentModel.version + 1,
+      }, {
+        where: { id } });
+      const fieldsEntities = await this.createFieldsEntities(fields, id);
+      // 生成新的fields
+      if (fieldsEntities) {
+        await this.fieldsRepository.create(fieldsEntities);
+      }
+      await transaction.commit();
+      return {
+        modelId: id,
+      };
+    } catch (error) {
+      this.logger.error(error);
+      throw new ApiException({
+        code: CommonCodes.UPDATED_FAIL,
+        message: '更新失败',
+        stack: error.stack,
+      });
+    }
+  }
+
+
+  /**
    * 通过ID查找模型
    * @param id
    */
@@ -102,7 +200,7 @@ export class ModelsService {
    * 获取字段类型列表
    */
   private async getDataTypes() {
-    const dataTypes = await this.dataTypesModel.findAll({
+    const dataTypes = await this.dataTypesRepository.findAll({
       where: {
         isDelete: false,
       },
