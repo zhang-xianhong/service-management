@@ -55,11 +55,13 @@ export class ServicesService {
       where: {
         id,
       },
-      // include: [{
-      //   model: ServicesApiModel,
-      //   attributes: { exclude: ['isDelete'] },
-      // }],
-      // include: [ServicesApiModel],
+      include: [{
+        model: ServicesApiModel,
+        attributes: { exclude: ['isDelete'] },
+      }, {
+        model: ServicesDependencyModel,
+        attributes: { exclude: ['isDelete'] },
+      }],
     });
     if (!service) {
       throw new ApiException({

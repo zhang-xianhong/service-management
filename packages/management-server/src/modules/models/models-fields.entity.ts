@@ -1,31 +1,39 @@
-import { Column,  Entity, JoinColumn, ManyToOne } from 'typeorm';
+import { Table, Column, DataType, ForeignKey, BelongsTo, Length  } from 'sequelize-typescript';
 import { BaseModel } from '../base.entity';
-import { ModelsInfoEntity } from './models-info.entity';
+import { ModelsInfoModel } from './models-info.entity';
 
-@Entity({ name: 'model_field' })
-export class ModelsFieldsEntity extends BaseModel<ModelsFieldsEntity> {
+@Table({
+  timestamps: false,
+  tableName: 'model_field',
+})
+export class ModelsFieldsModel extends BaseModel {
   // 管理模型ID
-  @ManyToOne(() => ModelsInfoEntity, model => model.id)
-  @JoinColumn({
-    name: 'model_id',
+  @ForeignKey(() => ModelsInfoModel)
+  @Column({
+    type: DataType.BIGINT,
+    field: 'model_id',
   })
-  modelId: number;
+  serviceId: number;
+
+  @BelongsTo(() => ModelsInfoModel)
+  info: ModelsInfoModel;
 
   // 字段名称
-  @Column({ length: 64 })
+  @Length({ min: 1, max: 64 })
+  @Column({ type: DataType.STRING })
   name: string;
 
   // 关联数据类型ID
   @Column({
-    name: 'type_id',
-    type: 'varchar',
+    field: 'type_id',
+    type: DataType.STRING,
     comment: '关联数据类型ID, 方便前端回读',
   })
   typeId: string;
 
   // 数据类型
   @Column({
-    type: 'varchar',
+    type: DataType.STRING,
   })
   type: string;
 
@@ -37,171 +45,160 @@ export class ModelsFieldsEntity extends BaseModel<ModelsFieldsEntity> {
 
   // 字段顺序号
   @Column({
-    type: 'int',
-    name: 'field_order',
-    default: 0,
+    type: DataType.INTEGER,
+    field: 'field_order',
+    defaultValue: 0,
     comment: '决定属性的排序，从0依次递减',
   })
   fieldOrder: number;
 
   // 字段长度
   @Column({
-    type: 'int',
-    default: 10000,
+    type: DataType.INTEGER,
+    defaultValue: 10000,
     comment: '字段长度',
   })
   length: number;
 
   // 字段长度
   @Column({
-    type: 'varchar',
-    default: '',
-    name: 'default_value',
+    type: DataType.STRING,
+    defaultValue: '',
+    field: 'default_value',
     comment: '默认值',
   })
   defaultValue: string;
 
   // 是否主键
   @Column({
-    name: 'is_key',
-    type: 'bool',
-    width: 1,
-    default: false,
+    field: 'is_key',
+    type: DataType.BOOLEAN,
+    defaultValue: false,
   })
   isKey: boolean;
 
   // 是否查询条件
   @Column({
-    name: 'is_query',
-    type: 'bool',
-    width: 1,
-    default: false,
+    field: 'is_query',
+    type: DataType.BOOLEAN,
+    defaultValue: false,
   })
   isQuery: boolean;
 
   // 是否展示
   @Column({
-    name: 'is_show',
-    type: 'bool',
-    width: 1,
-    default: false,
+    field: 'is_show',
+    type: DataType.BOOLEAN,
+    defaultValue: false,
     comment: '是否展示',
   })
   isShow: boolean;
 
   // 是否列表
   @Column({
-    name: 'is_show_list',
-    type: 'bool',
-    width: 1,
-    default: false,
+    field: 'is_show_list',
+    type: DataType.BOOLEAN,
+    defaultValue: false,
     comment: '是否列表',
   })
   isShowList: boolean;
 
   // 查询类型
   @Column({
-    name: 'query_mode',
-    type: 'varchar',
-    default: 'single',
+    field: 'query_mode',
+    type: DataType.STRING,
+    defaultValue: 'single',
     comment: '查询类型',
   })
   queryMode: string;
 
   // 是否只读
   @Column({
-    name: 'read_only',
-    type: 'bool',
-    width: 1,
-    default: false,
+    field: 'read_only',
+    type: DataType.BOOLEAN,
+    defaultValue: false,
   })
   readOnly: boolean;
 
   // 是否可为空
   @Column({
-    name: 'not_null',
-    type: 'bool',
-    width: 1,
-    default: true,
+    field: 'not_null',
+    type: DataType.BOOLEAN,
+    defaultValue: true,
   })
   notNull: boolean;
 
   // 扩展信息
   @Column({
-    type: 'varchar',
-    default: '',
+    type: DataType.STRING,
+    defaultValue: '',
   })
   extra: string;
 
   // 外联模型ID
   @Column({
-    type: 'varchar',
-    name: 'foreign_model_id',
-    default: null,
+    type: DataType.STRING,
+    field: 'foreign_model_id',
+    defaultValue: null,
     comment: '外联模型ID',
   })
   foreignModelId: string;
 
   // 外联字段ID
   @Column({
-    type: 'varchar',
-    name: 'foreign_id',
-    default: null,
+    type: DataType.STRING,
+    field: 'foreign_id',
+    defaultValue: null,
     comment: '外联字段ID',
   })
   foreignId: string;
 
   // 版本号
   @Column({
-    type: 'int',
-    default: 0,
+    type: DataType.INTEGER,
+    defaultValue: 0,
   })
   version: number;
 
   // 是否系统字段
   @Column({
-    name: 'is_system',
-    type: 'bool',
-    width: 1,
-    default: false,
+    field: 'is_system',
+    type: DataType.BOOLEAN,
+    defaultValue: false,
     comment: '是否系统字段',
   })
   isSystem: boolean;
 
   // 是否唯一
   @Column({
-    name: 'is_unique',
-    type: 'boolean',
-    width: 1,
-    default: false,
+    field: 'is_unique',
+    type: DataType.BOOLEAN,
+    defaultValue: false,
   })
   isUnique: boolean;
 
   // 是否索引
   @Column({
-    name: 'is_index',
-    type: 'boolean',
-    width: 1,
-    default: false,
+    field: 'is_index',
+    type: DataType.BOOLEAN,
+    defaultValue: false,
   })
   isIndex: boolean;
 
   // 分词
   @Column({
-    name: 'is_participle_support',
-    type: 'boolean',
-    width: 1,
-    default: false,
+    field: 'is_participle_support',
+    type: DataType.BOOLEAN,
+    defaultValue: false,
     comment: '分词支持',
   })
   isParticipleSupport: boolean;
 
   // 拼音
   @Column({
-    name: 'is_pinyin_support',
-    type: 'boolean',
-    width: 1,
-    default: false,
+    field: 'is_pinyin_support',
+    type: DataType.BOOLEAN,
+    defaultValue: false,
     comment: '拼音支持',
   })
   isPinyinSupport: boolean;

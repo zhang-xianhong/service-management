@@ -1,19 +1,19 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
-import { DataTypesEntity } from './settings-data-types.entity';
-import { SettingsTagsEntity } from './settings-tags.entity';
+import { DataTypesModel } from './settings-data-types.entity';
+import { SettingsTagsModel } from './settings-tags.entity';
 import { PlainObject } from 'src/shared/pipes/query.pipe';
 import { ApiException } from 'src/shared/utils/api.exception';
 import { CommonCodes } from 'src/shared/constants/code';
-import { SettingsCategoriesEntity } from './settings-categories.entity';
+import { SettingsCategoriesModel } from './settings-categories.entity';
 import { SYSTEM_FIELD_TYPES } from 'src/shared/constants/field-types';
 import { InjectModel } from '@nestjs/sequelize';
 
 @Injectable()
 export class SettingsService {
   constructor(
-    @InjectModel(DataTypesEntity) private readonly dataTypesRepository: typeof DataTypesEntity,
-    @InjectModel(SettingsTagsEntity) private readonly tagsRepository: typeof SettingsTagsEntity,
-    @InjectModel(SettingsCategoriesEntity) private readonly categoriesRepository: typeof SettingsCategoriesEntity,
+    @InjectModel(DataTypesModel) private readonly dataTypesRepository: typeof DataTypesModel,
+    @InjectModel(SettingsTagsModel) private readonly tagsRepository: typeof SettingsTagsModel,
+    @InjectModel(SettingsCategoriesModel) private readonly categoriesRepository: typeof SettingsCategoriesModel,
     // private connection: Connection,
   ) { }
 

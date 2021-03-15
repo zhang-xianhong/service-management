@@ -1,28 +1,29 @@
 /**
  * 项目实体
  */
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Table, Column, DataType, Length  } from 'sequelize-typescript';
+import { BaseModel } from '../base.entity';
 
-@Entity({ name: 'project' })
-export class ProjectEntity {
-  @PrimaryGeneratedColumn({
-    type: 'bigint',
-  })
-  id: number;
-
+@Table({
+  timestamps: false,
+  tableName: 'project',
+})
+export class ProjectModel extends BaseModel {
   // 项目名称
+  @Length({ min: 1, max: 64 })
   @Column({
-    type: 'varchar',
-    length: 64,
-    default: '',
+    type: DataType.STRING,
+
+    defaultValue: '',
   })
   name: string;
 
   // 描述
+  @Length({ min: 1, max: 64 })
   @Column({
-    type: 'varchar',
-    length: 64,
-    default: '',
+    type: DataType.STRING,
+
+    defaultValue: '',
   })
   description: string;
 
@@ -32,221 +33,196 @@ export class ProjectEntity {
 
   // 是否只读
   @Column({
-    type: 'boolean',
-    name: 'read_nly',
+    type: DataType.BOOLEAN,
+    field: 'read_nly',
   })
   readOnly: boolean;
 
   // 代码生成器类型
   @Column({
-    type: 'varchar',
-    name: 'generator_type',
-    default: '',
+    type: DataType.STRING,
+    field: 'generator_type',
+    defaultValue: '',
   })
   generatorType: string;
 
   // 负责人
   @Column({
-    type: 'varchar',
-    default: '',
+    type: DataType.STRING,
+    defaultValue: '',
   })
   owner: string;
 
   // 代码质量
   @Column({
-    type: 'varchar',
-    name: 'code_quality',
-    default: '',
+    type: DataType.STRING,
+    field: 'code_quality',
+    defaultValue: '',
   })
   codeQuality: string;
 
   // 级别名称
   @Column({
-    type: 'varchar',
-    name: 'level_name',
-    default: '',
+    type: DataType.STRING,
+    field: 'level_name',
+    defaultValue: '',
   })
   levelName: string;
 
   // 级别
   @Column({
     type: 'int',
-    default: null,
+    defaultValue: null,
   })
   level: number;
 
-  // 创建账号
-  @Column({
-    type: 'varchar',
-    length: 64,
-    name: 'create_user',
-    default: '',
-  })
-  createUser: string;
-
   // 创建用户
   @Column({
-    type: 'varchar',
-    length: 64,
-    name: 'create_user_name',
+    type: DataType.STRING,
+
+    field: 'create_user_name',
   })
   createUserName: string;
 
   // 创建日期
   @Column({
     type: 'datetime',
-    name: 'create_date',
-    default: () => 'NOW()',
+    field: 'create_date',
+    defaultValue: () => 'NOW()',
   })
   createDate: Date;
 
-  // 更新账号
-  @Column({
-    type: 'varchar',
-    length: 64,
-    name: 'update_user',
-    default: '',
-  })
-  updateUser: string;
-
   // 更新用户
   @Column({
-    type: 'varchar',
-    length: 64,
-    name: 'update_user_name',
-    default: '',
+    type: DataType.STRING,
+
+    field: 'update_user_name',
+    defaultValue: '',
   })
   updateUserName: string;
 
   // 更新日期
   @Column({
     type: 'datetime',
-    name: 'update_date',
-    default: null,
+    field: 'update_date',
+    defaultValue: null,
   })
   updateDate: Date;
 
   // 更新次数
   @Column({
     type: 'int',
-    default: 0,
+    defaultValue: 0,
   })
   version: number;
 
   // 数据库IP
   @Column({
-    type: 'varchar',
-    name: 'database_ip',
-    default: '',
+    type: DataType.STRING,
+    field: 'database_ip',
+    defaultValue: '',
   })
   databaseIp: string;
 
   // 数据库端口
   @Column({
-    type: 'varchar',
-    name: 'database_port',
-    default: '',
+    type: DataType.STRING,
+    field: 'database_port',
+    defaultValue: '',
   })
   databasePort: string;
 
   // 数据库名称
   @Column({
-    type: 'varchar',
-    name: 'database_name',
-    default: '',
+    type: DataType.STRING,
+    field: 'database_name',
+    defaultValue: '',
   })
   databaseName: string;
 
   // 数据库用户
   @Column({
-    type: 'varchar',
-    name: 'database_user_name',
-    default: '',
+    type: DataType.STRING,
+    field: 'database_user_name',
+    defaultValue: '',
   })
   databaseUserName: string;
 
   // 数据库密码
   @Column({
-    type: 'varchar',
-    name: 'database_user_password',
-    default: '',
+    type: DataType.STRING,
+    field: 'database_user_password',
+    defaultValue: '',
   })
   databaseUserPassword: string;
 
   // TOKEN
   @Column({
-    type: 'varchar',
-    default: '',
+    type: DataType.STRING,
+    defaultValue: '',
   })
   token: string;
 
   // 已分配用户
   @Column({
-    type: 'varchar',
-    default: '',
+    type: DataType.STRING,
+    defaultValue: '',
   })
   assigned: string;
 
   // 每日冻结时段
   @Column({
-    type: 'varchar',
-    name: 'freeze_hours',
-    default: '',
+    type: DataType.STRING,
+    field: 'freeze_hours',
+    defaultValue: '',
   })
   freezeHours: string;
 
   // 开放微对象给项目
   @Column({
-    type: 'varchar',
-    name: 'can_access_micro_objects',
-    default: '',
+    type: DataType.STRING,
+    field: 'can_access_micro_objects',
+    defaultValue: '',
   })
   canAccessMicroObjects: string;
 
   // 开放微服务给项目
   @Column({
-    type: 'varchar',
-    name: 'can_access_micro_services',
-    default: '',
+    type: DataType.STRING,
+    field: 'can_access_micro_services',
+    defaultValue: '',
   })
   canAccessMicroServices: string;
 
   // 开放微模块给项目
   @Column({
-    type: 'varchar',
-    name: 'can_access_micro_modules',
-    default: '',
+    type: DataType.STRING,
+    field: 'can_access_micro_modules',
+    defaultValue: '',
   })
   canAccessMicroModules: string;
 
   // 能访问微对象的项目
   @Column({
-    type: 'varchar',
-    name: 'open_micro_object_to_projects',
-    default: '',
+    type: DataType.STRING,
+    field: 'open_micro_object_to_projects',
+    defaultValue: '',
   })
   openMicroObjectToProjects: string;
 
   // 能访问微服务的项目
   @Column({
-    type: 'varchar',
-    name: 'open_micro_service_to_projects',
-    default: '',
+    type: DataType.STRING,
+    field: 'open_micro_service_to_projects',
+    defaultValue: '',
   })
   openMicroServiceToProjects: string;
 
   // 能访问微模块的项目
   @Column({
-    type: 'varchar',
-    name: 'open_micro_module_to_projects',
-    default: '',
+    type: DataType.STRING,
+    field: 'open_micro_module_to_projects',
+    defaultValue: '',
   })
   openMicroModuleToProjects: string;
-
-  // 删除
-  @Column({
-    type: 'int',
-    default: 0,
-  })
-  isDelete: number;
 }

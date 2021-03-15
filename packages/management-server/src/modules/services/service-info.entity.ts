@@ -2,16 +2,17 @@
  * 服务信息实体
  */
 import { Table, Column, DataType, Length, HasMany } from 'sequelize-typescript';
+import { BaseModel } from '../base.entity';
 import { ServicesApiModel } from './service-api.entity';
 import { ServicesDependencyModel } from './service-dependency.entity';
-import { BaseModel } from 'src/modules/base.entity';
+// import { BaseModel } from 'src/modules/base.entity';
 
 
 @Table({
   timestamps: false,
   tableName: 'service_info',
 })
-export class ServicesInfoModel extends BaseModel<ServicesInfoModel>  {
+export class ServicesInfoModel extends BaseModel  {
   // 项目服务
   @Length({ min: 1, max: 64 })
   @Column({

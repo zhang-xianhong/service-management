@@ -1,12 +1,12 @@
 import { Logger, Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { ModelsFieldsEntity } from './models-fields.entity';
-import { ModelsInfoEntity } from './models-info.entity';
+import { ModelsFieldsModel } from './models-fields.entity';
+import { ModelsInfoModel } from './models-info.entity';
 import { ModelsController } from './models.controller';
 import { ModelsService } from './models.service';
-import { DataTypesEntity } from '../settings/settings-data-types.entity';
+import { DataTypesModel } from '../settings/settings-data-types.entity';
+import { SequelizeModule } from '@nestjs/sequelize';
 @Module({
-  imports: [TypeOrmModule.forFeature([ModelsInfoEntity, ModelsFieldsEntity, DataTypesEntity])],
+  imports: [SequelizeModule.forFeature([ModelsInfoModel, ModelsFieldsModel, DataTypesModel])],
   controllers: [ModelsController],
   providers: [ModelsService, Logger],
   exports: [ModelsService],

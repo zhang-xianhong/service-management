@@ -4,7 +4,7 @@ import { Table, Column, DataType, PrimaryKey, AutoIncrement, Default, Model } fr
 @Table({
   timestamps: false,
 })
-export class BaseModel<T extends Model<T>> extends Model<T> {
+export class BaseModel extends Model {
   @PrimaryKey
   @AutoIncrement
   @Column(DataType.BIGINT)

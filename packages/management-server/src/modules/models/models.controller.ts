@@ -16,11 +16,7 @@ export class ModelsController {
    */
   @Get()
   async findAll(@Query(new QueryPipe()) query: SearchQuery) {
-    const [list, total] = await this.modelService.findAll(query);
-    return {
-      list,
-      total,
-    };
+    return  await this.modelService.findAll(query);
   }
 
   /**
@@ -50,7 +46,7 @@ export class ModelsController {
   @Post()
   async create(@Body() postData) {
     this.validatePostData(postData);
-    return await this.modelService.create(this.getPostData(postData));
+    // return await this.modelService.create(this.getPostData(postData));
   }
 
   /**
@@ -66,7 +62,7 @@ export class ModelsController {
         message: '无效的ID',
       });
     }
-    return await this.modelService.deleteModel(deleteIds);
+    // return await this.modelService.deleteModel(deleteIds);
   }
 
   /**
@@ -76,7 +72,7 @@ export class ModelsController {
   @Post(':id')
   async updateModel(@Body() postData, @Param() { id }) {
     this.validatePostData(postData);
-    return await this.modelService.updateModel(id, this.getPostData(postData));
+    // return await this.modelService.updateModel(id, this.getPostData(postData));
   }
 
   /**

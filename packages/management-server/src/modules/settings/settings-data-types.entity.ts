@@ -1,7 +1,7 @@
 /**
  * 数据类型表
  */
-import { Table, Column, DataType  } from 'sequelize-typescript';
+import { Table, Column, DataType, Model  } from 'sequelize-typescript';
 import { FIELD_TYPES } from 'src/shared/constants/field-types';
 import { BaseModel } from '../base.entity';
 
@@ -11,7 +11,13 @@ import { BaseModel } from '../base.entity';
 })
 
 // settings/data-types
-export class DataTypesEntity extends BaseModel<DataTypesEntity> {
+export class DataTypesModel  extends Model implements BaseModel {
+  id: number;
+  createTime: Date;
+  updateTime: Date;
+  createUser: number;
+  updateUser: number;
+  isDelete: boolean;
   // 值
   @Column({
     type: DataType.STRING,

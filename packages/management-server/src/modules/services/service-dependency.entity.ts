@@ -9,7 +9,7 @@ import { ServicesInfoModel } from './service-info.entity';
   timestamps: false,
   tableName: 'service_dependency',
 })
-export class ServicesDependencyModel extends BaseModel<ServicesDependencyModel> {
+export class ServicesDependencyModel extends BaseModel {
   // 依赖服务
   @Column({
     type: DataType.BIGINT,
@@ -43,10 +43,10 @@ export class ServicesDependencyModel extends BaseModel<ServicesDependencyModel> 
   @BelongsTo(() => ServicesInfoModel)
   serviceInfo: ServicesInfoModel;
 
-  // @ManyToOne(() => ServicesInfoEntity, info => info.id)
+  // @ManyToOne(() => ServicesInfoModel, info => info.id)
   // @JoinColumn({
   //   name: 'dependency_id',
   //   referencedColumnName: 'id',
   // })
-  // service: ServicesInfoEntity;
+  // service: ServicesInfoModel;
 }

@@ -21,7 +21,7 @@ export enum paramType {
   timestamps: false,
   tableName: 'service_api',
 })
-export class ServicesApiModel extends BaseModel<ServicesApiModel> {
+export class ServicesApiModel extends BaseModel {
   // 接口URL
   @Length({ min: 1, max: 64 })
   @Column({

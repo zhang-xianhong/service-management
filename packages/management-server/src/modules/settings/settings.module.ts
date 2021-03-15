@@ -2,14 +2,14 @@
 import { Module } from '@nestjs/common';
 import { SequelizeModule } from '@nestjs/sequelize';
 // import { TypeOrmModule } from '@nestjs/typeorm';
-import { SettingsCategoriesEntity } from './settings-categories.entity';
-import { DataTypesEntity } from './settings-data-types.entity';
-import { SettingsTagsEntity } from './settings-tags.entity';
+import { SettingsCategoriesModel } from './settings-categories.entity';
+import { DataTypesModel } from './settings-data-types.entity';
+import { SettingsTagsModel } from './settings-tags.entity';
 import { SettingsController } from './settings.controller';
 import { SettingsService } from './settings.service';
 
 @Module({
-  imports: [SequelizeModule.forFeature([DataTypesEntity, SettingsTagsEntity, SettingsCategoriesEntity])],
+  imports: [SequelizeModule.forFeature([DataTypesModel, SettingsTagsModel, SettingsCategoriesModel])],
   controllers: [SettingsController],
   providers: [SettingsService],
   exports: [SettingsService],
