@@ -1,4 +1,5 @@
-import { NOW } from 'sequelize';
+import { Sequelize, NOW } from 'sequelize';
+
 import { Table, Column, DataType, PrimaryKey, AutoIncrement, Default, Model } from 'sequelize-typescript';
 @Table({
   timestamps: false,
@@ -12,17 +13,17 @@ export class BaseModel extends Model {
   // 创建时间
   @Default(NOW)
   @Column({
-    type: DataType.DATE,
     field: 'create_time',
-    defaultValue: NOW,
+    type: 'TIMESTAMP',
+    defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
   })
   createTime: Date;
 
   // 修改时间
   @Column({
-    type: DataType.DATE,
     field: 'update_time',
-    defaultValue: NOW,
+    type: 'TIMESTAMP',
+    defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
   })
   updateTime: Date;
 
@@ -40,6 +41,7 @@ export class BaseModel extends Model {
   })
   updateUser: number;
 
+  // 是否删除
   @Column({
     type: DataType.BOOLEAN,
     field: 'is_delete',
