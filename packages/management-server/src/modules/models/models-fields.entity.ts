@@ -13,7 +13,7 @@ export class ModelsFieldsModel extends BaseModel {
     type: DataType.BIGINT,
     field: 'model_id',
   })
-  serviceId: number;
+  modelId: number;
 
   @BelongsTo(() => ModelsInfoModel)
   info: ModelsInfoModel;

@@ -106,7 +106,7 @@ export class ModelsService {
       const fieldsEntities = await this.createFieldsEntities(fields, model.id);
       // 生成新的fields
       if (fieldsEntities) {
-        await this.fieldsRepository.create(fieldsEntities, {
+        await this.fieldsRepository.bulkCreate(fieldsEntities, {
           transaction,
         });
       }
@@ -115,8 +115,8 @@ export class ModelsService {
         modelId: model.id,
       };
     } catch (error) {
-      await transaction.rollback();
       this.logger.error(error);
+      await transaction.rollback();
       throw new ApiException({
         code: CommonCodes.UPDATED_FAIL,
         message: '新增失败',
@@ -165,7 +165,7 @@ export class ModelsService {
       const fieldsEntities = await this.createFieldsEntities(fields, id);
       // 生成新的fields
       if (fieldsEntities) {
-        await this.fieldsRepository.create(fieldsEntities, {
+        await this.fieldsRepository.bulkCreate(fieldsEntities, {
           transaction,
         });
       }
@@ -281,7 +281,7 @@ export class ModelsService {
           });
         }
         const { type, extra, length, isKey } = fieldType;
-        return this.fieldsRepository.create({
+        return {
           ...newField,
           type,
           extra,
@@ -289,7 +289,7 @@ export class ModelsService {
           isKey,
           typeId,
           modelId,
-        });
+        };
       });
       return fieldsEntities;
     }

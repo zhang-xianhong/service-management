@@ -1,4 +1,3 @@
-import { join } from 'path';
 import getConfig from './';
 
 const IS_PRODUCTION = process.env.NODE_ENV === 'production';
@@ -19,6 +18,9 @@ export default {
   password: DATABASE_PASSWORD,
   database: DATABASE_DB,
   autoLoadModels: true,
-  synchronize: true,
+  synchronize: !IS_PRODUCTION,
   models: [],
+  logging(...msg) {
+    return IS_PRODUCTION ? null : console.log(...msg);
+  },
 };

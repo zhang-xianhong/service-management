@@ -127,20 +127,6 @@ export class ServicesService {
     }
     const transaction = await this.sequelize.transaction();
     try {
-<<<<<<< HEAD
-      await this.sequelize.transaction(async (t) => {
-        const transactionHost = { transaction: t };
-
-        serviceData.serverPort = Number(serviceMaxPort?.serverPort || 8079) + 1;
-        const service: any = await this.infoRepository.create(serviceData, transactionHost);
-        if (apis && Array.isArray(apis)) {
-          const apisEntities = apis.map(api => ({
-            ...api,
-            serviceId: service.id,
-          }));
-          await this.apiRepository.bulkCreate(apisEntities, transactionHost);
-        }
-=======
       serviceData.serverPort = Number(serviceMaxPort?.serverPort) + 1 || 8080;
       const service: any = await this.infoRepository.create(serviceData, { transaction });
       if (apis && Array.isArray(apis)) {
@@ -150,7 +136,6 @@ export class ServicesService {
         }));
         await this.apiRepository.bulkCreate(apisEntities, { transaction });
       }
->>>>>>> a09abd928ac6049b80c69c24413dca4b122b1f41
 
       if (dependencies && Array.isArray(dependencies)) {
         const dependenciesEntities = dependencies.map(dependency => ({
@@ -158,11 +143,11 @@ export class ServicesService {
           dependencyId: dependency.dependencyId,
           serviceId: service.id,
         }));
-        console.log(dependenciesEntities);
         await this.dependencyRepository.bulkCreate(dependenciesEntities, { transaction });
       }
       await transaction.commit();
     } catch (err) {
+      this.logger.error(err);
       // 一旦发生错误，事务会回滚
       await transaction.rollback();
       throw new ApiException({
