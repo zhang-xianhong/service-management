@@ -1,4 +1,4 @@
-import { BeforeUpdate, Column, PrimaryColumn } from 'typeorm';
+import { Column, PrimaryColumn } from 'typeorm';
 
 export class BaseEntity {
   // 自增ID
@@ -49,9 +49,4 @@ export class BaseEntity {
     select: false,
   })
   isDelete: boolean;
-
-  @BeforeUpdate()
-  updateFields() {
-    console.log(0, this);
-  }
 }
