@@ -129,7 +129,7 @@ export class ServicesService {
       await this.sequelize.transaction(async (t) => {
         const transactionHost = { transaction: t };
 
-        serviceData.serverPort = Number(serviceMaxPort?.serverPort) + 1 || 8080;
+        serviceData.serverPort = Number(serviceMaxPort?.serverPort || 8079) + 1;
         const service: any = await this.infoRepository.create(serviceData, transactionHost);
         if (apis && Array.isArray(apis)) {
           const apisEntities = apis.map(api => ({
@@ -221,7 +221,7 @@ export class ServicesService {
     const transaction = await this.sequelize.transaction();
     try {
       const deleteIds = ids.filter(id => Number(id));
-      // 更新info表数据，isDelete置为ture
+      // 更新info表数据，isDelete置为true
       await this.infoRepository.update({
         isDelete: true,
       }, {
@@ -230,7 +230,7 @@ export class ServicesService {
         },
         transaction,
       });
-      // 更新api表数据，isDelete置为ture
+      // 更新api表数据，isDelete置为true
       await this.apiRepository.update({
         isDelete: true,
       }, {
@@ -238,7 +238,7 @@ export class ServicesService {
           serviceId: { [Op.in]: deleteIds },
         }, transaction,
       });
-      // 更新dependency表数据，isDelete置为ture
+      // 更新dependency表数据，isDelete置为true
       await this.dependencyRepository.update({
         isDelete: true,
       }, {

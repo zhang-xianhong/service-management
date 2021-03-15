@@ -108,10 +108,10 @@ export class ServicesInfoModel extends BaseModel  {
   @Length({ min: 1, max: 64 })
   @Column({
     type: DataType.STRING,
-    field: 'extand_version',
+    field: 'extend_version',
     defaultValue: null,
   })
-  extandVersion: string;
+  extendVersion: string;
 
   // 分类
   @Length({ min: 1, max: 64 })
@@ -131,17 +131,17 @@ export class ServicesInfoModel extends BaseModel  {
 
   // 初始化次数
   @Column({
-    type: 'int',
-    name: 'init_times',
-    default: 0,
+    type: DataType.INTEGER,
+    field: 'init_times',
+    defaultValue: 0,
   })
   initTimes: number;
 
   // 构建次数
   @Column({
-    type: 'int',
-    name: 'built_times',
-    default: 0,
+    type: DataType.INTEGER,
+    field: 'built_times',
+    defaultValue: 0,
   })
   builtTimes: number;
 

@@ -1,6 +1,5 @@
 import { NOW } from 'sequelize';
 import { Table, Column, DataType, PrimaryKey, AutoIncrement, Default, Model } from 'sequelize-typescript';
-
 @Table({
   timestamps: false,
 })
