@@ -36,7 +36,7 @@
 
 | 参数名                      | 参数描述           | 示例     | 数据类型                          | 是否必传 | 默认值  | 备注                                                           |
 | --------------------------- | ------------------ | -------- | --------------------------------- | -------- | ------- | -------------------------------------------------------------- |
-| name                        | 按钮标识           | 'delete' | string                            | false    | -       | 如果未传入 eventName 字段按钮事件触发 emit "{trigger}: {name}" |
+| name                        | 按钮标识           | 'delete' | string                            | true    | -       | 如果未传入 eventName 字段按钮事件触发 emit "{trigger}: {name}" |
 | label ｜ 按钮内容 ｜ '删除' | string             | false    | ''                                |          |
 | trigger                     | 事件触发钩子       | 'click'  | 'hover'/'click'/'dbclick'/'focus' | false    | 'click' |
 | eventName                   | 自定义返回事件名称 | 'change' | string                            | false    | -       | eventName 与 name 必须至少传一个，否则按钮事件无法 emit        |

@@ -17,7 +17,7 @@
         <el-button type="primary">新增</el-button>
       </router-link>
       <el-button :disabled="!selections.length">克隆</el-button>
-      <el-button :disabled="!selections.length">删除</el-button>
+      <el-button :disabled="!selections.length" @click="deleteDataItems">删除</el-button>
       <el-button>分类</el-button>
       <el-button>标签</el-button>
       <el-button>负责人</el-button>
@@ -29,7 +29,8 @@
       :default-sort="{ prop: 'name', order: 'descending' }"
       @selection-change="handleSelectionChange"
       @sort-change="handleSortChange"
-      @click:edit="editDataItem"
+      @edit="editDataItem"
+      @delete="deleteDataItem"
     >
       <template #name="{ rowData }">
         <router-link :to="`/schema/model/${rowData.id}`">{{ rowData.name }} </router-link>
@@ -40,12 +41,13 @@
 <script lang="ts">
 import { reactive, ref, onMounted, toRefs } from 'vue';
 import { PageInfo, SortInfo } from '@/components/data-list/types/data-list';
-import { getModelList } from '@/api/schema/model';
+import { getModelList, deleteModel } from '@/api/schema/model';
 import { RouterLink, useRouter } from 'vue-router';
 import PackagedTable from '@/components/packaged-table/PackagedTable.vue';
 import { tableColumns, tableOperations } from '../config/data-object-management-table';
 import TableColumnInterface from '@/components/packaged-table/types/table-columns-interface';
 import TableButtonInterface from '@/components/packaged-table/types/table-button-interface';
+import { ElMessage } from 'element-plus';
 
 interface TableStateInterface {
   data: any[];
@@ -62,6 +64,9 @@ export default {
     RouterLink,
   },
   setup() {
+    // 路由信息
+    const router = useRouter();
+
     // 表格相关数据
     const tableState: TableStateInterface = reactive({
       data: [],
@@ -116,8 +121,26 @@ export default {
 
     // 编辑数据模型项
     const editDataItem = (rowData: any) => {
-      const router = useRouter();
-      router.resolve(`/schema/data-object/${rowData.id}`);
+      router.push({ path: `/schema/model/${rowData.id}` });
+    };
+
+    // 单条删除数据模型项
+    const deleteDataItem = async (rowData: any) => {
+      const res: any = await deleteModel({ ids: [rowData.id] });
+      if (res.code === 0) {
+        ElMessage.success('删除成功');
+        await getList();
+      }
+    };
+
+    // 批量删除数据模型项
+    const deleteDataItems = async () => {
+      const ids = tableState.selections.map((item) => item.id);
+      const res: any = await deleteModel({ ids });
+      if (res.code === 0) {
+        ElMessage.success('删除成功');
+        await getList();
+      }
     };
 
     onMounted(() => {
@@ -131,6 +154,8 @@ export default {
       handleSortChange,
       handleSelectionChange,
       editDataItem,
+      deleteDataItem,
+      deleteDataItems,
       getList,
     };
   },

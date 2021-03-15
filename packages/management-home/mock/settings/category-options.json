@@ -1,0 +1,49 @@
+{
+    "code": 0,
+    "data": [
+        {
+            "id": "1",
+            "createTime": "2021-03-11T02:32:54.000Z",
+            "updateTime": "2021-03-11T02:32:54.000Z",
+            "createUser": null,
+            "updateUser": null,
+            "name": "客服管理",
+            "description": "客服管理",
+            "children": [
+                {
+                    "id": "2",
+                    "createTime": "2021-03-11T02:33:27.000Z",
+                    "updateTime": "2021-03-11T02:33:27.000Z",
+                    "createUser": null,
+                    "updateUser": null,
+                    "name": "客服维护系统",
+                    "description": "客服维护系统",
+                    "children": []
+                },
+                {
+                    "id": "3",
+                    "createTime": "2021-03-11T02:36:20.000Z",
+                    "updateTime": "2021-03-11T02:36:20.000Z",
+                    "createUser": null,
+                    "updateUser": null,
+                    "name": "客服系统",
+                    "description": "客服系统",
+                    "children": []
+                }
+            ]
+        },
+        {
+            "id": "4",
+            "createTime": "2021-03-11T02:37:42.000Z",
+            "updateTime": "2021-03-11T02:37:42.000Z",
+            "createUser": null,
+            "updateUser": null,
+            "name": "营销系统",
+            "description": "营销系统",
+            "children": []
+        }
+    ],
+    "message": "successful",
+    "httpStatus": 200,
+    "timestamp": 1615430311608
+}
