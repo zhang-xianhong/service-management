@@ -56,6 +56,7 @@ export const tableColumns: Array<TableColumnsInterface> = [
         label: '构建包',
         eventName: 'build',
         trigger: 'click',
+        visibility: false,
       },
       {
         name: 'start',

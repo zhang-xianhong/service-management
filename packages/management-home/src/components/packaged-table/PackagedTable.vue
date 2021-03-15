@@ -20,7 +20,7 @@
         <template v-if="isButton">
           <template v-for="({ name, label, trigger, eventName, ...restOptions }, index) in buttonOptions" :key="index">
             <el-button
-              v-if="label || scope.row[prop]"
+              v-if="(label || scope.row[prop]) && handleButtonVisibility(buttonsVisibility[name], scope.row)"
               :key="index"
               type="primary"
               v-on="buttonEventHandler(trigger, prop, scope.row, name, eventName)"
@@ -53,8 +53,9 @@
 </template>
 
 <script lang="ts">
-import { SetupContext, computed, watchEffect, ref } from 'vue';
+import { SetupContext, computed, watchEffect, ref, reactive } from 'vue';
 import ButtonOptionInterface from './types/table-button-interface';
+import TableColumnsInterface from './types/table-columns-interface';
 import dateFormat from './date-format';
 
 export default {
@@ -146,6 +147,20 @@ export default {
       return [];
     });
 
+    // 按钮是否可见配置
+    const buttonsVisibility: Record<string, boolean | Function> = reactive({});
+
+    // 按钮是否可见配置初始化
+    Object.values(props.columns as TableColumnsInterface[]).forEach((item: TableColumnsInterface) => {
+      if (item.buttonOptions && item.buttonOptions.length) {
+        item.buttonOptions.forEach((data: ButtonOptionInterface) => {
+          if (data.visibility || data.visibility === false) {
+            buttonsVisibility[data.name] = data.visibility;
+          }
+        });
+      }
+    });
+
     // 操作栏按钮事件触发
     function handleOperate(operationItem: ButtonOptionInterface, rowData: any): void {
       if (operationItem) {
@@ -209,9 +224,26 @@ export default {
       return result;
     }
 
+    // 表单内按钮是否可见配置处理
+    function handleButtonVisibility(visibility: any, rowData: any) {
+      if (visibility === undefined) {
+        return true;
+      }
+      if (typeof visibility === 'function') {
+        return visibility(rowData);
+      }
+      return !!visibility;
+    }
+
+    // 修改表格内按钮是否可见
+    function changeButtonVisibility(name: string, visibility: boolean | Function) {
+      buttonsVisibility[name] = visibility;
+    }
+
     // 组件向外暴露按钮引用
     ctx.expose({
       buttonsRef,
+      changeButtonVisibility,
     });
 
     return {
@@ -221,9 +253,11 @@ export default {
       tableData,
       tableOperations,
       tableColumns,
+      buttonsVisibility,
       handleOperate,
       buttonEventHandler,
       handleButtonOptions,
+      handleButtonVisibility,
       dateFormat,
     };
   },

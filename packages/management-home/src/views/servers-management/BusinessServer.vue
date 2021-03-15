@@ -187,7 +187,7 @@ export default {
     };
 
     // 建立ws连接，后台有变化是刷新列表
-    ws.initWebSocket(`ws://${location.hostname}:3000`);
+    ws.initWebSocket(`ws://${location.hostname}/socket`);
     ws.addWsHandler('serviceUpdate', (msgEvt: MessageEvent) => {
       if (JSON.parse(msgEvt.data).event === 'serviceUpdate') {
         reloadList();
