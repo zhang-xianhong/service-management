@@ -125,7 +125,7 @@ export class ServicesService {
     await queryRunner.startTransaction();
     try {
       // 端口递增
-      serviceData.serverPort =  Number(serviceMaxPort?.serverPort) + 1 || 8080;
+      serviceData.serverPort =  Number(serviceMaxPort?.serverPort || 8079) + 1;
       const service: any = await queryRunner.manager.save(this.infoRepository.create(serviceData));
       if (apis && Array.isArray(apis)) {
         const apisEntities = apis.map(api => this.apiRepository.create({
@@ -237,19 +237,19 @@ export class ServicesService {
     await queryRunner.connect();
     await queryRunner.startTransaction();
     try {
-      // 更新info表数据，isDelete置为ture
+      // 更新info表数据，isDelete置为true
       await queryRunner.manager.update(ServicesInfoEntity, {
         id: In(deleteIds),
       }, {
         isDelete: true,
       });
-      // 更新api表数据，isDelete置为ture
+      // 更新api表数据，isDelete置为true
       await queryRunner.manager.update(ServicesApiEntity, {
         serviceId: In(deleteIds),
       }, {
         isDelete: true,
       });
-      // 更新dependency表数据，isDelete置为ture
+      // 更新dependency表数据，isDelete置为true
       await queryRunner.manager.update(ServicesDependencyEntity, {
         serviceId: In(deleteIds),
       }, {
