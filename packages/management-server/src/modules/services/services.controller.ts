@@ -1,6 +1,8 @@
 import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
+import { CommonCodes } from 'src/shared/constants/code';
 import { QueryPipe, SearchQuery } from 'src/shared/pipes/query.pipe';
-import { ServiceInfoDto } from './dto/service-info.dto';
+import { ApiException } from 'src/shared/utils/api.exception';
+import { isEmpty } from 'src/shared/utils/validator';
 import { ServicesService } from './services.service';
 @Controller('services')
 export class ServicesController {
@@ -25,7 +27,7 @@ export class ServicesController {
 
   // 新增服务
   @Post()
-  async create(@Body() postData: ServiceInfoDto) {
+  async create(@Body() postData) {
     return await this.service.create(postData);
   }
 
@@ -41,6 +43,22 @@ export class ServicesController {
     console.log(postData);
 
     // return await this.service.buildService(postData);
+  }
+
+  /**
+   * 更新服务状态
+   * @param param0
+   * @returns
+   */
+  @Post('/update/status')
+  async updateStatus(@Body() { id, status }) {
+    if (!id || isEmpty(status)) {
+      throw new ApiException({
+        code: CommonCodes.PARAMETER_INVALID,
+        message: 'id 和 status 字段不能为空',
+      });
+    }
+    return await this.service.updateServiceStatus(id, status);
   }
 
   // 更新服务

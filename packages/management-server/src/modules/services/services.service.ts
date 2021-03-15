@@ -4,16 +4,21 @@ import { ApiException } from 'src/shared/utils/api.exception';
 import { ServicesApiModel } from './service-api.entity';
 import { ServicesDependencyModel } from './service-dependency.entity';
 import { ServicesInfoModel } from './service-info.entity';
-import { INIT_SERVICE_URL, SERVICE_SSHURI } from 'src/shared/constants/url';
+import { BUILD_SERVICE_URL, INIT_SERVICE_URL, SERVICE_SSHURI, GENERATE_SERVICE_REPOSITORY_URL } from 'src/shared/constants/url';
 import { isEmpty } from 'src/shared/utils/validator';
 import { PlainObject } from 'src/shared/pipes/query.pipe';
 import { InjectModel } from '@nestjs/sequelize';
 import { Op, Sequelize } from 'sequelize';
+import { SERVICE_STATUS } from './service-status';
+import { ErrorTypes } from 'src/shared/constants/error';
+import { SocketGateway } from 'src/shared/gateway/socket.gateway';
+import { WEBSOCKET_EVENT_SERVICE_UPDATE } from 'src/shared/constants/websocket-events';
 @Injectable()
 export class ServicesService {
   constructor(
     @Inject(Logger)
     private readonly logger: LoggerService,
+    private readonly io: SocketGateway,
     private sequelize: Sequelize,
     @InjectModel(ServicesInfoModel) private readonly infoRepository: typeof ServicesInfoModel,
     @InjectModel(ServicesApiModel) private readonly apiRepository: typeof ServicesApiModel,
@@ -72,6 +77,11 @@ export class ServicesService {
     return service;
   }
 
+  /**
+   * 创建服务
+   * @param data
+   * @returns
+   */
   async create(data: any) {
     const { apis, dependencies, ...serviceData } = data;
     if (isEmpty(serviceData.name)) {
@@ -251,13 +261,21 @@ export class ServicesService {
    * @param id
    */
   async initService(id: number) {
+    const service = await this.getServiceById(id);
+    if (service.status !== SERVICE_STATUS.UNINITIALIZED
+      && service.status !== SERVICE_STATUS.INITIALIZATION_FAILED) {
+      throw new ApiException({
+        code: CommonCodes.PARAMETER_INVALID,
+        message: '当前服务不能初始化',
+      });
+    }
     try {
       const { data }: any = await this.httpService.get(`${INIT_SERVICE_URL}${id}`).toPromise();
       if (data?.code === 0) {
         const { data: { sshURI } } = data;
-        this.update(id, {
+        await this.update(id, {
           deposit: `${SERVICE_SSHURI}${sshURI}`,
-          status: 1,
+          status: SERVICE_STATUS.INITIALIZING,
         });
         return true;
       }
@@ -270,5 +288,124 @@ export class ServicesService {
         error,
       }, HttpStatus.BAD_REQUEST);
     }
+  }
+
+  /**
+   * 构建服务
+   * @param id
+   */
+  async buildService(data: any) {
+    const { serviceId, branch, userId } = data;
+    const service = await this.getServiceById(serviceId);
+    if (service.status !== SERVICE_STATUS.BUILD_FAILED
+      && service.status !== SERVICE_STATUS.UN_BUILD) {
+      throw new ApiException({
+        code: CommonCodes.PARAMETER_INVALID,
+        message: '当前服务不能构建',
+      });
+    }
+    try {
+      const { data } = await this.httpService.get(`${BUILD_SERVICE_URL}?serverId=${serviceId}&ref=${branch}&userId=${userId}`).toPromise();
+      if (data?.code === 0) {
+        await this.updateServiceStatus(serviceId, SERVICE_STATUS.BUILDING);
+        return data.data;
+      }
+      throw data.message;
+    } catch (error) {
+      this.logger.error(error);
+      throw new ApiException({
+        code: CommonCodes.BUILD_FAIL,
+        message: '服务构建失败',
+        error,
+      }, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  /**
+   * 创建服务物理项目仓库
+   */
+  async generateServiceRepository({
+    projectDesc,
+    projectName,
+    saServiceID,
+  }) {
+    try {
+      const { data } = await this.httpService.post(GENERATE_SERVICE_REPOSITORY_URL, {
+        projectDesc,
+        projectName,
+        saServiceID,
+      }).toPromise();
+      if (data?.code === 0) {
+        return data.data;
+      }
+      throw data.message;
+    } catch (error) {
+      this.logger.error(error);
+      throw new ApiException({
+        code: CommonCodes.BUILD_FAIL,
+        message: '创建服务仓库失败',
+        error,
+      }, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  /**
+   * 更新服务状态
+   * @param serviceId
+   * @param status
+   */
+  async updateServiceStatus(serviceId: number, status: SERVICE_STATUS) {
+    const update: PlainObject = {
+      status,
+    };
+    const service = await this.infoRepository.findOne({
+      where: {
+        serviceId,
+      },
+    });
+    // 初始化成功后, 初始化次数加1
+    if (status === SERVICE_STATUS.UN_BUILD) {
+      update.initTimes = service.initTimes + 1;
+    }
+    // 构建成功后, 构建次数加1
+    if (status === SERVICE_STATUS.BUILT) {
+      update.builtTimes = service.builtTimes + 1;
+    }
+    await this.infoRepository.update(update, {
+      where: {
+        serviceId,
+      },
+    });
+    // 推送消息到前端
+    this.io.sendMessage(WEBSOCKET_EVENT_SERVICE_UPDATE, {
+      serviceId,
+      status,
+    });
+    return {
+      serviceId,
+      status,
+    };
+  }
+
+  /**
+   * 根据服务ID获取服务
+   * @param id
+   * @returns
+   */
+  private async getServiceById(id: number) {
+    const service = await this.infoRepository.findOne({
+      where: {
+        id,
+        isDelete: false,
+      },
+    });
+    if (!service) {
+      throw new ApiException({
+        code: CommonCodes.NOT_FOUND,
+        message: '服务不存在',
+        error: ErrorTypes.NOT_FOUND,
+      }, HttpStatus.NOT_FOUND);
+    }
+    return service;
   }
 }

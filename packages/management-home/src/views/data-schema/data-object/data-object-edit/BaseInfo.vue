@@ -12,11 +12,14 @@
     <el-form-item prop="owner" label="负责人">
       <el-select v-model="formData.owner" placeholder="请选择" multiple></el-select>
     </el-form-item>
-    <el-form-item prop="classification" label="分类">
-      <el-select v-model="formData.classification" placeholder="请选择" multiple></el-select>
+    <el-form-item prop="categories" label="分类">
+      <el-select v-model="formData.categories" placeholder="请选择" multiple></el-select>
+      <categories-selection></categories-selection>
     </el-form-item>
     <el-form-item prop="tags" label="标签">
-      <el-select v-model="formData.tags" placeholder="请选择" multiple></el-select>
+      <el-select v-model="formData.tags" placeholder="请选择" multiple>
+        <el-option v-for="item in tagOptions" :key="item.id" :label="item.name" :value="item.id"></el-option>
+      </el-select>
     </el-form-item>
     <el-form-item prop="remark" label="对象详情">
       <el-input type="textarea" :rows="3" placeholder="请输入数据对象描述，最多支持225个字符" v-model="formData.remark">
@@ -33,9 +36,11 @@
 </template>
 
 <script lang="ts">
-import { ref, watch, reactive, toRefs } from 'vue';
+import { ref, watch, reactive, toRefs, onMounted } from 'vue';
 import ModelProperty from './components/ModelProperty.vue';
+import categoriesSelection from './components/CategoriesSelection.vue';
 import { createModel, updateModel } from '@/api/schema/model';
+import { getAllTags } from '@/api/settings/tags';
 import { ElMessage } from 'element-plus';
 import { useRouter } from 'vue-router';
 
@@ -43,6 +48,7 @@ export default {
   name: 'BaseInfo',
   components: {
     ModelProperty,
+    categoriesSelection,
   },
   props: {
     data: {
@@ -66,11 +72,13 @@ export default {
         description: '',
         demand: '',
         owner: [],
-        classification: [],
+        categories: [],
         tags: [],
         remark: '',
         fields: [],
       },
+      tagOptions: [],
+      categoryOptions: [],
     });
 
     watch(
@@ -80,7 +88,7 @@ export default {
         formState.formData = {
           ...data,
           owner: data.owner ? data.owner.split(',') : [],
-          classification: data.classification ? data.classification.split(',') : [],
+          categories: data.categories ? data.categories.split(',') : [],
           tags: data.tags ? data.tags.split(',') : [],
           remark: data.remark || '',
           demand: data.demand || '',
@@ -150,7 +158,7 @@ export default {
       const saveData = {
         ...formState.formData,
         owner: formState.formData.owner.join(','),
-        classification: formState.formData.classification.join(','),
+        categories: formState.formData.categories.join(','),
         tags: formState.formData.tags.join(','),
       };
       formRef.value.validate((valid: boolean) => {
@@ -172,6 +180,11 @@ export default {
     function onCancel(): void {
       router.back();
     }
+
+    onMounted(async () => {
+      const res = await getAllTags();
+      formState.tagOptions = res.data || [];
+    });
 
     return {
       ...toRefs(formState),

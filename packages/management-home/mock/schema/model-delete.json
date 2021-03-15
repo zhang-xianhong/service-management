@@ -1,0 +1,9 @@
+{
+    "code": 0,
+    "data": {
+        "deleted": ["1"]
+    },
+    "message": "successful",
+    "httpStatus": 200,
+    "timestamp": 1614754353518
+}
