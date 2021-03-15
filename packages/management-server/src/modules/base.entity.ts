@@ -1,57 +1,51 @@
-import { BeforeUpdate, Column, PrimaryColumn } from 'typeorm';
+import { NOW } from 'sequelize';
+import { Table, Column, DataType, PrimaryKey, AutoIncrement, Default } from 'sequelize-typescript';
 
+@Table({
+  timestamps: false,
+})
 export class BaseEntity {
-  // 自增ID
-  @PrimaryColumn({
-    type: 'bigint',
-    generated: true,
-  })
+  @PrimaryKey
+  @AutoIncrement
+  @Column(DataType.BIGINT)
   id: number;
 
   // 创建时间
+  @Default(NOW)
   @Column({
-    type: 'timestamp',
-    name: 'create_time',
-    default: () => 'CURRENT_TIMESTAMP',
+    type: DataType.DATE,
+    field: 'create_time',
+    defaultValue: NOW,
   })
   createTime: Date;
 
   // 修改时间
   @Column({
-    type: 'timestamp',
-    name: 'update_time',
-    default: () => 'CURRENT_TIMESTAMP',
+    type: DataType.DATE,
+    field: 'update_time',
+    defaultValue: NOW,
   })
   updateTime: Date;
 
   // 创建人
   @Column({
-    type: 'bigint',
-    name: 'create_user',
-    default: null,
+    type: DataType.BIGINT,
+    field: 'create_user',
   })
   createUser: number;
 
   // 更新人
   @Column({
-    type: 'bigint',
-    name: 'update_user',
-    default: null,
+    type: DataType.BIGINT,
+    field: 'update_user',
   })
   updateUser: number;
 
-  // 是否删除
   @Column({
-    name: 'is_delete',
-    type: 'boolean',
-    width: 1,
-    default: false,
-    select: false,
+    type: DataType.BOOLEAN,
+    field: 'is_delete',
+    defaultValue: false,
   })
   isDelete: boolean;
-
-  @BeforeUpdate()
-  updateFields() {
-    console.log(0, this);
-  }
 }
+

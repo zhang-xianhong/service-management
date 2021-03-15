@@ -9,11 +9,7 @@ export class ServicesController {
   // 获取服务列表
   @Get('')
   async serviceList(@Query(new QueryPipe) query: SearchQuery) {
-    const [list, total] = await this.service.findAll(query);
-    return {
-      total,
-      list,
-    };
+    return await this.service.findAll(query);
   }
 
   // 获取服务详情

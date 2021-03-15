@@ -1,33 +1,37 @@
 /**
  * 数据字典表
  */
-import { Column, Entity } from 'typeorm';
+import { Table, Column, DataType, Model } from 'sequelize-typescript';
 import { BaseEntity } from '../base.entity';
 
+@Table({
+  timestamps: false,
+  tableName: 'settings_dictionary',
+})
+
 // settings/dictionaries/:typeCode
-@Entity({ name: 'settings_dictionary' })
-export class DictionariesEntity extends BaseEntity {
+export class DictionariesEntity extends Model<BaseEntity> {
   // 父级，为空则表示一级类型
   @Column({
-    type: 'varchar',
-    default: '',
+    type: DataType.STRING,
+    defaultValue: '',
   })
   parent: string;
 
   // 值
   @Column({
-    type: 'varchar',
+    type: DataType.STRING,
   })
   code: string;
 
   // 名称
   @Column({
-    type: 'varchar',
+    type: DataType.STRING,
   })
   name: string;
 
   @Column({
-    type: 'tinytext',
+    type: DataType.TEXT,
   })
   description: string;
 }

@@ -1,178 +1,183 @@
 /**
  * 服务信息实体
  */
-import { Column, Entity, OneToMany } from 'typeorm';
+import { Table, Column, DataType, Length, HasMany, Model } from 'sequelize-typescript';
 import { ServicesApiEntity } from './service-api.entity';
 import { ServicesDependencyEntity } from './service-dependency.entity';
 import { BaseEntity } from 'src/modules/base.entity';
-@Entity({ name: 'service_info' })
-export class ServicesInfoEntity extends BaseEntity {
+
+
+@Table({
+  timestamps: false,
+  tableName: 'service_info',
+})
+export class ServicesInfoEntity extends Model<BaseEntity, ServicesInfoEntity> {
   // 项目服务
+  @Length({ min: 1, max: 64 })
   @Column({
-    type: 'varchar',
-    length: 64,
+    type: DataType.STRING,
     comment: '服务名称，对应生成SpringBoot工程的名称',
   })
   name: string;
 
   // 服务基础url
+  @Length({ min: 1, max: 64 })
   @Column({
-    type: 'varchar',
-    length: 64,
+    type: DataType.STRING,
     comment: '为所有该服务下接口的URL添加前缀',
-    default: '',
+    defaultValue: '',
   })
   url: string;
 
   // 服务端口号
   @Column({
-    type: 'int',
-    name: 'server_port',
+    type: DataType.INTEGER,
+    field: 'server_port',
     comment: '服务启动监听端口号',
-    default: null,
+    defaultValue: null,
   })
   serverPort: number;
 
   // 服务部署id
   @Column({
-    type: 'varchar',
-    name: 'depoly_id',
+    type: DataType.STRING,
+    field: 'depoly_id',
     comment: '服务部署在运行平台id',
-    default: null,
+    defaultValue: null,
   })
   depolyId: string;
 
   // 依赖的模型id
   @Column({
-    type: 'varchar',
-    name: 'module_dependency_id',
+    type: DataType.STRING,
+    field: 'module_dependency_id',
     comment: '依赖的主模型id，附模型需要根据主模型进行关联',
-    default: null,
+    defaultValue: null,
   })
   moduleDependencyId: string;
 
   // 托管信息/服务代码
   @Column({
-    type: 'varchar',
+    type: DataType.STRING,
     comment: '比如：git、svn地址',
-    default: null,
+    defaultValue: null,
   })
   deposit: string;
 
   // 服务状态
   @Column({
-    type: 'tinyint',
+    type: DataType.TINYINT,
     comment: '是否初始化，决定是否要追加更新',
-    default: 0,
+    defaultValue: 0,
   })
   status: number;
 
   // 服务描述
   @Column({
-    type: 'varchar',
-    default: '',
+    type: DataType.STRING,
+    defaultValue: '',
   })
   description: string;
 
   // 版本号/修改次数
   @Column({
-    type: 'int',
+    type: DataType.INTEGER,
     comment: '要素字段-系统维护',
-    default: null,
+    defaultValue: null,
   })
   version: number;
 
   // 负责人
+  @Length({ min: 1, max: 64 })
   @Column({
-    type: 'varchar',
-    length: 64,
-    default: null,
+    type: DataType.STRING,
+    defaultValue: null,
   })
   owner: string;
 
   // 是否纯继承
   @Column({
-    type: 'tinyint',
-    name: 'is_all_by_extend',
-    default: null,
+    type: DataType.TINYINT,
+    field: 'is_all_by_extend',
+    defaultValue: null,
   })
   isAllByExtend: number;
 
   // 继承版本
+  @Length({ min: 1, max: 64 })
   @Column({
-    type: 'varchar',
-    length: 64,
-    name: 'extand_version',
-    default: null,
+    type: DataType.STRING,
+    field: 'extand_version',
+    defaultValue: null,
   })
   extandVersion: string;
 
   // 分类
+  @Length({ min: 1, max: 64 })
   @Column({
-    type: 'varchar',
-    length: 64,
-    default: '',
+    type: DataType.STRING,
+    defaultValue: '',
   })
   classification: string;
 
   // 标签
   @Column({
-    type: 'varchar',
-    default: '',
+    type: DataType.STRING,
+    defaultValue: '',
   })
   tag: string;
 
   // 代码质量
   @Column({
-    type: 'varchar',
-    name: 'code_quality',
-    default: '',
+    type: DataType.STRING,
+    field: 'code_quality',
+    defaultValue: '',
   })
   codeQuality: string;
 
   // 服务级别
   @Column({
-    type: 'varchar',
-    name: 'service_rank',
-    default: '',
+    type: DataType.STRING,
+    field: 'service_rank',
+    defaultValue: '',
   })
   serviceRank: string;
 
   // 服务地址/swagger地址
   @Column({
-    type: 'varchar',
-    name: 'service_Api_url',
-    default: '',
+    type: DataType.STRING,
+    field: 'service_Api_url',
+    defaultValue: '',
   })
   serviceApiUrl: string;
 
   // Druid地址
   @Column({
-    type: 'varchar',
-    name: 'druid_url',
-    default: '',
+    type: DataType.STRING,
+    field: 'druid_url',
+    defaultValue: '',
   })
   druidUrl: string;
 
   // 启动时间
   @Column({
-    type: 'datetime',
-    name: 'start_time',
-    default: null,
+    type: DataType.DATE,
+    field: 'start_time',
+    defaultValue: null,
   })
   startTime: Date;
 
   // 克隆源
   @Column({
-    type: 'varchar',
-    name: 'clone_by',
-    default: '',
+    type: DataType.STRING,
+    field: 'clone_by',
+    defaultValue: '',
   })
   cloneBy: string;
 
-  @OneToMany(() => ServicesApiEntity, api => api.serviceId)
+  @HasMany(() => ServicesApiEntity)
   apis: ServicesApiEntity[];
 
-  @OneToMany(() => ServicesDependencyEntity, dependency => dependency.serviceId)
+  @HasMany(() => ServicesDependencyEntity)
   dependencies: ServicesDependencyEntity[];
 }

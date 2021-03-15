@@ -1,35 +1,39 @@
 /**
  * 数据类型表
  */
+import { Table, Column, DataType, Model } from 'sequelize-typescript';
 import { FIELD_TYPES } from 'src/shared/constants/field-types';
-import { Column, Entity } from 'typeorm';
 import { BaseEntity } from '../base.entity';
 
+@Table({
+  timestamps: false,
+  tableName: 'settings_data_type',
+})
+
 // settings/data-types
-@Entity({ name: 'settings_data_type' })
-export class DataTypesEntity extends BaseEntity {
+export class DataTypesEntity extends Model<BaseEntity> {
   // 值
   @Column({
-    type: 'varchar',
+    type: DataType.STRING,
   })
   type: FIELD_TYPES;
 
   // 字段长度
   @Column({
-    type: 'bigint',
-    default: 0,
+    type: DataType.INTEGER,
+    defaultValue: 0,
   })
   length: number;
 
   // 名称
   @Column({
-    type: 'varchar',
+    type: DataType.STRING,
   })
   name: string;
 
   // 描述
   @Column({
-    type: 'tinytext',
+    type: DataType.STRING,
   })
   description: string;
 }

@@ -1,9 +1,9 @@
 /**
  * 项目实体
  */
-import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
+import { Table, Column, DataType, Length, ForeignKey, BelongsTo, Model } from 'sequelize-typescript';
+import { BaseEntity } from '../base.entity';
 import { ServicesInfoEntity } from './service-info.entity';
-import { BaseEntity } from 'src/modules/base.entity';
 
 export enum methodType {
   Get = 'GET',
@@ -17,58 +17,65 @@ export enum paramType {
   RequestParam = 'REQUEST_PARAM'
 }
 
-@Entity({ name: 'service_api' })
-export class ServicesApiEntity extends BaseEntity {
+@Table({
+  timestamps: false,
+  tableName: 'service_api',
+})
+export class ServicesApiEntity extends Model<BaseEntity> {
   // 接口URL
+  @Length({ min: 1, max: 64 })
   @Column({
-    type: 'varchar',
-    length: 64,
+    type: DataType.STRING,
     comment: '接口的URL，会映射为接口的方法名和RequestMapping',
   })
   url: string;
 
   // 请求方式
   @Column({
-    type: 'enum',
-    enum: methodType,
-    name: 'method_type',
-    default: methodType.Get,
+    type: DataType.ENUM,
+    values: ['GET', 'POST', 'PUT'],
+    field: 'method_type',
+    defaultValue: 'GET',
   })
-  method: methodType;
+  method: string;
 
   // 参数类型
   @Column({
-    type: 'enum',
-    enum: paramType,
-    name: 'param_type',
-    default: paramType.RequestParam,
+    type: DataType.ENUM,
+    values: ['REQUEST_BODY', 'PATH_VARIABLE', 'REQUEST_PARAM'],
+    field: 'param_type',
+    defaultValue: 'REQUEST_PARAM',
   })
-  paramType: paramType;
+  paramType: string;
 
   // 接口名称
   @Column({
-    type: 'varchar',
+    type: DataType.STRING,
   })
   name: string;
 
   // 接口描述
   @Column({
-    type: 'varchar',
-    default: '',
+    type: DataType.STRING,
+    defaultValue: '',
   })
   description: string;
 
   // 隶属服务
-  @ManyToOne(() => ServicesInfoEntity, info => info.id)
-  @JoinColumn({
-    name: 'service_id',
+  @ForeignKey(() => ServicesInfoEntity)
+  @Column({
+    type: DataType.BIGINT,
+    field: 'service_id',
   })
   serviceId: number;
 
+  @BelongsTo(() => ServicesInfoEntity)
+  team: ServicesInfoEntity;
+
   // 版本号
   @Column({
-    type: 'int',
-    default: 0,
+    type: DataType.INTEGER,
+    defaultValue: 0,
   })
   version: number;
 }

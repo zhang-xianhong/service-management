@@ -1,22 +1,25 @@
 /**
  * 用户控制页面中表格，单元格的显示排序等操作
  */
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Table, Column, DataType, Length, Model } from 'sequelize-typescript';
+import { BaseEntity } from '../base.entity';
+
+@Table({
+  timestamps: false,
+  tableName: 'settings_column',
+})
 
 // settings/columns/work
-@Entity({ name: 'settings_column' })
-export class ColumnsEntity {
-  @PrimaryGeneratedColumn({
-    type: 'bigint',
-  })
-  id: number;
-
+export class ColumnsEntity extends Model<BaseEntity> {
   // 所属表模块
-  @Column({ length: 64 })
+  @Length({ min: 1, max: 64 })
+  @Column({
+    type: DataType.STRING,
+  })
   module: string;
 
   @Column({
-    type: 'tinytext',
+    type: DataType.STRING,
   })
   description: string;
 
@@ -30,22 +33,7 @@ export class ColumnsEntity {
    * }]
    */
   @Column({
-    type: 'json',
-    name: 'columns',
+    type: DataType.JSON,
   })
   columns: JSON;
-
-  @Column({
-    type: 'datetime',
-    name: 'update_time',
-    default: () => 'NOW()',
-  })
-  updateTime: Date;
-
-  @Column({
-    type: 'bigint',
-    name: 'update_user',
-    default: null,
-  })
-  createUser: number;
 }

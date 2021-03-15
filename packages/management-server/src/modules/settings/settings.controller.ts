@@ -28,11 +28,8 @@ export class SettingsController {
   // 标签
   @Get('/tags')
   async getTags(@Query(new QueryPipe()) query: SearchQuery) {
-    const [list, total] = await this.service.findAllTags(query);
-    return {
-      list,
-      total,
-    };
+    const data = await this.service.findAllTags(query);
+    return data;
   }
 
   /**

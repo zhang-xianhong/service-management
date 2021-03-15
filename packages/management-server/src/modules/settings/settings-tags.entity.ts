@@ -1,29 +1,33 @@
 /**
  * 标签表
  */
-import { Column, Entity } from 'typeorm';
+import { Table, Column, DataType, Model } from 'sequelize-typescript';
 import { BaseEntity } from '../base.entity';
 
+@Table({
+  timestamps: false,
+  tableName: 'settings_tag',
+})
+
 // settings/tags/
-@Entity({ name: 'settings_tag' })
-export class SettingsTagsEntity extends BaseEntity {
+export class SettingsTagsEntity extends Model<BaseEntity> {
   // 名称
   @Column({
-    type: 'varchar',
+    type: DataType.STRING,
   })
   name: string;
 
   @Column({
-    type: 'varchar',
-    default: '',
+    type: DataType.STRING,
+    defaultValue: '',
   })
   description: string;
 
   // 克隆源
   @Column({
-    type: 'varchar',
-    name: 'clone_by',
-    default: '',
+    type: DataType.STRING,
+    field: 'clone_by',
+    defaultValue: '',
     comment: '克隆来源',
   })
   cloneBy: string;

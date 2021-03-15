@@ -12,13 +12,13 @@ const {
 } = getConfig();
 
 export default {
-  type: 'mysql',
+  dialect: 'mysql',
   host: DATABASE_HOST,
   port: parseInt(DATABASE_PORT, 10),
   username: DATABASE_USERNAME,
   password: DATABASE_PASSWORD,
   database: DATABASE_DB,
-  entities: [join(__dirname, '../', '**/*.entity{.ts,.js}')],
-  synchronize: !IS_PRODUCTION,
-  logging: !IS_PRODUCTION,
+  autoLoadModels: true,
+  synchronize: true,
+  models: [],
 };
