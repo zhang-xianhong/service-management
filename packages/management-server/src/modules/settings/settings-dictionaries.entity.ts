@@ -1,8 +1,8 @@
 /**
  * 数据字典表
  */
-import { Table, Column, DataType, Model } from 'sequelize-typescript';
-import { BaseEntity } from '../base.entity';
+import { Table, Column, DataType  } from 'sequelize-typescript';
+import { BaseModel } from '../base.entity';
 
 @Table({
   timestamps: false,
@@ -10,7 +10,7 @@ import { BaseEntity } from '../base.entity';
 })
 
 // settings/dictionaries/:typeCode
-export class DictionariesEntity extends Model<BaseEntity> {
+export class DictionariesEntity extends BaseModel<DictionariesEntity> {
   // 父级，为空则表示一级类型
   @Column({
     type: DataType.STRING,

@@ -1,9 +1,9 @@
 import { Column, Entity, OneToMany } from 'typeorm';
-import { BaseEntity } from '../base.entity';
+import { BaseModel } from '../base.entity';
 import { ModelsFieldsEntity } from './models-fields.entity';
 
 @Entity({ name: 'model_info' })
-export class ModelsInfoEntity extends BaseEntity {
+export class ModelsInfoEntity extends BaseModel<ModelsInfoEntity> {
   @Column({ length: 64, comment: '模型名称，大驼峰格式' })
   name: string;
 

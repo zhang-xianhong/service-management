@@ -1,9 +1,9 @@
 import { HttpService, HttpStatus, Inject, Injectable, Logger, LoggerService } from '@nestjs/common';
 import { CommonCodes, ServiceCodes } from 'src/shared/constants/code';
 import { ApiException } from 'src/shared/utils/api.exception';
-import { ServicesApiEntity } from './service-api.entity';
-import { ServicesDependencyEntity } from './service-dependency.entity';
-import { ServicesInfoEntity } from './service-info.entity';
+import { ServicesApiModel } from './service-api.entity';
+import { ServicesDependencyModel } from './service-dependency.entity';
+import { ServicesInfoModel } from './service-info.entity';
 import { INIT_SERVICE_URL, SERVICE_SSHURI } from 'src/shared/constants/url';
 import { isEmpty } from 'src/shared/utils/validator';
 import { PlainObject } from 'src/shared/pipes/query.pipe';
@@ -15,9 +15,9 @@ export class ServicesService {
     @Inject(Logger)
     private readonly logger: LoggerService,
     private sequelize: Sequelize,
-    @InjectModel(ServicesInfoEntity) private readonly infoRepository: typeof ServicesInfoEntity,
-    @InjectModel(ServicesApiEntity) private readonly apiRepository: typeof ServicesApiEntity,
-    @InjectModel(ServicesDependencyEntity) private readonly dependencyRepository: typeof ServicesDependencyEntity,
+    @InjectModel(ServicesInfoModel) private readonly infoRepository: typeof ServicesInfoModel,
+    @InjectModel(ServicesApiModel) private readonly apiRepository: typeof ServicesApiModel,
+    @InjectModel(ServicesDependencyModel) private readonly dependencyRepository: typeof ServicesDependencyModel,
     private httpService: HttpService,
   ) { }
 
@@ -36,7 +36,7 @@ export class ServicesService {
       where.tags = query.tags;
     }
     if (query.keyword) {
-      // where.name = ILike(`%${query.keyword}%`);
+      where.name = { [Op.like]: `%${query.keyword}%` };
     }
     const { conditions = {} } = query;
     conditions.where = where;
@@ -49,11 +49,17 @@ export class ServicesService {
    * @param id
    */
   async findById(id: number) {
+    console.log(typeof ServicesApiModel);
+
     const service = await this.infoRepository.findOne({
       where: {
         id,
       },
-      // relations: ['apis', 'dependencies', 'dependencies.service'],
+      // include: [{
+      //   model: ServicesApiModel,
+      //   attributes: { exclude: ['isDelete'] },
+      // }],
+      // include: [ServicesApiModel],
     });
     if (!service) {
       throw new ApiException({
@@ -89,7 +95,7 @@ export class ServicesService {
     // 验证是否有同名服务
     const nameExisted = await this.infoRepository.findOne({
       where: {
-        // name: serviceData.name,
+        name: serviceData.name,
         isDelete: false,
       },
     });
@@ -127,6 +133,7 @@ export class ServicesService {
             dependencyId: dependency.dependencyId,
             serviceId: service.id,
           }));
+          console.log(dependenciesEntities);
           await this.dependencyRepository.bulkCreate(dependenciesEntities, transactionHost);
         }
       });
@@ -142,7 +149,7 @@ export class ServicesService {
   async update(id: number, data: any) {
     const { apis, dependencies, ...serviceData } = data;
     // 验证是否有同名模块
-    const nameExisted = await this.infoRepository.findOne({
+    const nameExisted = await this.infoRepository.findOne<ServicesInfoModel>({
       where: {
         name: serviceData.name,
         isDelete: false,
@@ -161,7 +168,7 @@ export class ServicesService {
 
         // 更新serviceApi信息
         if (apis && Array.isArray(apis)) {
-          await this.apiRepository.destroy<ServicesApiEntity>({
+          await this.apiRepository.destroy<ServicesApiModel>({
             where: {
               serviceId: id,
             },
@@ -199,34 +206,41 @@ export class ServicesService {
    * @param id
    */
   async delete(ids: string[]) {
+    const transaction = await this.sequelize.transaction();
     try {
-      await this.sequelize.transaction(async (t) => {
-        const transactionHost = { transaction: t };
-        const deleteIds = ids.filter(id => Number(id));
-        // 更新info表数据，isDelete置为ture
-        await this.infoRepository.update({
-          isDelete: true,
-        }, { where: {
-          serviceId: [Op.in(deleteIds)],
-        }, transactionHost });
-        // 更新api表数据，isDelete置为ture
-        await this.apiRepository.update({
-          isDelete: true,
-        }, { where: {
-          serviceId: [Op.in(deleteIds)],
-        }, transactionHost });
-        // 更新dependency表数据，isDelete置为ture
-        await this.dependencyRepository.update({
-          isDelete: true,
-        }, { where: {
-          serviceId: [Op.in(deleteIds)],
-        }, transactionHost });
-        return {
-          id: deleteIds,
-        };
+      const deleteIds = ids.filter(id => Number(id));
+      // 更新info表数据，isDelete置为ture
+      await this.infoRepository.update({
+        isDelete: true,
+      }, {
+        where: {
+          id: { [Op.in]: deleteIds },
+        },
+        transaction,
       });
+      // 更新api表数据，isDelete置为ture
+      await this.apiRepository.update({
+        isDelete: true,
+      }, {
+        where: {
+          serviceId: { [Op.in]: deleteIds },
+        }, transaction,
+      });
+      // 更新dependency表数据，isDelete置为ture
+      await this.dependencyRepository.update({
+        isDelete: true,
+      }, {
+        where: {
+          serviceId: { [Op.in]: deleteIds },
+        }, transaction,
+      });
+      await transaction.commit();
+      return {
+        id: deleteIds,
+      };
     } catch (err) {
       // 一旦发生错误，事务会回滚
+      await transaction.rollback();
     }
   }
 

@@ -1,10 +1,13 @@
 
 
-import { Table, Column, DataType, Length, Model  } from 'sequelize-typescript';
-import { BaseEntity } from '../base.entity';
+import { Table, Column, DataType, Length  } from 'sequelize-typescript';
+import { BaseModel } from '../base.entity';
 
-@Table
-export class User extends Model<BaseEntity>  {
+@Table({
+  timestamps: false,
+  tableName: 'user',
+})
+export class User extends BaseModel<User>  {
   @Column({
     type: DataType.STRING,
   })

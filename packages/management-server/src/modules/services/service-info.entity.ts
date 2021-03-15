@@ -1,17 +1,17 @@
 /**
  * 服务信息实体
  */
-import { Table, Column, DataType, Length, HasMany, Model } from 'sequelize-typescript';
-import { ServicesApiEntity } from './service-api.entity';
-import { ServicesDependencyEntity } from './service-dependency.entity';
-import { BaseEntity } from 'src/modules/base.entity';
+import { Table, Column, DataType, Length, HasMany } from 'sequelize-typescript';
+import { ServicesApiModel } from './service-api.entity';
+import { ServicesDependencyModel } from './service-dependency.entity';
+import { BaseModel } from 'src/modules/base.entity';
 
 
 @Table({
   timestamps: false,
   tableName: 'service_info',
 })
-export class ServicesInfoEntity extends Model<BaseEntity, ServicesInfoEntity> {
+export class ServicesInfoModel extends BaseModel<ServicesInfoModel>  {
   // 项目服务
   @Length({ min: 1, max: 64 })
   @Column({
@@ -175,9 +175,9 @@ export class ServicesInfoEntity extends Model<BaseEntity, ServicesInfoEntity> {
   })
   cloneBy: string;
 
-  @HasMany(() => ServicesApiEntity)
-  apis: ServicesApiEntity[];
+  @HasMany(() => ServicesApiModel)
+  apis: ServicesApiModel[];
 
-  @HasMany(() => ServicesDependencyEntity)
-  dependencies: ServicesDependencyEntity[];
+  @HasMany(() => ServicesDependencyModel)
+  dependencies: ServicesDependencyModel[];
 }

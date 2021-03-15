@@ -1,8 +1,8 @@
 /**
  * 分类表
  */
-import { Table, Column, DataType, Model } from 'sequelize-typescript';
-import { BaseEntity } from '../base.entity';
+import { Table, Column, DataType  } from 'sequelize-typescript';
+import { BaseModel } from '../base.entity';
 
 @Table({
   timestamps: false,
@@ -10,7 +10,7 @@ import { BaseEntity } from '../base.entity';
 })
 
 // settings/tags/
-export class SettingsCategoriesEntity extends Model<BaseEntity> {
+export class SettingsCategoriesEntity extends  BaseModel<SettingsCategoriesEntity> {
   // 名称
   @Column({
     type: DataType.STRING,

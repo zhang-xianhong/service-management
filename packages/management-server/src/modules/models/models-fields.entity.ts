@@ -1,9 +1,9 @@
 import { Column,  Entity, JoinColumn, ManyToOne } from 'typeorm';
-import { BaseEntity } from '../base.entity';
+import { BaseModel } from '../base.entity';
 import { ModelsInfoEntity } from './models-info.entity';
 
 @Entity({ name: 'model_field' })
-export class ModelsFieldsEntity extends BaseEntity {
+export class ModelsFieldsEntity extends BaseModel<ModelsFieldsEntity> {
   // 管理模型ID
   @ManyToOne(() => ModelsInfoEntity, model => model.id)
   @JoinColumn({

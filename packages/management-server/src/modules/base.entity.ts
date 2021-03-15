@@ -1,10 +1,10 @@
 import { NOW } from 'sequelize';
-import { Table, Column, DataType, PrimaryKey, AutoIncrement, Default } from 'sequelize-typescript';
+import { Table, Column, DataType, PrimaryKey, AutoIncrement, Default, Model } from 'sequelize-typescript';
 
 @Table({
   timestamps: false,
 })
-export class BaseEntity {
+export class BaseModel<T extends Model<T>> extends Model<T> {
   @PrimaryKey
   @AutoIncrement
   @Column(DataType.BIGINT)

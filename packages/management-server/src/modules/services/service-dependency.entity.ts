@@ -1,15 +1,15 @@
 /**
  * 项目实体
  */
-import { Table, Column, DataType, ForeignKey, BelongsTo, Model } from 'sequelize-typescript';
-import { BaseEntity } from '../base.entity';
-import { ServicesInfoEntity } from './service-info.entity';
+import { Table, Column, DataType, ForeignKey, BelongsTo } from 'sequelize-typescript';
+import { BaseModel } from '../base.entity';
+import { ServicesInfoModel } from './service-info.entity';
 
 @Table({
   timestamps: false,
-  tableName: 'settings_dictionary',
+  tableName: 'service_dependency',
 })
-export class ServicesDependencyEntity extends  Model<BaseEntity> {
+export class ServicesDependencyModel extends BaseModel<ServicesDependencyModel> {
   // 依赖服务
   @Column({
     type: DataType.BIGINT,
@@ -33,15 +33,15 @@ export class ServicesDependencyEntity extends  Model<BaseEntity> {
   version: number;
 
   // 隶属服务
-  @ForeignKey(() => ServicesInfoEntity)
+  @ForeignKey(() => ServicesInfoModel)
   @Column({
     type: DataType.BIGINT,
     field: 'service_id',
   })
   serviceId: number;
 
-  @BelongsTo(() => ServicesInfoEntity)
-  info: ServicesInfoEntity;
+  @BelongsTo(() => ServicesInfoModel)
+  serviceInfo: ServicesInfoModel;
 
   // @ManyToOne(() => ServicesInfoEntity, info => info.id)
   // @JoinColumn({

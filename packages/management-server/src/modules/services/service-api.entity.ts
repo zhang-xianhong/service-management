@@ -1,9 +1,9 @@
 /**
  * 项目实体
  */
-import { Table, Column, DataType, Length, ForeignKey, BelongsTo, Model } from 'sequelize-typescript';
-import { BaseEntity } from '../base.entity';
-import { ServicesInfoEntity } from './service-info.entity';
+import { Table, Column, DataType, Length, ForeignKey, BelongsTo } from 'sequelize-typescript';
+import { BaseModel } from '../base.entity';
+import { ServicesInfoModel } from './service-info.entity';
 
 export enum methodType {
   Get = 'GET',
@@ -21,7 +21,7 @@ export enum paramType {
   timestamps: false,
   tableName: 'service_api',
 })
-export class ServicesApiEntity extends Model<BaseEntity> {
+export class ServicesApiModel extends BaseModel<ServicesApiModel> {
   // 接口URL
   @Length({ min: 1, max: 64 })
   @Column({
@@ -62,15 +62,15 @@ export class ServicesApiEntity extends Model<BaseEntity> {
   description: string;
 
   // 隶属服务
-  @ForeignKey(() => ServicesInfoEntity)
+  @ForeignKey(() => ServicesInfoModel)
   @Column({
     type: DataType.BIGINT,
     field: 'service_id',
   })
   serviceId: number;
 
-  @BelongsTo(() => ServicesInfoEntity)
-  team: ServicesInfoEntity;
+  @BelongsTo(() => ServicesInfoModel)
+  serviceInfo: ServicesInfoModel;
 
   // 版本号
   @Column({
