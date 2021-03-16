@@ -4,7 +4,7 @@ import { CommonCodes } from '../../shared/constants/code';
 import { ModelsInfoModel } from './models-info.model';
 import { ModelsFieldsModel } from './models-fields.model';
 import { PlainObject } from 'src/shared/pipes/query.pipe';
-import { DataTypesModel } from '../settings/settings-data-types.entity';
+import { DataTypesModel } from '../settings/settings-data-types.model';
 import { FIELD_TYPE, SYSTEM_FIELD_TYPES } from 'src/shared/constants/field-types';
 import { InjectModel } from '@nestjs/sequelize';
 import { Op, Sequelize } from 'sequelize';
@@ -17,7 +17,7 @@ export class ModelsService {
     @InjectModel(ModelsInfoModel) private readonly infoRepository: typeof ModelsInfoModel,
     @InjectModel(ModelsFieldsModel) private readonly fieldsRepository: typeof ModelsFieldsModel,
     @InjectModel(DataTypesModel) private readonly dataTypesRepository: typeof DataTypesModel,
-  ) {}
+  ) { }
 
   /**
    * 获取全部
@@ -160,8 +160,11 @@ export class ModelsService {
         updateTime: new Date(),
         version: currentModel.version + 1,
       }, {
-        where: { id },
-        transaction });
+        where: {
+          id,
+        },
+        transaction,
+      });
       const fieldsEntities = await this.createFieldsEntities(fields, id);
       // 生成新的fields
       if (fieldsEntities) {

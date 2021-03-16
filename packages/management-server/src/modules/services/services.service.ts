@@ -251,7 +251,8 @@ export class ServicesService {
       }, {
         where: {
           serviceId: { [Op.in]: deleteIds },
-        }, transaction,
+        },
+        transaction,
       });
       await transaction.commit();
       return {

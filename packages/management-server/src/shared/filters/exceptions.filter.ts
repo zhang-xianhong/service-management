@@ -19,6 +19,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
     let message: string;
     let code: number = HttpStatus.INTERNAL_SERVER_ERROR;
     let stack: any;
+    console.log(exception);
     // 处理HTTP异常
     if (isHttpError) {
       const httpException = exception as HttpException;

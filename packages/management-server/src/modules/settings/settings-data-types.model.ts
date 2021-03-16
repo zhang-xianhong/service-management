@@ -36,4 +36,12 @@ export class DataTypesModel extends BaseModel {
     type: DataType.STRING,
   })
   description: string;
+
+  // 是否是系统内置
+  @Column({
+    type: DataType.BOOLEAN,
+    field: 'is_system',
+    defaultValue: false,
+  })
+  isSystem: boolean;
 }

@@ -10,7 +10,7 @@ import { BaseModel } from '../base.entity';
 })
 
 // settings/tags/
-export class SettingsTagsModel  extends BaseModel {
+export class SettingsTagsModel extends BaseModel {
   // 名称
   @Column({
     type: DataType.STRING,

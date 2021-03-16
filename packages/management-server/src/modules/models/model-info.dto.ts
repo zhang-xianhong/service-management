@@ -1,5 +1,5 @@
 // 请注意，执行器的顺序是从下往上执行的
-import {  ArrayNotEmpty, IsArray,  IsNotEmpty, Validate,  ValidateNested } from 'class-validator';
+import { ArrayNotEmpty, IsArray,  IsNotEmpty, Validate,  ValidateNested } from 'class-validator';
 import { UpperCamel } from '../../shared/validators/upper-camel';
 import { ModelFieldDto } from './model-field.dto';
 
