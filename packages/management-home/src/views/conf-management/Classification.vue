@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-row class="classific-row">
-      <el-button type="primary">新增顶级分类</el-button>
+      <el-button type="primary" @click="addTop">新增顶级分类</el-button>
       <el-button type="primary" @click="addChild">新增子级分类</el-button>
       <el-button type="primary">克隆</el-button>
       <el-button type="primary" v-if="!allExpanded" @click="expandAll">展开所有</el-button>
@@ -100,7 +100,7 @@ export default defineComponent({
     };
 
     const filterTree = () => {
-      tree.value.filter(filterText.value);
+      _.debounce(500)(tree.value.filter(filterText.value));
     };
 
     const setAllNodeStatue = (status: boolean) => {
@@ -173,6 +173,21 @@ export default defineComponent({
       loadTreeData();
     };
 
+    const addTop = () => {
+      const toSave = tree.value.getNode(TEMP_KEY);
+      if (toSave) {
+        ElMessage.warning(`请先保存节点${toSave.data.name}`);
+        return;
+      }
+      const newNodeData = {
+        name: DEFAULT_NODE_NAME,
+        id: TEMP_KEY,
+      };
+      tree.value.append(newNodeData, null);
+      currentNode.value = newNodeData;
+      tree.value.setCurrentKey(TEMP_KEY);
+    };
+
     return {
       tree,
       treeData,
@@ -189,6 +204,7 @@ export default defineComponent({
       save,
       remove,
       addChild,
+      addTop,
     };
   },
 });
