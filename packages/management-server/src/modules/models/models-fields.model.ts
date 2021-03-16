@@ -1,4 +1,5 @@
-import { Table, Column, DataType, ForeignKey, BelongsTo, Length  } from 'sequelize-typescript';
+import { MaxLength } from 'class-validator';
+import { Table, Column, DataType, ForeignKey, BelongsTo  } from 'sequelize-typescript';
 import { BaseModel } from '../base.entity';
 import { ModelsInfoModel } from './models-info.model';
 
@@ -19,7 +20,6 @@ export class ModelsFieldsModel extends BaseModel {
   info: ModelsInfoModel;
 
   // 字段名称
-  @Length({ min: 1, max: 64 })
   @Column({ type: DataType.STRING })
   name: string;
 
@@ -39,8 +39,9 @@ export class ModelsFieldsModel extends BaseModel {
 
   // 字段描述
   @Column({
-    type: 'tinytext',
+    type: DataType.TEXT,
   })
+  @MaxLength(255)
   description: string;
 
   // 字段顺序号
