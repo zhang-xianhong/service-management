@@ -40,9 +40,7 @@ export class ServicesController {
   // 构建服务
   @Post('/build')
   async buildService(@Body() postData) {
-    console.log(postData);
-
-    // return await this.service.buildService(postData);
+    return await this.service.buildService(postData);
   }
 
   /**

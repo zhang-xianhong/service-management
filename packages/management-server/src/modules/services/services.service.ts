@@ -146,8 +146,8 @@ export class ServicesService {
         await this.dependencyRepository.bulkCreate(dependenciesEntities, { transaction });
       }
       await transaction.commit();
-    } catch (err) {
-      this.logger.error(err);
+    } catch (error) {
+      this.logger.error(error);
       // 一旦发生错误，事务会回滚
       await transaction.rollback();
       throw new ApiException({
@@ -316,7 +316,7 @@ export class ServicesService {
       });
     }
     try {
-      const { data } = await this.httpService.get(`${BUILD_SERVICE_URL}?serverId=${serviceId}&ref=${branch}&userId=${userId}`).toPromise();
+      const { data } = await this.httpService.get(`${BUILD_SERVICE_URL}?serviceId=${serviceId}&ref=${branch}&userId=${userId}`).toPromise();
       if (data?.code === 0) {
         await this.updateServiceStatus(serviceId, SERVICE_STATUS.BUILDING);
         return data.data;
