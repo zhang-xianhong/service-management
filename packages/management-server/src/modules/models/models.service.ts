@@ -137,7 +137,7 @@ export class ModelsService {
       where: {
         name: modelData.name,
         isDelete: false,
-        id: { [Op.notIn]: id },
+        id: { [Op.not]: id },
       },
     });
     if (nameExisted) {
@@ -175,6 +175,7 @@ export class ModelsService {
       };
     } catch (error) {
       this.logger.error(error);
+      await transaction.rollback();
       throw new ApiException({
         code: CommonCodes.UPDATED_FAIL,
         message: '更新失败',
