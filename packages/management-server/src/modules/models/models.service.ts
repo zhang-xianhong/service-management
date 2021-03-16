@@ -4,7 +4,7 @@ import { CommonCodes } from '../../shared/constants/code';
 import { ModelsInfoModel } from './models-info.entity';
 import { ModelsFieldsModel } from './models-fields.entity';
 import { PlainObject } from 'src/shared/pipes/query.pipe';
-import { DataTypesModel } from '../settings/settings-data-types.entity';
+import { DataTypesModel } from '../settings/settings-data-types.model';
 import { FIELD_TYPE, SYSTEM_FIELD_TYPES } from 'src/shared/constants/field-types';
 import { InjectModel } from '@nestjs/sequelize';
 import { Op, Sequelize } from 'sequelize';

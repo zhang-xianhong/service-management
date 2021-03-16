@@ -1,4 +1,4 @@
-import { IsEnum, IsInt, IsNotEmpty, MaxLength } from 'class-validator';
+import { IsEnum, IsInt, IsNotEmpty, IsOptional, MaxLength } from 'class-validator';
 import { FIELD_TYPES } from 'src/shared/constants/field-types';
 
 export class SettingsDataTypeDto {
@@ -10,8 +10,10 @@ export class SettingsDataTypeDto {
   @IsNotEmpty()
   @MaxLength(64)
   name: string;
+  @IsOptional()
   @MaxLength(255)
-  description: string;
+  description?: string;
+  @IsOptional()
   @IsInt()
   length: number;
 }

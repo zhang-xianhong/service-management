@@ -1,7 +1,7 @@
 /**
  * 项目实体
  */
-import { Table, Column, DataType, Length, ForeignKey, BelongsTo, IsUrl } from 'sequelize-typescript';
+import { Table, Column, DataType, ForeignKey, BelongsTo } from 'sequelize-typescript';
 import { BaseModel } from '../base.entity';
 import { ServicesInfoModel } from './service-info.entity';
 
@@ -23,8 +23,6 @@ export enum paramType {
 })
 export class ServicesApiModel extends BaseModel {
   // 接口URL
-  @Length({ min: 1, max: 64 })
-  @IsUrl
   @Column({
     type: DataType.STRING,
     comment: '接口的URL，会映射为接口的方法名和RequestMapping',

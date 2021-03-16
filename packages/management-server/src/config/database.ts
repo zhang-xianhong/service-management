@@ -20,7 +20,7 @@ export default {
   autoLoadModels: true,
   synchronize: !IS_PRODUCTION,
   models: [],
-  logging(...msg) {
-    return IS_PRODUCTION ? null : console.log(...msg);
-  },
+  // logging(...msg) {
+  //   return IS_PRODUCTION ? null : console.log(...msg);
+  // },
 };

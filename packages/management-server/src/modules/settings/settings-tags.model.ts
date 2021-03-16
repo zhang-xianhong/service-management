@@ -1,7 +1,7 @@
 /**
  * 标签表
  */
-import { Table, Column, DataType, Model  } from 'sequelize-typescript';
+import { Table, Column, DataType  } from 'sequelize-typescript';
 import { BaseModel } from '../base.entity';
 
 @Table({
@@ -10,13 +10,7 @@ import { BaseModel } from '../base.entity';
 })
 
 // settings/tags/
-export class SettingsTagsModel  extends Model implements BaseModel {
-  id: number;
-  createTime: Date;
-  updateTime: Date;
-  createUser: number;
-  updateUser: number;
-  isDelete: boolean;
+export class SettingsTagsModel extends BaseModel {
   // 名称
   @Column({
     type: DataType.STRING,

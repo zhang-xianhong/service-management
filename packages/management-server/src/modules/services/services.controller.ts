@@ -3,6 +3,7 @@ import { CommonCodes } from 'src/shared/constants/code';
 import { QueryPipe, SearchQuery } from 'src/shared/pipes/query.pipe';
 import { ApiException } from 'src/shared/utils/api.exception';
 import { isEmpty } from 'src/shared/utils/validator';
+import { ServiceInfoDto } from './dto/service-info.dto';
 import { ServicesService } from './services.service';
 @Controller('services')
 export class ServicesController {
@@ -27,7 +28,7 @@ export class ServicesController {
 
   // 新增服务
   @Post()
-  async create(@Body() postData) {
+  async create(@Body() postData: ServiceInfoDto) {
     return await this.service.create(postData);
   }
 

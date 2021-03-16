@@ -1,8 +1,9 @@
-import { IsString, IsEnum } from 'class-validator';
+import { IsString, IsEnum, IsUrl } from 'class-validator';
 import { methodType, paramType } from '../service-api.entity';
 
 export class ServiceApiDto {
   @IsString()
+  @IsUrl()
   readonly url: string;
 
   @IsEnum(methodType)
