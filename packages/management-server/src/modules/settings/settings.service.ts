@@ -1,37 +1,175 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
-import { Repository, Connection, ILike, TreeRepository } from 'typeorm';
-import { InjectRepository } from '@nestjs/typeorm';
-import { DataTypesEntity } from './settings-data-types.entity';
-import { SettingsTagsEntity } from './settings-tags.entity';
-import { PlainObject } from 'src/shared/pipes/query.pipe';
+import { DataTypesModel } from './settings-data-types.model';
+import { SettingsTagsModel } from './settings-tags.model';
+import { PlainObject, SearchQuery } from 'src/shared/pipes/query.pipe';
 import { ApiException } from 'src/shared/utils/api.exception';
 import { CommonCodes, SettingCodes } from 'src/shared/constants/code';
-import { SettingsCategoriesEntity } from './settings-categories.entity';
+import { SettingsCategoriesModel } from './settings-categories.model';
+import { InjectModel } from '@nestjs/sequelize';
+import { Op } from 'sequelize';
+import { isDefined } from 'src/shared/utils/validator';
 import { ErrorTypes } from 'src/shared/constants/error';
-import { SYSTEM_FIELD_TYPES } from 'src/shared/constants/field-types';
+import { getTreeArr } from 'src/shared/utils/util';
+import { SettingsDataTypeDto } from './dto/settings-data-type.dto';
+import { SettingsTagDto } from './dto/settings-tag.dto';
 
 @Injectable()
 export class SettingsService {
   constructor(
-    private connection: Connection,
-    @InjectRepository(DataTypesEntity)
-    private readonly dataTypesRepository: Repository<DataTypesEntity>,
-    @InjectRepository(SettingsTagsEntity)
-    private readonly tagsRepository: Repository<SettingsTagsEntity>,
-    @InjectRepository(SettingsCategoriesEntity)
-    private readonly categoriesRepository: TreeRepository<SettingsCategoriesEntity>,
-  ) {}
+    @InjectModel(DataTypesModel) private readonly dataTypesRepository: typeof DataTypesModel,
+    @InjectModel(SettingsTagsModel) private readonly tagsRepository: typeof SettingsTagsModel,
+    @InjectModel(SettingsCategoriesModel) private readonly categoriesRepository: typeof SettingsCategoriesModel,
+    // private connection: Connection,
+  ) { }
 
   /**
    * 获取数据类型列表
+   * @param query
+   * @param getTotal
    * @returns
    */
-  async findDataTypes() {
-    const types = await this.dataTypesRepository.find({
+  async findAllDataTypes(query: SearchQuery, getTotal = true) {
+    const where = {
       isDelete: false,
-    });
-    return [...SYSTEM_FIELD_TYPES, ...types];
+    };
+    if (query.keyword) {
+      where[Op.or] = [
+        {
+          name: {
+            [Op.like]: `%${query.keyword}%`,
+          },
+        },
+        {
+          description: {
+            [Op.like]: `%${query.keyword}%`,
+          },
+        },
+      ];
+    }
+    if (isDefined(query.isSystem)) {
+      (where as PlainObject).isSystem = query.isSystem;
+    }
+    const { conditions } = query;
+    conditions.where = where;
+    if (!getTotal) {
+      // 删除分页相关的字段
+      delete conditions.offset;
+      delete conditions.limit;
+      return await this.dataTypesRepository.findAll(conditions);
+    }
+    return await this.dataTypesRepository.findAndCountAll(conditions);
   }
+
+  /**
+   * 通过ID查找数据类型
+   * @param id
+   * @returns
+   */
+  async findDataTypeById(id: number) {
+    const row = await this.dataTypesRepository.findOne({
+      where: {
+        id,
+        isDelete: false,
+      },
+    });
+    if (!row) {
+      throw new ApiException({
+        code: CommonCodes.NOT_FOUND,
+        message: '数据类型不存在',
+        error: ErrorTypes.NOT_FOUND,
+      });
+    }
+    return row;
+  }
+
+
+  /**
+   * 创建数据类型
+   * @param postData
+   * @returns
+   */
+  async createDataType(postData: SettingsDataTypeDto) {
+    const nameExisted = await this.dataTypesRepository.findOne({
+      where: {
+        isDelete: false,
+        name: postData.name,
+      },
+    });
+    if (nameExisted) {
+      throw new ApiException({
+        code: CommonCodes.DATA_EXISTED,
+        message: `名称[${postData.name}]已存在`,
+      });
+    }
+    const res = await this.dataTypesRepository.create(postData);
+    return {
+      dataTypeId: res.id,
+    };
+  }
+
+
+  /**
+   * 更新数据类型
+   * @param postData
+   * @returns
+   */
+  async updateDataType(id: number, postData: SettingsDataTypeDto) {
+    const row = await this.findDataTypeById(id);
+    if (row.isSystem) {
+      throw new ApiException({
+        code: CommonCodes.PARAMETER_INVALID,
+        message: '内置类型禁止更新',
+      });
+    }
+    const nameExisted = await this.dataTypesRepository.findOne({
+      where: {
+        isDelete: false,
+        name: postData.name,
+        id: {
+          [Op.not]: id,
+        },
+      },
+    });
+    if (nameExisted) {
+      throw new ApiException({
+        code: CommonCodes.DATA_EXISTED,
+        message: `名称[${postData.name}]已存在`,
+      });
+    }
+    await this.dataTypesRepository.update(postData, {
+      where: { id },
+    });
+    return {
+      dataTypeId: id,
+    };
+  }
+
+  /**
+   * 删除数据类型（支持批量）
+   * @param ids
+   */
+  async deleteDataTypes(ids: Array<number>) {
+    const [deleted] = await this.dataTypesRepository.update({
+      isDelete: true,
+    }, {
+      where: {
+        id: {
+          [Op.in]: ids,
+        },
+        isSystem: false,
+      },
+    });
+    if (deleted === ids.length) {
+      return {
+        deleted: ids,
+      };
+    }
+    throw new ApiException({
+      code: CommonCodes.DELETED_FAIL,
+      message: '部分删除失败(可能原因：已被删除或者系统类型不允许删除)',
+    });
+  }
+
 
   /**
    * 获取全部
@@ -39,28 +177,44 @@ export class SettingsService {
    * @param getTotal
    */
   async findAllTags(query, getTotal = true) {
-    const where: PlainObject = {
+    const where = {
       isDelete: false,
     };
     if (query.keyword) {
-      where.name = ILike(`%${query.keyword}%`);
-    }
-    if (!getTotal) {
-      return await this.tagsRepository.find(where);
+      where[Op.or] = [
+        {
+          name: {
+            [Op.like]: `%${query.keyword}%`,
+          },
+        },
+        {
+          description: {
+            [Op.like]: `%${query.keyword}%`,
+          },
+        },
+      ];
     }
     const { conditions } = query;
     conditions.where = where;
-    return await this.tagsRepository.findAndCount(conditions);
+    if (!getTotal) {
+      // 删除分页相关的字段
+      delete conditions.offset;
+      delete conditions.limit;
+      return await this.tagsRepository.findAll(conditions);
+    }
+    return await this.tagsRepository.findAndCountAll(conditions);
   }
 
   /**
    * 创建标签
    * @param postData
    */
-  async createTag(postData) {
+  async createTag(postData: SettingsTagDto) {
     const nameExisted = await this.tagsRepository.findOne({
-      name: postData.name,
-      isDelete: false,
+      where: {
+        name: postData.name,
+        isDelete: false,
+      },
     });
     if (nameExisted) {
       throw new ApiException({
@@ -68,11 +222,90 @@ export class SettingsService {
         message: '标签名称已存在',
       });
     }
-    const res = await this.tagsRepository.save(postData);
+    const res = await this.tagsRepository.create(postData);
     return {
       tagId: res.id,
     };
   }
+
+
+  /**
+   * 通过ID查找标签
+   * @param id
+   * @returns
+   */
+  async findTagById(id: number) {
+    const row = await this.tagsRepository.findOne({
+      where: {
+        id,
+        isDelete: false,
+      },
+    });
+    if (!row) {
+      throw new ApiException({
+        code: CommonCodes.NOT_FOUND,
+        message: '标签不存在',
+        error: ErrorTypes.NOT_FOUND,
+      });
+    }
+    return row;
+  }
+
+  /**
+   * 更新标签
+   * @param postData
+   * @returns
+   */
+  async updateTag(id: number, postData: SettingsTagDto) {
+    await this.findTagById(id);
+    const nameExisted = await this.tagsRepository.findOne({
+      where: {
+        isDelete: false,
+        name: postData.name,
+        id: {
+          [Op.not]: id,
+        },
+      },
+    });
+    if (nameExisted) {
+      throw new ApiException({
+        code: CommonCodes.DATA_EXISTED,
+        message: `名称[${postData.name}]已存在`,
+      });
+    }
+    await this.tagsRepository.update(postData, {
+      where: { id },
+    });
+    return {
+      tagId: id,
+    };
+  }
+
+  /**
+   * 删除标签（支持批量）
+   * @param ids
+   */
+  async deleteTags(ids: Array<number>) {
+    const [deleted] = await this.tagsRepository.update({
+      isDelete: true,
+    }, {
+      where: {
+        id: {
+          [Op.in]: ids,
+        },
+      },
+    });
+    if (deleted === ids.length) {
+      return {
+        deleted: ids,
+      };
+    }
+    throw new ApiException({
+      code: CommonCodes.DELETED_FAIL,
+      message: '删除失败',
+    });
+  }
+
 
   /**
    * 获取所有分类
@@ -80,8 +313,8 @@ export class SettingsService {
    * @param getTotal
    */
   async findAllCategories() {
-    return await this.categoriesRepository.find({
-      isDelete: false,
+    return await this.categoriesRepository.findAll({
+      where: { isDelete: false },
     });
   }
 
@@ -92,8 +325,10 @@ export class SettingsService {
    */
   async findCategoryById(id: number) {
     return await this.categoriesRepository.findOne({
-      isDelete: false,
-      id,
+      where: {
+        id,
+        isDelete: false,
+      },
     });
   }
 
@@ -103,7 +338,11 @@ export class SettingsService {
    * @param getTotal
    */
   async findCategoriesTree() {
-    return await this.categoriesRepository.findTrees();
+    const categories = await this.categoriesRepository.findAll({
+      raw: true,
+    });
+    const categoriesTree = getTreeArr({ key: 'id', pKey: 'parentId', data: categories });
+    return categoriesTree;
   }
 
   /**
@@ -113,17 +352,16 @@ export class SettingsService {
   async createCategory(data: any) {
     const { parentId, ...category } = data;
     if (parentId) {
-      const parent = await this.categoriesRepository.findOne({ id: parentId });
+      const parent = await this.categoriesRepository.findOne({ where: { id: parentId } });
       if (!parent) {
         throw new ApiException({
           code: CommonCodes.NOT_FOUND,
           message: '父级分类不存在',
-          error: ErrorTypes.NOT_FOUND,
         }, HttpStatus.NOT_FOUND);
       }
-      category.parent = parent;
+      category.parentId = parentId;
     }
-    const result = await this.categoriesRepository.save(category);
+    const result = await this.categoriesRepository.create(category);
     return {
       categoryId: result.id,
     };
@@ -144,11 +382,11 @@ export class SettingsService {
       throw new ApiException({
         code: CommonCodes.NOT_FOUND,
         message: '分类不存在',
-        error: ErrorTypes.NOT_FOUND,
       }, HttpStatus.NOT_FOUND);
     }
-    const result = await this.categoriesRepository.update(id, data);
-    return result.affected === 1;
+    return await this.categoriesRepository.update(data, {
+      where: { id },
+    });
   }
 
   /**
@@ -169,14 +407,25 @@ export class SettingsService {
         error: ErrorTypes.NOT_FOUND,
       }, HttpStatus.NOT_FOUND);
     }
-    const data = await this.categoriesRepository.findDescendantsTree(category);
-    if (data.children.length) {
+    const data = await this.categoriesRepository.findAll({
+      where: {
+        parentId: id,
+      },
+      raw: true,
+    });
+    if (data.length) {
       throw new ApiException({
         code: SettingCodes.EXIST_CHILD_NODES,
-        message: '存在子节点',
+        message: '分类存在子节点，请先删除子节点',
       });
     }
-    const result = await this.categoriesRepository.delete(id);
-    return result.affected === 1;
+    await this.categoriesRepository.update({
+      isDelete: true,
+    }, {
+      where: { id },
+    });
+    return {
+      categoryId: id,
+    };
   }
 }
