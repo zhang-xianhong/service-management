@@ -1,8 +1,8 @@
 import { HttpStatus, Inject, Injectable, Logger, LoggerService } from '@nestjs/common';
 import { ApiException } from '../../shared/utils/api.exception';
 import { CommonCodes } from '../../shared/constants/code';
-import { ModelsInfoModel } from './models-info.entity';
-import { ModelsFieldsModel } from './models-fields.entity';
+import { ModelsInfoModel } from './models-info.model';
+import { ModelsFieldsModel } from './models-fields.model';
 import { PlainObject } from 'src/shared/pipes/query.pipe';
 import { DataTypesModel } from '../settings/settings-data-types.entity';
 import { FIELD_TYPE, SYSTEM_FIELD_TYPES } from 'src/shared/constants/field-types';

@@ -1,9 +1,9 @@
 import { HttpService, HttpStatus, Inject, Injectable, Logger, LoggerService } from '@nestjs/common';
 import { CommonCodes, ServiceCodes } from 'src/shared/constants/code';
 import { ApiException } from 'src/shared/utils/api.exception';
-import { ServicesApiModel } from './service-api.entity';
-import { ServicesDependencyModel } from './service-dependency.entity';
-import { ServicesInfoModel } from './service-info.entity';
+import { ServicesApiModel } from './service-api.model';
+import { ServicesDependencyModel } from './service-dependency.model';
+import { ServicesInfoModel } from './service-info.model';
 import { BUILD_SERVICE_URL, INIT_SERVICE_URL, SERVICE_SSHURI, GENERATE_SERVICE_REPOSITORY_URL } from 'src/shared/constants/url';
 import { isEmpty } from 'src/shared/utils/validator';
 import { PlainObject } from 'src/shared/pipes/query.pipe';

@@ -1,6 +1,6 @@
 import { Table, Column, DataType, Length, HasMany  } from 'sequelize-typescript';
 import { BaseModel } from '../base.entity';
-import { ModelsFieldsModel } from './models-fields.entity';
+import { ModelsFieldsModel } from './models-fields.model';
 
 @Table({
   timestamps: false,

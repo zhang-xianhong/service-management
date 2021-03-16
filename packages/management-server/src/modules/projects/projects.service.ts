@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { CommonCodes } from 'src/shared/constants/code';
 import { ApiException } from 'src/shared/utils/api.exception';
 import { Repository } from 'typeorm';
-import { ProjectModel } from './project.entity';
+import { ProjectModel } from './project.model';
 
 @Injectable()
 export class ProjectsService {

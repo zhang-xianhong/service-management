@@ -3,8 +3,8 @@
  */
 import { Table, Column, DataType, HasMany } from 'sequelize-typescript';
 import { BaseModel } from '../base.entity';
-import { ServicesApiModel } from './service-api.entity';
-import { ServicesDependencyModel } from './service-dependency.entity';
+import { ServicesApiModel } from './service-api.model';
+import { ServicesDependencyModel } from './service-dependency.model';
 @Table({
   timestamps: false,
   tableName: 'service_info',

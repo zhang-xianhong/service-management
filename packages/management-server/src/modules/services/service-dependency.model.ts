@@ -3,7 +3,7 @@
  */
 import { Table, Column, DataType, ForeignKey, BelongsTo } from 'sequelize-typescript';
 import { BaseModel } from '../base.entity';
-import { ServicesInfoModel } from './service-info.entity';
+import { ServicesInfoModel } from './service-info.model';
 
 @Table({
   timestamps: false,

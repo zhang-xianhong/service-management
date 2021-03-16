@@ -3,12 +3,12 @@ import { DataTypesModel } from './settings-data-types.entity';
 import { SettingsTagsModel } from './settings-tags.entity';
 import { PlainObject } from 'src/shared/pipes/query.pipe';
 import { ApiException } from 'src/shared/utils/api.exception';
-import { CommonCodes } from 'src/shared/constants/code';
+import { CommonCodes, SettingCodes } from 'src/shared/constants/code';
 import { SettingsCategoriesModel } from './settings-categories.entity';
 import { SYSTEM_FIELD_TYPES } from 'src/shared/constants/field-types';
 import { InjectModel } from '@nestjs/sequelize';
 import { ErrorTypes } from 'src/shared/constants/error';
-import arrayToTree from 'array-to-tree';
+import { getTreeArr } from 'src/shared/utils/util';
 
 @Injectable()
 export class SettingsService {
@@ -58,7 +58,8 @@ export class SettingsService {
     const nameExisted = await this.tagsRepository.findOne({
       where: {
         // name: postData.name as string,
-        isDelete: false },
+        isDelete: false,
+      },
     });
     if (nameExisted) {
       throw new ApiException({
@@ -103,11 +104,10 @@ export class SettingsService {
    * @param getTotal
    */
   async findCategoriesTree() {
-    // return await this.categoriesRepository.findTrees();
-    const categorie =  await this.categoriesRepository.findAll({
-      where: { isDelete: false },
+    const categorie = await this.categoriesRepository.findAll({
+      raw: true,
     });
-    const categorieTree = arrayToTree(categorie);
+    const categorieTree = getTreeArr({ key: 'id', pKey: 'parentId', data: categorie });
     return categorieTree;
   }
 
@@ -170,16 +170,28 @@ export class SettingsService {
       throw new ApiException({
         code: CommonCodes.NOT_FOUND,
         message: '分类不存在',
-        // error: ErrorTypes.NOT_FOUND,
+        error: ErrorTypes.NOT_FOUND,
       }, HttpStatus.NOT_FOUND);
     }
-    // const data = await this.categoriesRepository.findDescendantsTree(category);
-    // if (data.children.length) {
-    //   throw new ApiException({
-    //     code: SettingCodes.EXIST_CHILD_NODES,
-    //     message: '存在子节点',
-    //   });
-    // }
-    return  await this.categoriesRepository.destroy({ where: { id } });
+    const data = await this.categoriesRepository.findAll({
+      where: {
+        parentId: id,
+      },
+      raw: true,
+    });
+    if (data.length) {
+      throw new ApiException({
+        code: SettingCodes.EXIST_CHILD_NODES,
+        message: '分类存在子节点，请先删除子节点',
+      });
+    }
+    await this.categoriesRepository.update({
+      isDelete: true,
+    }, {
+      where: { id },
+    });
+    return {
+      categoryId: id,
+    };
   }
 }
