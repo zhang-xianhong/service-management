@@ -21,10 +21,6 @@ import { SequelizeModule } from '@nestjs/sequelize';
       useFactory: (config: ConfigService) => config.get('database'),
       inject: [ConfigService],
     }),
-    // TypeOrmModule.forRootAsync({
-    //   useFactory: (config: ConfigService) => config.get('database'),
-    //   inject: [ConfigService],
-    // }),
     WinstonModule.forRootAsync({
       useFactory: (config: ConfigService) => config.get('winston'),
       inject: [ConfigService],

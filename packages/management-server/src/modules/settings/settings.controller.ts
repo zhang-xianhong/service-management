@@ -3,28 +3,51 @@ import { CommonCodes } from 'src/shared/constants/code';
 import { QueryPipe, SearchQuery } from 'src/shared/pipes/query.pipe';
 import { ApiException } from 'src/shared/utils/api.exception';
 import { isEmpty } from 'src/shared/utils/validator';
+import { SettingsDataTypeDto } from './dto/settings-data-types.dto';
 import { SettingsService } from './settings.service';
 
 @Controller('settings')
 export class SettingsController {
   constructor(private readonly service: SettingsService) {}
-  @Get('/columns/:module')
-  async getColumns() {}
 
-  @Post('/columns/:module')
-  async setColumns() {}
-
-  @Get('/dictionaries')
-  async getDictionaries() {}
-
-  @Get('/dictionaries/:parent')
-  async getDictionariesByPCode() {}
-
+  /* 数据类型相关 */
+  // 获取数据类型(分页)
   @Get('/data-types')
-  async getDataTypes() {
-    return await this.service.findDataTypes();
+  async getDataTypesByPaged(@Query(new QueryPipe()) query: SearchQuery) {
+    return await this.service.findAllDataTypes(query);
   }
 
+  // 获取数据类型(所有)
+  @Get('/data-types/all')
+  async getDataTypes(@Query(new QueryPipe()) query: SearchQuery) {
+    return await this.service.findAllDataTypes(query, false);
+  }
+
+  // 获取数据类型详情
+  @Get('/data-types/:id')
+  async getDataTypeById() {
+    // return await this.service.findAllDataTypes();
+  }
+
+  // 创建数据类型
+  @Post('/data-types')
+  async createDataType(@Body() postData: SettingsDataTypeDto) {
+    return await this.service.createDataType(postData);
+  }
+
+  // 删除数据类型
+  @Post('/data-types/delete')
+  async deleteDataType() {
+    // return await this.service.findAllDataTypes();
+  }
+
+  // 更新数据类型
+  @Post('/data-types/:id')
+  async updateDataType() {
+    // return await this.service.findAllDataTypes();
+  }
+
+  /* 标签相关 */
   // 标签
   @Get('/tags')
   async getTags(@Query(new QueryPipe()) query: SearchQuery) {

@@ -1,12 +1,16 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { DataTypesModel } from './settings-data-types.entity';
 import { SettingsTagsModel } from './settings-tags.entity';
-import { PlainObject } from 'src/shared/pipes/query.pipe';
+import { PlainObject, SearchQuery } from 'src/shared/pipes/query.pipe';
 import { ApiException } from 'src/shared/utils/api.exception';
 import { CommonCodes } from 'src/shared/constants/code';
 import { SettingsCategoriesModel } from './settings-categories.entity';
 import { SYSTEM_FIELD_TYPES } from 'src/shared/constants/field-types';
 import { InjectModel } from '@nestjs/sequelize';
+import { Op } from 'sequelize';
+import { isDefined } from 'src/shared/utils/validator';
+import { ErrorTypes } from 'src/shared/constants/error';
+import { SettingsDataTypeDto } from './dto/settings-data-types.dto';
 
 @Injectable()
 export class SettingsService {
@@ -19,14 +23,67 @@ export class SettingsService {
 
   /**
    * 获取数据类型列表
+   * @param query
+   * @param getTotal
    * @returns
    */
-  async findDataTypes() {
-    const types = await this.dataTypesRepository.findAll({
-      where: { isDelete: false },
-    });
-    return [...SYSTEM_FIELD_TYPES, ...types];
+  async findAllDataTypes(query: SearchQuery, getTotal = true) {
+    const where = {
+      isDelete: false,
+    };
+    if (query.keyword) {
+      where[Op.or] = [
+        {
+          name: {
+            [Op.like]: `%${query.keyword}%`,
+          },
+        },
+        {
+          description: {
+            [Op.like]: `%${query.keyword}%`,
+          },
+        },
+      ];
+    }
+    if (isDefined(query.isSystem)) {
+      (where as PlainObject).isSystem = query.isSystem;
+    }
+    const { conditions } = query;
+    conditions.where = where;
+    if (!getTotal) {
+      // 删除分页相关的字段
+      delete conditions.offset;
+      delete conditions.limit;
+      return await this.dataTypesRepository.findAll(conditions);
+    }
+    return await this.dataTypesRepository.findAndCountAll(conditions);
   }
+
+  /**
+   * 创建数据类型
+   * @param postData
+   * @returns
+   */
+  async createDataType(postData: SettingsDataTypeDto) {
+    const saveData = { ...postData };
+    const nameExisted = await this.dataTypesRepository.findOne({
+      where: {
+        isDelete: false,
+        name: saveData.name,
+      },
+    });
+    if (nameExisted) {
+      throw new ApiException({
+        code: CommonCodes.DATA_EXISTED,
+        message: `类型${saveData.name}已存在`,
+      });
+    }
+    const res = await this.dataTypesRepository.create(saveData);
+    return {
+      dataTypeId: res.id,
+    };
+  }
+
 
   /**
    * 获取全部
