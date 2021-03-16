@@ -1,7 +1,7 @@
 /**
  * 分类表
  */
-import { Table, Column, DataType, Model  } from 'sequelize-typescript';
+import { Table, Column, DataType, ForeignKey, BelongsTo, HasMany  } from 'sequelize-typescript';
 import { BaseModel } from '../base.entity';
 
 @Table({
@@ -10,13 +10,7 @@ import { BaseModel } from '../base.entity';
 })
 
 // settings/tags/
-export class SettingsCategoriesModel extends Model implements BaseModel {
-  id: number;
-  createTime: Date;
-  updateTime: Date;
-  createUser: number;
-  updateUser: number;
-  isDelete: boolean;
+export class SettingsCategoriesModel extends BaseModel {
   // 名称
   @Column({
     type: DataType.STRING,
@@ -29,4 +23,18 @@ export class SettingsCategoriesModel extends Model implements BaseModel {
     defaultValue: '',
   })
   description: string;
+
+  // 隶属服务
+  @ForeignKey(() => SettingsCategoriesModel)
+  @Column({
+    type: DataType.BIGINT,
+    field: 'parent_id',
+  })
+  parentId: number;
+
+  @BelongsTo(() => SettingsCategoriesModel)
+  parent: SettingsCategoriesModel;
+
+  @HasMany(() => SettingsCategoriesModel)
+  children: SettingsCategoriesModel[];
 }

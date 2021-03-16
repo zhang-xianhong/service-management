@@ -7,6 +7,8 @@ import { CommonCodes } from 'src/shared/constants/code';
 import { SettingsCategoriesModel } from './settings-categories.entity';
 import { SYSTEM_FIELD_TYPES } from 'src/shared/constants/field-types';
 import { InjectModel } from '@nestjs/sequelize';
+import { ErrorTypes } from 'src/shared/constants/error';
+import arrayToTree from 'array-to-tree';
 
 @Injectable()
 export class SettingsService {
@@ -102,6 +104,11 @@ export class SettingsService {
    */
   async findCategoriesTree() {
     // return await this.categoriesRepository.findTrees();
+    const categorie =  await this.categoriesRepository.findAll({
+      where: { isDelete: false },
+    });
+    const categorieTree = arrayToTree(categorie);
+    return categorieTree;
   }
 
   /**
@@ -116,10 +123,10 @@ export class SettingsService {
         throw new ApiException({
           code: CommonCodes.NOT_FOUND,
           message: '父级分类不存在',
-          // error: ErrorTypes.NOT_FOUND,
+          error: ErrorTypes.NOT_FOUND,
         }, HttpStatus.NOT_FOUND);
       }
-      category.parent = parent;
+      category.parentId = parentId;
     }
     const result = await this.categoriesRepository.create(category);
     return {
@@ -142,7 +149,7 @@ export class SettingsService {
       throw new ApiException({
         code: CommonCodes.NOT_FOUND,
         message: '分类不存在',
-        // error: ErrorTypes.NOT_FOUND,
+        error: ErrorTypes.NOT_FOUND,
       }, HttpStatus.NOT_FOUND);
     }
     return await this.categoriesRepository.update({ id }, data);

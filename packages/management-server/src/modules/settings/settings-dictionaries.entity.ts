@@ -1,7 +1,7 @@
 /**
  * 数据字典表
  */
-import { Table, Column, DataType, Model } from 'sequelize-typescript';
+import { Table, Column, DataType } from 'sequelize-typescript';
 import { BaseModel } from '../base.entity';
 
 @Table({
@@ -10,13 +10,7 @@ import { BaseModel } from '../base.entity';
 })
 
 // settings/dictionaries/:typeCode
-export class DictionariesModel  extends Model implements BaseModel {
-  id: number;
-  createTime: Date;
-  updateTime: Date;
-  createUser: number;
-  updateUser: number;
-  isDelete: boolean;
+export class DictionariesModel  extends BaseModel {
   // 父级，为空则表示一级类型
   @Column({
     type: DataType.STRING,
