@@ -204,8 +204,8 @@ const routes: Array<RouteRecordRaw> = [
     ],
   },
   {
-    path: '/conf',
-    name: 'Configuration',
+    path: '/settings',
+    name: 'Settings',
     component: Layout,
     meta: {
       title: '配置管理',
