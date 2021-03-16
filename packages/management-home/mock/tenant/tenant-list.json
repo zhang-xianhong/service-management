@@ -1,0 +1,41 @@
+{
+  "code": 0,
+  "data": {
+    "total": 3,
+    "list": [
+      {
+        "id": "1",
+        "name": "test 001",
+        "person": "张一",
+        "tel": "12345454545",
+        "email": "22222@qq.com",
+        "manager": "里斯",
+        "managerTel": "1232323232",
+        "status": 1
+      },
+      {
+        "id": "2",
+        "name": "test 001",
+        "person": "张一",
+        "tel": "12345454545",
+        "email": "22222@qq.com",
+        "manager": "里斯",
+        "managerTel": "1232323232",
+        "status": 1
+      },
+      {
+        "id": "3",
+        "name": "test 001",
+        "person": "张一",
+        "tel": "12345454545",
+        "email": "22222@qq.com",
+        "manager": "里斯",
+        "managerTel": "1232323232",
+        "status": 1
+      }
+    ]
+  },
+  "message": "successful",
+  "httpStatus": 200,
+  "timestamp": 1614328643228
+}

@@ -204,8 +204,8 @@ const routes: Array<RouteRecordRaw> = [
     ],
   },
   {
-    path: '/conf',
-    name: 'Configuration',
+    path: '/settings',
+    name: 'Settings',
     component: Layout,
     meta: {
       title: '配置管理',
@@ -229,6 +229,26 @@ const routes: Array<RouteRecordRaw> = [
         name: 'Tag',
         meta: {
           title: '标签信息',
+          icon: 'el-icon-eleme',
+          isRootLevel: false,
+        },
+      },
+    ],
+  },
+  {
+    path: '/tenant-menagement',
+    redirect: '/tenant-list',
+    component: Layout,
+    meta: {
+      isRootLevel: true,
+    },
+    children: [
+      {
+        path: 'tenant-list',
+        component: () => import(/* webpackChunkName: "conf" */ '@/views/tenant-management/Index.vue'),
+        name: 'TenantList',
+        meta: {
+          title: '租户管理',
           icon: 'el-icon-eleme',
           isRootLevel: false,
         },

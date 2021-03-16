@@ -13,8 +13,7 @@
       <el-select v-model="formData.owner" placeholder="请选择" multiple></el-select>
     </el-form-item>
     <el-form-item prop="categories" label="分类">
-      <el-select v-model="formData.categories" placeholder="请选择" multiple></el-select>
-      <categories-selection></categories-selection>
+      <categories-selection v-model="formData.categories"></categories-selection>
     </el-form-item>
     <el-form-item prop="tags" label="标签">
       <el-select v-model="formData.tags" placeholder="请选择" multiple>
