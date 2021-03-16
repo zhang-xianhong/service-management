@@ -235,6 +235,26 @@ const routes: Array<RouteRecordRaw> = [
       },
     ],
   },
+  {
+    path: '/tenant-menagement',
+    redirect: '/tenant-list',
+    component: Layout,
+    meta: {
+      isRootLevel: true,
+    },
+    children: [
+      {
+        path: 'tenant-list',
+        component: () => import(/* webpackChunkName: "conf" */ '@/views/tenant-management/Index.vue'),
+        name: 'TenantList',
+        meta: {
+          title: '租户管理',
+          icon: 'el-icon-eleme',
+          isRootLevel: false,
+        },
+      },
+    ],
+  },
 ];
 
 export const reCreateRouter = (routes: Array<RouteRecordRaw>): Router =>
