@@ -1,13 +1,12 @@
 /**
  * 服务信息实体
  */
-import { Table, Column, DataType, Length, HasMany } from 'sequelize-typescript';
+import { Table, Column, DataType, Length, HasMany, Is, IsUrl } from 'sequelize-typescript';
 import { BaseModel } from '../base.entity';
 import { ServicesApiModel } from './service-api.entity';
 import { ServicesDependencyModel } from './service-dependency.entity';
-// import { BaseModel } from 'src/modules/base.entity';
 
-
+const REG_SERVICE_NAME = /^srv-[a-z0-9-]+(?<!-)$/;
 @Table({
   timestamps: false,
   tableName: 'service_info',
@@ -15,6 +14,7 @@ import { ServicesDependencyModel } from './service-dependency.entity';
 export class ServicesInfoModel extends BaseModel  {
   // 项目服务
   @Length({ min: 1, max: 64 })
+  @Is(REG_SERVICE_NAME)
   @Column({
     type: DataType.STRING,
     comment: '服务名称，对应生成SpringBoot工程的名称',
@@ -23,6 +23,7 @@ export class ServicesInfoModel extends BaseModel  {
 
   // 服务基础url
   @Length({ min: 1, max: 64 })
+  @IsUrl
   @Column({
     type: DataType.STRING,
     comment: '为所有该服务下接口的URL添加前缀',
@@ -36,6 +37,9 @@ export class ServicesInfoModel extends BaseModel  {
     field: 'server_port',
     comment: '服务启动监听端口号',
     defaultValue: null,
+    validate: {
+      isPort: true,
+    },
   })
   serverPort: number;
 
