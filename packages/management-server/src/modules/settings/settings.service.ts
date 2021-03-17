@@ -410,6 +410,7 @@ export class SettingsService {
     const data = await this.categoriesRepository.findAll({
       where: {
         parentId: id,
+        isDelete: false,
       },
       raw: true,
     });
