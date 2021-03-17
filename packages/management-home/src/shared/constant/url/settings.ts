@@ -6,6 +6,7 @@ export default {
   DELETE_DATA_TYPE: ['/settings/data-types/delete', '/mock/settings/datatype-delete.json'],
   GET_DATA_TYPES_DETAIL: ['/settings/data-types/_', '/mock/settings/datatype-detail.json'],
   GET_TAGS_ALL: ['settings/tags/all', '/mock/settings/all-tags.json'],
+  GET_TAGS: ['settings/tags', '/mock/settings/all-tags.json'],
   GET_CATEGORIES: ['settings/categories/tree', '/mock/settings/category-options.json'],
   GET_CLASSIFICATION_LIST: ['/settings/categories/tree', '/mock/settings/classification-list.json'],
   GET_CLASSIFICATION_DETAIL: ['/settings/categories/_', '/mock/settings/classification-detail.json'],
