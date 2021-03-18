@@ -161,14 +161,6 @@ export class ModelsFieldsModel extends BaseModel {
   })
   version: number;
 
-  // 是否系统字段
-  @Column({
-    field: 'is_system',
-    type: DataType.BOOLEAN,
-    defaultValue: false,
-    comment: '是否系统字段',
-  })
-  isSystem: boolean;
 
   // 是否唯一
   @Column({

@@ -5,8 +5,9 @@ import { ModelsController } from './models.controller';
 import { ModelsService } from './models.service';
 import { DataTypesModel } from '../settings/settings-data-types.model';
 import { SequelizeModule } from '@nestjs/sequelize';
+import { ServicesInfoModel } from '../services/service-info.model';
 @Module({
-  imports: [SequelizeModule.forFeature([ModelsInfoModel, ModelsFieldsModel, DataTypesModel])],
+  imports: [SequelizeModule.forFeature([ModelsInfoModel, ModelsFieldsModel, DataTypesModel, ServicesInfoModel])],
   controllers: [ModelsController],
   providers: [ModelsService, Logger],
   exports: [ModelsService],

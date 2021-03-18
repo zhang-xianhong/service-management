@@ -54,8 +54,6 @@ export class ServicesService {
    * @param id
    */
   async findById(id: number) {
-    console.log(typeof ServicesApiModel);
-
     const service = await this.infoRepository.findOne({
       where: {
         id,

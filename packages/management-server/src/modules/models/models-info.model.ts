@@ -1,5 +1,6 @@
-import { Table, Column, DataType, Length, HasMany  } from 'sequelize-typescript';
+import { Table, Column, DataType, HasMany, ForeignKey } from 'sequelize-typescript';
 import { BaseModel } from '../base.entity';
+import { ServicesInfoModel } from '../services/service-info.model';
 import { ModelsFieldsModel } from './models-fields.model';
 
 @Table({
@@ -8,15 +9,12 @@ import { ModelsFieldsModel } from './models-fields.model';
 })
 
 export class ModelsInfoModel extends BaseModel {
-  @Length({ min: 1, max: 64 })
   @Column({ type: DataType.STRING, comment: '模型名称，大驼峰格式' })
   name: string;
 
-  @Length({ min: 1, max: 100 })
   @Column({ type: DataType.STRING, comment: '模型中文描述' })
   description: string;
 
-  @Length({ min: 1, max: 255 })
   @Column({
     type: DataType.STRING,
     comment: '模型详情，备注信息',
@@ -112,4 +110,13 @@ export class ModelsInfoModel extends BaseModel {
 
   @HasMany(() => ModelsFieldsModel)
   fields: ModelsFieldsModel;
+
+  // 关联服务
+  @ForeignKey(() => ServicesInfoModel)
+  @Column({
+    type: DataType.INTEGER,
+    field: 'service_id',
+    comment: '关联服务',
+  })
+  serviceId: number;
 }
