@@ -312,7 +312,7 @@ export class SettingsService {
    * @param query
    * @param getTotal
    */
-  async findAllCategories() {
+  async findAllCategories(): Promise<SettingsCategoriesModel[]>  {
     return await this.categoriesRepository.findAll({
       where: { isDelete: false },
     });
@@ -323,7 +323,7 @@ export class SettingsService {
    * @param query
    * @param getTotal
    */
-  async findCategoryById(id: number) {
+  async findCategoryById(id: number): Promise<SettingsCategoriesModel> {
     return await this.categoriesRepository.findOne({
       where: {
         id,
@@ -337,7 +337,7 @@ export class SettingsService {
    * @param query
    * @param getTotal
    */
-  async findCategoriesTree() {
+  async findCategoriesTree(): Promise<Object[]> {
     const categories = await this.categoriesRepository.findAll({
       raw: true,
     });

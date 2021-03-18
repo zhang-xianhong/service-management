@@ -7,12 +7,15 @@ export class SettingsDataTypeDto {
   })
   @IsNotEmpty()
   type: FIELD_TYPES;
+
   @IsNotEmpty()
   @MaxLength(64)
   name: string;
+
   @IsOptional()
   @MaxLength(255)
   description?: string;
+
   @IsOptional()
   @IsInt()
   length: number;
