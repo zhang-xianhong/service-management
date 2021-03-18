@@ -125,7 +125,7 @@ export default defineComponent({
       refreshServiceList(data);
     };
 
-    function logs(res) {
+    function logs(res: any) {
       return res;
     }
     return {
