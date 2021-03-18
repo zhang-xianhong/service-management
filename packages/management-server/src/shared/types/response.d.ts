@@ -14,7 +14,13 @@ export interface Deleted {
 }
 
 // 列表返回
+export type Rows<T> = Array<T>;
+
+// 详情
+export type Details<T> = T;
+
+// 列表返回(带分页)
 export interface RowsAndCount<T> {
   count: number
-  rows: Array<T>
+  rows: Rows<T>
 }
