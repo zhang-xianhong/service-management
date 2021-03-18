@@ -15,6 +15,9 @@ export interface FIELD_TYPE {
   length: number
   name: string
   description: string
+  isSystem?: boolean
+  isUnique?: boolean
+  isIndex?: boolean
   isKey?: boolean
   extra?: string
 }
@@ -31,3 +34,8 @@ export const SYSTEM_FIELD_TYPES: FIELD_TYPE[] = [
     extra: 'auto_increment',
   },
 ];
+
+
+export const MODEL_DEFAULT_FIELDS_NAMES = ['UUID'];
+
+export const FIELD_UUID_NAME = 'UUID';
