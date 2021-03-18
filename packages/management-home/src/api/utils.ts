@@ -1,4 +1,4 @@
-export const isProduction = true || process.env.NODE_ENV === 'production';
+export const isProduction = false || process.env.NODE_ENV === 'production';
 
 export const getUrl = (urls: string[], params = ''): string => {
   if (isProduction) {

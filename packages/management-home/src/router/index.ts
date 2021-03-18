@@ -52,6 +52,38 @@ const routes: Array<RouteRecordRaw> = [
     ],
   },
   {
+    path: '/service-management',
+    redirect: '/service-list',
+    component: Layout,
+    meta: {
+      title: '服务管理',
+      icon: 'el-icon-eleme',
+      isRootLevel: true,
+    },
+    children: [
+      {
+        path: 'service-list',
+        component: () => import('@/views/sevice-management/business-service/ServiceList.vue'),
+        name: 'ServiceList',
+        meta: {
+          title: '业务服务',
+          icon: 'el-icon-eleme',
+          isRootLevel: false,
+        },
+      },
+      {
+        path: 'other-service',
+        component: () => import('@/views/sevice-management/other-service/Index.vue'),
+        name: 'OtherService',
+        meta: {
+          title: '其他服务',
+          icon: 'el-icon-eleme',
+          isRootLevel: false,
+        },
+      },
+    ],
+  },
+  {
     path: '/settings',
     name: 'Settings',
     component: Layout,
