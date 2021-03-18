@@ -30,7 +30,7 @@
         <span class="el-dropdown-link"> <i class="el-icon-s-unfold header-title-object-icon3"></i>项目 </span>
         <template #dropdown>
           <el-dropdown-menu>
-            <el-dropdown-item v-for="project in projectList" :key="project.id">{{ project.name }}</el-dropdown-item>
+            <el-dropdown-item v-for="(project, index) in projectList" :key="index">{{ project.name }}</el-dropdown-item>
           </el-dropdown-menu>
         </template>
       </el-dropdown>
