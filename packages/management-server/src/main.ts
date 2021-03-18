@@ -9,10 +9,8 @@ import { AllExceptionsFilter } from './shared/filters/exceptions.filter';
 import { TraceMiddleware } from './shared/middleware/trace.middleware';
 import { ResponseInterceptor } from './shared/interceptors/response.interceptor';
 // import { AuthorityGuard } from './shared/guards/auth.guard';
-import { HttpStatus, ValidationPipe } from '@nestjs/common';
-import { ApiException } from './shared/utils/api.exception';
-import { CommonCodes } from './shared/constants/code';
 import { WsAdapter } from '@nestjs/platform-ws';
+import { ApiValidationPipe } from './shared/pipes/api-validation.pipe';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -33,18 +31,7 @@ async function bootstrap() {
   // 全局拦截器
   app.useGlobalInterceptors(new ResponseInterceptor());
   // 全局过滤管道
-  app.useGlobalPipes(new ValidationPipe({
-    transform: true,
-    stopAtFirstError: true,
-    whitelist: true,
-    errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
-    exceptionFactory: (errors) => {
-      throw new ApiException({
-        code: CommonCodes.PARAMETER_INVALID,
-        message: Object.values(errors[0].constraints)[0],
-      });
-    },
-  }));
+  app.useGlobalPipes(new ApiValidationPipe());
 
   app.useWebSocketAdapter(new WsAdapter(app));
   // 全局守卫

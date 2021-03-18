@@ -10,22 +10,28 @@
         ></el-input>
       </el-col>
       <el-col :offset="12" :span="6" style="text-align: right;">
-        <el-button type="primary">新增</el-button>
-        <el-button @click="groupRemove">删除</el-button>
+        <el-button type="primary" @click="add">新增</el-button>
+        <el-button @click="groupRemove()">删除</el-button>
       </el-col>
     </el-row>
     <el-row>
-      <el-table :data="tagList" @selection-change="handleSelectionChange">
-        <el-table-column type="selection" width="55" />
-        <el-table-column type="index" width="50" />
-        <el-table-column v-for="col in columns" :key="col.prop" :prop="col.prop" :label="col.label"></el-table-column>
-        <el-table-column prop="operation" width="300">
+      <el-table :data="tagList" @selection-change="handleSelectionChange" @sort-change="sortChange" v-loading="loading">
+        <el-table-column type="selection" width="45" />
+        <el-table-column type="index" label="序号" width="50" />
+        <el-table-column
+          v-for="col in columns"
+          :key="col.prop"
+          :prop="col.prop"
+          :label="col.label"
+          sortable="custom"
+        ></el-table-column>
+        <el-table-column prop="operation" width="220">
           <template #default="{ row }">
-            <el-button type="primary" @click="detail(row)" size="mini">详情</el-button>
+            <!-- <el-button type="primary" @click="detail(row)" size="mini">详情</el-button> -->
             <el-button type="primary" @click="disabled(row)" size="mini">禁用</el-button>
             <!-- <el-button type="primary" @click="enabled(row)" size="mini">启用</el-button> -->
-            <el-button type="primary" @click="rename(row)" size="mini">替换</el-button>
-            <el-button @click="remove(row)">删除</el-button>
+            <el-button type="primary" @click="rename(row)" size="mini">修改</el-button>
+            <el-button @click="groupRemove([row.id])">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -42,21 +48,44 @@
       >
       </el-pagination>
     </el-row>
+    <el-dialog :title="dialogTitle" v-model="dialogVisible">
+      <el-form :model="form" :rules="rules" ref="formRef">
+        <el-form-item label="标签名称" :label-width="80" prop="name">
+          <el-input v-model="form.name" autocomplete="off"></el-input>
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <el-button type="primary" @click="save()" size="mini">确认</el-button>
+        <el-button @click="cancel()">取消</el-button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, ref, onMounted } from 'vue';
-import { listTags } from '@/api/settings/tags';
+import { listTags, addTag, updateTag, deleteTags } from '@/api/settings/tags';
 import _ from 'lodash/fp';
 export default defineComponent({
   name: 'Tag',
   setup() {
+    // 分页功能
     const page = ref(1);
     const total = ref(0);
     const pageSize = ref(10);
+    const handlePageSizeChange = (size: number) => {
+      pageSize.value = size;
+    };
+    const handlePageChange = (curPage: number) => {
+      page.value = curPage;
+    };
+
+    // 表格数据
+    let sortType: string;
+    let sortField: string;
     const tagList = ref([]);
     const filterText = ref('');
+    const loading = ref(false);
     const columns = [
       {
         label: '标签名称',
@@ -75,34 +104,104 @@ export default defineComponent({
         prop: 'cloneBy',
       },
     ];
-    const handlePageSizeChange = (size: number) => {
-      pageSize.value = size;
+    const format = (num: number): string => {
+      if (num < 10) {
+        return `0${num}`;
+      }
+      return num.toString();
     };
-    const handlePageChange = (curPage: number) => {
-      page.value = curPage;
+    const dateFormat = (timestamp: number | string): string => {
+      const date = new Date(timestamp);
+      const year = date.getFullYear();
+      const month = format(date.getMonth() + 1);
+      const day = format(date.getDate());
+      const hour = format(date.getHours());
+      const minute = format(date.getMinutes());
+      const second = format(date.getSeconds());
+      return `${year}/${month}/${day} ${hour}:${minute}:${second}`;
     };
     const getTagList = async () => {
+      loading.value = true;
       const { code, data } = await listTags({
         page: page.value,
         pageSize: pageSize.value,
         keyword: filterText.value,
+        sortType,
+        sortField,
       });
+      loading.value = false;
       if (code === 0) {
         total.value = data.count;
-        tagList.value = data.rows;
+        tagList.value = data.rows.map((row: any) => ({
+          ...row,
+          createTime: dateFormat(row.createTime),
+        }));
       }
     };
+
+    // 过滤
     const filterTag = _.debounce(500)(getTagList);
-    // const remove = (row) => {
 
-    // };
-    // let selection = [];
-    // const handleSelectionChange = (val: any) => {
-    //   selection = val;
-    // };
-    // const groupRemove = () => {
+    // 排序
+    const sortChange = (val: any) => {
+      sortType = val.order;
+      sortField = val.prop;
+      getTagList();
+    };
 
-    // };
+    // 批量删除
+    let selection: Array<number> = [];
+    const handleSelectionChange = (val: any) => {
+      selection = _.map('id')(val);
+    };
+    const groupRemove = async (ids = selection) => {
+      loading.value = true;
+      const { code } = await deleteTags({ ids });
+      loading.value = false;
+      if (code === 0) getTagList();
+    };
+
+    // 编辑弹窗
+    const formRef: any = ref(null);
+    const dialogVisible = ref(false);
+    const dialogTitle = ref('');
+    const form = ref({
+      name: '',
+    });
+    const rules = {
+      name: [{ required: true, message: '请输入标签名称', trigger: 'blur' }],
+    };
+    let id = '';
+    const rename = (row: any) => {
+      form.value.name = row.name;
+      dialogVisible.value = true;
+      dialogTitle.value = '修改标签';
+      id = row.id;
+    };
+    const add = () => {
+      form.value.name = '';
+      dialogVisible.value = true;
+      dialogTitle.value = '新增标签';
+    };
+    const save = () => {
+      formRef.value.validate(async (isValid: boolean) => {
+        if (isValid) {
+          loading.value = true;
+          const { code } =
+            dialogTitle.value === '新增标签'
+              ? await addTag({ name: form.value.name })
+              : await updateTag({ id, name: form.value.name });
+          loading.value = false;
+          if (code === 0) {
+            dialogVisible.value = false;
+            getTagList();
+          }
+        }
+      });
+    };
+    const cancel = () => {
+      dialogVisible.value = false;
+    };
 
     onMounted(getTagList);
     return {
@@ -116,9 +215,19 @@ export default defineComponent({
       getTagList,
       filterText,
       filterTag,
-      // handleSelectionChange,
-      // remove,
-      // groupRemove,
+      handleSelectionChange,
+      groupRemove,
+      dialogVisible,
+      dialogTitle,
+      form,
+      rules,
+      rename,
+      add,
+      save,
+      cancel,
+      formRef,
+      loading,
+      sortChange,
     };
   },
 });

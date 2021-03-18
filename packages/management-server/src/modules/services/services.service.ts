@@ -1,33 +1,30 @@
 import { HttpService, HttpStatus, Inject, Injectable, Logger, LoggerService } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
 import { CommonCodes, ServiceCodes } from 'src/shared/constants/code';
 import { ApiException } from 'src/shared/utils/api.exception';
-import { Connection, ILike, In, Not, Repository } from 'typeorm';
-import { ServicesApiEntity } from './service-api.entity';
-import { ServicesDependencyEntity } from './service-dependency.entity';
-import { ServicesInfoEntity } from './service-info.entity';
+import { ServicesApiModel } from './service-api.model';
+import { ServicesDependencyModel } from './service-dependency.model';
+import { ServicesInfoModel } from './service-info.model';
 import { BUILD_SERVICE_URL, INIT_SERVICE_URL, SERVICE_SSHURI, GENERATE_SERVICE_REPOSITORY_URL } from 'src/shared/constants/url';
 import { isEmpty } from 'src/shared/utils/validator';
 import { PlainObject } from 'src/shared/pipes/query.pipe';
-import { SocketGateway } from 'src/shared/gateway/socket.gateway';
+import { InjectModel } from '@nestjs/sequelize';
+import { Op, Sequelize } from 'sequelize';
 import { SERVICE_STATUS } from './service-status';
-import { WEBSOCKET_EVENT_SERVICE_UPDATE } from 'src/shared/constants/websocket-events';
 import { ErrorTypes } from 'src/shared/constants/error';
+import { SocketGateway } from 'src/shared/gateway/socket.gateway';
+import { WEBSOCKET_EVENT_SERVICE_UPDATE } from 'src/shared/constants/websocket-events';
 @Injectable()
 export class ServicesService {
   constructor(
     @Inject(Logger)
     private readonly logger: LoggerService,
-    @InjectRepository(ServicesInfoEntity)
-    private readonly infoRepository: Repository<ServicesInfoEntity>,
-    @InjectRepository(ServicesApiEntity)
-    private readonly apiRepository: Repository<ServicesApiEntity>,
-    @InjectRepository(ServicesDependencyEntity)
-    private readonly dependencyRepository: Repository<ServicesDependencyEntity>,
-    private connection: Connection,
-    private httpService: HttpService,
     private readonly io: SocketGateway,
-  ) {}
+    private sequelize: Sequelize,
+    @InjectModel(ServicesInfoModel) private readonly infoRepository: typeof ServicesInfoModel,
+    @InjectModel(ServicesApiModel) private readonly apiRepository: typeof ServicesApiModel,
+    @InjectModel(ServicesDependencyModel) private readonly dependencyRepository: typeof ServicesDependencyModel,
+    private httpService: HttpService,
+  ) { }
 
   /**
    * 获取服务列表
@@ -44,11 +41,11 @@ export class ServicesService {
       where.tags = query.tags;
     }
     if (query.keyword) {
-      where.name = ILike(`%${query.keyword}%`);
+      where.name = { [Op.like]: `%${query.keyword}%` };
     }
     const { conditions = {} } = query;
     conditions.where = where;
-    const list =  this.infoRepository.findAndCount(conditions);
+    const list = this.infoRepository.findAndCountAll(conditions);
     return list;
   }
 
@@ -57,11 +54,19 @@ export class ServicesService {
    * @param id
    */
   async findById(id: number) {
+    console.log(typeof ServicesApiModel);
+
     const service = await this.infoRepository.findOne({
       where: {
         id,
       },
-      relations: ['apis', 'dependencies', 'dependencies.service'],
+      include: [{
+        model: ServicesApiModel,
+        attributes: { exclude: ['isDelete'] },
+      }, {
+        model: ServicesDependencyModel,
+        attributes: { exclude: ['isDelete'] },
+      }],
     });
     if (!service) {
       throw new ApiException({
@@ -108,11 +113,11 @@ export class ServicesService {
     });
 
     // 获取最大端口号服务
-    const [serviceMaxPort] = await this.infoRepository.find({
+    const [serviceMaxPort] = await this.infoRepository.findAll({
       where: {
         isDelete: false,
       },
-      order: { serverPort: 'DESC' },
+      order: [['serverPort', 'DESC']],
     });
     if (nameExisted) {
       throw new ApiException({
@@ -120,48 +125,35 @@ export class ServicesService {
         message: '服务名称已存在',
       });
     }
-    const queryRunner = this.connection.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
+    const transaction = await this.sequelize.transaction();
     try {
-      // 端口递增
-      serviceData.serverPort =  Number(serviceMaxPort?.serverPort) + 1 || 8080;
-      const service: any = await queryRunner.manager.save(this.infoRepository.create(serviceData));
+      serviceData.serverPort = Number(serviceMaxPort?.serverPort) + 1 || 8080;
+      const service: any = await this.infoRepository.create(serviceData, { transaction });
       if (apis && Array.isArray(apis)) {
-        const apisEntities = apis.map(api => this.apiRepository.create({
+        const apisEntities = apis.map(api => ({
           ...api,
           serviceId: service.id,
         }));
-        await queryRunner.manager.save(apisEntities);
+        await this.apiRepository.bulkCreate(apisEntities, { transaction });
       }
 
       if (dependencies && Array.isArray(dependencies)) {
-        const dependenciesEntities = dependencies.map(dependency => this.dependencyRepository.create({
+        const dependenciesEntities = dependencies.map(dependency => ({
           ...dependency,
           dependencyId: dependency.dependencyId,
           serviceId: service.id,
         }));
-        await queryRunner.manager.save(dependenciesEntities);
+        await this.dependencyRepository.bulkCreate(dependenciesEntities, { transaction });
       }
-      // 创建物理仓库
-      await this.generateServiceRepository({
-        projectDesc: data.description,
-        projectName: data.name,
-        saServiceID: service.id,
-      });
-      await queryRunner.commitTransaction();
-      return {
-        serviceId: service.id,
-      };
+      await transaction.commit();
     } catch (error) {
       this.logger.error(error);
-      await queryRunner.rollbackTransaction();
+      // 一旦发生错误，事务会回滚
+      await transaction.rollback();
       throw new ApiException({
         code: CommonCodes.CREATED_FAIL,
-        message: '创建失败',
+        message: '服务创建失败',
       });
-    } finally {
-      await queryRunner.release();
     }
   }
 
@@ -172,11 +164,11 @@ export class ServicesService {
   async update(id: number, data: any) {
     const { apis, dependencies, ...serviceData } = data;
     // 验证是否有同名模块
-    const nameExisted = await this.infoRepository.findOne({
+    const nameExisted = await this.infoRepository.findOne<ServicesInfoModel>({
       where: {
         name: serviceData.name,
         isDelete: false,
-        id: Not(id),
+        id: [Op.notIn[id]],
       },
     });
     if (nameExisted) {
@@ -185,45 +177,46 @@ export class ServicesService {
         message: '模型名称已存在',
       });
     }
-    const queryRunner = this.connection.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
+    const transaction = await this.sequelize.transaction();
     try {
-      // 更新serviceInfo信息
-      await queryRunner.manager.update(ServicesInfoEntity, { id }, serviceData);
-
       // 更新serviceApi信息
       if (apis && Array.isArray(apis)) {
-        await queryRunner.manager.delete(ServicesApiEntity, { serviceId: id });
-        const apisEntities = apis.map(api => this.apiRepository.create({
-          ...api,
-          serviceId: id,
-        }));
-        await queryRunner.manager.save(apisEntities);
+        await this.apiRepository.destroy<ServicesApiModel>({
+          where: {
+            serviceId: id,
+          },
+          transaction,
+        });
+        const apisEntities = apis.map(api => (
+          {
+            ...api,
+            serviceId: id,
+          }
+        ));
+        await this.apiRepository.bulkCreate(apisEntities, { transaction });
       }
 
       if (dependencies && Array.isArray(dependencies)) {
-        await queryRunner.manager.delete(ServicesDependencyEntity, { serviceId: id });
-        const dependenciesEntities = dependencies.map(dependency => this.dependencyRepository.create({
+        await this.dependencyRepository.destroy({
+          where: {
+            serviceId: id,
+          },
+        });
+        const dependenciesEntities = dependencies.map(dependency => ({
           ...dependency,
           dependencyId: dependency.dependencyId,
           serviceId: id,
         }));
-        await queryRunner.manager.save(dependenciesEntities);
+        await this.dependencyRepository.bulkCreate(dependenciesEntities, { transaction });
       }
-      await queryRunner.commitTransaction();
-      return {
-        serviceId: id,
-      };
-    } catch (error) {
-      this.logger.error(error);
-      await queryRunner.rollbackTransaction();
+      await transaction.commit();
+    } catch (err) {
+      // 一旦发生错误，事务会回滚
+      await transaction.rollback();
       throw new ApiException({
         code: CommonCodes.UPDATED_FAIL,
-        message: '更新失败',
+        message: '服务更新失败',
       });
-    } finally {
-      await queryRunner.release();
     }
   }
 
@@ -232,42 +225,46 @@ export class ServicesService {
    * @param id
    */
   async delete(ids: string[]) {
-    const deleteIds = ids.filter(id => Number(id));
-    const queryRunner = this.connection.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
+    const transaction = await this.sequelize.transaction();
     try {
-      // 更新info表数据，isDelete置为ture
-      await queryRunner.manager.update(ServicesInfoEntity, {
-        id: In(deleteIds),
-      }, {
+      const deleteIds = ids.filter(id => Number(id));
+      // 更新info表数据，isDelete置为true
+      await this.infoRepository.update({
         isDelete: true,
-      });
-      // 更新api表数据，isDelete置为ture
-      await queryRunner.manager.update(ServicesApiEntity, {
-        serviceId: In(deleteIds),
       }, {
-        isDelete: true,
+        where: {
+          id: { [Op.in]: deleteIds },
+        },
+        transaction,
       });
-      // 更新dependency表数据，isDelete置为ture
-      await queryRunner.manager.update(ServicesDependencyEntity, {
-        serviceId: In(deleteIds),
+      // 更新api表数据，isDelete置为true
+      await this.apiRepository.update({
+        isDelete: true,
       }, {
-        isDelete: true,
+        where: {
+          serviceId: { [Op.in]: deleteIds },
+        }, transaction,
       });
-      await queryRunner.commitTransaction();
+      // 更新dependency表数据，isDelete置为true
+      await this.dependencyRepository.update({
+        isDelete: true,
+      }, {
+        where: {
+          serviceId: { [Op.in]: deleteIds },
+        },
+        transaction,
+      });
+      await transaction.commit();
       return {
-        id: In(deleteIds),
+        id: deleteIds,
       };
-    } catch (error) {
-      this.logger.error(error);
-      await queryRunner.rollbackTransaction();
+    } catch (err) {
+      // 一旦发生错误，事务会回滚
+      await transaction.rollback();
       throw new ApiException({
         code: CommonCodes.DELETED_FAIL,
-        message: '删除失败',
+        message: '服务删除失败',
       });
-    } finally {
-      await queryRunner.release();
     }
   }
 
@@ -320,7 +317,7 @@ export class ServicesService {
       });
     }
     try {
-      const { data } = await this.httpService.get(`${BUILD_SERVICE_URL}?serverId=${serviceId}&ref=${branch}&userId=${userId}`).toPromise();
+      const { data } = await this.httpService.get(`${BUILD_SERVICE_URL}?serviceId=${serviceId}&ref=${branch}&userId=${userId}`).toPromise();
       if (data?.code === 0) {
         await this.updateServiceStatus(serviceId, SERVICE_STATUS.BUILDING);
         return data.data;
@@ -373,7 +370,11 @@ export class ServicesService {
     const update: PlainObject = {
       status,
     };
-    const service = await this.infoRepository.findOne(serviceId);
+    const service = await this.infoRepository.findOne({
+      where: {
+        serviceId,
+      },
+    });
     // 初始化成功后, 初始化次数加1
     if (status === SERVICE_STATUS.UN_BUILD) {
       update.initTimes = service.initTimes + 1;
@@ -382,7 +383,11 @@ export class ServicesService {
     if (status === SERVICE_STATUS.BUILT) {
       update.builtTimes = service.builtTimes + 1;
     }
-    await this.infoRepository.update(serviceId, update);
+    await this.infoRepository.update(update, {
+      where: {
+        serviceId,
+      },
+    });
     // 推送消息到前端
     this.io.sendMessage(WEBSOCKET_EVENT_SERVICE_UPDATE, {
       serviceId,
@@ -401,8 +406,10 @@ export class ServicesService {
    */
   private async getServiceById(id: number) {
     const service = await this.infoRepository.findOne({
-      id,
-      isDelete: false,
+      where: {
+        id,
+        isDelete: false,
+      },
     });
     if (!service) {
       throw new ApiException({

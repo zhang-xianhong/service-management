@@ -1,21 +1,36 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
-import { Repository, Connection } from 'typeorm';
-import { InjectRepository } from '@nestjs/typeorm';
-import { UsersEntity } from './users.entity';
+import { User } from './users.entity';
 import { ApiException } from '../../shared/utils/api.exception';
 import { CommonCodes, UserCodes } from '../../shared/constants/code';
 import { genPassword, validPassword } from '../../shared/utils/password';
 
+
+// import { UserDto } from './dto/user.dto';
+import { PlainObject } from 'src/shared/pipes/query.pipe';
+import { Op } from 'sequelize';
+import { InjectModel } from '@nestjs/sequelize';
 @Injectable()
 export class UsersService {
-  constructor(
-    @InjectRepository(UsersEntity)
-    private readonly usersRepository: Repository<UsersEntity>,
-    private connection: Connection,
-  ) {}
+  constructor(@InjectModel(User)
+  private usersRepository: typeof User) { }
 
-  async findAll() {
-    return await this.usersRepository.find({ select: ['username', 'id'] });
+  async findAll(query) {
+    const where: PlainObject = {
+      isDelete: false,
+    };
+    if (query.classification) {
+      where.classification = query.classification;
+    }
+    if (query.tags) {
+      where.tags = query.tags;
+    }
+    if (query.keyword) {
+      where.username = { [Op.like]: `%${query.keyword}%` };
+    }
+    const { conditions = {} } = query;
+    conditions.where = where;
+    const data = await this.usersRepository.findAndCountAll<User>(conditions);
+    return data;
   }
 
   async findBy(where: object) {
@@ -44,11 +59,12 @@ export class UsersService {
         message: '该用户名已被注册',
       });
     }
+
     const saveData = { ...data };
     const { hash, salt } = genPassword(password);
     saveData.hash = hash;
     saveData.salt = salt;
-    const res = await this.usersRepository.save(saveData);
+    const res = await this.usersRepository.create(saveData);
     return {
       id: res.id,
     };

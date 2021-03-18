@@ -1,6 +1,5 @@
 // 支持的数据类型，Java那边会根据type和length字段自动解析为数据库数据类型
-export type FIELD_TYPES = 'Integer' | 'Long' | 'Float' | 'Double' | 'Boolean' | 'String' | 'java.util.Date';
-export enum ENUM_FIELD_TYPES {
+export enum FIELD_TYPES {
   INTEGER = 'Integer',
   LONG = 'Long',
   FLOAT = 'Float',
@@ -24,7 +23,7 @@ export interface FIELD_TYPE {
 export const SYSTEM_FIELD_TYPES: FIELD_TYPE[] = [
   {
     id: '0',
-    type: 'Long',
+    type: FIELD_TYPES.LONG,
     length: 20,
     name: 'UUID',
     description: '主键ID',

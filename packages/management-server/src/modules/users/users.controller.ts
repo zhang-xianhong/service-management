@@ -32,11 +32,10 @@ export class UsersController {
 
   @Get()
   async findAll(@Query(new QueryPipe()) query: SearchQuery) {
-    const list = await this.usersService.findAll();
+    const { count, rows } = await this.usersService.findAll(query);
     return {
-      list,
-      count: 0,
-      query,
+      list: rows,
+      total: count,
     };
   }
 

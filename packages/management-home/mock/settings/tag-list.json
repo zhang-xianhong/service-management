@@ -1,0 +1,19 @@
+{
+  "code": 0,
+  "data": {
+    "count": 1,
+    "rows": [{
+      "id": "1",
+      "createTime": "2021-03-05T06:42:35.000Z",
+      "updateTime": "2021-03-05T06:42:35.000Z",
+      "createUser": null,
+      "updateUser": null,
+      "name": "项目结构配置",
+      "description": "项目结构配置",
+      "cloneBy": ""
+    }]
+  },
+  "message": "successful",
+  "httpStatus": 200,
+  "timestamp": 1614926751860
+}

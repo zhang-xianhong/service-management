@@ -1,26 +1,23 @@
 import { HttpStatus, Inject, Injectable, Logger, LoggerService } from '@nestjs/common';
-import { Repository, Connection, Not, ILike, In } from 'typeorm';
-import { InjectRepository } from '@nestjs/typeorm';
 import { ApiException } from '../../shared/utils/api.exception';
 import { CommonCodes } from '../../shared/constants/code';
-import { ModelsInfoEntity } from './models-info.entity';
-import { ModelsFieldsEntity } from './models-fields.entity';
+import { ModelsInfoModel } from './models-info.model';
+import { ModelsFieldsModel } from './models-fields.model';
 import { PlainObject } from 'src/shared/pipes/query.pipe';
-import { DataTypesEntity } from '../settings/settings-data-types.entity';
+import { DataTypesModel } from '../settings/settings-data-types.model';
 import { FIELD_TYPE, SYSTEM_FIELD_TYPES } from 'src/shared/constants/field-types';
+import { InjectModel } from '@nestjs/sequelize';
+import { Op, Sequelize } from 'sequelize';
 @Injectable()
 export class ModelsService {
   constructor(
     @Inject(Logger)
     private readonly logger: LoggerService,
-    @InjectRepository(ModelsInfoEntity)
-    private readonly infoRepository: Repository<ModelsInfoEntity>,
-    @InjectRepository(ModelsFieldsEntity)
-    private readonly fieldsRepository: Repository<ModelsFieldsEntity>,
-    @InjectRepository(DataTypesEntity)
-    private readonly dataTypesEntity: Repository<DataTypesEntity>,
-    private connection: Connection,
-  ) {}
+    private sequelize: Sequelize,
+    @InjectModel(ModelsInfoModel) private readonly infoRepository: typeof ModelsInfoModel,
+    @InjectModel(ModelsFieldsModel) private readonly fieldsRepository: typeof ModelsFieldsModel,
+    @InjectModel(DataTypesModel) private readonly dataTypesRepository: typeof DataTypesModel,
+  ) { }
 
   /**
    * 获取全部
@@ -35,10 +32,14 @@ export class ModelsService {
       where.classification = query.classification;
     }
     if (query.tags) {
-      where.tags = ILike(`%${query.tags}%`);
+      where.tags = {
+        [Op.like]: `%${query.tags}%`,
+      };
     }
     if (query.keyword) {
-      where.name = ILike(`%${query.keyword}%`);
+      where.name = {
+        [Op.like]: `%${query.keyword}%`,
+      };
     }
     const { conditions = {} } = query;
     conditions.where = where;
@@ -47,9 +48,9 @@ export class ModelsService {
     }
     if (!getTotal) {
       conditions.select = ['id', 'name', 'description'];
-      return await this.infoRepository.find(conditions);
+      return await this.infoRepository.findAll(conditions);
     }
-    return await this.infoRepository.findAndCount(conditions);
+    return await this.infoRepository.findAndCountAll(conditions);
   }
 
   /**
@@ -62,7 +63,10 @@ export class ModelsService {
         id,
         isDelete: false,
       },
-      relations: ['fields'],
+      include: [{
+        model: ModelsFieldsModel,
+        attributes: { exclude: ['isDelete'] },
+      }],
     });
     if (!model) {
       throw new ApiException({
@@ -93,31 +97,31 @@ export class ModelsService {
         message: '模型名称已存在',
       });
     }
-    const queryRunner = this.connection.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
+    const transaction = await this.sequelize.transaction();
     try {
       delete modelData.id;
-      const model: any = await queryRunner.manager.save(this.infoRepository.create(modelData));
+      const model: any = await this.infoRepository.create(modelData, {
+        transaction,
+      });
       const fieldsEntities = await this.createFieldsEntities(fields, model.id);
       // 生成新的fields
       if (fieldsEntities) {
-        await queryRunner.manager.save(fieldsEntities);
+        await this.fieldsRepository.bulkCreate(fieldsEntities, {
+          transaction,
+        });
       }
-      await queryRunner.commitTransaction();
+      await transaction.commit();
       return {
         modelId: model.id,
       };
     } catch (error) {
       this.logger.error(error);
-      await queryRunner.rollbackTransaction();
+      await transaction.rollback();
       throw new ApiException({
-        code: CommonCodes.CREATED_FAIL,
-        message: '创建失败',
+        code: CommonCodes.UPDATED_FAIL,
+        message: '新增失败',
         stack: error.stack,
       });
-    } finally {
-      await queryRunner.release();
     }
   }
 
@@ -133,7 +137,7 @@ export class ModelsService {
       where: {
         name: modelData.name,
         isDelete: false,
-        id: Not(id),
+        id: { [Op.not]: id },
       },
     });
     if (nameExisted) {
@@ -143,41 +147,43 @@ export class ModelsService {
       });
     }
 
-    const queryRunner = this.connection.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
-
+    const transaction = await this.sequelize.transaction();
     try {
       // 删除原有的fields
-      await queryRunner.manager.delete(ModelsFieldsEntity, {
-        modelId: id,
+      await this.fieldsRepository.destroy({
+        where: { modelId: id },
+        transaction,
       });
       // 更新model
-      await queryRunner.manager.update(ModelsInfoEntity, id, {
+      await this.fieldsRepository.update({
         ...modelData,
         updateTime: new Date(),
         version: currentModel.version + 1,
+      }, {
+        where: {
+          id,
+        },
+        transaction,
       });
       const fieldsEntities = await this.createFieldsEntities(fields, id);
-      console.log(fieldsEntities);
       // 生成新的fields
       if (fieldsEntities) {
-        await queryRunner.manager.save(fieldsEntities);
+        await this.fieldsRepository.bulkCreate(fieldsEntities, {
+          transaction,
+        });
       }
-      await queryRunner.commitTransaction();
+      await transaction.commit();
       return {
         modelId: id,
       };
     } catch (error) {
       this.logger.error(error);
-      await queryRunner.rollbackTransaction();
+      await transaction.rollback();
       throw new ApiException({
         code: CommonCodes.UPDATED_FAIL,
         message: '更新失败',
         stack: error.stack,
       });
-    } finally {
-      await queryRunner.release();
     }
   }
 
@@ -187,36 +193,43 @@ export class ModelsService {
    * @param id
    */
   async deleteModel(deleteIds: string[]) {
-    const queryRunner = this.connection.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
+    const transaction = await this.sequelize.transaction();
     try {
       // 将关联fields设置为删除状态
-      await queryRunner.manager.update(ModelsFieldsEntity, {
-        modelId: In(deleteIds),
-      }, {
+      await this.fieldsRepository.update({
         isDelete: true,
+      }, {
+        where: {
+          modelId: {
+            [Op.in]: deleteIds,
+          },
+        },
+        transaction,
       });
+
       // 更新model为删除状态
-      await queryRunner.manager.update(ModelsInfoEntity, {
-        id: In(deleteIds),
-      }, {
+      await this.infoRepository.update({
         isDelete: true,
+      }, {
+        where: {
+          id: {
+            [Op.in]: deleteIds,
+          },
+        },
+        transaction,
       });
-      await queryRunner.commitTransaction();
+      await transaction.commit();
       return {
         deleted: deleteIds,
       };
     } catch (error) {
       this.logger.error(error);
-      await queryRunner.rollbackTransaction();
+      await transaction.rollback();
       throw new ApiException({
         code: CommonCodes.DELETED_FAIL,
         message: '删除失败',
         stack: error.stack,
       });
-    } finally {
-      await queryRunner.release();
     }
   }
 
@@ -244,8 +257,10 @@ export class ModelsService {
    * 获取字段类型列表
    */
   private async getDataTypes() {
-    const dataTypes = await this.dataTypesEntity.find({
-      isDelete: false,
+    const dataTypes = await this.dataTypesRepository.findAll({
+      where: {
+        isDelete: false,
+      },
     });
     return [...SYSTEM_FIELD_TYPES, ...dataTypes];
   }
@@ -258,7 +273,7 @@ export class ModelsService {
   private async createFieldsEntities(fields: Array<unknown>, modelId: number) {
     const fieldTypes = (await this.getDataTypes()) as FIELD_TYPE[];
     if (fields && Array.isArray(fields)) {
-      const fieldsEntities = fields.map((field) => {
+      const fieldsEntities = fields.map((field: any) => {
         const newField = { ...field };
         delete newField.id;
         const { typeId } = newField;
@@ -270,7 +285,7 @@ export class ModelsService {
           });
         }
         const { type, extra, length, isKey } = fieldType;
-        return this.fieldsRepository.create({
+        return {
           ...newField,
           type,
           extra,
@@ -278,7 +293,7 @@ export class ModelsService {
           isKey,
           typeId,
           modelId,
-        });
+        };
       });
       return fieldsEntities;
     }

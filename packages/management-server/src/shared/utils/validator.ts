@@ -12,6 +12,13 @@ export const isNull = (value: unknown): boolean => value === null;
 
 
 /**
+ * 是否定义
+ * @param value
+ * @returns
+ */
+export const isDefined = (value: unknown): boolean => !isUndefined(value) && !isNull(value);
+
+/**
  * 字符串是否为空
  * @param value
  * @param ignoreWhitespace

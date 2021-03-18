@@ -4,7 +4,8 @@ import { is, isEmpty, isNumeric } from '../../shared/utils/validator';
 import { CommonCodes } from '../../shared/constants/code';
 import { ModelsService } from './models.service';
 import { QueryPipe, SearchQuery } from '../../shared/pipes/query.pipe';
-import { REG_UPPER_CAMEL_CASE, REG_LOWER_CAMEL_CASE } from '../../shared/utils/rules';
+import { REG_LOWER_CAMEL_CASE } from '../../shared/utils/rules';
+import { ModelInfoDto } from './dto/model-info.dto';
 @Controller('models')
 
 export class ModelsController {
@@ -16,11 +17,7 @@ export class ModelsController {
    */
   @Get()
   async findAll(@Query(new QueryPipe()) query: SearchQuery) {
-    const [list, total] = await this.modelService.findAll(query);
-    return {
-      list,
-      total,
-    };
+    return  await this.modelService.findAll(query);
   }
 
   /**
@@ -48,7 +45,7 @@ export class ModelsController {
    * @param postData
    */
   @Post()
-  async create(@Body() postData) {
+  async create(@Body() postData: ModelInfoDto) {
     this.validatePostData(postData);
     return await this.modelService.create(this.getPostData(postData));
   }
@@ -74,7 +71,7 @@ export class ModelsController {
    * @param postData
    */
   @Post(':id')
-  async updateModel(@Body() postData, @Param() { id }) {
+  async updateModel(@Body() postData: ModelInfoDto, @Param() { id }) {
     this.validatePostData(postData);
     return await this.modelService.updateModel(id, this.getPostData(postData));
   }
@@ -84,21 +81,7 @@ export class ModelsController {
    * @param data
    */
   private validatePostData(data) {
-    const { name, description, fields } = data;
-    if (isEmpty(name) || !is(name, REG_UPPER_CAMEL_CASE)) {
-      throw new ApiException({
-        code: CommonCodes.PARAMETER_INVALID,
-        message: '无效的模型名称',
-      });
-    }
-
-    if (isEmpty(description)) {
-      throw new ApiException({
-        code: CommonCodes.PARAMETER_INVALID,
-        message: '无效的模型描述',
-      });
-    }
-
+    const { fields } = data;
     if (fields && Array.isArray(fields) && fields.length > 0) {
       const names = [];
       const isInvalid = fields.some((field) => {
