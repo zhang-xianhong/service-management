@@ -90,6 +90,13 @@ export class ServicesInfoModel extends BaseModel  {
   })
   owner: string;
 
+  // 服务详情
+  @Column({
+    type: DataType.STRING,
+    defaultValue: null,
+  })
+  detail: string;
+
   // 是否纯继承
   @Column({
     type: DataType.TINYINT,

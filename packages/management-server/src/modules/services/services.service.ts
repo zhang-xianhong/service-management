@@ -13,6 +13,9 @@ import { SERVICE_STATUS } from './service-status';
 import { ErrorTypes } from 'src/shared/constants/error';
 import { SocketGateway } from 'src/shared/gateway/socket.gateway';
 import { WEBSOCKET_EVENT_SERVICE_UPDATE } from 'src/shared/constants/websocket-events';
+import { ServiceDependencyDto } from './dto/service-dependency.dto';
+import { ServiceInfoDto } from './dto/service-info.dto';
+import { ServiceApiDto } from './dto/service-api.dto';
 @Injectable()
 export class ServicesService {
   constructor(
@@ -82,16 +85,88 @@ export class ServicesService {
    * @param data
    * @returns
    */
-  async create(data: any) {
-    const { apis, dependencies, ...serviceData } = data;
-    if (isEmpty(serviceData.name)) {
+  async createService(data: ServiceInfoDto) {
+    const serviceData = data;
+    const { name } = data;
+    if (isEmpty(name)) {
       throw new ApiException({
         code: ServiceCodes.NAME_INVALID,
         message: '无效的服务名称',
       });
     }
-    if (apis && Array.isArray(apis)) {
-      const isInvalid = apis.some((api) => {
+    // 验证是否有同名服务
+    const nameExisted = await this.infoRepository.findOne({
+      where: {
+        name,
+        isDelete: false,
+      },
+    });
+    if (nameExisted) {
+      throw new ApiException({
+        code: CommonCodes.DATA_EXISTED,
+        message: '服务名称已存在',
+      });
+    }
+
+    // 获取最大端口号服务
+    const [serviceMaxPort] = await this.infoRepository.findAll({
+      where: {
+        isDelete: false,
+      },
+      order: [['serverPort', 'DESC']],
+    });
+
+    try {
+      serviceData.serverPort = Number(serviceMaxPort?.serverPort) + 1 || 8080;
+      const service: any = await this.infoRepository.create(serviceData);
+      return {
+        serviceId: service.id,
+      };
+    } catch (error) {
+      this.logger.error(error);
+      throw new ApiException({
+        code: CommonCodes.CREATED_FAIL,
+        message: '服务创建失败',
+      });
+    }
+  }
+  /**
+   * 添加服务依赖
+   * @param serviceId
+   * @param data
+   */
+  async addServiceDependencies(serviceId: number, data: ServiceDependencyDto[]) {
+    try {
+      if (data && Array.isArray(data)) {
+        await this.dependencyRepository.destroy({
+          where: {
+            serviceId,
+          },
+        });
+        const dependenciesEntities = data.map(dependency => ({
+          ...dependency,
+          dependencyId: dependency.dependencyId,
+          serviceId,
+        }));
+        await this.dependencyRepository.bulkCreate(dependenciesEntities);
+      }
+    } catch (error) {
+      this.logger.error(error);
+      throw new ApiException({
+        code: CommonCodes.CREATED_FAIL,
+        message: '保存服务依赖失败',
+      });
+    }
+  }
+  /**
+   * 添加/更新服务接口
+   * @param serviceId
+   * @param data
+   * @returns
+   */
+  async addServiceApis(serviceId: number, data: ServiceApiDto[]) {
+    if (data && Array.isArray(data)) {
+      const isInvalid = data.some((api) => {
         if (isEmpty(api.name)) {
           return true;
         }
@@ -104,55 +179,25 @@ export class ServicesService {
         });
       }
     }
-    // 验证是否有同名服务
-    const nameExisted = await this.infoRepository.findOne({
-      where: {
-        name: serviceData.name,
-        isDelete: false,
-      },
-    });
 
-    // 获取最大端口号服务
-    const [serviceMaxPort] = await this.infoRepository.findAll({
-      where: {
-        isDelete: false,
-      },
-      order: [['serverPort', 'DESC']],
-    });
-    if (nameExisted) {
-      throw new ApiException({
-        code: CommonCodes.DATA_EXISTED,
-        message: '服务名称已存在',
-      });
-    }
-    const transaction = await this.sequelize.transaction();
     try {
-      serviceData.serverPort = Number(serviceMaxPort?.serverPort) + 1 || 8080;
-      const service: any = await this.infoRepository.create(serviceData, { transaction });
-      if (apis && Array.isArray(apis)) {
-        const apisEntities = apis.map(api => ({
+      if (data && Array.isArray(data)) {
+        await this.apiRepository.destroy<ServicesApiModel>({
+          where: {
+            serviceId,
+          },
+        });
+        const apisEntities = data.map(api => ({
           ...api,
-          serviceId: service.id,
+          serviceId,
         }));
-        await this.apiRepository.bulkCreate(apisEntities, { transaction });
+        await this.apiRepository.bulkCreate(apisEntities);
       }
-
-      if (dependencies && Array.isArray(dependencies)) {
-        const dependenciesEntities = dependencies.map(dependency => ({
-          ...dependency,
-          dependencyId: dependency.dependencyId,
-          serviceId: service.id,
-        }));
-        await this.dependencyRepository.bulkCreate(dependenciesEntities, { transaction });
-      }
-      await transaction.commit();
     } catch (error) {
       this.logger.error(error);
-      // 一旦发生错误，事务会回滚
-      await transaction.rollback();
       throw new ApiException({
         code: CommonCodes.CREATED_FAIL,
-        message: '服务创建失败',
+        message: '保存服务接口失败',
       });
     }
   }
@@ -161,12 +206,11 @@ export class ServicesService {
    *
    * @param data 更新服务
    */
-  async update(id: number, data: any) {
-    const { apis, dependencies, ...serviceData } = data;
+  async updateService(id: number, data: any) {
     // 验证是否有同名模块
     const nameExisted = await this.infoRepository.findOne<ServicesInfoModel>({
       where: {
-        name: serviceData.name,
+        name: data.name,
         isDelete: false,
         id: [Op.notIn[id]],
       },
@@ -177,42 +221,14 @@ export class ServicesService {
         message: '模型名称已存在',
       });
     }
-    const transaction = await this.sequelize.transaction();
     try {
-      // 更新serviceApi信息
-      if (apis && Array.isArray(apis)) {
-        await this.apiRepository.destroy<ServicesApiModel>({
-          where: {
-            serviceId: id,
-          },
-          transaction,
-        });
-        const apisEntities = apis.map(api => (
-          {
-            ...api,
-            serviceId: id,
-          }
-        ));
-        await this.apiRepository.bulkCreate(apisEntities, { transaction });
-      }
-
-      if (dependencies && Array.isArray(dependencies)) {
-        await this.dependencyRepository.destroy({
-          where: {
-            serviceId: id,
-          },
-        });
-        const dependenciesEntities = dependencies.map(dependency => ({
-          ...dependency,
-          dependencyId: dependency.dependencyId,
-          serviceId: id,
-        }));
-        await this.dependencyRepository.bulkCreate(dependenciesEntities, { transaction });
-      }
-      await transaction.commit();
+      await this.infoRepository.update(data, {
+        where: { id },
+      });
+      return {
+        serviceId: id,
+      };
     } catch (err) {
-      // 一旦发生错误，事务会回滚
-      await transaction.rollback();
       throw new ApiException({
         code: CommonCodes.UPDATED_FAIL,
         message: '服务更新失败',
@@ -285,7 +301,7 @@ export class ServicesService {
       const { data }: any = await this.httpService.get(`${INIT_SERVICE_URL}${id}`).toPromise();
       if (data?.code === 0) {
         const { data: { sshURI } } = data;
-        await this.update(id, {
+        await this.updateService(id, {
           deposit: `${SERVICE_SSHURI}${sshURI}`,
           status: SERVICE_STATUS.INITIALIZING,
         });

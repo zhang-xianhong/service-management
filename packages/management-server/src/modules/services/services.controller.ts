@@ -3,6 +3,8 @@ import { CommonCodes } from 'src/shared/constants/code';
 import { QueryPipe, SearchQuery } from 'src/shared/pipes/query.pipe';
 import { ApiException } from 'src/shared/utils/api.exception';
 import { isEmpty } from 'src/shared/utils/validator';
+import { ServiceApiDto } from './dto/service-api.dto';
+import { ServiceDependencyDto } from './dto/service-dependency.dto';
 import { ServiceInfoDto } from './dto/service-info.dto';
 import { ServicesService } from './services.service';
 @Controller('services')
@@ -29,7 +31,19 @@ export class ServicesController {
   // 新增服务
   @Post()
   async create(@Body() postData: ServiceInfoDto) {
-    return await this.service.create(postData);
+    return await this.service.createService(postData);
+  }
+
+  // 新增服务接口
+  @Post('/apis/:id')
+  async createApi(@Param() { id }, @Body() postData: ServiceApiDto[]) {
+    return await this.service.addServiceApis(id, postData);
+  }
+
+  // 新增服务依赖
+  @Post('/dependencies/:id')
+  async createDependency(@Param() { id }, @Body() postData: ServiceDependencyDto[]) {
+    return await this.service.addServiceDependencies(id, postData);
   }
 
   // 初始化服务
@@ -63,6 +77,6 @@ export class ServicesController {
   // 更新服务
   @Post('/:id')
   async update(@Param() { id }, @Body() body) {
-    return await this.service.update(id, body);
+    return await this.service.updateService(id, body);
   }
 }
