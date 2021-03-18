@@ -1,0 +1,19 @@
+{
+    "code": 0,
+    "data": {
+        "id": 1,
+        "createTime": "2021-03-16T09:13:00.000Z",
+        "updateTime": "2021-03-16T08:57:37.000Z",
+        "createUser": null,
+        "updateUser": null,
+        "isDelete": false,
+        "type": "Float",
+        "length": 0,
+        "name": "UUID",
+        "description": null,
+        "isSystem": true
+    },
+    "message": "successful",
+    "httpStatus": 200,
+    "timestamp": 1615886887528
+}

@@ -63,7 +63,7 @@ const routes: Array<RouteRecordRaw> = [
     children: [
       {
         path: 'classification',
-        component: () => import(/* webpackChunkName: "conf" */ '@/views/conf-management/Classification.vue'),
+        component: () => import(/* webpackChunkName: "classification" */ '@/views/conf-management/Classification.vue'),
         name: 'Classification',
         meta: {
           title: '分类信息',
@@ -73,11 +73,32 @@ const routes: Array<RouteRecordRaw> = [
       },
       {
         path: 'tag',
-        component: () => import(/* webpackChunkName: "conf" */ '@/views/conf-management/Tag.vue'),
+        component: () => import(/* webpackChunkName: "tag" */ '@/views/conf-management/Tag.vue'),
         name: 'Tag',
         meta: {
           title: '标签信息',
           icon: 'el-icon-eleme',
+          isRootLevel: false,
+        },
+      },
+      {
+        path: 'datatype',
+        component: () => import(/* webpackChunkName: "datatype" */ '@/views/conf-management/DataType.vue'),
+        name: 'DataType',
+        meta: {
+          title: '数据类型',
+          icon: 'el-icon-eleme',
+          isRootLevel: false,
+        },
+      },
+      {
+        path: 'datatype/edit/:id',
+        component: () => import(/* webpackChunkName: "datatype-edit" */ '@/views/conf-management/DataTypeEdit.vue'),
+        name: 'DataTypeEdit',
+        meta: {
+          title: '数据类型编辑',
+          icon: 'el-icon-eleme',
+          hidden: true,
           isRootLevel: false,
         },
       },
