@@ -93,6 +93,7 @@ export class ModelsService {
       },
       include: [{
         model: ModelsFieldsModel,
+        required: false,
         where: {
           isDelete: false,
         },
