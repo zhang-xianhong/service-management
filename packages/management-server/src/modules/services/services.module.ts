@@ -6,9 +6,11 @@ import { ServicesInfoModel } from './service-info.model';
 import { ServicesController } from './services.controller';
 import { ServicesService } from './services.service';
 import { SocketGateway } from 'src/shared/gateway/socket.gateway';
+import { ModelsModule } from '../models/models.module';
 
 @Module({
-  imports: [SequelizeModule.forFeature([ServicesInfoModel, ServicesApiModel, ServicesDependencyModel]), HttpModule],
+  imports: [SequelizeModule.forFeature([ServicesInfoModel, ServicesApiModel, ServicesDependencyModel]),
+    HttpModule, ModelsModule],
   controllers: [ServicesController],
   providers: [ServicesService, SocketGateway, Logger],
   exports: [ServicesService],

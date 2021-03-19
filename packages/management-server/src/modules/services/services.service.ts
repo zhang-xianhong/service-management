@@ -16,6 +16,9 @@ import { WEBSOCKET_EVENT_SERVICE_UPDATE } from 'src/shared/constants/websocket-e
 import { ServiceDependencyDto } from './dto/service-dependency.dto';
 import { ServiceInfoDto } from './dto/service-info.dto';
 import { ServiceApiDto } from './dto/service-api.dto';
+import { ModelsService } from '../models/models.service';
+import { Created, Deleted, Updated, BulkCreated, Details, Rows, RowsAndCount } from 'src/shared/types/response';
+import { ModelsInfoModel } from '../models/models-info.model';
 @Injectable()
 export class ServicesService {
   constructor(
@@ -23,17 +26,18 @@ export class ServicesService {
     private readonly logger: LoggerService,
     private readonly io: SocketGateway,
     private sequelize: Sequelize,
+    private httpService: HttpService,
+    private modelsService: ModelsService,
     @InjectModel(ServicesInfoModel) private readonly infoRepository: typeof ServicesInfoModel,
     @InjectModel(ServicesApiModel) private readonly apiRepository: typeof ServicesApiModel,
     @InjectModel(ServicesDependencyModel) private readonly dependencyRepository: typeof ServicesDependencyModel,
-    private httpService: HttpService,
   ) { }
 
   /**
    * 获取服务列表
    * @param query
    */
-  async findAll(query: any) {
+  async findAll(query: any): Promise<RowsAndCount<ServicesInfoModel>> {
     const where: PlainObject = {
       isDelete: false,
     };
@@ -48,24 +52,25 @@ export class ServicesService {
     }
     const { conditions = {} } = query;
     conditions.where = where;
-    const list = this.infoRepository.findAndCountAll(conditions);
-    return list;
+    return await this.infoRepository.findAndCountAll(conditions);
   }
 
   /**
    * 通过ID获取服务详情
    * @param id
    */
-  async findById(id: number) {
+  async findById(id: number): Promise<Details<ServicesInfoModel>> {
     const service = await this.infoRepository.findOne({
       where: {
         id,
       },
       include: [{
         model: ServicesApiModel,
+        required: false,
         attributes: { exclude: ['isDelete'] },
       }, {
         model: ServicesDependencyModel,
+        required: false,
         attributes: { exclude: ['isDelete'] },
       }],
     });
@@ -79,11 +84,19 @@ export class ServicesService {
   }
 
   /**
+   * 根据服务id获取服务模型数据
+   * @param serviceId
+   */
+  async getModelsByServiceId(serviceId: number): Promise<Rows<ModelsInfoModel>> {
+    return await this.modelsService.findModelsByServiceId(serviceId);
+  }
+
+  /**
    * 创建服务
    * @param data
    * @returns
    */
-  async createService(data: ServiceInfoDto) {
+  async createService(data: ServiceInfoDto): Promise<Created> {
     const serviceData = data;
     const { name } = data;
     if (isEmpty(name)) {
@@ -116,9 +129,9 @@ export class ServicesService {
 
     try {
       serviceData.serverPort = Number(serviceMaxPort?.serverPort) + 1 || 8080;
-      const service: any = await this.infoRepository.create(serviceData);
+      const service = await this.infoRepository.create(serviceData);
       return {
-        serviceId: service.id,
+        id: service.id,
       };
     } catch (error) {
       this.logger.error(error);
@@ -133,21 +146,22 @@ export class ServicesService {
    * @param serviceId
    * @param data
    */
-  async addServiceDependencies(serviceId: number, data: ServiceDependencyDto[]) {
+  async addServiceDependencies(serviceId: number, data: ServiceDependencyDto[]): Promise<BulkCreated> {
     try {
-      if (data && Array.isArray(data)) {
-        await this.dependencyRepository.destroy({
-          where: {
-            serviceId,
-          },
-        });
-        const dependenciesEntities = data.map(dependency => ({
-          ...dependency,
-          dependencyId: dependency.dependencyId,
+      await this.dependencyRepository.destroy({
+        where: {
           serviceId,
-        }));
-        await this.dependencyRepository.bulkCreate(dependenciesEntities);
-      }
+        },
+      });
+      const dependenciesEntities = data.map(dependency => ({
+        ...dependency,
+        dependencyId: dependency.dependencyId,
+        serviceId,
+      }));
+      const res = await this.dependencyRepository.bulkCreate(dependenciesEntities);
+      return {
+        ids: res.map(item => item.id),
+      };
     } catch (error) {
       this.logger.error(error);
       throw new ApiException({
@@ -162,35 +176,21 @@ export class ServicesService {
    * @param data
    * @returns
    */
-  async addServiceApis(serviceId: number, data: ServiceApiDto[]) {
-    if (data && Array.isArray(data)) {
-      const isInvalid = data.some((api) => {
-        if (isEmpty(api.name)) {
-          return true;
-        }
-        return false;
-      });
-      if (isInvalid) {
-        throw new ApiException({
-          code: ServiceCodes.NAME_INVALID,
-          message: '无效的接口名',
-        });
-      }
-    }
-
+  async addServiceApis(serviceId: number, data: ServiceApiDto[]): Promise<BulkCreated> {
     try {
-      if (data && Array.isArray(data)) {
-        await this.apiRepository.destroy<ServicesApiModel>({
-          where: {
-            serviceId,
-          },
-        });
-        const apisEntities = data.map(api => ({
-          ...api,
+      await this.apiRepository.destroy<ServicesApiModel>({
+        where: {
           serviceId,
-        }));
-        await this.apiRepository.bulkCreate(apisEntities);
-      }
+        },
+      });
+      const apisEntities = data.map(api => ({
+        ...api,
+        serviceId,
+      }));
+      const res =  await this.apiRepository.bulkCreate(apisEntities);
+      return {
+        ids: res.map(item => item.id),
+      };
     } catch (error) {
       this.logger.error(error);
       throw new ApiException({
@@ -204,7 +204,7 @@ export class ServicesService {
    *
    * @param data 更新服务
    */
-  async updateService(id: number, data: any) {
+  async updateService(id: number, data: any): Promise<Updated> {
     // 验证是否有同名模块
     const nameExisted = await this.infoRepository.findOne<ServicesInfoModel>({
       where: {
@@ -224,7 +224,7 @@ export class ServicesService {
         where: { id },
       });
       return {
-        serviceId: id,
+        id,
       };
     } catch (err) {
       throw new ApiException({
@@ -238,10 +238,10 @@ export class ServicesService {
    * 删除服务
    * @param id
    */
-  async delete(ids: string[]) {
+  async delete(ids: number[]): Promise<Deleted> {
     const transaction = await this.sequelize.transaction();
     try {
-      const deleteIds = ids.filter(id => Number(id));
+      const deleteIds: number[] = ids.filter(id => Number(id));
       // 更新info表数据，isDelete置为true
       await this.infoRepository.update({
         isDelete: true,
@@ -268,9 +268,11 @@ export class ServicesService {
         },
         transaction,
       });
+      // 删除服务相关模型信息
+      await Promise.all(ids.map(id => this.modelsService.deleteModelsByServiceId(Number(id), transaction)));
       await transaction.commit();
       return {
-        id: deleteIds,
+        ids: deleteIds,
       };
     } catch (err) {
       // 一旦发生错误，事务会回滚
@@ -418,7 +420,7 @@ export class ServicesService {
    * @param id
    * @returns
    */
-  private async getServiceById(id: number) {
+  private async getServiceById(id: number): Promise<Details<ServicesInfoModel>> {
     const service = await this.infoRepository.findOne({
       where: {
         id,

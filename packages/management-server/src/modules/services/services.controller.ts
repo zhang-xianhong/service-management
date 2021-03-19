@@ -18,10 +18,17 @@ export class ServicesController {
   }
 
   // 获取服务详情
+  @Get('/models')
+  async findModelsByServiceId(@Query() { serviceId }) {
+    return await this.service.getModelsByServiceId(Number(serviceId));
+  }
+
+  // 获取服务详情
   @Get('/:id')
   async findOneById(@Param() { id }) {
     return await this.service.findById(Number(id));
   }
+
   // 删除接口
   @Post('/delete')
   async deleteData(@Body() { ids }) {
