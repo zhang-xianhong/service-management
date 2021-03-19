@@ -29,7 +29,7 @@ export class ServicesController {
     return await this.service.findById(Number(id));
   }
 
-  // 删除接口
+  // 删除服务接口
   @Post('/delete')
   async deleteData(@Body() { ids }) {
     return await this.service.delete(ids);
@@ -41,13 +41,13 @@ export class ServicesController {
     return await this.service.createService(postData);
   }
 
-  // 新增服务接口
+  // 新增/更新服务接口
   @Post('/apis/:id')
   async createApi(@Param() { id }, @Body() postData: ServiceApiDto[]) {
     return await this.service.addServiceApis(id, postData);
   }
 
-  // 新增服务依赖
+  // 新增/更新服务依赖
   @Post('/dependencies/:id')
   async createDependency(@Param() { id }, @Body() postData: ServiceDependencyDto[]) {
     return await this.service.addServiceDependencies(id, postData);

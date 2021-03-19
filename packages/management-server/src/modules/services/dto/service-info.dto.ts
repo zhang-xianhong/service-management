@@ -10,15 +10,19 @@ export class ServiceInfoDto {
   description: string;
 
   @IsString()
+  @IsOptional()
   owner: string;
 
   @IsString()
+  @IsOptional()
   classification: string;
 
   @IsString()
+  @IsOptional()
   tag: string;
 
   @IsString()
+  @IsOptional()
   detail: string;
 
   @IsNumber()
