@@ -1,4 +1,7 @@
-export const getTreeArr = (obj) => {
+import { PlainObject } from '../pipes/query.pipe';
+import { Tree } from '../types/tree';
+
+export const getTreeArr = (obj: PlainObject): Tree[] => {
   if (!Array.isArray(obj.data)) {
     console.log('getTreeArr=>请传入数组');
     return [];

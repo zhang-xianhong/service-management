@@ -32,19 +32,19 @@ export class ModelsService {
    */
   async createdModel(postData: ModelInfoDto): Promise<Created> {
     const { name, serviceId } = postData;
-    const nameExisted = await this.infoRepository.findOne({
+    const existModel: ModelsInfoModel = await this.infoRepository.findOne({
       where: {
         name,
         isDelete: false,
       },
     });
-    if (nameExisted) {
+    if (existModel) {
       throw new ApiException({
         code: CommonCodes.DATA_EXISTED,
         message: `名称[${name}]已存在`,
       });
     }
-    const service = await this.serviceRepository.findOne({
+    const service: ServicesInfoModel = await this.serviceRepository.findOne({
       where: {
         id: serviceId,
         isDelete: false,
@@ -59,7 +59,7 @@ export class ModelsService {
     }
     const transaction = await this.sequelize.transaction();
     try {
-      const res = await this.infoRepository.create(postData, {
+      const res: ModelsInfoModel = await this.infoRepository.create(postData, {
         transaction,
       });
       // 生成默认字段
@@ -110,7 +110,7 @@ export class ModelsService {
    * @returns
    */
   async updateModel({ serviceId, ...postData }: ModelInfoDto, id: number): Promise<Updated> {
-    const nameExisted = await this.infoRepository.findOne({
+    const existModel: ModelsInfoModel = await this.infoRepository.findOne({
       where: {
         name: postData.name,
         isDelete: false,
@@ -119,7 +119,8 @@ export class ModelsService {
         },
       },
     });
-    if (nameExisted) {
+
+    if (existModel) {
       throw new ApiException({
         code: CommonCodes.DATA_EXISTED,
         message: `名称[${postData.name}]已存在`,
@@ -182,6 +183,7 @@ export class ModelsService {
     });
     return await Promise.all([deleteModels, deleteFields]);
   }
+
 
   /**
    * 删除模型(支持批量)
@@ -284,8 +286,8 @@ export class ModelsService {
    * @param modelId
    * @param transaction
    */
-  private async createModelDefaultFields(modelId: number, transaction?: sequelize.Transaction)  {
-    const defaultFields = await this.dataTypesRepository.findAll({
+  private async createModelDefaultFields(modelId: number, transaction?: sequelize.Transaction): Promise<void>  {
+    const defaultFields: DataTypesModel[] = await this.dataTypesRepository.findAll({
       where: {
         name: {
           [Op.in]: MODEL_DEFAULT_FIELDS_NAMES,
@@ -298,7 +300,7 @@ export class ModelsService {
       description: field.description,
       typeId: field.id,
     }));
-    const fieldsEntities = await this.createFieldsEntities(genFields, modelId, defaultFields);
+    const fieldsEntities: ModelsFieldsModel[] = await this.createFieldsEntities(genFields, modelId, defaultFields);
     await this.fieldsRepository.bulkCreate(fieldsEntities, {
       transaction,
     });
@@ -315,7 +317,7 @@ export class ModelsService {
   Promise<ModelsFieldsModel[]> {
     if (!fieldTypes) {
       // eslint-disable-next-line no-param-reassign
-      fieldTypes = await  this.getDataTypes();
+      fieldTypes = await this.getDataTypes();
     }
     const fieldsEntities = fields.map((field: any) => {
       const newField = { ...field };

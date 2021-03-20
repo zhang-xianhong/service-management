@@ -86,7 +86,7 @@ export class ModelsInfoModel extends BaseModel {
 
   // 相似度
   @Column({
-    type: 'float',
+    type: DataType.FLOAT,
     defaultValue: null,
   })
   similarity: number;
