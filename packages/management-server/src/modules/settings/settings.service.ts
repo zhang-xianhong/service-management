@@ -197,7 +197,7 @@ export class SettingsService {
         },
       ];
     }
-    const { conditions } = query;
+    const { conditions = {} } = query;
     conditions.where = where;
     if (!getTotal) {
       // 删除分页相关的字段

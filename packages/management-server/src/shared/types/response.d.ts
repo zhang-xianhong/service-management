@@ -3,7 +3,6 @@ export interface Created {
   id: number
 }
 
-
 export interface BulkCreated {
   ids: number[]
 }
