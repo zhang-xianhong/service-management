@@ -1,8 +1,8 @@
 {
   "code": 0,
   "data": {
-    "total": 3,
-    "list": [
+    "count": 3,
+    "rows": [
       {
         "id": "1",
         "name": "test 001",
