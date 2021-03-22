@@ -164,7 +164,7 @@ import {
   deleteServiceForList,
   getTagsForService,
   getClassifications,
-} from './service-data-utils';
+} from './utils/service-data-utils';
 import { addService } from '@/api/servers';
 
 export default defineComponent({
