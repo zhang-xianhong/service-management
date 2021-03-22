@@ -3,7 +3,7 @@ import { CommonCodes } from 'src/shared/constants/code';
 import { QueryPipe, SearchQuery } from 'src/shared/pipes/query.pipe';
 import { ApiException } from 'src/shared/utils/api.exception';
 import { isEmpty } from 'src/shared/utils/validator';
-import { ServiceApiDto } from './dto/service-api.dto';
+import { ServiceConfigDto } from './dto/service-config.dto';
 import { ServiceDependencyDto } from './dto/service-dependency.dto';
 import { ServiceInfoDto } from './dto/service-info.dto';
 import { ServicesService } from './services.service';
@@ -15,6 +15,12 @@ export class ServicesController {
   @Get('')
   async serviceList(@Query(new QueryPipe) query: SearchQuery) {
     return await this.service.findAll(query);
+  }
+
+  // 服务配置
+  @Post('/config')
+  async serviceConfig(@Body() body: ServiceConfigDto) {
+    return await this.service.addServiceConfig(body);
   }
 
   // 获取服务详情
@@ -42,13 +48,13 @@ export class ServicesController {
   }
 
   // 新增/更新服务接口
-  @Post('/apis/:id')
-  async createApi(@Param() { id }, @Body() postData: ServiceApiDto[]) {
-    return await this.service.addServiceApis(id, postData);
+  @Post('/:id/apis')
+  async createApi(@Param() { id }, @Body() { apis }) {
+    return await this.service.addServiceApis(id, apis);
   }
 
   // 新增/更新服务依赖
-  @Post('/dependencies/:id')
+  @Post('/:id/dependencies')
   async createDependency(@Param() { id }, @Body() postData: ServiceDependencyDto[]) {
     return await this.service.addServiceDependencies(id, postData);
   }

@@ -1,14 +1,13 @@
 import { HttpService, HttpStatus, Inject, Injectable, Logger, LoggerService } from '@nestjs/common';
-import { CommonCodes, ServiceCodes } from 'src/shared/constants/code';
+import { CommonCodes } from 'src/shared/constants/code';
 import { ApiException } from 'src/shared/utils/api.exception';
 import { ServicesApiModel } from './service-api.model';
 import { ServicesDependencyModel } from './service-dependency.model';
 import { ServicesInfoModel } from './service-info.model';
 import { BUILD_SERVICE_URL, INIT_SERVICE_URL, SERVICE_SSHURI, GENERATE_SERVICE_REPOSITORY_URL } from 'src/shared/constants/url';
-import { isEmpty } from 'src/shared/utils/validator';
 import { PlainObject } from 'src/shared/pipes/query.pipe';
 import { InjectModel } from '@nestjs/sequelize';
-import { Op, Sequelize } from 'sequelize';
+import { Op, Sequelize, Transaction } from 'sequelize';
 import { SERVICE_STATUS } from './service-status';
 import { ErrorTypes } from 'src/shared/constants/error';
 import { SocketGateway } from 'src/shared/gateway/socket.gateway';
@@ -19,6 +18,8 @@ import { ServiceApiDto } from './dto/service-api.dto';
 import { ModelsService } from '../models/models.service';
 import { Created, Deleted, Updated, BulkCreated, Details, Rows, RowsAndCount } from 'src/shared/types/response';
 import { ModelsInfoModel } from '../models/models-info.model';
+import { ServicesConfigModel } from './service-config.model';
+import { ServiceConfigDto } from './dto/service-config.dto';
 @Injectable()
 export class ServicesService {
   constructor(
@@ -31,6 +32,7 @@ export class ServicesService {
     @InjectModel(ServicesInfoModel) private readonly infoRepository: typeof ServicesInfoModel,
     @InjectModel(ServicesApiModel) private readonly apiRepository: typeof ServicesApiModel,
     @InjectModel(ServicesDependencyModel) private readonly dependencyRepository: typeof ServicesDependencyModel,
+    @InjectModel(ServicesConfigModel) private readonly servicesConfigRepository: typeof ServicesConfigModel,
   ) { }
 
   /**
@@ -38,17 +40,38 @@ export class ServicesService {
    * @param query
    */
   async findAll(query: any): Promise<RowsAndCount<ServicesInfoModel>> {
-    const where: PlainObject = {
+    const where: any = {
       isDelete: false,
     };
     if (query.classification) {
-      where.classification = query.classification;
+      const classification = query.classification.split(',');
+      where.classification = {
+        [Op.or]: classification.map(i => ({
+          [Op.like]: `%${i}%`,
+        })),
+      };
     }
-    if (query.tags) {
+    if (query.tag) {
       where.tags = query.tags;
     }
     if (query.keyword) {
-      where.name = { [Op.like]: `%${query.keyword}%` };
+      where[Op.or] = [
+        {
+          name: {
+            [Op.like]: `%${query.keyword}%`,
+          },
+        },
+        {
+          classification: {
+            [Op.like]: `%${query.keyword}%`,
+          },
+        },
+        {
+          tag: {
+            [Op.like]: `%${query.keyword}%`,
+          },
+        },
+      ];
     }
     const { conditions = {} } = query;
     conditions.where = where;
@@ -60,7 +83,7 @@ export class ServicesService {
    * @param id
    */
   async findById(id: number): Promise<Details<ServicesInfoModel>> {
-    const service = await this.infoRepository.findOne({
+    const service: ServicesInfoModel = await this.infoRepository.findOne({
       where: {
         id,
       },
@@ -70,6 +93,10 @@ export class ServicesService {
         attributes: { exclude: ['isDelete'] },
       }, {
         model: ServicesDependencyModel,
+        required: false,
+        attributes: { exclude: ['isDelete'] },
+      }, {
+        model: ServicesConfigModel,
         required: false,
         attributes: { exclude: ['isDelete'] },
       }],
@@ -97,22 +124,16 @@ export class ServicesService {
    * @returns
    */
   async createService(data: ServiceInfoDto): Promise<Created> {
-    const serviceData = data;
     const { name } = data;
-    if (isEmpty(name)) {
-      throw new ApiException({
-        code: ServiceCodes.NAME_INVALID,
-        message: '无效的服务名称',
-      });
-    }
+    const { dependencies, ...serviceData } = data;
     // 验证是否有同名服务
-    const nameExisted = await this.infoRepository.findOne({
+    const service: ServicesInfoModel = await this.infoRepository.findOne({
       where: {
         name,
         isDelete: false,
       },
     });
-    if (nameExisted) {
+    if (service) {
       throw new ApiException({
         code: CommonCodes.DATA_EXISTED,
         message: '服务名称已存在',
@@ -120,24 +141,69 @@ export class ServicesService {
     }
 
     // 获取最大端口号服务
-    const [serviceMaxPort] = await this.infoRepository.findAll({
+    const [maxPortService]: ServicesInfoModel[] = await this.infoRepository.findAll({
       where: {
         isDelete: false,
       },
       order: [['serverPort', 'DESC']],
     });
 
+    const transaction: Transaction = await this.sequelize.transaction();
     try {
-      serviceData.serverPort = Number(serviceMaxPort?.serverPort) + 1 || 8080;
-      const service = await this.infoRepository.create(serviceData);
+      serviceData.serverPort = Number(maxPortService?.serverPort) + 1 || 8080;
+      const service: ServicesInfoModel = await this.infoRepository.create(serviceData, { transaction });
+      if (dependencies && Array.isArray(dependencies)) {
+        const dependenciesEntities = dependencies.map(dependency => ({
+          dependencyId: dependency.id,
+          serviceId: service.id,
+        }));
+        await this.dependencyRepository.bulkCreate(dependenciesEntities, { transaction });
+      }
+      await transaction.commit();
       return {
         id: service.id,
       };
     } catch (error) {
       this.logger.error(error);
+      await transaction.rollback();
       throw new ApiException({
         code: CommonCodes.CREATED_FAIL,
         message: '服务创建失败',
+      });
+    }
+  }
+  /**
+   * 添加服务配置
+   * @param serviceId
+   * @param data
+   */
+  async addServiceConfig(data: ServiceConfigDto): Promise<Created> {
+    const { serviceId } = data;
+    try {
+      const config: ServicesConfigModel = await this.servicesConfigRepository.findOne({
+        where: {
+          serviceId,
+        },
+      });
+      if (config) {
+        await this.servicesConfigRepository.update(data, {
+          where: {
+            serviceId,
+          },
+        });
+        return {
+          id: config.id,
+        };
+      }
+      const res: ServicesConfigModel = await this.servicesConfigRepository.create(data);
+      return {
+        id: res.id,
+      };
+    } catch (error) {
+      this.logger.error(error);
+      throw new ApiException({
+        code: CommonCodes.CREATED_FAIL,
+        message: '保存服务配置失败',
       });
     }
   }
@@ -147,23 +213,26 @@ export class ServicesService {
    * @param data
    */
   async addServiceDependencies(serviceId: number, data: ServiceDependencyDto[]): Promise<BulkCreated> {
+    const transaction: Transaction = await this.sequelize.transaction();
     try {
       await this.dependencyRepository.destroy({
         where: {
           serviceId,
         },
+        transaction,
       });
       const dependenciesEntities = data.map(dependency => ({
-        ...dependency,
-        dependencyId: dependency.dependencyId,
+        dependencyId: dependency.id,
         serviceId,
       }));
-      const res = await this.dependencyRepository.bulkCreate(dependenciesEntities);
+      const res = await this.dependencyRepository.bulkCreate(dependenciesEntities, { transaction });
+      await transaction.commit();
       return {
         ids: res.map(item => item.id),
       };
     } catch (error) {
       this.logger.error(error);
+      await transaction.rollback();
       throw new ApiException({
         code: CommonCodes.CREATED_FAIL,
         message: '保存服务依赖失败',
@@ -177,22 +246,26 @@ export class ServicesService {
    * @returns
    */
   async addServiceApis(serviceId: number, data: ServiceApiDto[]): Promise<BulkCreated> {
+    const transaction: Transaction = await this.sequelize.transaction();
     try {
       await this.apiRepository.destroy<ServicesApiModel>({
         where: {
           serviceId,
         },
+        transaction,
       });
       const apisEntities = data.map(api => ({
         ...api,
         serviceId,
       }));
-      const res =  await this.apiRepository.bulkCreate(apisEntities);
+      const res: ServicesApiModel[] =  await this.apiRepository.bulkCreate(apisEntities, { transaction });
+      await transaction.commit();
       return {
         ids: res.map(item => item.id),
       };
     } catch (error) {
       this.logger.error(error);
+      await transaction.rollback();
       throw new ApiException({
         code: CommonCodes.CREATED_FAIL,
         message: '保存服务接口失败',
@@ -205,28 +278,45 @@ export class ServicesService {
    * @param data 更新服务
    */
   async updateService(id: number, data: any): Promise<Updated> {
+    const { dependencies, ...serviceData } = data;
     // 验证是否有同名模块
-    const nameExisted = await this.infoRepository.findOne<ServicesInfoModel>({
+    const service: ServicesInfoModel = await this.infoRepository.findOne<ServicesInfoModel>({
       where: {
         name: data.name,
         isDelete: false,
         id: [Op.notIn[id]],
       },
     });
-    if (nameExisted) {
+    if (service) {
       throw new ApiException({
         code: CommonCodes.DATA_EXISTED,
         message: '模型名称已存在',
       });
     }
+    const transaction: Transaction = await this.sequelize.transaction();
     try {
-      await this.infoRepository.update(data, {
+      await this.infoRepository.update(serviceData, {
         where: { id },
+        transaction,
       });
+      await this.dependencyRepository.destroy({
+        where: {
+          serviceId: id,
+        },
+        transaction,
+      });
+      const dependenciesEntities = dependencies.map(dependency => ({
+        dependencyId: dependency.id,
+        serviceId: id,
+      }));
+      await this.dependencyRepository.bulkCreate(dependenciesEntities, { transaction });
+      await transaction.commit();
       return {
         id,
       };
-    } catch (err) {
+    } catch (error) {
+      this.logger.error(error);
+      await transaction.rollback();
       throw new ApiException({
         code: CommonCodes.UPDATED_FAIL,
         message: '服务更新失败',
@@ -239,7 +329,7 @@ export class ServicesService {
    * @param id
    */
   async delete(ids: number[]): Promise<Deleted> {
-    const transaction = await this.sequelize.transaction();
+    const transaction: Transaction = await this.sequelize.transaction();
     try {
       const deleteIds: number[] = ids.filter(id => Number(id));
       // 更新info表数据，isDelete置为true
@@ -386,7 +476,7 @@ export class ServicesService {
     const update: PlainObject = {
       status,
     };
-    const service = await this.infoRepository.findOne({
+    const service: ServicesInfoModel = await this.infoRepository.findOne({
       where: {
         serviceId,
       },
@@ -421,7 +511,7 @@ export class ServicesService {
    * @returns
    */
   private async getServiceById(id: number): Promise<Details<ServicesInfoModel>> {
-    const service = await this.infoRepository.findOne({
+    const service: ServicesInfoModel = await this.infoRepository.findOne({
       where: {
         id,
         isDelete: false,

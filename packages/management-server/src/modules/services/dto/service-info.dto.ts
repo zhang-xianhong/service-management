@@ -1,4 +1,6 @@
-import { IsNumber, IsOptional, IsString, Matches, MaxLength } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsArray, IsNotEmpty, IsNumber, IsOptional, IsString, Matches, MaxLength, ValidateNested } from 'class-validator';
+import { ServiceDependencyDto } from './service-dependency.dto';
 
 export class ServiceInfoDto {
   @Matches(/^srv-[a-z0-9-]+(?<!-)$/)
@@ -28,4 +30,10 @@ export class ServiceInfoDto {
   @IsNumber()
   @IsOptional()
   serverPort: number;
+
+  @ValidateNested({ each: true })
+  @IsArray()
+  @IsNotEmpty()
+  @Type(() => ServiceDependencyDto)
+  readonly dependencies?: ServiceDependencyDto[];
 }

@@ -4,6 +4,7 @@
 import { Table, Column, DataType, HasMany } from 'sequelize-typescript';
 import { BaseModel } from '../base.entity';
 import { ServicesApiModel } from './service-api.model';
+import { ServicesConfigModel } from './service-config.model';
 import { ServicesDependencyModel } from './service-dependency.model';
 @Table({
   timestamps: false,
@@ -197,4 +198,7 @@ export class ServicesInfoModel extends BaseModel  {
 
   @HasMany(() => ServicesDependencyModel)
   dependencies: ServicesDependencyModel[];
+
+  @HasMany(() => ServicesConfigModel)
+  config: ServicesConfigModel;
 }
