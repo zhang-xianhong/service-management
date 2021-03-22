@@ -66,7 +66,7 @@ const routes: Array<RouteRecordRaw> = [
     children: [
       {
         path: 'service-list',
-        component: () => import('@/views/sevice-management/business-service/ServiceList.vue'),
+        component: () => import('@/views/service-management/business-service/ServiceList.vue'),
         name: 'ServiceList',
         meta: {
           title: '业务服务',
@@ -75,8 +75,19 @@ const routes: Array<RouteRecordRaw> = [
         },
       },
       {
+        path: 'service-list/detail/:id',
+        component: () => import('@/views/service-management/business-service/ServiceDetail.vue'),
+        name: 'ServiceDetail',
+        meta: {
+          title: '业务服务详情',
+          icon: 'el-icon-eleme',
+          isRootLevel: false,
+          hidden: true,
+        },
+      },
+      {
         path: 'other-service',
-        component: () => import('@/views/sevice-management/other-service/Index.vue'),
+        component: () => import('@/views/service-management/other-service/Index.vue'),
         name: 'OtherService',
         meta: {
           title: '其他服务',
