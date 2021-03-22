@@ -1,8 +1,83 @@
 {
   "code": 0,
   "data": {
-    "id": 1,
-    "name": "Test Service",
-    "description": "Test description"
-  }
+      "id": "6",
+      "name": "testService",
+      "url": "testurl",
+      "serverPort": 3000,
+      "depolyId": "test",
+      "moduleDependencyId": "test123",
+      "deposit": "github.xxx.git",
+      "status": 1,
+      "description": "测试数据",
+      "version": 1,
+      "owner": "wxp",
+      "isAllByExtend": 0,
+      "extandVersion": "1",
+      "classification": "6,5",
+      "tag": "1",
+      "codeQuality": "1",
+      "serviceRank": "1",
+      "serviceApiUrl": "www.swaffer.com",
+      "druidUrl": "",
+      "startTime": null,
+      "cloneBy": "",
+      "createTime": "2021-03-03T02:08:14.000Z",
+      "updateTime": null,
+      "createUser": "111",
+      "updateUser": null,
+      "apis": [
+          {
+              "id": "5",
+              "url": "www.test.com",
+              "method": "GET",
+              "paramType": "REQUEST_BODY",
+              "name": "测试接口",
+              "description": "测试接口",
+              "version": 1,
+              "createTime": "2021-03-03T02:08:14.000Z",
+              "updateTime": null,
+              "createUser": "111",
+              "updateUser": null
+          },
+          {
+              "id": "6",
+              "url": "www.test111.com",
+              "method": "POST",
+              "paramType": "REQUEST_BODY",
+              "name": "测试接口111",
+              "description": "测试接口111",
+              "version": 1,
+              "createTime": "2021-03-03T02:08:14.000Z",
+              "updateTime": null,
+              "createUser": "111222",
+              "updateUser": null
+          }
+      ],
+      "dependencies": [
+          {
+              "id": "7",
+              "dependencyId": "124333",
+              "remark": "测试服务依赖111",
+              "version": 1,
+              "createTime": "2021-03-03T02:08:14.000Z",
+              "updateTime": null,
+              "createUser": "111222",
+              "updateUser": null
+          },
+          {
+              "id": "8",
+              "dependencyId": "1313",
+              "remark": "测试服务依赖222",
+              "version": 1,
+              "createTime": "2021-03-03T02:08:14.000Z",
+              "updateTime": null,
+              "createUser": "111222",
+              "updateUser": null
+          }
+      ]
+  },
+  "message": "successful",
+  "httpStatus": 200,
+  "timestamp": 1614739592359
 }

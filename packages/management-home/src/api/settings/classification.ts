@@ -15,5 +15,5 @@ export const getClassificationById: (payload: object) => Promise<SuccessResponse
 export const getClassificationList: () => Promise<SuccessResponse<any>> = () =>
   request.get(getUrl(URL.settings.GET_CLASSIFICATION_LIST));
 
-export const deleteClassification: (id: string) => Promise<SuccessResponse<any>> = (id: string) =>
-  request.post(getUrl(URL.settings.DELETE_CLASSIFICATION, id));
+export const deleteClassification: (id: number) => Promise<SuccessResponse<any>> = (id: number) =>
+  request.post(getUrl(URL.settings.DELETE_CLASSIFICATION, String(id)));
