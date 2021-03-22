@@ -11,7 +11,7 @@ const whiteList = baseRoutes.map((x) => x.path);
 
 router.beforeEach(async (to, from, next) => {
   NProgress.start();
-  document.title = `${to.meta.title}city-base`;
+  document.title = `${to.meta.title} city-base`;
 
   const hasToken = getToken();
   const usefulRoutes = alloverRouter();

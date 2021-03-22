@@ -10,6 +10,7 @@ export const baseRoutes: Array<RouteRecordRaw> = [
     component: () => import('@/views/login/Index.vue'),
     meta: {
       isRootLevel: false,
+      title: '登录',
     },
   },
   {
@@ -18,6 +19,7 @@ export const baseRoutes: Array<RouteRecordRaw> = [
     component: () => import('@/views/no-right/Index.vue'),
     meta: {
       isRootLevel: false,
+      title: '没有权限',
     },
   },
   {
@@ -26,6 +28,7 @@ export const baseRoutes: Array<RouteRecordRaw> = [
     component: () => import('@/views/not-found/Index.vue'),
     meta: {
       isRootLevel: false,
+      title: '404',
     },
   },
 ];
