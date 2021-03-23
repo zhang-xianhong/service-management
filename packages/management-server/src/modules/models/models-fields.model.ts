@@ -21,10 +21,10 @@ export class ModelsFieldsModel extends BaseModel {
   // 关联数据类型ID
   @Column({
     field: 'type_id',
-    type: DataType.STRING,
+    type: DataType.BIGINT,
     comment: '关联数据类型ID, 方便前端回读',
   })
-  typeId: string;
+  typeId: number;
 
   // 数据类型
   @Column({
