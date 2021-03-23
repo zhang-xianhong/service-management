@@ -86,7 +86,7 @@ export class ModelsInfoModel extends BaseModel {
 
   // 相似度
   @Column({
-    type: 'float',
+    type: DataType.FLOAT,
     defaultValue: null,
   })
   similarity: number;
@@ -108,7 +108,11 @@ export class ModelsInfoModel extends BaseModel {
   })
   startTime: number;
 
-  @HasMany(() => ModelsFieldsModel)
+  @HasMany(() => ModelsFieldsModel, {
+    foreignKey: 'modelId',
+    constraints: false,
+    foreignKeyConstraint: false,
+  })
   fields: ModelsFieldsModel;
 
   // 关联服务

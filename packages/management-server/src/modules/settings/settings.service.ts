@@ -13,6 +13,7 @@ import { getTreeArr } from 'src/shared/utils/util';
 import { SettingsDataTypeDto } from './dto/settings-data-type.dto';
 import { SettingsTagDto } from './dto/settings-tag.dto';
 import { Created, Deleted, Details, Rows, RowsAndCount, Updated } from 'src/shared/types/response';
+import { Tree } from 'src/shared/types/tree';
 
 @Injectable()
 export class SettingsService {
@@ -68,7 +69,7 @@ export class SettingsService {
    * @returns
    */
   async findDataTypeById(id: number): Promise<Details<DataTypesModel>> {
-    const row = await this.dataTypesRepository.findOne({
+    const row: DataTypesModel = await this.dataTypesRepository.findOne({
       where: {
         id,
         isDelete: false,
@@ -84,26 +85,25 @@ export class SettingsService {
     return row;
   }
 
-
   /**
    * 创建数据类型
    * @param postData
    * @returns
    */
   async createDataType(postData: SettingsDataTypeDto): Promise<Created> {
-    const nameExisted = await this.dataTypesRepository.findOne({
+    const existDataType: DataTypesModel = await this.dataTypesRepository.findOne({
       where: {
         isDelete: false,
         name: postData.name,
       },
     });
-    if (nameExisted) {
+    if (existDataType) {
       throw new ApiException({
         code: CommonCodes.DATA_EXISTED,
         message: `名称[${postData.name}]已存在`,
       });
     }
-    const res = await this.dataTypesRepository.create(postData);
+    const res: DataTypesModel = await this.dataTypesRepository.create(postData);
     return {
       id: res.id,
     };
@@ -116,14 +116,14 @@ export class SettingsService {
    * @returns
    */
   async updateDataType(id: number, postData: SettingsDataTypeDto): Promise<Updated> {
-    const row = await this.findDataTypeById(id);
+    const row: DataTypesModel = await this.findDataTypeById(id);
     if (row.isSystem) {
       throw new ApiException({
         code: CommonCodes.PARAMETER_INVALID,
         message: '内置类型禁止更新',
       });
     }
-    const nameExisted = await this.dataTypesRepository.findOne({
+    const existDataType: DataTypesModel = await this.dataTypesRepository.findOne({
       where: {
         isDelete: false,
         name: postData.name,
@@ -132,7 +132,7 @@ export class SettingsService {
         },
       },
     });
-    if (nameExisted) {
+    if (existDataType) {
       throw new ApiException({
         code: CommonCodes.DATA_EXISTED,
         message: `名称[${postData.name}]已存在`,
@@ -213,13 +213,13 @@ export class SettingsService {
    * @param postData
    */
   async createTag(postData: SettingsTagDto): Promise<Created> {
-    const nameExisted = await this.tagsRepository.findOne({
+    const existTag: SettingsTagsModel = await this.tagsRepository.findOne({
       where: {
         name: postData.name,
         isDelete: false,
       },
     });
-    if (nameExisted) {
+    if (existTag) {
       throw new ApiException({
         code: CommonCodes.DATA_EXISTED,
         message: '标签名称已存在',
@@ -238,7 +238,7 @@ export class SettingsService {
    * @returns
    */
   async findTagById(id: number): Promise<Details<SettingsTagsModel>> {
-    const row = await this.tagsRepository.findOne({
+    const row: SettingsTagsModel = await this.tagsRepository.findOne({
       where: {
         id,
         isDelete: false,
@@ -261,7 +261,7 @@ export class SettingsService {
    */
   async updateTag(id: number, postData: SettingsTagDto): Promise<Updated> {
     await this.findTagById(id);
-    const nameExisted = await this.tagsRepository.findOne({
+    const existTag: SettingsTagsModel = await this.tagsRepository.findOne({
       where: {
         isDelete: false,
         name: postData.name,
@@ -270,7 +270,7 @@ export class SettingsService {
         },
       },
     });
-    if (nameExisted) {
+    if (existTag) {
       throw new ApiException({
         code: CommonCodes.DATA_EXISTED,
         message: `名称[${postData.name}]已存在`,
@@ -340,12 +340,11 @@ export class SettingsService {
    * @param query
    * @param getTotal
    */
-  async findCategoriesTree(): Promise<Object[]> {
-    const categories = await this.categoriesRepository.findAll({
+  async findCategoriesTree(): Promise<Tree[]> {
+    const categories: SettingsCategoriesModel[] = await this.categoriesRepository.findAll({
       raw: true,
     });
-    const categoriesTree = getTreeArr({ key: 'id', pKey: 'parentId', data: categories });
-    return categoriesTree;
+    return getTreeArr({ key: 'id', pKey: 'parentId', data: categories });
   }
 
   /**
@@ -355,7 +354,7 @@ export class SettingsService {
   async createCategory(data: any): Promise<Created> {
     const { parentId, ...category } = data;
     if (parentId) {
-      const parent = await this.categoriesRepository.findOne({ where: { id: parentId } });
+      const parent: SettingsCategoriesModel = await this.categoriesRepository.findOne({ where: { id: parentId } });
       if (!parent) {
         throw new ApiException({
           code: CommonCodes.NOT_FOUND,
@@ -375,7 +374,7 @@ export class SettingsService {
    * @param data
    */
   async updateCategory(id: number, data: any): Promise<Updated> {
-    const category = await this.categoriesRepository.findOne({
+    const category: SettingsCategoriesModel = await this.categoriesRepository.findOne({
       where: {
         isDelete: false,
         id,
@@ -400,7 +399,7 @@ export class SettingsService {
    * @param data
    */
   async deleteCategory(id: number) {
-    const category = await this.categoriesRepository.findOne({
+    const category: SettingsCategoriesModel = await this.categoriesRepository.findOne({
       where: {
         isDelete: false,
         id,
@@ -413,7 +412,7 @@ export class SettingsService {
         error: ErrorTypes.NOT_FOUND,
       }, HttpStatus.NOT_FOUND);
     }
-    const data = await this.categoriesRepository.findAll({
+    const data: SettingsCategoriesModel[] = await this.categoriesRepository.findAll({
       where: {
         parentId: id,
         isDelete: false,

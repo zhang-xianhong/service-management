@@ -1,4 +1,7 @@
-export const getTreeArr = (obj) => {
+import { PlainObject } from '../pipes/query.pipe';
+import { Tree } from '../types/tree';
+
+export const getTreeArr = (obj: PlainObject): Tree[] => {
   if (!Array.isArray(obj.data)) {
     console.log('getTreeArr=>请传入数组');
     return [];
@@ -35,3 +38,16 @@ export const getTreeArr = (obj) => {
     });
   } return treeArray;
 };
+
+
+/**
+ * 小驼峰转换为大驼峰
+ * @param string
+ * @returns
+ */
+export const lowerCamelToUpperCamel = (string: string): string => {
+  const [firstChar, ...chars] = string;
+  return `${firstChar.toUpperCase()}${chars.join('')}`;
+};
+
+

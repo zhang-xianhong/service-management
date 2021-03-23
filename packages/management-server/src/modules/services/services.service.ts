@@ -19,6 +19,7 @@ import { ServiceApiDto } from './dto/service-api.dto';
 import { ModelsService } from '../models/models.service';
 import { Created, Deleted, Updated, BulkCreated, Details, Rows, RowsAndCount } from 'src/shared/types/response';
 import { ModelsInfoModel } from '../models/models-info.model';
+import { ModelsRelationModel } from '../models/models-relation.model';
 @Injectable()
 export class ServicesService {
   constructor(
@@ -87,7 +88,10 @@ export class ServicesService {
    * 根据服务id获取服务模型数据
    * @param serviceId
    */
-  async getModelsByServiceId(serviceId: number): Promise<Rows<ModelsInfoModel>> {
+  async getModelsByServiceId(serviceId: number): Promise<{
+    models: Rows<ModelsInfoModel>,
+    relations: Rows<ModelsRelationModel>
+  }> {
     return await this.modelsService.findModelsByServiceId(serviceId);
   }
 

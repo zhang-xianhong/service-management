@@ -1,17 +1,20 @@
 import { Inject, Injectable, Logger, LoggerService } from '@nestjs/common';
-import { ApiException } from '../../shared/utils/api.exception';
-import { CommonCodes } from '../../shared/constants/code';
-import { ModelsInfoModel } from './models-info.model';
-import { ModelsFieldsModel } from './models-fields.model';
-import { DataTypesModel } from '../settings/settings-data-types.model';
-import { FIELD_TYPE, FIELD_UUID_NAME,  MODEL_DEFAULT_FIELDS_NAMES } from 'src/shared/constants/field-types';
 import { InjectModel } from '@nestjs/sequelize';
 import sequelize, { Op, Sequelize } from 'sequelize';
-import { ModelInfoDto } from './dto/model-info.dto';
+import { ApiException } from 'src/shared/utils/api.exception';
+import { CommonCodes } from 'src/shared/constants/code';
+import { DEFAULT_FIELDS, FIELD_TYPE, FIELD_TYPES, FIELD_UUID_NAME } from 'src/shared/constants/field-types';
 import { Created, Deleted, Rows, Updated } from 'src/shared/types/response';
 import { ErrorTypes } from 'src/shared/constants/error';
+import { lowerCamelToUpperCamel } from 'src/shared/utils/util';
+import { DataTypesModel } from '../settings/settings-data-types.model';
+import { ModelsInfoModel } from './models-info.model';
+import { ModelsFieldsModel } from './models-fields.model';
 import { ServicesInfoModel } from '../services/service-info.model';
+import { ModelsRelationModel } from './models-relation.model';
+import { ModelInfoDto } from './dto/model-info.dto';
 import { ModelFieldDto } from './dto/model-field.dto';
+import { ModelRelationDto } from './dto/model-relation.dto';
 
 @Injectable()
 export class ModelsService {
@@ -21,6 +24,7 @@ export class ModelsService {
     private sequelize: Sequelize,
     @InjectModel(ModelsInfoModel) private readonly infoRepository: typeof ModelsInfoModel,
     @InjectModel(ModelsFieldsModel) private readonly fieldsRepository: typeof ModelsFieldsModel,
+    @InjectModel(ModelsRelationModel) private readonly relationRepository: typeof ModelsRelationModel,
     @InjectModel(DataTypesModel) private readonly dataTypesRepository: typeof DataTypesModel,
     @InjectModel(ServicesInfoModel) private readonly serviceRepository: typeof ServicesInfoModel,
   ) {}
@@ -32,19 +36,19 @@ export class ModelsService {
    */
   async createdModel(postData: ModelInfoDto): Promise<Created> {
     const { name, serviceId } = postData;
-    const nameExisted = await this.infoRepository.findOne({
+    const existModel: ModelsInfoModel = await this.infoRepository.findOne({
       where: {
         name,
         isDelete: false,
       },
     });
-    if (nameExisted) {
+    if (existModel) {
       throw new ApiException({
         code: CommonCodes.DATA_EXISTED,
         message: `名称[${name}]已存在`,
       });
     }
-    const service = await this.serviceRepository.findOne({
+    const service: ServicesInfoModel = await this.serviceRepository.findOne({
       where: {
         id: serviceId,
         isDelete: false,
@@ -59,7 +63,7 @@ export class ModelsService {
     }
     const transaction = await this.sequelize.transaction();
     try {
-      const res = await this.infoRepository.create(postData, {
+      const res: ModelsInfoModel = await this.infoRepository.create(postData, {
         transaction,
       });
       // 生成默认字段
@@ -85,8 +89,11 @@ export class ModelsService {
    * @param serviceId
    * @returns
    */
-  async findModelsByServiceId(serviceId: number): Promise<Rows<ModelsInfoModel>> {
-    return await this.infoRepository.findAll({
+  async findModelsByServiceId(serviceId: number): Promise<{
+    models: Rows<ModelsInfoModel>,
+    relations: Rows<ModelsRelationModel>
+  }> {
+    const modelsPromise = this.infoRepository.findAll({
       where: {
         serviceId,
         isDelete: false,
@@ -100,6 +107,18 @@ export class ModelsService {
         attributes: { exclude: ['isDelete'] },
       }],
     });
+    const relationsPromise = this.relationRepository.findAll({
+      where: {
+        serviceId,
+        isDelete: false,
+      },
+    });
+
+    const [models, relations] = await Promise.all([modelsPromise, relationsPromise]);
+    return {
+      models,
+      relations,
+    };
   }
 
 
@@ -110,7 +129,7 @@ export class ModelsService {
    * @returns
    */
   async updateModel({ serviceId, ...postData }: ModelInfoDto, id: number): Promise<Updated> {
-    const nameExisted = await this.infoRepository.findOne({
+    const existModel: ModelsInfoModel = await this.infoRepository.findOne({
       where: {
         name: postData.name,
         isDelete: false,
@@ -119,7 +138,8 @@ export class ModelsService {
         },
       },
     });
-    if (nameExisted) {
+
+    if (existModel) {
       throw new ApiException({
         code: CommonCodes.DATA_EXISTED,
         message: `名称[${postData.name}]已存在`,
@@ -145,13 +165,13 @@ export class ModelsService {
 
 
   /**
-   * 删除服务的同时删除Model和相应的Fields
+   * 删除服务的同时删除Model和相应的Fields和relation
    * 此操作在事务中执行
    * @param serviceId
    * @param transaction
    * @returns
    */
-  async deleteModelsByServiceId(serviceId: number, transaction: sequelize.Transaction) {
+  async deleteModelsByServiceId(serviceId: number, transaction: sequelize.Transaction): Promise<any> {
     const models: Array<{id: number}> = await this.infoRepository.findAll({
       where: {
         serviceId,
@@ -180,8 +200,16 @@ export class ModelsService {
       },
       transaction,
     });
-    return await Promise.all([deleteModels, deleteFields]);
+    const deleteRelations = this.relationRepository.update({
+      isDelete: true,
+    }, {
+      where: {
+        serviceId,
+      },
+    });
+    return await Promise.all([deleteModels, deleteFields, deleteRelations]);
   }
+
 
   /**
    * 删除模型(支持批量)
@@ -211,6 +239,25 @@ export class ModelsService {
         },
         transaction,
       });
+      await this.relationRepository.update({
+        isDelete: true,
+      }, {
+        where: {
+          [Op.or]: [
+            {
+              fromModelId: {
+                [Op.in]: modelIds,
+              },
+            },
+            {
+              toModelId: {
+                [Op.in]: modelIds,
+              },
+            },
+          ],
+        },
+        transaction,
+      });
       await transaction.commit();
       return {
         ids: modelIds,
@@ -227,82 +274,224 @@ export class ModelsService {
 
 
   /**
-   * 更新模型字段
-   * 1.删除原有的
-   * 2.创建新的
+   * 更新或创建字段
    * @param modelId
    * @param fields
    * @returns
    */
-  async updateModelFields(modelId: number, fields: ModelFieldDto[]): Promise<ModelsFieldsModel[]> {
-    // 先删除再创建
+  async updateOrCreateFields(modelId: number, fields: ModelFieldDto[]): Promise<number[]> {
+    // 创建或更新模型字段
+    const newFields = fields.filter(field => field.name !== FIELD_UUID_NAME);
+    // 查找是否存在名称冲突的字段
+    const currentFields: ModelsFieldsModel[] = await this.fieldsRepository.findAll({
+      where: {
+        modelId,
+      },
+      raw: true,
+    });
+    let conflictName = '';
+    const hasNameConflictField: boolean = newFields.some((field) => {
+      const sameNameField = currentFields.find(item => item.name === field.name);
+      if (sameNameField && Number(field.id) !== Number(sameNameField.id)) {
+        conflictName = field.name;
+        return true;
+      }
+      return false;
+    });
+    if (hasNameConflictField) {
+      throw new ApiException({
+        code: CommonCodes.DATA_EXISTED,
+        message: `名称[${conflictName}]已存在`,
+      });
+    }
+    const fieldsEntities: ModelsFieldsModel[] = await this.createFieldsEntities(newFields, modelId);
+    const res: ModelsFieldsModel[] = await this.fieldsRepository.bulkCreate(fieldsEntities, {
+      updateOnDuplicate: ['id'],
+      returning: true,
+    });
+    return res.map(item => item.id);
+  }
+
+  /**
+   * 创建模型关系
+   * @param postData
+   * @returns
+   */
+  async createModelRelation(postData: ModelRelationDto): Promise<Created> {
+    const { fromModelId, toModelId, serviceId } = postData;
+    const sameRelation: ModelsRelationModel = await this.relationRepository.findOne({
+      where: {
+        fromModelId,
+        toModelId,
+        serviceId,
+      },
+    });
+    if (sameRelation) {
+      return {
+        id: sameRelation.id,
+      };
+    }
     const transaction = await this.sequelize.transaction();
     try {
-      await this.fieldsRepository.destroy({
-        where: {
-          modelId,
-          name: {
-            // UUID类型的不删除
-            [Op.not]: FIELD_UUID_NAME,
-          },
-        },
-        transaction,
-      });
-      const newFields = fields.filter(field => field.name !== FIELD_UUID_NAME);
-      const fieldsEntities = await this.createFieldsEntities(newFields, modelId);
-      const res = await this.fieldsRepository.bulkCreate(fieldsEntities, {
-        transaction,
+      const foreignKeyId = (await
+      this.createModelRelationForeignKey(postData.fromModelId, postData.toModelId, transaction));
+      const res = await this.relationRepository.create({
+        ...postData,
+        byFieldId: foreignKeyId,
       });
       await transaction.commit();
-      return res;
+      return {
+        id: res.id,
+      };
     } catch (error) {
       this.logger.error(error);
       await transaction.rollback();
+      if (error instanceof ApiException) {
+        throw error;
+      }
       throw new ApiException({
-        code: CommonCodes.UPDATED_FAIL,
-        message: '保存字段失败',
+        code: CommonCodes.CREATED_FAIL,
+        message: '生成关联关系失败',
         error,
       });
     }
   }
 
+
+  /**
+   * 更新模型关系
+   * @param relationId
+   * @param postData
+   * @returns
+   */
+  async updateModelRelation(relationId: number,  postData: ModelRelationDto): Promise<Updated> {
+    const transaction = await this.sequelize.transaction();
+    try {
+      const foreignKey = (await
+      this.createModelRelationForeignKey(postData.fromModelId, postData.toModelId, transaction));
+      await this.relationRepository.update({
+        ...postData,
+        byFieldId: foreignKey,
+        updateTime: new Date(),
+      }, {
+        where: {
+          id: relationId,
+        },
+      });
+      await transaction.commit();
+      return {
+        id: relationId,
+      };
+    } catch (error) {
+      this.logger.error(error);
+      await transaction.rollback();
+      if (error instanceof ApiException) {
+        throw error;
+      }
+      throw new ApiException({
+        code: CommonCodes.UPDATED_FAIL,
+        message: '更新关联关系失败',
+        error,
+      });
+    }
+  }
+
+
+  /**
+   * 删除模型关系
+   * @param ids
+   * @returns
+   */
+  async deleteModelRelations(ids: number[]): Promise<Deleted> {
+    const transaction = await this.sequelize.transaction();
+    try {
+      const relations = await this.relationRepository.findAll({
+        where: {
+          id: {
+            [Op.in]: ids,
+          },
+        },
+        raw: true,
+        transaction,
+      });
+      const foreignKeyIds = Array.from(new Set(relations.map(item => item.byFieldId)));
+      // 删除关系
+      await this.relationRepository.destroy({
+        where: {
+          id: {
+            [Op.in]: ids,
+          },
+        },
+        transaction,
+      });
+      // 删除外键
+      await this.fieldsRepository.update({
+        isDelete: true,
+      }, {
+        where: {
+          id: {
+            [Op.in]: foreignKeyIds,
+          },
+        },
+      });
+      await transaction.commit();
+      return {
+        ids,
+      };
+    } catch (error) {
+      this.logger.error(error);
+      await transaction.rollback();
+      if (error instanceof ApiException) {
+        throw error;
+      }
+      throw new ApiException({
+        code: CommonCodes.DELETED_FAIL,
+        message: '删除关联关系失败',
+        error,
+      });
+    }
+  }
+
+
   /**
    * 获取字段类型列表
    */
-  private async getDataTypes() {
+  private async getDataTypes(isSystem?: boolean) {
+    const where: sequelize.WhereOptions = {
+      isDelete: false,
+    };
+    if (typeof isSystem === 'boolean') {
+      where.isSystem = isSystem;
+    }
     const dataTypes = await this.dataTypesRepository.findAll({
-      where: {
-        isDelete: false,
-      },
+      where,
       raw: true,
     });
     return dataTypes;
   }
+
 
   /**
    * 创建模型的默认字段
    * @param modelId
    * @param transaction
    */
-  private async createModelDefaultFields(modelId: number, transaction?: sequelize.Transaction)  {
-    const defaultFields = await this.dataTypesRepository.findAll({
-      where: {
-        name: {
-          [Op.in]: MODEL_DEFAULT_FIELDS_NAMES,
-        },
-        isSystem: true,
-      },
+  private async createModelDefaultFields(modelId: number, transaction?: sequelize.Transaction): Promise<void>  {
+    const fieldTypes: DataTypesModel[] = await this.getDataTypes(true);
+    const genFields = DEFAULT_FIELDS.map((field) => {
+      const { type, ...keepFields } = field;
+      const filedType = fieldTypes.find(item => item.name === type);
+      return {
+        ...keepFields,
+        typeId: filedType.id,
+      };
     });
-    const genFields = defaultFields.map(field => ({
-      name: field.name,
-      description: field.description,
-      typeId: field.id,
-    }));
-    const fieldsEntities = await this.createFieldsEntities(genFields, modelId, defaultFields);
+    const fieldsEntities: ModelsFieldsModel[] = await this.createFieldsEntities(genFields, modelId, fieldTypes);
     await this.fieldsRepository.bulkCreate(fieldsEntities, {
       transaction,
     });
   };
+
 
   /**
    * 生成表字段
@@ -315,12 +504,10 @@ export class ModelsService {
   Promise<ModelsFieldsModel[]> {
     if (!fieldTypes) {
       // eslint-disable-next-line no-param-reassign
-      fieldTypes = await  this.getDataTypes();
+      fieldTypes = await this.getDataTypes();
     }
-    const fieldsEntities = fields.map((field: any) => {
-      const newField = { ...field };
-      delete newField.id;
-      const { typeId } = newField;
+    return fields.map((field: any) => {
+      const { typeId } = field;
       const fieldType = fieldTypes.find(item => Number(item.id) === Number(typeId));
       if (!fieldType) {
         throw new ApiException({
@@ -328,23 +515,93 @@ export class ModelsService {
           message: '无效的字段类型',
         });
       }
-      if (fieldType.name === FIELD_UUID_NAME) {
-        fieldType.isKey = true;
-        fieldType.extra = 'auto_increment';
-        fieldType.isUnique = true;
-        fieldType.isIndex = true;
-      }
-      const { type, extra, length, isKey } = fieldType;
+      const { type, length } = fieldType;
       return {
-        ...newField,
+        ...field,
         type,
-        extra,
         length,
-        isKey,
         typeId,
         modelId,
+        updateTime: new Date(),
       };
     });
-    return fieldsEntities;
+  }
+
+  /**
+   * 通过模型ID查找model
+   * @param id
+   * @returns
+   */
+  private async findModelById(id: number): Promise<ModelsInfoModel> {
+    const model: ModelsInfoModel = await this.infoRepository.findOne({
+      where: {
+        id,
+        isDelete: false,
+      },
+    });
+    if (!model) {
+      throw new ApiException({
+        code: CommonCodes.NOT_FOUND,
+        message: `模型[${id}]不存在`,
+        error: ErrorTypes.NOT_FOUND,
+      });
+    }
+    return model;
+  }
+
+  /**
+   * 创建模型关联外键
+   * @param fromId
+   * @param toId
+   * @param transaction
+   * @returns
+   */
+  private async createModelRelationForeignKey(fromId: number, toId: number, transaction: sequelize.Transaction):
+  Promise<number> {
+    const [fromModel, toModel] = await Promise.all([this.findModelById(fromId), this.findModelById(toId)]);
+    // 外键名称
+    const foreignKey = `ref${lowerCamelToUpperCamel(toModel.name)}Id`;
+    // 生成外键
+    let foreignKeyField: ModelsFieldsModel = await this.fieldsRepository.findOne({
+      where: {
+        name: foreignKey,
+        isDelete: false,
+      },
+      transaction,
+    });
+    if (!foreignKeyField) {
+      const uuidType = await this.dataTypesRepository.findOne({
+        where: {
+          name: FIELD_UUID_NAME,
+          isSystem: true,
+        },
+      });
+      // 生成外键
+      const foreignKeyFieldEntity: FIELD_TYPE = {
+        name: foreignKey,
+        description: `模型“${fromModel.name}” - “${toModel.name}”间外键`,
+        isSystem: true,
+        type: FIELD_TYPES.LONG,
+        length: 20,
+        typeId: uuidType.id,
+      };
+      foreignKeyField = await this.fieldsRepository.create({
+        ...foreignKeyFieldEntity,
+        modelId: fromModel.id,
+      }, {
+        transaction,
+      });
+    } else if (foreignKeyField.isDelete) {
+      await this.fieldsRepository.update({
+        isDelete: false,
+      }, {
+        where: {
+          id: foreignKeyField.id,
+        },
+        transaction,
+      });
+    }
+
+    return foreignKeyField.id;
   }
 }
