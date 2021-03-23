@@ -1,20 +1,20 @@
 import { Inject, Injectable, Logger, LoggerService } from '@nestjs/common';
-import { ApiException } from '../../shared/utils/api.exception';
-import { CommonCodes } from '../../shared/constants/code';
-import { ModelsInfoModel } from './models-info.model';
-import { ModelsFieldsModel } from './models-fields.model';
-import { DataTypesModel } from '../settings/settings-data-types.model';
-import { DEFAULT_FIELDS, FIELD_TYPE, FIELD_TYPES, FIELD_UUID_NAME } from 'src/shared/constants/field-types';
 import { InjectModel } from '@nestjs/sequelize';
 import sequelize, { Op, Sequelize } from 'sequelize';
-import { ModelInfoDto } from './dto/model-info.dto';
+import { ApiException } from 'src/shared/utils/api.exception';
+import { CommonCodes } from 'src/shared/constants/code';
+import { DEFAULT_FIELDS, FIELD_TYPE, FIELD_TYPES, FIELD_UUID_NAME } from 'src/shared/constants/field-types';
 import { Created, Deleted, Rows, Updated } from 'src/shared/types/response';
 import { ErrorTypes } from 'src/shared/constants/error';
+import { lowerCamelToUpperCamel } from 'src/shared/utils/util';
+import { DataTypesModel } from '../settings/settings-data-types.model';
+import { ModelsInfoModel } from './models-info.model';
+import { ModelsFieldsModel } from './models-fields.model';
 import { ServicesInfoModel } from '../services/service-info.model';
+import { ModelsRelationModel } from './models-relation.model';
+import { ModelInfoDto } from './dto/model-info.dto';
 import { ModelFieldDto } from './dto/model-field.dto';
 import { ModelRelationDto } from './dto/model-relation.dto';
-import { ModelsRelationModel } from './models-relation.model';
-import { lowerCamelToUpperCamel } from 'src/shared/utils/util';
 
 @Injectable()
 export class ModelsService {
@@ -68,7 +68,6 @@ export class ModelsService {
       });
       // 生成默认字段
       await this.createModelDefaultFields(res.id, transaction);
-      // 生成配置
       await transaction.commit();
       return {
         id: res.id,
@@ -166,13 +165,13 @@ export class ModelsService {
 
 
   /**
-   * 删除服务的同时删除Model和相应的Fields
+   * 删除服务的同时删除Model和相应的Fields和relation
    * 此操作在事务中执行
    * @param serviceId
    * @param transaction
    * @returns
    */
-  async deleteModelsByServiceId(serviceId: number, transaction: sequelize.Transaction) {
+  async deleteModelsByServiceId(serviceId: number, transaction: sequelize.Transaction): Promise<any> {
     const models: Array<{id: number}> = await this.infoRepository.findAll({
       where: {
         serviceId,
@@ -201,7 +200,14 @@ export class ModelsService {
       },
       transaction,
     });
-    return await Promise.all([deleteModels, deleteFields]);
+    const deleteRelations = this.relationRepository.update({
+      isDelete: true,
+    }, {
+      where: {
+        serviceId,
+      },
+    });
+    return await Promise.all([deleteModels, deleteFields, deleteRelations]);
   }
 
 
@@ -233,6 +239,25 @@ export class ModelsService {
         },
         transaction,
       });
+      await this.relationRepository.update({
+        isDelete: true,
+      }, {
+        where: {
+          [Op.or]: [
+            {
+              fromModelId: {
+                [Op.in]: modelIds,
+              },
+            },
+            {
+              toModelId: {
+                [Op.in]: modelIds,
+              },
+            },
+          ],
+        },
+        transaction,
+      });
       await transaction.commit();
       return {
         ids: modelIds,
@@ -254,7 +279,7 @@ export class ModelsService {
    * @param fields
    * @returns
    */
-  async updateOrCreateFields(modelId: number, fields: ModelFieldDto[]): Promise<ModelsFieldsModel[]> {
+  async updateOrCreateFields(modelId: number, fields: ModelFieldDto[]): Promise<number[]> {
     // 创建或更新模型字段
     const newFields = fields.filter(field => field.name !== FIELD_UUID_NAME);
     // 查找是否存在名称冲突的字段
@@ -282,8 +307,9 @@ export class ModelsService {
     const fieldsEntities: ModelsFieldsModel[] = await this.createFieldsEntities(newFields, modelId);
     const res: ModelsFieldsModel[] = await this.fieldsRepository.bulkCreate(fieldsEntities, {
       updateOnDuplicate: ['id'],
+      returning: true,
     });
-    return res;
+    return res.map(item => item.id);
   }
 
   /**
@@ -292,6 +318,19 @@ export class ModelsService {
    * @returns
    */
   async createModelRelation(postData: ModelRelationDto): Promise<Created> {
+    const { fromModelId, toModelId, serviceId } = postData;
+    const sameRelation: ModelsRelationModel = await this.relationRepository.findOne({
+      where: {
+        fromModelId,
+        toModelId,
+        serviceId,
+      },
+    });
+    if (sameRelation) {
+      return {
+        id: sameRelation.id,
+      };
+    }
     const transaction = await this.sequelize.transaction();
     try {
       const foreignKey = (await
@@ -330,6 +369,7 @@ export class ModelsService {
       await this.relationRepository.update({
         ...postData,
         byFieldId: foreignKey,
+        updateTime: new Date(),
       }, {
         where: {
           id: relationId,
@@ -422,7 +462,7 @@ export class ModelsService {
       // eslint-disable-next-line no-param-reassign
       fieldTypes = await this.getDataTypes();
     }
-    const fieldsEntities = fields.map((field: any) => {
+    return fields.map((field: any) => {
       const { typeId } = field;
       const fieldType = fieldTypes.find(item => Number(item.id) === Number(typeId));
       if (!fieldType) {
@@ -438,9 +478,9 @@ export class ModelsService {
         length,
         typeId,
         modelId,
+        updateTime: new Date(),
       };
     });
-    return fieldsEntities;
   }
 
   /**
@@ -486,14 +526,20 @@ export class ModelsService {
       transaction,
     });
     if (!foreignKeyField) {
+      const uuidType = await this.dataTypesRepository.findOne({
+        where: {
+          name: FIELD_UUID_NAME,
+          isSystem: true,
+        },
+      });
       // 生成外键
       const foreignKeyFieldEntity: FIELD_TYPE = {
         name: foreignKey,
-        description: `模型”${fromModel.name}“ - ”${toModel.name}“间外键`,
+        description: `模型“${fromModel.name}” - “${toModel.name}”间外键`,
         isSystem: true,
         type: FIELD_TYPES.LONG,
         length: 20,
-        typeId: 0,
+        typeId: uuidType.id,
       };
       await this.fieldsRepository.create({
         ...foreignKeyFieldEntity,
