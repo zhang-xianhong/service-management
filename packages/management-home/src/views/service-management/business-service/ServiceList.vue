@@ -1,5 +1,6 @@
 <template>
   <div class="service-list">
+    <blank-header></blank-header>
     <div class="service-list_header">
       <div class="service-list_left">
         <el-button icon="el-icon-plus" type="primary" @click="toggleServiceDialog">新建</el-button>
@@ -180,10 +181,13 @@ import {
   getClassifications,
 } from './utils/service-data-utils';
 import { addService } from '@/api/servers';
+import BlankHeader from '@/components/blank-header/Index.vue';
 
 export default defineComponent({
   name: 'ServiceList',
-  components: {},
+  components: {
+    BlankHeader,
+  },
   data() {
     return {
       sortProps: {
