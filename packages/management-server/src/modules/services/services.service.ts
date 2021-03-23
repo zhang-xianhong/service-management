@@ -12,14 +12,16 @@ import { SERVICE_STATUS } from './service-status';
 import { ErrorTypes } from 'src/shared/constants/error';
 import { SocketGateway } from 'src/shared/gateway/socket.gateway';
 import { WEBSOCKET_EVENT_SERVICE_UPDATE } from 'src/shared/constants/websocket-events';
-import { ServiceDependencyDto } from './dto/service-dependency.dto';
 import { ServiceInfoDto } from './dto/service-info.dto';
-import { ServiceApiDto } from './dto/service-api.dto';
+import { ServiceApisDto } from './dto/service-apis.dto';
 import { ModelsService } from '../models/models.service';
 import { Created, Deleted, Updated, BulkCreated, Details, Rows, RowsAndCount } from 'src/shared/types/response';
 import { ModelsInfoModel } from '../models/models-info.model';
 import { ServicesConfigModel } from './service-config.model';
 import { ServiceConfigDto } from './dto/service-config.dto';
+import { ServicesApiParamModel } from './service-api-param.model';
+import { ApiDto } from './dto/api.dto';
+import { DEFAULT_APIS } from './default-apis';
 @Injectable()
 export class ServicesService {
   constructor(
@@ -33,6 +35,7 @@ export class ServicesService {
     @InjectModel(ServicesApiModel) private readonly apiRepository: typeof ServicesApiModel,
     @InjectModel(ServicesDependencyModel) private readonly dependencyRepository: typeof ServicesDependencyModel,
     @InjectModel(ServicesConfigModel) private readonly servicesConfigRepository: typeof ServicesConfigModel,
+    @InjectModel(ServicesApiParamModel) private readonly apiParamRepository: typeof ServicesApiParamModel,
   ) { }
 
   /**
@@ -86,12 +89,9 @@ export class ServicesService {
     const service: ServicesInfoModel = await this.infoRepository.findOne({
       where: {
         id,
+        isDelete: false,
       },
       include: [{
-        model: ServicesApiModel,
-        required: false,
-        attributes: { exclude: ['isDelete'] },
-      }, {
         model: ServicesDependencyModel,
         required: false,
         attributes: { exclude: ['isDelete'] },
@@ -116,6 +116,25 @@ export class ServicesService {
    */
   async getModelsByServiceId(serviceId: number): Promise<Rows<ModelsInfoModel>> {
     return await this.modelsService.findModelsByServiceId(serviceId);
+  }
+
+  /**
+   * 根据服务id获取接口数据
+   * @param serviceId
+   */
+  async getApisByServiceId(serviceId: number): Promise<Rows<ServicesApiModel>> {
+    const api: ServicesApiModel[] = await this.apiRepository.findAll({
+      where: {
+        serviceId,
+        isDelete: false,
+      },
+      include: [{
+        model: ServicesApiParamModel,
+        required: false,
+        attributes: { exclude: ['isDelete'] },
+      }],
+    });
+    return api;
   }
 
   /**
@@ -159,6 +178,7 @@ export class ServicesService {
         }));
         await this.dependencyRepository.bulkCreate(dependenciesEntities, { transaction });
       }
+      await this.addServiceDefaultApis(service.id, transaction);
       await transaction.commit();
       return {
         id: service.id,
@@ -183,6 +203,7 @@ export class ServicesService {
       const config: ServicesConfigModel = await this.servicesConfigRepository.findOne({
         where: {
           serviceId,
+          isDelete: false,
         },
       });
       if (config) {
@@ -207,58 +228,56 @@ export class ServicesService {
       });
     }
   }
+
   /**
-   * 添加服务依赖
+   * 添加服务默认接口
    * @param serviceId
    * @param data
    */
-  async addServiceDependencies(serviceId: number, data: ServiceDependencyDto[]): Promise<BulkCreated> {
-    const transaction: Transaction = await this.sequelize.transaction();
+  async addServiceDefaultApis(serviceId: number, transaction: Transaction): Promise<BulkCreated> {
     try {
-      await this.dependencyRepository.destroy({
-        where: {
-          serviceId,
-        },
-        transaction,
-      });
-      const dependenciesEntities = data.map(dependency => ({
-        dependencyId: dependency.id,
+      const defaultApis = DEFAULT_APIS.map(api => ({
+        ...api,
+        isSystem: true,
         serviceId,
       }));
-      const res = await this.dependencyRepository.bulkCreate(dependenciesEntities, { transaction });
-      await transaction.commit();
+      const res: ServicesApiModel[] = await this.apiRepository.bulkCreate(defaultApis, { transaction });
       return {
         ids: res.map(item => item.id),
       };
     } catch (error) {
       this.logger.error(error);
-      await transaction.rollback();
       throw new ApiException({
         code: CommonCodes.CREATED_FAIL,
-        message: '保存服务依赖失败',
+        message: '保存服务默认接口失败',
       });
     }
   }
+
   /**
    * 添加/更新服务接口
    * @param serviceId
    * @param data
    * @returns
    */
-  async addServiceApis(serviceId: number, data: ServiceApiDto[]): Promise<BulkCreated> {
+  async addServiceApis(serviceId: number, data: ServiceApisDto): Promise<BulkCreated> {
     const transaction: Transaction = await this.sequelize.transaction();
+    const { apis } = data;
     try {
+      // 删除非系统生产接口
       await this.apiRepository.destroy<ServicesApiModel>({
         where: {
           serviceId,
+          isSystem: false,
         },
         transaction,
       });
-      const apisEntities = data.map(api => ({
+      const apisEntities = apis.map(api => ({
         ...api,
         serviceId,
       }));
-      const res: ServicesApiModel[] =  await this.apiRepository.bulkCreate(apisEntities, { transaction });
+
+      const res = await Promise.all(apisEntities.map(item => this.addServiceApiParams(item, transaction)));
       await transaction.commit();
       return {
         ids: res.map(item => item.id),
@@ -269,6 +288,43 @@ export class ServicesService {
       throw new ApiException({
         code: CommonCodes.CREATED_FAIL,
         message: '保存服务接口失败',
+      });
+    }
+  }
+
+  /**
+   * 添加接口参数
+   * @param apiId
+   * @param data
+   * @returns
+   */
+  async addServiceApiParams(data: ApiDto, transaction: Transaction): Promise<Created> {
+    try {
+      const { params, ...apiData } = data;
+      const res: ServicesApiModel = await this.apiRepository.create(apiData, { transaction });
+      await this.apiParamRepository.destroy<ServicesApiParamModel>({
+        where: {
+          apiId: res.id,
+        },
+        transaction,
+      });
+      // todo 校验GET请求不能添加requert_body参数类型
+      if (Array.isArray(params)) {
+        const paramsEntities = params.map(param => ({
+          ...param,
+          apiId: res.id,
+        }));
+        await this.apiParamRepository.bulkCreate(paramsEntities, { transaction });
+      }
+
+      return {
+        id: res.id,
+      };
+    } catch (error) {
+      this.logger.error(error);
+      throw new ApiException({
+        code: CommonCodes.CREATED_FAIL,
+        message: '保存接口参数失败',
       });
     }
   }
@@ -351,6 +407,15 @@ export class ServicesService {
       });
       // 更新dependency表数据，isDelete置为true
       await this.dependencyRepository.update({
+        isDelete: true,
+      }, {
+        where: {
+          serviceId: { [Op.in]: deleteIds },
+        },
+        transaction,
+      });
+      // 更新config表数据，isDelete置为true
+      await this.servicesConfigRepository.update({
         isDelete: true,
       }, {
         where: {

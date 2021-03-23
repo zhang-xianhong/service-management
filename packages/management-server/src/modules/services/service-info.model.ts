@@ -1,7 +1,7 @@
 /**
  * 服务信息实体
  */
-import { Table, Column, DataType, HasMany } from 'sequelize-typescript';
+import { Table, Column, DataType, HasMany, HasOne } from 'sequelize-typescript';
 import { BaseModel } from '../base.entity';
 import { ServicesApiModel } from './service-api.model';
 import { ServicesConfigModel } from './service-config.model';
@@ -199,6 +199,6 @@ export class ServicesInfoModel extends BaseModel  {
   @HasMany(() => ServicesDependencyModel)
   dependencies: ServicesDependencyModel[];
 
-  @HasMany(() => ServicesConfigModel)
+  @HasOne(() => ServicesConfigModel)
   config: ServicesConfigModel;
 }
