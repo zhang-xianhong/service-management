@@ -178,6 +178,7 @@ export class ServicesService {
         }));
         await this.dependencyRepository.bulkCreate(dependenciesEntities, { transaction });
       }
+      // 添加默认接口
       await this.addServiceDefaultApis(service.id, transaction);
       await transaction.commit();
       return {
