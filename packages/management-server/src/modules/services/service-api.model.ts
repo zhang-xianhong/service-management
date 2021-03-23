@@ -1,8 +1,9 @@
 /**
  * 项目实体
  */
-import { Table, Column, DataType, ForeignKey, BelongsTo } from 'sequelize-typescript';
+import { Table, Column, DataType, ForeignKey, BelongsTo, HasMany } from 'sequelize-typescript';
 import { BaseModel } from '../base.entity';
+import { ServicesApiParamModel } from './service-api-param.model';
 import { ServicesInfoModel } from './service-info.model';
 
 export enum methodType {
@@ -10,13 +11,6 @@ export enum methodType {
   Post = 'POST',
   Put = 'PUT'
 }
-
-export enum paramType {
-  RequestBody = 'REQUEST_BODY',
-  PathVariable = 'PATH_VARIABLE',
-  RequestParam = 'REQUEST_PARAM'
-}
-
 @Table({
   timestamps: false,
   tableName: 'service_api',
@@ -31,21 +25,11 @@ export class ServicesApiModel extends BaseModel {
 
   // 请求方式
   @Column({
-    type: DataType.ENUM,
-    values: ['GET', 'POST', 'PUT'],
+    type: DataType.STRING,
     field: 'method_type',
-    defaultValue: 'GET',
+    defaultValue: methodType.Get,
   })
-  method: string;
-
-  // 参数类型
-  @Column({
-    type: DataType.ENUM,
-    values: ['REQUEST_BODY', 'PATH_VARIABLE', 'REQUEST_PARAM'],
-    field: 'param_type',
-    defaultValue: 'REQUEST_PARAM',
-  })
-  paramType: string;
+  method: methodType;
 
   // 接口名称
   @Column({
@@ -71,10 +55,21 @@ export class ServicesApiModel extends BaseModel {
   @BelongsTo(() => ServicesInfoModel)
   serviceInfo: ServicesInfoModel;
 
+  @HasMany(() => ServicesApiParamModel)
+  params: ServicesApiParamModel[];
+
   // 版本号
   @Column({
     type: DataType.INTEGER,
     defaultValue: 0,
   })
   version: number;
+
+  // 是否系统自动生产接口
+  @Column({
+    type: DataType.TINYINT,
+    defaultValue: 0,
+    field: 'is_system',
+  })
+  isSystem: number;
 }
