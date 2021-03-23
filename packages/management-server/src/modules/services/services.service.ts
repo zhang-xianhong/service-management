@@ -22,6 +22,7 @@ import { ServiceConfigDto } from './dto/service-config.dto';
 import { ServicesApiParamModel } from './service-api-param.model';
 import { ApiDto } from './dto/api.dto';
 import { DEFAULT_APIS } from './default-apis';
+import { ModelsRelationModel } from '../models/models-relation.model';
 @Injectable()
 export class ServicesService {
   constructor(
@@ -114,7 +115,10 @@ export class ServicesService {
    * 根据服务id获取服务模型数据
    * @param serviceId
    */
-  async getModelsByServiceId(serviceId: number): Promise<Rows<ModelsInfoModel>> {
+  async getModelsByServiceId(serviceId: number): Promise<{
+    models: Rows<ModelsInfoModel>,
+    relations: Rows<ModelsRelationModel>
+  }> {
     return await this.modelsService.findModelsByServiceId(serviceId);
   }
 
@@ -310,7 +314,7 @@ export class ServicesService {
         transaction,
       });
       // todo 校验GET请求不能添加requert_body参数类型
-      if (Array.isArray(params)) {
+      if (Array.isArray(params) && params.length) {
         const paramsEntities = params.map(param => ({
           ...param,
           apiId: res.id,

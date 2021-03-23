@@ -1,12 +1,12 @@
 import { IsString, IsEnum, IsNumber } from 'class-validator';
-import { paramType } from '../service-api-param.model';
+import { PARAM_TYPE } from '../service-api-param.model';
 
 export class ApiParamDto {
   @IsString()
   readonly name: string;
 
-  @IsEnum(paramType)
-  readonly paramType: paramType;
+  @IsEnum(PARAM_TYPE)
+  readonly paramType: PARAM_TYPE;
 
   @IsNumber()
   readonly required: number;

@@ -6,7 +6,7 @@ import { BaseModel } from '../base.entity';
 import { ServicesApiModel } from './service-api.model';
 
 
-export enum paramType {
+export enum PARAM_TYPE {
   RequestBody = 'REQUEST_BODY',
   PathVariable = 'PATH_VARIABLE',
   RequestParam = 'REQUEST_PARAM'
@@ -28,9 +28,9 @@ export class ServicesApiParamModel extends BaseModel {
   @Column({
     type: DataType.STRING,
     field: 'param_type',
-    defaultValue: paramType.RequestBody,
+    defaultValue: PARAM_TYPE.RequestBody,
   })
-  paramType: paramType;
+  paramType: PARAM_TYPE;
 
   // 是否必填
   @Column({
