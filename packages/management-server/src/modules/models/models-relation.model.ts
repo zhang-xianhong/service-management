@@ -49,4 +49,12 @@ export class ModelsRelationModel extends BaseModel {
     comment: '冗余字段，模型是通过哪个外键关联的',
   })
   byFieldId: number;
+
+  // 版本
+  @Column({
+    type: DataType.BIGINT,
+    comment: '版本',
+    defaultValue: 0,
+  })
+  version: number;
 }
