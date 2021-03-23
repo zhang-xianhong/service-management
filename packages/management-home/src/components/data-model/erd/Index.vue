@@ -5,24 +5,28 @@
     @mouseup="dragStop"
     @mouseleave="dragStop"
     @mousemove="drag"
+    @mousedown.capture="clearSelect"
   >
     <div :style="`width: ${viewWidth}px; height: ${viewHeight}px; position: relative;`">
-      <add-model></add-model>
-      <erd-relation></erd-relation>
+      <add-model @model-change="modelChange"></add-model>
+      <erd-relation @model-change="modelChange"></erd-relation>
       <erd-table
         v-for="(table, $index) in tables"
         :key="$index"
         :index="$index"
         :dragging="table.dragging"
         :class="{ selected: table.selected }"
+        :tableAttr="table"
+        :types="allTypes"
         @mousedown="selectedTable(table)"
+        @model-change="modelChange"
       ></erd-table>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, watchEffect } from 'vue';
+import { defineComponent, onMounted, watchEffect, ref, inject } from 'vue';
 import _ from 'lodash/fp';
 import {
   tables,
@@ -37,10 +41,13 @@ import {
   viewWidth,
   viewHeight,
   recalcCanvasSize,
+  svgOffset,
 } from './store';
 import ErdTable from './Table.vue';
 import ErdRelation from './Relation.vue';
 import AddModel from './AddModel.vue';
+import { getDataTypes } from '@/api/settings/data-types';
+import { updateConfig } from '@/api/schema/model';
 export default defineComponent({
   name: 'Erd',
   props: {
@@ -59,14 +66,30 @@ export default defineComponent({
   },
   components: { ErdTable, ErdRelation, AddModel },
   setup(props, context) {
+    const serviceId = inject('serviceId');
     watchEffect(() => {
-      tables.value = props.modelValue.tables.value || [];
-      relations.value = props.modelValue.relations.value || [];
+      tables.value = props.modelValue.tables || [];
+      relations.value = props.modelValue.relations || [];
       relationLines.value = getLines();
       recalcCanvasSize();
     });
-    const dragStop = () => {
-      tables.value.forEach((table) => {
+    const dragStop = async () => {
+      if (_.some('dragging')(tables.value)) {
+        const coordinate: Record<string, any> = {};
+        tables.value.forEach((table: any) => {
+          coordinate[table.id] = table.position;
+        });
+        const { code } = await updateConfig({
+          serviceId,
+          config: {
+            coordinate,
+          },
+        });
+        if (code === 0) {
+          context.emit('model-change');
+        }
+      }
+      tables.value.forEach((table: any) => {
         // eslint-disable-next-line no-param-reassign
         table.dragging = false;
       });
@@ -86,6 +109,35 @@ export default defineComponent({
       table.dragging = true;
       context.emit('selectChange', table);
     };
+    const clearSelect = () => {
+      clearSelected();
+      context.emit('selectChange', null);
+    };
+    const calcSvgPosition = () => {
+      const svgElem = document.querySelector('.erd-container-wrapper svg') as HTMLElement;
+      const x = svgElem.getBoundingClientRect().left + document.documentElement.scrollLeft;
+      const y = svgElem.getBoundingClientRect().top + document.documentElement.scrollTop;
+      svgOffset.value = { x, y };
+    };
+    const modelChange = () => {
+      context.emit('model-change');
+    };
+    const allTypes = ref([]);
+    const initTypeOption = async () => {
+      const { code, data } = await getDataTypes({});
+      if (code === 0) {
+        allTypes.value = data.rows;
+      }
+    };
+    onMounted(() => {
+      calcSvgPosition();
+      const svgElem = document.querySelector('.erd-container-wrapper svg') as HTMLElement;
+      const closestScroll = svgElem.closest('.el-scrollbar__wrap');
+      if (closestScroll) {
+        closestScroll.addEventListener('scroll', calcSvgPosition);
+      }
+      initTypeOption();
+    });
     return {
       tables,
       dragStop,
@@ -93,6 +145,10 @@ export default defineComponent({
       selectedTable,
       viewWidth,
       viewHeight,
+      clearSelected,
+      clearSelect,
+      modelChange,
+      allTypes,
     };
   },
 });

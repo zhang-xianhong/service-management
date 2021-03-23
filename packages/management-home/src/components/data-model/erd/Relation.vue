@@ -72,13 +72,26 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
-import { relationLines, relations, clearSelected, newRelationLine, tempLinePath, tempRelation } from './store';
+import { defineComponent, inject } from 'vue';
+import { relationLines, relations, clearSelected, newRelationLine, tempLinePath, tempRelation, tables } from './store';
+import { updateRelation } from '@/api/schema/model';
 export default defineComponent({
   name: 'ErdRelation',
-  setup() {
-    const revertRelation = (index: number) => {
-      relations.value[index].reverse();
+  setup(props, context) {
+    const serviceId = inject('serviceId');
+    const revertRelation = async (index: number) => {
+      [relations.value[index][0], relations.value[index][1]] = [relations.value[index][1], relations.value[index][0]];
+      const fromIndex = relations.value[index][0];
+      const toIndex = relations.value[index][1];
+      const { code } = await updateRelation(String(relations.value[index][3]), {
+        fromModelId: (tables.value[fromIndex] as any).id,
+        toModelId: (tables.value[toIndex] as any).id,
+        serviceId,
+        relationType: relations.value[index][2],
+      });
+      if (code === 0) {
+        context.emit('model-change');
+      }
     };
     const selectLine = (line: any) => {
       clearSelected();

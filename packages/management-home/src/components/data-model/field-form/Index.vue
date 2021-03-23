@@ -15,7 +15,9 @@
       </el-table-column>
       <el-table-column prop="type" label="数据类型">
         <template #default="{ row }">
-          <el-select v-model="row.description"></el-select>
+          <el-select v-model="row.type">
+            <el-option v-for="type in allTypes" :key="type.id" :label="type.name" :value="type.id"></el-option>
+          </el-select>
         </template>
       </el-table-column>
       <el-table-column prop="notNull" label="非空" width="60">
@@ -54,7 +56,8 @@
 </template>
 
 <script>
-import { defineComponent, ref, watchEffect } from 'vue';
+import { defineComponent, onMounted, ref, watchEffect } from 'vue';
+import { getDataTypes } from '@/api/settings/data-types';
 export default defineComponent({
   name: 'ColumnForm',
   props: {
@@ -86,10 +89,23 @@ export default defineComponent({
     const remove = (index) => {
       fields.value.splice(index, 1);
     };
+
+    const allTypes = ref([]);
+    const initTypeOption = async () => {
+      const { code, data } = await getDataTypes();
+      if (code === 0) {
+        allTypes.value = data.rows;
+      }
+    };
+
+    onMounted(() => {
+      initTypeOption();
+    });
     return {
       fields,
       add,
       remove,
+      allTypes,
     };
   },
 });

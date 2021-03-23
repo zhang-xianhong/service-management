@@ -19,7 +19,7 @@ export interface Table {
   owner: number;
   tag: number;
   classification: number;
-  columns: Array<Column>;
+  fields: Array<Column>;
   position: {
     x: number;
     y: number;
@@ -50,9 +50,13 @@ export const relations: Ref<Array<Relation>> = ref([]);
 export const relationLines: Ref<Array<Line>> = ref([]);
 export const viewWidth = ref(0);
 export const viewHeight = ref(0);
+export const svgOffset = ref({
+  x: 0,
+  y: 0,
+});
 
 const getPos = (index: number) => [tables.value[index].position.x, tables.value[index].position.y];
-const getTableHeight = (index: number) => tables.value[index].columns.length * 30 + 48;
+const getTableHeight = (index: number) => tables.value[index].fields.length * 30 + 48;
 const getLinePosition = (startPos: Array<number>, endPos: Array<number>, startIndex: number, endIndex: number) => {
   if (startIndex === endIndex) {
     return {
@@ -79,20 +83,21 @@ const getLinePosition = (startPos: Array<number>, endPos: Array<number>, startIn
   const dist = Math.sqrt((line[1].x - line[0].x) ** 2 + (line[1].y - line[0].y) ** 2);
   const dirX = (line[1].x - line[0].x) / dist;
   const dirY = (line[1].y - line[0].y) / dist;
+  const showLine = line[0]?.x && line[1]?.x;
   return {
     startMarker: {
-      x: dirX * 30 + line[0].x,
-      y: dirY * 30 + line[0].y,
+      x: showLine ? dirX * 30 + line[0].x : -1000,
+      y: showLine ? dirY * 30 + line[0].y : -1000,
     },
     endMarker: {
-      x: dirX * -40 + line[1].x,
-      y: dirY * -40 + line[1].y,
+      x: showLine ? dirX * -40 + line[1].x : -1000,
+      y: showLine ? dirY * -40 + line[1].y : -1000,
     },
     middleMarker: {
-      x: (line[0].x + line[1].x) / 2,
-      y: (line[0].y + line[1].y) / 2,
+      x: showLine ? (line[0].x + line[1].x) / 2 : -1000,
+      y: showLine ? (line[0].y + line[1].y) / 2 : -1000,
     },
-    path: `M ${line[0]?.x} ${line[0]?.y} L ${line[1]?.x} ${line[1]?.y}`,
+    path: line[0]?.x && line[1]?.x ? `M ${line[0]?.x} ${line[0]?.y} L ${line[1]?.x} ${line[1]?.y}` : '',
     noRevert: false,
   };
 };
@@ -104,9 +109,12 @@ export const getLines = () =>
   })(relations.value);
 
 export const recalcCanvasSize = () => {
-  const maxX = Math.max(..._.map('position.x')(tables.value));
+  const maxX = Math.max(..._.map('position.x')(tables.value), 600);
   viewWidth.value = maxX + 220;
-  const maxY = Math.max(..._.map((table: Table) => table.position.y + table.columns.length * 30 + 48)(tables.value));
+  const maxY = Math.max(
+    ..._.map((table: Table) => table.position.y + table.fields.length * 30 + 48)(tables.value),
+    600,
+  );
   viewHeight.value = maxY + 20;
 };
 export const move = (index: number, movementX: number, movementY: number): void => {
@@ -142,7 +150,7 @@ export const newRelationLine = ref([
 ]);
 export const drawRelationStart = (ev: MouseEvent, index: number) => {
   drawingRelation.value = true;
-  newRelationLine.value[0] = [ev.clientX, ev.clientY];
+  newRelationLine.value[0] = [ev.clientX - svgOffset.value.x, ev.clientY - svgOffset.value.y];
   newRelation.value[0] = index;
 };
 export const tempLinePath = ref('');
@@ -153,7 +161,7 @@ const drawTempLine = (startIndex: number, endIndex: number) => {
 };
 export const draw = (ev: MouseEvent) => {
   if (!~tempRelation.value) {
-    newRelationLine.value[1] = [ev.clientX, ev.clientY];
+    newRelationLine.value[1] = [ev.clientX - svgOffset.value.x, ev.clientY - svgOffset.value.y];
   } else {
     drawTempLine(newRelation.value[0], tempRelation.value);
   }
@@ -178,8 +186,12 @@ export const drawRelationEnd = (index: number) => {
   newRelation.value[1] = index;
   if (checkRelation()) {
     relations.value.push([...newRelation.value]);
+    const newRelationTableId = _.map((r: number) => tables.value[r])(newRelation.value);
+    clearNewRelation();
+    return newRelationTableId;
   }
   clearNewRelation();
+  return null;
 };
 
 export const drawTempRleation = (index: number) => {

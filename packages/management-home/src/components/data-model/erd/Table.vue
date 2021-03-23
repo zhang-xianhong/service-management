@@ -1,18 +1,18 @@
 <template>
   <div
     class="erd-table-container"
-    :style="{ left: `${position.x}px`, top: `${position.y}px` }"
-    @mouseup="drawRelationEnd(index)"
+    :style="{ left: `${table.position.x}px`, top: `${table.position.y}px` }"
+    @mouseup="relationEnd(index)"
     @mouseenter="drawTempRleation(index)"
     @mouseleave="removeTempRleation()"
   >
     <div class="header">
-      {{ name }}
+      {{ table.name }}
     </div>
     <div class="body">
-      <div v-for="(col, $index) in columns" :key="$index" class="column">
+      <div v-for="(col, $index) in table.fields" :key="$index" class="column">
         <div>{{ col.name }}</div>
-        <div>{{ col.type }}</div>
+        <div>{{ types.find((type) => type.id === col.typeId).name }}</div>
       </div>
     </div>
     <div
@@ -23,15 +23,17 @@
       @mousedown.stop="drawRelationStart($event, index)"
     ></div>
     <div class="operations">
-      <i class="el-icon-circle-close"></i>
+      <i class="el-icon-circle-close" @click="removeModel(table.id)"></i>
       <i class="el-icon-link"></i>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
-import { tables, drawRelationStart, drawRelationEnd, drawTempRleation, removeTempRleation } from './store';
+import { defineComponent, watchEffect, ref, inject } from 'vue';
+import _ from 'lodash/fp';
+import { drawRelationStart, drawRelationEnd, drawTempRleation, removeTempRleation } from './store';
+import { deleteModel, createRelation } from '@/api/schema/model';
 export default defineComponent({
   name: 'ErdTable',
   props: {
@@ -40,20 +42,51 @@ export default defineComponent({
       required: true,
     },
     dragging: {
-      type: Boolean,
+      type: [Boolean],
+      default: false,
+    },
+    tableAttr: {
+      type: Object,
+      required: true,
+    },
+    types: {
+      type: Array,
       required: true,
     },
   },
-  setup(props) {
-    const table = tables.value[props.index];
+  setup(props, context) {
+    const serviceId = inject('serviceId');
     const markers = ['top', 'right', 'bottom', 'left'];
+    const removeModel = async (id: any) => {
+      const { code } = await deleteModel({ ids: [id] });
+      if (code === 0) {
+        context.emit('model-change');
+      }
+    };
+    const relationEnd = async (index: number) => {
+      const checkRelation = drawRelationEnd(index);
+      if (checkRelation) {
+        const { code } = await createRelation({
+          fromModelId: _.property('id')(checkRelation[0]),
+          toModelId: _.property('id')(checkRelation[1]),
+          serviceId,
+          relationType: 1,
+        });
+        if (code === 0) context.emit('model-change');
+      }
+    };
+    const table = ref({});
+    watchEffect(() => {
+      table.value = props.tableAttr;
+    });
     return {
       markers,
       drawRelationStart,
-      drawRelationEnd,
+      relationEnd,
       drawTempRleation,
       removeTempRleation,
-      ...table,
+      removeModel,
+      table,
     };
   },
 });

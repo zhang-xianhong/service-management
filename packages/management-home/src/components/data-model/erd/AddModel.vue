@@ -3,7 +3,7 @@
     <i class="el-icon-plus"></i>
     <span>添加数据对象</span>
     <el-dialog v-model="dialogVisible" title="创建数据对象" width="600px">
-      <el-form label-width="120px" label-position="left" :model="form" :rules="rules">
+      <el-form ref="formRef" label-width="120px" label-position="left" :model="form" :rules="rules">
         <el-form-item label="数据对象名称" prop="name">
           <el-input v-model="form.name"></el-input>
         </el-form-item>
@@ -19,30 +19,37 @@
   </div>
 </template>
 
-<script>
-import { defineComponent, ref } from 'vue';
+<script lang="ts">
+import { defineComponent, inject, nextTick, ref } from 'vue';
 import { createModel } from '@/api/schema/model';
 export default defineComponent({
   name: 'AddModel',
-  setup() {
+  setup(props, context) {
+    const serviceId = inject('serviceId');
+    const formRef: any = ref(null);
     const dialogVisible = ref(false);
     const form = ref({
       name: '',
       description: '',
     });
     const showDialog = () => {
-      form.value = {
-        name: '',
-        description: '',
-      };
       dialogVisible.value = true;
+      nextTick(() => {
+        form.value = {
+          name: '',
+          description: '',
+        };
+        formRef.value.clearValidate();
+      });
     };
     const addModel = async () => {
       const { code } = await createModel({
         ...form.value,
+        serviceId,
       });
       if (code === 0) {
-        dialogVisible.value = true;
+        dialogVisible.value = false;
+        context.emit('model-change');
       }
     };
     const rules = {
@@ -55,6 +62,7 @@ export default defineComponent({
       showDialog,
       addModel,
       rules,
+      formRef,
     };
   },
 });
