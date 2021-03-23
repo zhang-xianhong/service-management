@@ -159,7 +159,7 @@
       <div style="height: 80px;line-height: 80px">是否停止已选服务？</div>
       <div class="dialog-footer">
         <el-button type="primary" @click="submitStopService">确定</el-button>
-        <el-button @click="stopDialogVisible = fasle">取消</el-button>
+        <el-button @click="stopDialogVisible = false">取消</el-button>
       </div>
     </el-dialog>
     <div class="black-hovers" @click="blackHoverclick" v-if="blackHoverVisible"></div>
