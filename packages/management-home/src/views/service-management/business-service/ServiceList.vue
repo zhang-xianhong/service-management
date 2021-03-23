@@ -7,7 +7,7 @@
         <!--        <el-button>克隆</el-button>-->
         <!--        <el-button>继承</el-button>-->
         <el-button @click="runService">启动</el-button>
-        <el-button>停止</el-button>
+        <el-button @click="stopService">停止</el-button>
         <el-button @click="deleteHandler">删除</el-button>
       </div>
       <div class="service-list_right">
@@ -27,7 +27,11 @@
       >
         <el-table-column type="selection" width="55"> </el-table-column>
         <el-table-column type="index" width="50" label="序号"> </el-table-column>
-        <el-table-column property="name" label="服务名称"></el-table-column>
+        <el-table-column property="name" label="服务名称">
+          <template #default="scope">
+            <router-link :to="`service-list/detail/${scope.row.id}`">{{ scope.row.name }}</router-link>
+          </template>
+        </el-table-column>
         <el-table-column property="description" label="服务描述"></el-table-column>
         <el-table-column property="owner" label="负责人"></el-table-column>
         <el-table-column property="status" label="服务状态"></el-table-column>
@@ -123,7 +127,7 @@
         </span>
       </template>
     </el-dialog>
-    <el-dialog title="启动服务" v-model="logDialogVisible" width="40%">
+    <el-dialog :title="logType" v-model="logDialogVisible" width="40%">
       <el-input type="textarea" :rows="25" :autosize="{ maxRows: 25, minRows: 25 }" v-model="logData"></el-input>
       <div class="dialog-footer">
         <el-button type="primary" style="margin-top: 20px" @click="logDialogVisible = false">关闭</el-button>
@@ -146,6 +150,16 @@
       <div class="dialog-footer">
         <el-button type="primary" @click="submitRunService">提交</el-button>
         <el-button @click="runDialogVisible = false">关闭</el-button>
+      </div>
+    </el-dialog>
+    <el-dialog v-model="stopDialogVisible" width="300px">
+      <template #title>
+        <div class="title_line">提示</div>
+      </template>
+      <div style="height: 80px;line-height: 80px">是否停止已选服务？</div>
+      <div class="dialog-footer">
+        <el-button type="primary" @click="submitStopService">确定</el-button>
+        <el-button @click="stopDialogVisible = fasle">取消</el-button>
       </div>
     </el-dialog>
     <div class="black-hovers" @click="blackHoverclick" v-if="blackHoverVisible"></div>
@@ -262,10 +276,12 @@ export default defineComponent({
     }
 
     const runDialogVisible = ref(false);
+    const stopDialogVisible = ref(false);
 
     const logData = ref('');
 
     const logDialogVisible = ref(false);
+    const logType = ref('启动服务');
 
     const runOptions = reactive({} as any);
     const branchOptions = ref(['master', 'dev', 'fix']);
@@ -273,9 +289,18 @@ export default defineComponent({
     const submitRunService = () => {
       runDialogVisible.value = false;
       logDialogVisible.value = true;
+      logType.value = '启动服务';
     };
     const runService = () => {
       runDialogVisible.value = true;
+    };
+    const stopService = () => {
+      stopDialogVisible.value = true;
+    };
+    const submitStopService = () => {
+      stopDialogVisible.value = false;
+      logDialogVisible.value = true;
+      logType.value = '停止服务';
     };
 
     return {
@@ -309,6 +334,10 @@ export default defineComponent({
       branchOptions,
       submitRunService,
       runService,
+      stopService,
+      stopDialogVisible,
+      submitStopService,
+      logType,
     };
   },
 });
@@ -356,5 +385,15 @@ export default defineComponent({
   top: 0;
   background-color: rgba(0, 0, 0, 0.2);
   z-index: 40;
+}
+.title_line {
+  border-bottom: solid 1px rgba(0, 0, 0, 0.2);
+  height: 60px;
+  line-height: 60px;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  padding-left: 20px;
 }
 </style>
