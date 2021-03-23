@@ -179,7 +179,7 @@ export class ModelsService {
       attributes: ['id'],
       transaction,
     });
-    const modelIds = models.map(model => model.id);
+    const modelIds: number[] = models.map(model => model.id);
     const deleteModels = this.infoRepository.update({
       isDelete: true,
     }, {
