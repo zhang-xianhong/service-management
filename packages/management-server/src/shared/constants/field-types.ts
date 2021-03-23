@@ -10,11 +10,12 @@ export enum FIELD_TYPES {
 }
 
 export interface FIELD_TYPE {
-  id: number | string
   type: FIELD_TYPES
   length: number
   name: string
+  id?: number | string
   description: string
+  typeId?: number
   isSystem?: boolean
   isUnique?: boolean
   isIndex?: boolean
@@ -35,7 +36,17 @@ export const SYSTEM_FIELD_TYPES: FIELD_TYPE[] = [
   },
 ];
 
-
-export const MODEL_DEFAULT_FIELDS_NAMES = ['UUID'];
-
 export const FIELD_UUID_NAME = 'UUID';
+
+// 默认要生成的字段
+export const DEFAULT_FIELDS = [
+  {
+    name: 'id',
+    type: 'UUID', // 根据该类型去data-type表中查找typeID
+    isKey: true,
+    isUnique: true,
+    isIndex: true,
+    isSystem: true,
+    extra: 'auto_increment',
+  },
+];

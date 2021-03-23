@@ -108,7 +108,11 @@ export class ModelsInfoModel extends BaseModel {
   })
   startTime: number;
 
-  @HasMany(() => ModelsFieldsModel)
+  @HasMany(() => ModelsFieldsModel, {
+    foreignKey: 'modelId',
+    constraints: false,
+    foreignKeyConstraint: false,
+  })
   fields: ModelsFieldsModel;
 
   // 关联服务

@@ -3,8 +3,11 @@ import { ModelsService } from './models.service';
 import { ModelInfoDto } from './dto/model-info.dto';
 import { Created, Deleted, Updated } from 'src/shared/types/response';
 import { ModelsFieldsModel } from './models-fields.model';
+import { ModelFieldsDto } from './dto/model-field.dto';
+import { ApiException } from 'src/shared/utils/api.exception';
+import { CommonCodes } from 'src/shared/constants/code';
+import { ModelRelationDto } from './dto/model-relation.dto';
 @Controller('models')
-
 export class ModelsController {
   constructor(private readonly service: ModelsService) {}
 
@@ -21,10 +24,57 @@ export class ModelsController {
   }
 
   // 更新创建模型字段
-  @Post('/fields')
-  async updateModelFields(@Body() { modelId, fields }): Promise<ModelsFieldsModel[]> {
-    return await this.service.updateModelFields(modelId, fields);
+  @Post('/:id/fields')
+  async updateOrCreateFields(@Body() { fields }: ModelFieldsDto, @Param() { id }): Promise<ModelsFieldsModel[]> {
+    if (!fields.length) {
+      throw new ApiException({
+        code: CommonCodes.PARAMETER_INVALID,
+        message: 'fields不能为空',
+      });
+    }
+    fields.reduce((prev, item) => {
+      if (prev.includes(item.name)) {
+        throw new ApiException({
+          code: CommonCodes.PARAMETER_INVALID,
+          message: `存在名称[${item.name}]相同的字段`,
+        });
+      }
+      return prev;
+    }, []);
+    return await this.service.updateOrCreateFields(id, fields);
   }
+
+  /**
+   * 更新模型关系
+   * @param param0
+   * @returns
+   */
+  @Post('/relation')
+  async createModelRelation(@Body() postData: ModelRelationDto): Promise<Created> {
+    return await this.service.createModelRelation(postData);
+  }
+
+  /**
+   * 更新模型关系
+   * @param param0
+   * @returns
+   */
+  @Post('/relation/:id')
+  async updateModelRelation(@Param() { id }, @Body() postData: ModelRelationDto): Promise<Updated> {
+    return await this.service.updateModelRelation(id, postData);
+  }
+
+
+  /**
+   * 删除模型关系
+   * @param param0
+   * @returns
+   */
+  @Post('/relation/delete')
+  async deleteModelRelation(@Body() ids: number[]): Promise<Deleted> {
+    return await this.service.deleteModelRelations(ids);
+  }
+
 
   // 更新模型
   @Post('/:id')

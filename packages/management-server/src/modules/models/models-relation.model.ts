@@ -41,4 +41,12 @@ export class ModelsRelationModel extends BaseModel {
     defaultValue: MODEL_RELATION_TYPES.ONE_TO_ONE,
   })
   relationType: MODEL_RELATION_TYPES;
+
+  // 关联外键
+  @Column({
+    type: DataType.STRING,
+    field: 'by_field_id',
+    comment: '冗余字段，模型是通过哪个外键关联的',
+  })
+  byFieldId: string;
 }

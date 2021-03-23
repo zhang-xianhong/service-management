@@ -38,3 +38,16 @@ export const getTreeArr = (obj: PlainObject): Tree[] => {
     });
   } return treeArray;
 };
+
+
+/**
+ * 小驼峰转换为大驼峰
+ * @param string
+ * @returns
+ */
+export const lowerCamelToUpperCamel = (string: string): string => {
+  const [firstChar, ...chars] = string;
+  return `${firstChar.toUpperCase()}${chars.join('')}`;
+};
+
+
