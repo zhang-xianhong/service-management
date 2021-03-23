@@ -333,11 +333,11 @@ export class ModelsService {
     }
     const transaction = await this.sequelize.transaction();
     try {
-      const foreignKey = (await
+      const foreignKeyId = (await
       this.createModelRelationForeignKey(postData.fromModelId, postData.toModelId, transaction));
       const res = await this.relationRepository.create({
         ...postData,
-        byFieldId: foreignKey,
+        byFieldId: foreignKeyId,
       });
       await transaction.commit();
       return {
@@ -346,6 +346,9 @@ export class ModelsService {
     } catch (error) {
       this.logger.error(error);
       await transaction.rollback();
+      if (error instanceof ApiException) {
+        throw error;
+      }
       throw new ApiException({
         code: CommonCodes.CREATED_FAIL,
         message: '生成关联关系失败',
@@ -382,6 +385,9 @@ export class ModelsService {
     } catch (error) {
       this.logger.error(error);
       await transaction.rollback();
+      if (error instanceof ApiException) {
+        throw error;
+      }
       throw new ApiException({
         code: CommonCodes.UPDATED_FAIL,
         message: '更新关联关系失败',
@@ -397,16 +403,53 @@ export class ModelsService {
    * @returns
    */
   async deleteModelRelations(ids: number[]): Promise<Deleted> {
-    await this.relationRepository.destroy({
-      where: {
-        id: {
-          [Op.in]: ids,
+    const transaction = await this.sequelize.transaction();
+    try {
+      const relations = await this.relationRepository.findAll({
+        where: {
+          id: {
+            [Op.in]: ids,
+          },
         },
-      },
-    });
-    return {
-      ids,
-    };
+        raw: true,
+        transaction,
+      });
+      const foreignKeyIds = Array.from(new Set(relations.map(item => item.byFieldId)));
+      // 删除关系
+      await this.relationRepository.destroy({
+        where: {
+          id: {
+            [Op.in]: ids,
+          },
+        },
+        transaction,
+      });
+      // 删除外键
+      await this.fieldsRepository.update({
+        isDelete: true,
+      }, {
+        where: {
+          id: {
+            [Op.in]: foreignKeyIds,
+          },
+        },
+      });
+      await transaction.commit();
+      return {
+        ids,
+      };
+    } catch (error) {
+      this.logger.error(error);
+      await transaction.rollback();
+      if (error instanceof ApiException) {
+        throw error;
+      }
+      throw new ApiException({
+        code: CommonCodes.DELETED_FAIL,
+        message: '删除关联关系失败',
+        error,
+      });
+    }
   }
 
 
@@ -448,6 +491,7 @@ export class ModelsService {
       transaction,
     });
   };
+
 
   /**
    * 生成表字段
@@ -513,12 +557,12 @@ export class ModelsService {
    * @returns
    */
   private async createModelRelationForeignKey(fromId: number, toId: number, transaction: sequelize.Transaction):
-  Promise<string> {
+  Promise<number> {
     const [fromModel, toModel] = await Promise.all([this.findModelById(fromId), this.findModelById(toId)]);
     // 外键名称
     const foreignKey = `ref${lowerCamelToUpperCamel(toModel.name)}Id`;
     // 生成外键
-    const foreignKeyField: ModelsFieldsModel = await this.fieldsRepository.findOne({
+    let foreignKeyField: ModelsFieldsModel = await this.fieldsRepository.findOne({
       where: {
         name: foreignKey,
         isDelete: false,
@@ -541,7 +585,7 @@ export class ModelsService {
         length: 20,
         typeId: uuidType.id,
       };
-      await this.fieldsRepository.create({
+      foreignKeyField = await this.fieldsRepository.create({
         ...foreignKeyFieldEntity,
         modelId: fromModel.id,
       }, {
@@ -558,6 +602,6 @@ export class ModelsService {
       });
     }
 
-    return foreignKey;
+    return foreignKeyField.id;
   }
 }

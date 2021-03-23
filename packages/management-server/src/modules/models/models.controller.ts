@@ -59,7 +59,7 @@ export class ModelsController {
    * @returns
    */
   @Post('/relation/delete')
-  async deleteModelRelation(@Body() ids: number[]): Promise<Deleted> {
+  async deleteModelRelation(@Body() { ids }): Promise<Deleted> {
     return await this.service.deleteModelRelations(ids);
   }
 
