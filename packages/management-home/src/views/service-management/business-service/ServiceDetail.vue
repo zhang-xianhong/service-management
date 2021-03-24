@@ -34,7 +34,7 @@
             ></el-option>
           </el-select>
         </el-row>
-        <div class="data-model__container" style="height: 800px;">
+        <div class="data-model__container">
           <erd
             v-loading="erdLoading"
             width="100%"
@@ -76,8 +76,8 @@ import useStatusUtils from './utils/service-detail-status';
 import ServerBaseInfo from './components/ServerBaseInfo.vue';
 import Erd from '@/components/data-model/erd/Index.vue';
 import ServerPortsInfo from './components/ServerPortsInfo.vue';
-import ModelDetailInfo from '@/components/data-model/detail-info/ModelDetailInfo.vue';
 import { ref, Ref, reactive, watch, onMounted, provide, computed } from 'vue';
+import ModelDetailInfo from '@/components/data-model/detail-info/ModelDetailInfo.vue';
 import { getServiceList, getServiceById } from '@/api/servers/index';
 import { getServiceModelList } from '@/api/schema/model';
 import { useRoute } from 'vue-router';
@@ -182,10 +182,12 @@ export default {
           relation.id,
         ])(data.relations);
       }
+      // 模型无定位时增加默认定位
       tables.forEach((table: any) => {
-        if (serverInfo.value.config) {
+        const tablePosition = serverInfo.value?.config?.coordinate[table.id];
+        if (tablePosition) {
           // eslint-disable-next-line no-param-reassign
-          table.position = serverInfo.value.config.coordinate[table.id];
+          table.position = tablePosition;
         } else {
           // eslint-disable-next-line no-param-reassign
           table.position = {
