@@ -18,7 +18,7 @@ export function refreshServiceList(payload = {} as any) {
   let data = {} as any;
   if (payload) {
     data = { ...payload };
-    data.tag = payload.tag ? payload.tag.join(',') : '';
+    data.tags = payload.tags ? payload.tags.join(',') : '';
   }
   Object.keys(data).forEach((x) => {
     if (!data[x]) {

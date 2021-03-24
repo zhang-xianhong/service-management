@@ -1,6 +1,5 @@
 <template>
   <div class="service-list">
-    <blank-header></blank-header>
     <div class="service-list_header">
       <div class="service-list_left">
         <el-button icon="el-icon-plus" type="primary" @click="toggleServiceDialog">新建</el-button>
@@ -14,7 +13,7 @@
       <div class="service-list_right">
         <el-input placeholder="请输入服务名称/标签/分类" style="width: 250px" v-model="pageInfo.keyword">
           <template #append>
-            <el-button icon="el-icon-search"></el-button>
+            <el-button icon="el-icon-search" @click="searchForList"></el-button>
           </template>
         </el-input>
       </div>
@@ -44,7 +43,7 @@
                 <el-button type="text" @click="sortTitleClick">分类</el-button>
               </template>
               <el-cascader
-                v-bind="pageInfo.classification"
+                :value="pageInfo.classification"
                 :options="sorts"
                 :props="sortProps"
                 clearable
@@ -61,7 +60,7 @@
               <template #reference>
                 <el-button type="text" @click="tagTitleClick">标签</el-button>
               </template>
-              <el-select v-model="pageInfo.tag" placeholder="请选择标签" clearable multiple>
+              <el-select v-model="pageInfo.tags" placeholder="请选择标签" clearable multiple>
                 <el-option v-for="(item, index) in tags" :key="index" :label="item.name" :value="item.id"></el-option>
               </el-select>
             </el-popover>
@@ -103,7 +102,7 @@
           </el-form-item>
           <el-form-item label="服务分类" :label-width="labelWidth">
             <el-cascader
-              v-bind="serviceDetail.classification"
+              :value="serviceDetail.classification"
               :options="sorts"
               :props="sortProps"
               clearable
@@ -181,13 +180,10 @@ import {
   getClassifications,
 } from './utils/service-data-utils';
 import { addService } from '@/api/servers';
-import BlankHeader from '@/components/blank-header/Index.vue';
 
 export default defineComponent({
   name: 'ServiceList',
-  components: {
-    BlankHeader,
-  },
+  components: {},
   data() {
     return {
       sortProps: {
@@ -211,7 +207,7 @@ export default defineComponent({
       page: 1,
       pageSize: 10,
       classification: '',
-      tag: [],
+      tags: [],
       keyword: '',
     });
 
@@ -307,6 +303,11 @@ export default defineComponent({
       logType.value = '停止服务';
     };
 
+    const searchForList = () => {
+      pageInfo.page = 1;
+      refreshServiceList(pageInfo);
+    };
+
     return {
       serviceTableList,
       serviceDetail,
@@ -342,6 +343,7 @@ export default defineComponent({
       stopDialogVisible,
       submitStopService,
       logType,
+      searchForList,
     };
   },
 });

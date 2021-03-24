@@ -1,7 +1,5 @@
 <template>
-  <div class="blank-header">
-    <slot></slot>
-  </div>
+  <div class="blank-header"></div>
 </template>
 
 <script>
@@ -9,19 +7,30 @@ import { defineComponent, onMounted, ref } from 'vue';
 export default defineComponent({
   name: 'BlankHeader',
   setup() {
-    const clintWidth = ref(document.getElementsByClassName('layout-container')[0].clientWidth);
-    console.log(clintWidth.value);
-
+    const clintWidth = ref(document.body.clientWidth);
+    const layoutBool = ref(clintWidth.value > 1440);
+    console.log(clintWidth.value, layoutBool.value);
     onMounted(() => {
-      window.onresize = (res) => {
-        console.log(res);
+      clintWidth.value = document.body.clientWidth;
+      window.onresize = () => {
+        clintWidth.value = document.body.clientWidth;
+        // getElementsByClassName('layout-container')[0]
+        layoutBool.value = ref(clintWidth.value > 1440);
       };
     });
     return {
       clintWidth,
+      layoutBool,
     };
   },
 });
 </script>
 
-<style scoped></style>
+<style lang="scss">
+.blank-header {
+  width: 100%;
+  height: 40px;
+  margin-bottom: 10px;
+  background-color: white;
+}
+</style>

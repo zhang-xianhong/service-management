@@ -9,6 +9,7 @@
       </aside>
       <div class="layout-container">
         <el-scrollbar>
+          <blank-header></blank-header>
           <div class="layout-viewport">
             <router-view />
           </div>
@@ -23,12 +24,14 @@ import { defineComponent } from 'vue';
 import SideBar from './components/sideBar/Index.vue';
 import NavBar from './components/navBar/Index.vue';
 import publicStyle from '@/styles/layout.scss';
+import BlankHeader from '@/components/blank-header/Index.vue';
 
 export default defineComponent({
   name: 'Layout',
   components: {
     SideBar,
     NavBar,
+    BlankHeader,
   },
   setup() {
     return {
