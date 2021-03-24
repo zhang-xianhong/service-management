@@ -23,6 +23,7 @@ import { ServicesApiParamModel } from './service-api-param.model';
 import { ApiDto } from './dto/api.dto';
 import { DEFAULT_APIS } from './default-apis';
 import { ModelsRelationModel } from '../models/models-relation.model';
+import { escapeLike } from 'src/shared/utils/sql';
 @Injectable()
 export class ServicesService {
   constructor(
@@ -51,7 +52,7 @@ export class ServicesService {
       const classification = query.classification.split(',');
       where.classification = {
         [Op.or]: classification.map(i => ({
-          [Op.like]: `%${i}%`,
+          [Op.like]: escapeLike(i),
         })),
       };
     }
@@ -59,20 +60,21 @@ export class ServicesService {
       where.tags = query.tags;
     }
     if (query.keyword) {
+      const likeString = escapeLike(query.keyword);
       where[Op.or] = [
         {
           name: {
-            [Op.like]: `%${query.keyword}%`,
+            [Op.like]: likeString,
           },
         },
         {
           classification: {
-            [Op.like]: `%${query.keyword}%`,
+            [Op.like]: likeString,
           },
         },
         {
           tag: {
-            [Op.like]: `%${query.keyword}%`,
+            [Op.like]: likeString,
           },
         },
       ];
