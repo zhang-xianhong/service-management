@@ -1,0 +1,157 @@
+<template>
+  <div class="baseinfo-container">
+    <div class="baseinfo-title">基本信息</div>
+    <el-form :model="formData" label-width="80px">
+      <el-form-item label="服务名称">
+        <div class="baseinfo-content">{{ formData.name }}</div>
+      </el-form-item>
+      <el-form-item label="服务描述">
+        <div class="baseinfo-content">{{ formData.description }}</div>
+      </el-form-item>
+      <el-form-item label="负责人">
+        <div v-if="isShowMode" class="baseinfo-content">{{ formData.owner }}</div>
+        <el-select v-else :value="computedOwner" multiple placeholder="请选择">
+          <el-option v-for="(item, index) in allOwners" :key="index">{{ item.name }}</el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item label="分类">
+        <div v-if="isShowMode" class="baseinfo-content">{{ classificationName }}</div>
+        <el-cascader
+          v-else
+          v-model="classificationValue"
+          :options="allClassifications"
+          :show-all-levels="false"
+          :props="{ multiple: true, label: 'name', value: 'id' }"
+          @change="selectClassification"
+          clearable
+        ></el-cascader>
+      </el-form-item>
+      <el-form-item label="标签">
+        <div v-if="isShowMode" class="baseinfo-content">{{ tagNames }}</div>
+        <el-select v-else v-model="tags" multiple filterable placeholder="请选择" @change="selectTag">
+          <el-option v-for="item in allTags" :key="item.id" :value="item.id" :label="item.name"></el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item label="服务详情">
+        <div v-if="isShowMode" class="baseinfo-content">{{ formData.detail }}</div>
+        <el-input
+          v-else
+          type="textarea"
+          placeholder="请输入内容"
+          v-model="formData.detail"
+          maxlength="50"
+          show-word-limit
+        >
+        </el-input>
+      </el-form-item>
+      <el-form-item>
+        <el-button v-if="isShowMode" type="primary" @click="modifyFormData">修改</el-button>
+        <el-button v-else type="primary" @click="saveFormData">保存</el-button>
+      </el-form-item>
+    </el-form>
+  </div>
+</template>
+
+<script lang="ts">
+import { reactive, ref, computed } from 'vue';
+import useClassifications from '../utils/service-baseinfo-classification';
+import useTags from '../utils/service-baseinfo-tag';
+import { updateService } from '@/api/servers';
+
+export default {
+  name: 'ServerBaseInfo',
+  props: {
+    data: {
+      type: Object,
+      default: () => ({}),
+    },
+    id: {
+      type: String,
+      default: '',
+    },
+  },
+  setup(props: { data: any; id: string }) {
+    // 是否为显示模式标识，默认为true
+    const isShowMode = ref(true);
+
+    // 表单数据
+    const formData = reactive({
+      name: props.data.name,
+      description: props.data.description,
+      owner: props.data.owner,
+      classification: props.data.classification,
+      tag: props.data.tag,
+      detail: props.data.detail,
+    });
+
+    // 负责人数组
+    const computedOwner = computed(() => formData.owner.split(','));
+
+    // 所有负责人
+    const allOwners = reactive([]);
+
+    const { allClassifications, classificationName, classificationValue } = useClassifications(formData.classification);
+
+    // 分类选择
+    const selectClassification = (value: Array<Array<string>>) => {
+      formData.classification = value.map((item: Array<string>) => item[item.length - 1]);
+      useClassifications(formData.classification.join(','));
+    };
+
+    const { tags, tagNames, allTags } = useTags(formData.tag);
+
+    // 标签选择
+    const selectTag = (tags: string[]) => {
+      formData.tag = tags.join(',');
+    };
+
+    // 修改表单数据
+    const modifyFormData = () => {
+      isShowMode.value = false;
+    };
+
+    // 保存表单修改
+    const saveFormData = async () => {
+      const { code } = await updateService(props.id, formData);
+      if (code === 0) {
+        isShowMode.value = true;
+        useTags(formData.tag);
+        useClassifications(formData.classification.join(','));
+      }
+    };
+
+    return {
+      isShowMode,
+      formData,
+      computedOwner,
+      allOwners,
+      allClassifications,
+      classificationName,
+      classificationValue,
+      selectClassification,
+      tags,
+      tagNames,
+      allTags,
+      selectTag,
+      modifyFormData,
+      saveFormData,
+    };
+  },
+};
+</script>
+
+<style lang="scss" scoped>
+.baseinfo-container {
+  padding: 12px;
+}
+.baseinfo-title {
+  margin-bottom: 20px;
+}
+.baseinfo-content {
+  display: inline-block;
+  width: 400px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+</style>

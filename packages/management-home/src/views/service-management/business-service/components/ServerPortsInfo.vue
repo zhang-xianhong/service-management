@@ -1,0 +1,250 @@
+<template>
+  <el-table :data="tableData" style="width: 100%;" height="330" border>
+    <el-table-column label="序号" type="index" width="50"></el-table-column>
+    <el-table-column label="接口名称" prop="name">
+      <template #default="scope">
+        <el-input v-if="!scope.row.isSystem" v-model="scope.row.name" placeholder="请输入英文名称"></el-input>
+        <template v-else>{{ scope.row.name }}</template>
+      </template>
+    </el-table-column>
+    <el-table-column label="请求方式" prop="method">
+      <template #default="scope">
+        <el-select v-if="!scope.row.isSystem" v-model="scope.row.method" placeholder="请选择请求方式">
+          <el-option
+            v-for="(option, index) in requestMethodOptions"
+            :key="index"
+            :label="option"
+            :value="option"
+          ></el-option>
+        </el-select>
+        <template v-else>{{ scope.row.method }}</template>
+      </template>
+    </el-table-column>
+    <el-table-column label="URL" prop="url">
+      <template #default="scope">
+        <el-input v-if="!scope.row.isSystem" v-model="scope.row.url" placeholder="请输入URL"></el-input>
+        <template v-else>{{ scope.row.url }}</template>
+      </template>
+    </el-table-column>
+    <el-table-column label="接口描述" prop="description">
+      <template #default="scope">
+        <el-input v-if="!scope.row.isSystem" v-model="scope.row.description" placeholder="请填写接口描述"></el-input>
+        <template v-else>{{ scope.row.description }}</template>
+      </template>
+    </el-table-column>
+    <el-table-column label="操作" width="120">
+      <template #default="scope">
+        <template v-if="!scope.row.isSystem">
+          <a class="operation-link" @click="openParamsModel(scope.$index, scope.row)">参数</a>
+          <a class="operation-link" @click="addItem(scope.$index)">添加</a>
+          <a class="operation-link" @click="deleteItem(scope.$index, scope.row)">删除</a>
+        </template>
+      </template>
+    </el-table-column>
+  </el-table>
+  <div class="ports-configuration__operations">
+    <el-button type="primary" @click="updateApis">保存</el-button>
+    <el-button @click="cancelChange">取消</el-button>
+  </div>
+  <!-- 参数配置弹窗 -->
+  <el-dialog title="参数配置" v-model="dialogVisible" width="30%">
+    <el-row>
+      <el-col :span="4" style="text-align: center;vertical-align: middle;line-height: 32px;">
+        {{ dialogState.method }}
+      </el-col>
+      <el-col :span="20">
+        <el-input v-model="dialogState.url" placeholder="请输入URL"></el-input>
+      </el-col>
+    </el-row>
+    <el-row>
+      <el-button-group>
+        <el-button @click="dialogState.paramType = 'REQUEST_PARAM'">params</el-button>
+        <el-button @click="dialogState.paramType = 'PATH_VARIABLE'">query</el-button>
+        <el-button v-if="dialogState.method === 'POST'" @click="dialogState.paramType = 'REQUEST_BODY'">body</el-button>
+      </el-button-group>
+      <el-table :data="computedParams" border>
+        <el-table-column prop="name" label="参数名称">
+          <template #default="scope">
+            <el-input v-model="scope.row.name" placeholder="请输入参数名称"></el-input>
+          </template>
+        </el-table-column>
+        <el-table-column label="参数类型">{{ dialogState.paramType }}</el-table-column>
+        <el-table-column prop="required" label="是否必填">
+          <template #default="scope">
+            <el-select v-model="scope.row.required">
+              <el-option :value="1" label="是"></el-option>
+              <el-option :value="0" label="否"></el-option>
+            </el-select>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" width="80">
+          <template #default="scope">
+            <a class="operation-link" @click="addParam(scope.$index, dialogState.paramType)">添加</a>
+            <a class="operation-link" @click="deleteParam(scope.$index, dialogState.paramType)">删除</a>
+          </template>
+        </el-table-column>
+      </el-table>
+    </el-row>
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button @click="dialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="handleParamsModify">确 定</el-button>
+      </span>
+    </template>
+  </el-dialog>
+</template>
+
+<script lang="ts">
+import { defineComponent, ref, reactive, watch, getCurrentInstance, SetupContext } from 'vue';
+import { getServiceApis, updateServiceApis } from '@/api/servers';
+
+export default defineComponent({
+  name: 'ServerPortsInfo',
+  props: {
+    id: {
+      type: String,
+      default: '',
+    },
+  },
+  emits: ['back'],
+  setup(props: { id: string }, ctx: SetupContext) {
+    // 组件实例
+    const instance = getCurrentInstance();
+
+    // 表单数据
+    const tableData = ref([] as any[]);
+
+    // 初始化表格数据
+    const initializeTableData = async () => {
+      const { data } = await getServiceApis({ serviceId: props.id });
+      tableData.value = [...data, { name: '', method: '', url: '', description: '', isSystem: 0 }];
+    };
+
+    initializeTableData();
+
+    // 添加属性
+    const addItem = (index: number) => {
+      tableData.value.splice(index + 1, 0, {
+        name: '',
+        method: '',
+        url: '',
+        description: '',
+      });
+    };
+
+    // 删除属性
+    const deleteItem = (index: number) => {
+      tableData.value.splice(index, 1);
+    };
+
+    // 请求方式选项数组
+    const requestMethodOptions = ['PUT', 'GET', 'POST', 'DELETE'];
+
+    const currentItemIndex = ref(0);
+
+    // 参数配置弹窗是否可见
+    const dialogVisible = ref(false);
+
+    // 参数弹窗所需数据
+    const dialogState = reactive({
+      method: '',
+      url: '',
+      params: [] as any[],
+      paramType: 'REQUEST_PARAM',
+    });
+
+    // 参数列表表格数据
+    const computedParams = ref([] as any[]);
+
+    // 监听参数类型变化切换参数列表数据
+    watch(
+      () => dialogState.paramType,
+      () => {
+        const result = dialogState.params.filter((item: any) => item.paramType === dialogState.paramType);
+        result.push({ name: '', paramType: dialogState.paramType, required: '' });
+        computedParams.value = result;
+      },
+    );
+
+    // 打开参数配置弹窗
+    const openParamsModel = (index: number, rowData: any) => {
+      currentItemIndex.value = index;
+      dialogVisible.value = true;
+      dialogState.method = rowData.method;
+      dialogState.url = rowData.url;
+      dialogState.params = rowData.params || [];
+    };
+
+    // 添加参数
+    const addParam = (index: number, paramType: string) => {
+      computedParams.value.splice(index + 1, 0, {
+        name: '',
+        paramType,
+        required: '',
+      });
+    };
+
+    // 删除参数
+    const deleteParam = (index: number) => {
+      computedParams.value.splice(index, 1);
+    };
+
+    // 参数配置修改
+    const handleParamsModify = () => {
+      const params = computedParams.value.map((param: any, index: number) => ({
+        ...param,
+        ...{ paramOrder: index, description: '' },
+      }));
+      tableData.value[currentItemIndex.value].params = params;
+      dialogVisible.value = false;
+    };
+
+    // 取消接口修改
+    const cancelChange = () => {
+      ctx.emit('back');
+    };
+
+    // 保存接口修改
+    const updateApis = async () => {
+      const { code } = await updateServiceApis(
+        tableData.value.filter((item: any) => item.name !== ''),
+        props.id,
+      );
+      if (code === 0) {
+        (instance as any).proxy.$message({
+          type: 'success',
+          message: '删除成功',
+        });
+        cancelChange();
+      }
+    };
+
+    return {
+      tableData,
+      requestMethodOptions,
+      dialogVisible,
+      dialogState,
+      computedParams,
+      openParamsModel,
+      addItem,
+      deleteItem,
+      addParam,
+      deleteParam,
+      handleParamsModify,
+      updateApis,
+      cancelChange,
+    };
+  },
+});
+</script>
+
+<style scoped lang="scss">
+.operation-link {
+  margin-right: 4px;
+}
+.ports-configuration__operations {
+  display: flex;
+  margin-top: 8px;
+  justify-content: flex-end;
+}
+</style>

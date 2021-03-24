@@ -1,6 +1,6 @@
 // 0 表示 api地址， // 1 表示mock地址
 export default {
-  GET_DATA_TYPES: ['/settings/data-types/all', '/mock/settings/data-types.json'],
+  GET_DATA_TYPES: ['/settings/data-types', '/mock/settings/data-types.json'],
   ADD_DATA_TYPE: ['/settings/data-types', '/mock/settings/datatype-create.json'],
   UPDATE_DATA_TYPE: ['/settings/data-types/_', '/mock/settings/datatype-update.json'],
   DELETE_DATA_TYPE: ['/settings/data-types/delete', '/mock/settings/datatype-delete.json'],
