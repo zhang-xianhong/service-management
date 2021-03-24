@@ -1,8 +1,9 @@
 <template>
   <div class="blank-header">
-    <span class="blank-header-back" v-if="back"><i class="el-icon-back"></i></span>
+    <span class="blank-header-back" v-if="back" @click="jumpBack"><i class="el-icon-back"></i></span>
     <span class="blank-header-title">{{ title }}</span>
-    <span></span>
+    <span v-if="detailName" class="blank-header-detail">|</span>
+    <span class="blank-header-detail">{{ detailName }}</span>
   </div>
 </template>
 
@@ -37,6 +38,11 @@ export default defineComponent({
     };
     getBread();
     console.log(levelList.value, 123);
+
+    function jumpBack() {
+      proxy.$router.back();
+    }
+    const detailName = ref('');
     watch(
       () => proxy.$route,
       (route) => {
@@ -50,6 +56,8 @@ export default defineComponent({
       clintWidth,
       layoutBool,
       title,
+      jumpBack,
+      detailName,
     };
   },
 });
@@ -67,6 +75,14 @@ export default defineComponent({
     width: 60px;
     text-align: center;
     font-size: 18px;
+    color: #006eff;
+    &:hover {
+      transform: scale(1.5);
+    }
+  }
+  &-detail {
+    display: inline-block;
+    margin-left: 10px;
   }
 }
 </style>
