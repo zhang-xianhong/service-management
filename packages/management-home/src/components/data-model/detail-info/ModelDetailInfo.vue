@@ -53,8 +53,6 @@
 
 <script lang="ts">
 import { computed, onMounted, ref, Ref } from 'vue';
-import { getAllTags } from '@/api/settings/tags';
-import { getClassificationList } from '@/api/settings/classification';
 import _ from 'lodash/fp';
 
 export default {
@@ -64,30 +62,21 @@ export default {
       type: Object,
       default: () => ({}),
     },
+    tags: {
+      type: Array,
+      default: () => [],
+    },
+    classifications: {
+      type: Array,
+      default: () => [],
+    },
   },
   setup(props: any) {
     const formData = ref({
       ...props.data,
     });
     const tagMap: Ref<Record<string, string>> = ref({});
-    const allTags = ref([]);
-    const initTags = async () => {
-      const { code, data } = await getAllTags();
-      if (code === 0) {
-        allTags.value = data;
-        data.forEach((tag: any) => {
-          tagMap.value[tag.id] = tag.name;
-        });
-      }
-    };
-    const classificationOptions = ref([]);
     const classificationName = ref('');
-    const initClassification = async () => {
-      const { code, data } = await getClassificationList();
-      if (code === 0) {
-        classificationOptions.value = data;
-      }
-    };
     const allUsers = ref([]);
     const owner = ref('');
     const initUsers = () => {
@@ -109,15 +98,13 @@ export default {
     };
 
     onMounted(() => {
-      initTags();
-      initClassification();
       initUsers();
     });
     return {
       formData,
       allUsers,
-      allTags,
-      classificationOptions,
+      allTags: props.tags,
+      classificationOptions: props.classifications,
       modifyFormData,
       isShowMode,
       tagNames,

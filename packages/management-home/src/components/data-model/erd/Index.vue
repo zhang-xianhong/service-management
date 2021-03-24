@@ -10,17 +10,19 @@
     <div :style="`width: ${viewWidth}px; height: ${viewHeight}px; position: relative;`">
       <add-model @model-change="modelChange"></add-model>
       <erd-relation @model-change="modelChange"></erd-relation>
-      <erd-table
-        v-for="(table, $index) in tables"
-        :key="$index"
-        :index="$index"
-        :dragging="table.dragging"
-        :class="{ selected: table.selected }"
-        :tableAttr="table"
-        :types="allTypes"
-        @mousedown="selectedTable(table)"
-        @model-change="modelChange"
-      ></erd-table>
+      <template v-if="allTypes.length">
+        <erd-table
+          v-for="(table, $index) in tables"
+          :key="$index"
+          :index="$index"
+          :dragging="table.dragging"
+          :class="{ selected: table.selected }"
+          :tableAttr="table"
+          :types="allTypes"
+          @mousedown="selectedTable(table)"
+          @model-change="modelChange"
+        ></erd-table>
+      </template>
     </div>
   </div>
 </template>
@@ -46,7 +48,7 @@ import {
 import ErdTable from './Table.vue';
 import ErdRelation from './Relation.vue';
 import AddModel from './AddModel.vue';
-import { getDataTypes } from '@/api/settings/data-types';
+import { getDataTypesAll } from '@/api/settings/data-types';
 import { updateConfig } from '@/api/schema/model';
 export default defineComponent({
   name: 'Erd',
@@ -79,7 +81,7 @@ export default defineComponent({
         const coordinate: Record<string, any> = {};
         tables.value.forEach((table: any) => {
           // eslint-disable-next-line no-param-reassign
-          table.dragging = false;
+          table.dragging = 0;
           coordinate[table.id] = table.position;
         });
         const { code } = await updateConfig({
@@ -92,6 +94,10 @@ export default defineComponent({
           context.emit('model-change');
         }
       }
+      tables.value.forEach((table: any) => {
+        // eslint-disable-next-line no-param-reassign
+        table.dragging = 0;
+      });
       clearNewRelation();
     };
     const drag = (ev: MouseEvent) => {
@@ -123,9 +129,9 @@ export default defineComponent({
     };
     const allTypes = ref([]);
     const initTypeOption = async () => {
-      const { code, data } = await getDataTypes({});
+      const { code, data } = await getDataTypesAll({});
       if (code === 0) {
-        allTypes.value = data.rows;
+        allTypes.value = data;
       }
     };
     onMounted(() => {

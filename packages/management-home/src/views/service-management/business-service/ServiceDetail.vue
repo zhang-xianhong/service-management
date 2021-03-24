@@ -183,11 +183,12 @@ export default {
         ])(data.relations);
       }
       // 模型无定位时增加默认定位
-      tables.forEach((table: any) => {
+      tables.forEach((table: any, index: number) => {
         const tablePosition = serverInfo.value?.config?.coordinate[table.id];
-        if (tablePosition) {
+        const oldTablePosition = modelList.value.tables[index]?.position;
+        if (oldTablePosition || tablePosition) {
           // eslint-disable-next-line no-param-reassign
-          table.position = tablePosition;
+          table.position = oldTablePosition || tablePosition;
         } else {
           // eslint-disable-next-line no-param-reassign
           table.position = {
