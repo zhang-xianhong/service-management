@@ -16,6 +16,7 @@ const classificationValue = ref([] as number[][]);
 const classificationMap: Map<number, any> = new Map();
 
 export default function(initialValue: string) {
+  console.log(initialValue, 6666);
   classifications.value = initialValue.split(',').map((item: string) => parseInt(item, 10));
 
   // 分类信息递归处理
@@ -71,5 +72,6 @@ export default function(initialValue: string) {
     allClassifications,
     classificationName,
     classificationValue,
+    getClassificationNames,
   };
 }

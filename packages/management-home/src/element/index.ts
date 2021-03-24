@@ -49,10 +49,12 @@ import {
   ElTimelineItem,
   ElCard,
   ElTree,
+  ElButtonGroup,
 } from 'element-plus';
 
 const components = [
   ElButton,
+  ElButtonGroup,
   ElIcon,
   ElImage,
   ElInput,

@@ -94,7 +94,8 @@ export default {
 
     // 分类选择
     const selectClassification = (value: Array<Array<string>>) => {
-      console.log(value);
+      formData.classification = value.map((item: Array<string>) => item[item.length - 1]);
+      useClassifications(formData.classification.join(','));
     };
 
     const { tags, tagNames, allTags } = useTags(formData.tag);
@@ -115,7 +116,7 @@ export default {
       if (code === 0) {
         isShowMode.value = true;
         useTags(formData.tag);
-        useClassifications(formData.classification);
+        useClassifications(formData.classification.join(','));
       }
     };
 

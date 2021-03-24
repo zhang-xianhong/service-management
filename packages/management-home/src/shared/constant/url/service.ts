@@ -7,4 +7,6 @@ export default {
   BUILD_SERVICE: ['/services/build', '/mock/services/service-build.json'],
   INIT_SERVICE: ['/services/init/_', '/mock/services/service-init.json'],
   DELETE_SERVICR: ['/services/delete/_'],
+  GET_SERVICE_APIS: ['/services/apis', '/mock/services/api-list.json'],
+  UPDATE_SERVICE_APIS: ['/services/_/apis', '/mock/services/api-update.json'],
 };
