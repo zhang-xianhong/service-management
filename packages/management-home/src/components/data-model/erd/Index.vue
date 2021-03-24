@@ -74,7 +74,8 @@ export default defineComponent({
       recalcCanvasSize();
     });
     const dragStop = async () => {
-      if (_.some('dragging')(tables.value)) {
+      const draggingTable: any = _.find('dragging')(tables.value);
+      if (draggingTable && Date.now() - draggingTable.dragging > 100) {
         const coordinate: Record<string, any> = {};
         tables.value.forEach((table: any) => {
           coordinate[table.id] = table.position;
@@ -91,7 +92,7 @@ export default defineComponent({
       }
       tables.value.forEach((table: any) => {
         // eslint-disable-next-line no-param-reassign
-        table.dragging = false;
+        table.dragging = 0;
       });
       clearNewRelation();
     };
@@ -106,7 +107,7 @@ export default defineComponent({
       // eslint-disable-next-line no-param-reassign
       table.selected = true;
       // eslint-disable-next-line no-param-reassign
-      table.dragging = true;
+      table.dragging = Date.now();
       context.emit('selectChange', table);
     };
     const clearSelect = () => {

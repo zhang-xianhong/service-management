@@ -1,7 +1,7 @@
 <template>
   <div class="detail">
     <el-row>
-      <el-col :span="20">
+      <el-col :span="16">
         <el-button
           v-for="(button, index) in buttons"
           :key="index"
@@ -11,31 +11,28 @@
           {{ button.label }}
         </el-button>
       </el-col>
-      <el-col :span="4" style="text-align:right;">
+      <el-col :span="8" style="text-align:right;">
+        <div class="detail-status">
+          <span :style="{ background: serverStatusInfo.color }" class="detail-status__icon"></span>
+          {{ serverStatusInfo.label }}
+        </div>
         <el-button class="detail-icon" icon="el-icon-s-data" @click="openBaseInfo"></el-button>
         <el-button class="detail-icon" icon="el-icon-notebook-2" @click="openPropertyInfo"></el-button>
         <el-button class="detail-icon" icon="el-icon-download" @click="openDownloadInfo"></el-button>
       </el-col>
     </el-row>
-    <el-row>
+    <el-row :style="{ height: computedHeight }">
       <el-col :span="16" style="border-right: 1px solid #bbbbbb">
         <el-row>
           <!-- 服务下拉选择框 -->
-          <el-col :span="20">
-            <el-select v-model="currentServiceId" placeholder="请选择">
-              <el-option
-                v-for="server in serverList"
-                :key="server.id"
-                :value="server.id"
-                :label="server.name"
-              ></el-option>
-            </el-select>
-          </el-col>
-          <!-- 服务状态 -->
-          <el-col :span="4">
-            <span :style="{ background: serverStatusInfo.color }" class="detail-status__icon"></span>
-            {{ serverStatusInfo.label }}
-          </el-col>
+          <el-select v-model="currentServiceId" placeholder="请选择">
+            <el-option
+              v-for="server in serverList"
+              :key="server.id"
+              :value="server.id"
+              :label="server.name"
+            ></el-option>
+          </el-select>
         </el-row>
         <div class="data-model__container" style="height: 800px;">
           <erd
@@ -44,6 +41,7 @@
             height="100%"
             v-model="modelList"
             @model-change="initModelList"
+            @select-change="modelSelected"
           ></erd>
         </div>
         <div>
@@ -52,13 +50,23 @@
         </div>
       </el-col>
       <el-col :span="8">
-        <template v-if="isInitialized && componentName">
+        <template v-if="componentName">
           <keep-alive>
             <component :is="componentName" :data="serverInfo" :id="currentServiceId"></component>
           </keep-alive>
         </template>
+        <template v-if="modelInfo">
+          <model-detail-info :data="modelInfo"></model-detail-info>
+        </template>
       </el-col>
     </el-row>
+    <transition name="slide-fade">
+      <div v-if="isShowDownDrawer" class="detail-drawer__container">
+        <keep-alive>
+          <component :is="drawerName" :id="currentServiceId" @back="isShowDownDrawer = false"></component>
+        </keep-alive>
+      </div>
+    </transition>
   </div>
 </template>
 
@@ -67,7 +75,9 @@ import useButtonUtils from './utils/service-detail-utils';
 import useStatusUtils from './utils/service-detail-status';
 import ServerBaseInfo from './components/ServerBaseInfo.vue';
 import Erd from '@/components/data-model/erd/Index.vue';
-import { ref, Ref, reactive, watch, onMounted, provide } from 'vue';
+import ServerPortsInfo from './components/ServerPortsInfo.vue';
+import ModelDetailInfo from '@/components/data-model/detail-info/ModelDetailInfo.vue';
+import { ref, Ref, reactive, watch, onMounted, provide, computed } from 'vue';
 import { getServiceList, getServiceById } from '@/api/servers/index';
 import { getServiceModelList } from '@/api/schema/model';
 import { useRoute } from 'vue-router';
@@ -78,15 +88,19 @@ export default {
   components: {
     ServerBaseInfo,
     Erd,
+    ServerPortsInfo,
+    ModelDetailInfo,
   },
   setup() {
     const { buttons } = useButtonUtils();
 
+    // 是否显示底部抽屉
+    const isShowDownDrawer = ref(false);
+
+    const computedHeight = computed(() => (isShowDownDrawer.value ? 'calc(95% - 400px)' : '95%'));
+
     // 获取路由信息
     const route = useRoute();
-
-    // 是否尚未初始化，默认值为false
-    const isInitialized = ref(true);
 
     // 当前服务ID
     const currentServiceId = ref(route.params.id);
@@ -107,6 +121,7 @@ export default {
     // 服务详情信息
     const serverInfo = ref({} as any);
 
+    // 获取服务详情
     const getServerInfo = async () => {
       const { data } = await getServiceById({ id: currentServiceId.value });
       serverInfo.value = data;
@@ -126,22 +141,24 @@ export default {
 
     // 打开基本信息
     const openBaseInfo = () => {
-      isInitialized.value = true;
       componentName.value = 'ServerBaseInfo';
     };
 
+    // 下侧组件名称
+    const drawerName = ref('');
+
     // 打开接口配置
     const openPropertyInfo = () => {
-      isInitialized.value = true;
-      componentName.value = 'ServerPropertyInfo';
+      isShowDownDrawer.value = true;
+      drawerName.value = 'ServerPortsInfo';
     };
 
     // 打开下载详情
     const openDownloadInfo = () => {
-      isInitialized.value = true;
       componentName.value = 'ServerPropertyInfo';
     };
 
+    // erd图组件参数构造
     provide('serviceId', Number(currentServiceId.value));
     const erdLoading = ref(false);
     const modelList: Ref<any> = ref({
@@ -182,25 +199,38 @@ export default {
         relations,
       };
     };
+    // 模型详情数据
+    const modelInfo = ref(null);
+    const modelSelected = (model: any) => {
+      componentName.value = '';
+      modelInfo.value = model;
+    };
+    watch(componentName, () => {
+      if (componentName.value) modelInfo.value = null;
+    });
 
     onMounted(() => {
       initModelList();
     });
     return {
+      isShowDownDrawer,
+      computedHeight,
       currentServiceId,
-      isInitialized,
       isOpenProperties,
       serverInfo,
       serverList,
       buttons,
       serverStatusInfo,
       componentName,
+      drawerName,
       openBaseInfo,
       openPropertyInfo,
       openDownloadInfo,
       modelList,
       initModelList,
       erdLoading,
+      modelSelected,
+      modelInfo,
     };
   },
 };
@@ -208,19 +238,42 @@ export default {
 
 <style lang="scss" scoped>
 .detail {
-  height: 100%;
+  height: 90vh;
   &-icon {
     padding: 9px;
   }
-  &-status__icon {
+  &-status {
+    margin-right: 8px;
     display: inline-block;
-    width: 14px;
-    height: 14px;
-    border-radius: 7px;
+    &__icon {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      border-radius: 7px;
+      margin-right: 4px;
+    }
   }
 }
 .data-model__container {
   width: 100%;
-  min-height: 600px;
+  height: 90%;
+}
+.slide-fade-enter-active {
+  transition: all 0.3s ease-in;
+}
+
+.slide-fade-leave-active {
+  transition: all 0.8s ease-out;
+}
+
+.slide-fade-enter-from,
+.slide-fade-leave-to {
+  transform: translateY(440px);
+  height: 0;
+}
+.detail-drawer__container {
+  height: 400px;
+  overflow: auto;
+  padding: 12px;
 }
 </style>

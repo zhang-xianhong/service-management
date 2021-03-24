@@ -24,7 +24,7 @@ export interface Table {
     x: number;
     y: number;
   };
-  dragging?: boolean;
+  dragging?: number;
   selected?: boolean;
 }
 interface Line {

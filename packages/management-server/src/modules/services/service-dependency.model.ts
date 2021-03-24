@@ -42,11 +42,4 @@ export class ServicesDependencyModel extends BaseModel {
 
   @BelongsTo(() => ServicesInfoModel)
   serviceInfo: ServicesInfoModel;
-
-  // @ManyToOne(() => ServicesInfoModel, info => info.id)
-  // @JoinColumn({
-  //   name: 'dependency_id',
-  //   referencedColumnName: 'id',
-  // })
-  // service: ServicesInfoModel;
 }

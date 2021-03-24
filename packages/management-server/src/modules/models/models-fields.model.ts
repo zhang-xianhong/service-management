@@ -1,7 +1,6 @@
 import { MaxLength } from 'class-validator';
-import { Table, Column, DataType, ForeignKey, BelongsTo  } from 'sequelize-typescript';
+import { Table, Column, DataType } from 'sequelize-typescript';
 import { BaseModel } from '../base.entity';
-import { ModelsInfoModel } from './models-info.model';
 
 @Table({
   timestamps: false,
@@ -9,15 +8,11 @@ import { ModelsInfoModel } from './models-info.model';
 })
 export class ModelsFieldsModel extends BaseModel {
   // 管理模型ID
-  @ForeignKey(() => ModelsInfoModel)
   @Column({
     type: DataType.BIGINT,
     field: 'model_id',
   })
   modelId: number;
-
-  @BelongsTo(() => ModelsInfoModel)
-  info: ModelsInfoModel;
 
   // 字段名称
   @Column({ type: DataType.STRING })
@@ -26,10 +21,10 @@ export class ModelsFieldsModel extends BaseModel {
   // 关联数据类型ID
   @Column({
     field: 'type_id',
-    type: DataType.STRING,
+    type: DataType.BIGINT,
     comment: '关联数据类型ID, 方便前端回读',
   })
-  typeId: string;
+  typeId: number;
 
   // 数据类型
   @Column({
@@ -161,15 +156,6 @@ export class ModelsFieldsModel extends BaseModel {
   })
   version: number;
 
-  // 是否系统字段
-  @Column({
-    field: 'is_system',
-    type: DataType.BOOLEAN,
-    defaultValue: false,
-    comment: '是否系统字段',
-  })
-  isSystem: boolean;
-
   // 是否唯一
   @Column({
     field: 'is_unique',
@@ -203,4 +189,13 @@ export class ModelsFieldsModel extends BaseModel {
     comment: '拼音支持',
   })
   isPinyinSupport: boolean;
+
+  // 是否系统字段
+  @Column({
+    field: 'is_system',
+    type: DataType.BOOLEAN,
+    defaultValue: false,
+    comment: '是否系统字段',
+  })
+  isSystem: boolean;
 }

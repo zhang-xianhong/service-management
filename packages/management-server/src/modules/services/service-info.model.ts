@@ -1,9 +1,10 @@
 /**
  * 服务信息实体
  */
-import { Table, Column, DataType, HasMany } from 'sequelize-typescript';
+import { Table, Column, DataType, HasMany, HasOne } from 'sequelize-typescript';
 import { BaseModel } from '../base.entity';
 import { ServicesApiModel } from './service-api.model';
+import { ServicesConfigModel } from './service-config.model';
 import { ServicesDependencyModel } from './service-dependency.model';
 @Table({
   timestamps: false,
@@ -37,11 +38,11 @@ export class ServicesInfoModel extends BaseModel  {
   // 服务部署id
   @Column({
     type: DataType.STRING,
-    field: 'depoly_id',
+    field: 'deploy_id',
     comment: '服务部署在运行平台id',
     defaultValue: null,
   })
-  depolyId: string;
+  deployId: string;
 
   // 依赖的模型id
   @Column({
@@ -89,6 +90,13 @@ export class ServicesInfoModel extends BaseModel  {
     defaultValue: null,
   })
   owner: string;
+
+  // 服务详情
+  @Column({
+    type: DataType.STRING,
+    defaultValue: null,
+  })
+  detail: string;
 
   // 是否纯继承
   @Column({
@@ -190,4 +198,7 @@ export class ServicesInfoModel extends BaseModel  {
 
   @HasMany(() => ServicesDependencyModel)
   dependencies: ServicesDependencyModel[];
+
+  @HasOne(() => ServicesConfigModel)
+  config: ServicesConfigModel;
 }

@@ -42,8 +42,8 @@ export default defineComponent({
       required: true,
     },
     dragging: {
-      type: [Boolean],
-      default: false,
+      type: Number,
+      default: 0,
     },
     tableAttr: {
       type: Object,
