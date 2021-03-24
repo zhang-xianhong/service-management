@@ -86,7 +86,7 @@ export class ServicesService {
    * 通过ID获取服务详情
    * @param id
    */
-  async findById(id: number): Promise<Details<ServicesInfoModel>> {
+  async findById(id: number): Promise<Details<any>> {
     const service: ServicesInfoModel = await this.infoRepository.findOne({
       where: {
         id,
@@ -108,7 +108,11 @@ export class ServicesService {
         message: '服务不存在',
       }, HttpStatus.NOT_FOUND);
     }
-    return service;
+    const { config, ...restConfig } = (service.toJSON() as PlainObject);
+    return {
+      ...restConfig,
+      config: config?.config,
+    };
   }
 
   /**
@@ -293,6 +297,7 @@ export class ServicesService {
       throw new ApiException({
         code: CommonCodes.CREATED_FAIL,
         message: '保存服务接口失败',
+        error,
       });
     }
   }
@@ -313,7 +318,7 @@ export class ServicesService {
         },
         transaction,
       });
-      // todo 校验GET请求不能添加requert_body参数类型
+      // todo 校验GET请求不能添加request_body参数类型
       if (Array.isArray(params) && params.length) {
         const paramsEntities = params.map(param => ({
           ...param,
@@ -330,6 +335,7 @@ export class ServicesService {
       throw new ApiException({
         code: CommonCodes.CREATED_FAIL,
         message: '保存接口参数失败',
+        error,
       });
     }
   }
@@ -381,6 +387,7 @@ export class ServicesService {
       throw new ApiException({
         code: CommonCodes.UPDATED_FAIL,
         message: '服务更新失败',
+        error,
       });
     }
   }

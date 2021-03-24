@@ -38,11 +38,11 @@ export class ServicesInfoModel extends BaseModel  {
   // 服务部署id
   @Column({
     type: DataType.STRING,
-    field: 'depoly_id',
+    field: 'deploy_id',
     comment: '服务部署在运行平台id',
     defaultValue: null,
   })
-  depolyId: string;
+  deployId: string;
 
   // 依赖的模型id
   @Column({
