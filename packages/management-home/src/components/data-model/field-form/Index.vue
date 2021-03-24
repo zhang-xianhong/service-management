@@ -1,6 +1,6 @@
 <template>
-  <div :style="`width: ${width}; height: ${height}; position: relative;`">
-    <el-table :data="fields" :height="height">
+  <div style="width: 100%; height=330px; position: relative;">
+    <el-table :data="fields" :height="330">
       <el-table-column type="selection" width="45"></el-table-column>
       <el-table-column type="index" width="50"></el-table-column>
       <el-table-column prop="name" label="属性名称">
@@ -56,29 +56,12 @@
 </template>
 
 <script>
-import { defineComponent, onMounted, ref, watchEffect } from 'vue';
+import { defineComponent, onMounted, ref, inject } from 'vue';
 import { getDataTypes } from '@/api/settings/data-types';
 export default defineComponent({
   name: 'ColumnForm',
-  props: {
-    modelValue: {
-      type: Array,
-      required: true,
-    },
-    width: {
-      type: [Number, String],
-      required: true,
-    },
-    height: {
-      type: [Number, String],
-      required: true,
-    },
-  },
-  setup(props) {
-    const fields = ref([]);
-    watchEffect(() => {
-      fields.value = props.modelValue;
-    });
+  setup() {
+    const fields = inject('fields');
     const add = (index) => {
       fields.value.splice(index + 1, 0, {
         name: '',

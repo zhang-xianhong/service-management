@@ -12,7 +12,7 @@
     <div class="body">
       <div v-for="(col, $index) in table.fields" :key="$index" class="column">
         <div>{{ col.name }}</div>
-        <div>{{ types.find((type) => type.id === col.typeId).name }}</div>
+        <div>{{ types.find((type) => type.id === col.typeId)?.name }}</div>
       </div>
     </div>
     <div
