@@ -29,7 +29,7 @@
       <el-form-item label="标签">
         <div v-if="isShowMode" class="baseinfo-content">{{ tagNames }}</div>
         <el-select v-else v-model="tags" multiple filterable placeholder="请选择" @change="selectTag">
-          <el-option v-for="item in allTags" :key="item.id" :value="item.id" :label="item.name"></el-option>
+          <el-option v-for="(item, index) in allTags" :key="index" :value="item.id" :label="item.name"></el-option>
         </el-select>
       </el-form-item>
       <el-form-item label="服务详情">
@@ -94,8 +94,8 @@ export default {
 
     // 分类选择
     const selectClassification = (value: Array<Array<string>>) => {
-      formData.classification = value.map((item: Array<string>) => item[item.length - 1]);
-      useClassifications(formData.classification.join(','));
+      formData.classification = value.map((item: Array<string>) => item[item.length - 1]).join(',');
+      useClassifications(formData.classification);
     };
 
     const { tags, tagNames, allTags } = useTags(formData.tag);
@@ -116,7 +116,7 @@ export default {
       if (code === 0) {
         isShowMode.value = true;
         useTags(formData.tag);
-        useClassifications(formData.classification.join(','));
+        useClassifications(formData.classification);
       }
     };
 

@@ -26,10 +26,10 @@ export const buildService: (payload: object) => Promise<SuccessResponse<any>> = 
 export const initService: (payload: object) => Promise<SuccessResponse<any>> = (payload: any) =>
   request.get(getUrl(URL.service.INIT_SERVICE, payload.serviceId), { timeout: 60000 });
 
-export const getServiceApis: (payload: object) => Promise<SuccessResponse<any>> = (payload: any) =>
-  request.get(getUrl(URL.service.GET_SERVICE_APIS), payload);
+export const getServiceApis: (id: string) => Promise<SuccessResponse<any>> = (id: string) =>
+  request.get(getUrl(URL.service.GET_SERVICE_APIS), { params: { serviceId: id } });
 
 export const updateServiceApis: (payload: object, id: string) => Promise<SuccessResponse<any>> = (
   payload: any,
   id: string,
-) => request.get(getUrl(URL.service.GET_SERVICE_APIS, id), payload);
+) => request.post(getUrl(URL.service.UPDATE_SERVICE_APIS, id), payload);
