@@ -105,6 +105,7 @@
               v-model="serviceDetail.classification"
               :options="sorts"
               :props="sortProps"
+              @change="getCascaderForm"
               clearable
               filterable
               placeholder="请选择分类"
@@ -116,7 +117,17 @@
             </el-select>
           </el-form-item>
           <el-form-item label="服务详情" :label-width="labelWidth">
-            <el-input v-model="serviceDetail.details" type="textarea" :rows="5"></el-input>
+            <el-input v-model="serviceDetail.detail" type="textarea" :rows="5"></el-input>
+          </el-form-item>
+          <el-form-item label="服务依赖" :label-width="labelWidth">
+            <el-select v-model="allService" clearable multiple>
+              <el-option
+                v-for="item in serviceTableList.list"
+                :key="item.id"
+                :label="item.name"
+                :value="item.id"
+              ></el-option>
+            </el-select>
           </el-form-item>
         </el-form>
       </div>
@@ -178,6 +189,8 @@ import {
   deleteServiceForList,
   getTagsForService,
   getClassifications,
+  getAllService,
+  allService,
 } from './utils/service-data-utils';
 import { addService } from '@/api/servers';
 
@@ -200,6 +213,7 @@ export default defineComponent({
     const addServiceDialog = ref(false);
     const toggleServiceDialog = () => {
       addServiceDialog.value = !addServiceDialog.value;
+      getAllService();
     };
     const labelWidth = ref('100px');
 
@@ -222,7 +236,10 @@ export default defineComponent({
     function addServiceByForm() {
       const senddata = { ...serviceDetail };
       senddata.tag = serviceDetail.tag.join(',');
-
+      senddata.dependencies = serviceDetail.dependencies.map((x: any) => ({
+        id: x,
+      }));
+      console.log(senddata, 'text');
       addService(senddata)
         .then(() => {
           refreshServiceList(pageInfo);
@@ -239,6 +256,13 @@ export default defineComponent({
     function logs(res: any) {
       console.log(res, 'this is logs');
       return res;
+    }
+    function getCascaderForm(res: any) {
+      if (res) {
+        serviceDetail.classification = `${res[0]}`;
+      } else {
+        serviceDetail.classification = '';
+      }
     }
 
     // 筛选
@@ -314,6 +338,7 @@ export default defineComponent({
       persons,
       tags,
       sorts,
+      addService,
       pageInfo,
       addServiceByForm,
       logs,
@@ -344,6 +369,8 @@ export default defineComponent({
       submitStopService,
       logType,
       searchForList,
+      getCascaderForm,
+      allService,
     };
   },
 });

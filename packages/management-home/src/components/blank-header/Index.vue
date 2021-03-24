@@ -24,7 +24,6 @@ export default defineComponent({
       window.onresize = () => {
         clintWidth.value = document.body.clientWidth;
         // getElementsByClassName('layout-container')[0]
-        // @typescript-ignore
         layoutBool.value = clintWidth.value > 1440;
       };
     });
