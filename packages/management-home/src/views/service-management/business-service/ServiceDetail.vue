@@ -78,6 +78,7 @@ import Erd from '@/components/data-model/erd/Index.vue';
 import ServerPortsInfo from './components/ServerPortsInfo.vue';
 import { ref, Ref, reactive, watch, onMounted, provide, computed } from 'vue';
 import ModelDetailInfo from '@/components/data-model/detail-info/ModelDetailInfo.vue';
+import ModelFieldForm from '@/components/data-model/field-form/Index.vue';
 import { getServiceList, getServiceById } from '@/api/servers/index';
 import { getServiceModelList } from '@/api/schema/model';
 import { useRoute } from 'vue-router';
@@ -89,6 +90,7 @@ export default {
     ServerBaseInfo,
     Erd,
     ModelDetailInfo,
+    ModelFieldForm,
     ServerPortsInfo,
   },
   setup() {
@@ -204,9 +206,18 @@ export default {
     };
     // 模型详情数据
     const modelInfo = ref(null);
+    const refFields = ref([]);
+    provide('fields', refFields);
     const modelSelected = (model: any) => {
       componentName.value = '';
       modelInfo.value = model;
+      if (model) {
+        refFields.value = model.fields;
+        isShowDownDrawer.value = true;
+        drawerName.value = 'ModelFieldForm';
+      } else {
+        isShowDownDrawer.value = false;
+      }
     };
     watch(componentName, () => {
       if (componentName.value) modelInfo.value = null;
