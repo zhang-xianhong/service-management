@@ -1,15 +1,24 @@
 <template>
-  <div class="blank-header"></div>
+  <div class="blank-header">
+    <span class="blank-header-back" v-if="back"><i class="el-icon-back"></i></span>
+    <span class="blank-header-title">{{ title }}</span>
+    <span></span>
+  </div>
 </template>
 
-<script>
-import { defineComponent, onMounted, ref } from 'vue';
+<script lang="ts">
+import { defineComponent, getCurrentInstance, onMounted, ref, watch } from 'vue';
 export default defineComponent({
   name: 'BlankHeader',
+  props: {
+    back: {
+      type: Boolean,
+      default: () => !false,
+    },
+  },
   setup() {
     const clintWidth = ref(document.body.clientWidth);
     const layoutBool = ref(clintWidth.value > 1440);
-    console.log(clintWidth.value, layoutBool.value);
     onMounted(() => {
       clintWidth.value = document.body.clientWidth;
       window.onresize = () => {
@@ -18,9 +27,29 @@ export default defineComponent({
         layoutBool.value = ref(clintWidth.value > 1440);
       };
     });
+    const levelList = ref([]);
+    const title = ref('');
+    const proxy = getCurrentInstance().proxy as any;
+    const getBread = () => {
+      const matched = proxy.$route.matched.filter((item: any) => item.meta && item.meta.title);
+      levelList.value = matched.filter((item: any) => item.meta && item.meta.title && item.meta.breadcrumb !== false);
+      title.value = levelList.value.reverse()[0].meta.title || '';
+    };
+    getBread();
+    console.log(levelList.value, 123);
+    watch(
+      () => proxy.$route,
+      (route) => {
+        if (route.path.startsWith('/redirect/')) {
+          return false;
+        }
+        getBread();
+      },
+    );
     return {
       clintWidth,
       layoutBool,
+      title,
     };
   },
 });
@@ -30,7 +59,14 @@ export default defineComponent({
 .blank-header {
   width: 100%;
   height: 40px;
+  line-height: 40px;
   margin-bottom: 10px;
   background-color: white;
+  &-back {
+    display: inline-block;
+    width: 60px;
+    text-align: center;
+    font-size: 18px;
+  }
 }
 </style>

@@ -43,7 +43,7 @@
                 <el-button type="text" @click="sortTitleClick">分类</el-button>
               </template>
               <el-cascader
-                :value="pageInfo.classification"
+                v-model="pageInfo.classification"
                 :options="sorts"
                 :props="sortProps"
                 clearable
@@ -102,7 +102,7 @@
           </el-form-item>
           <el-form-item label="服务分类" :label-width="labelWidth">
             <el-cascader
-              :value="serviceDetail.classification"
+              v-model="serviceDetail.classification"
               :options="sorts"
               :props="sortProps"
               clearable
