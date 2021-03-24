@@ -34,7 +34,16 @@
             ></el-option>
           </el-select>
         </el-row>
-        <div class="data-model__container"></div>
+        <div class="data-model__container">
+          <erd
+            v-loading="erdLoading"
+            width="100%"
+            height="100%"
+            v-model="modelList"
+            @model-change="initModelList"
+            @select-change="modelSelected"
+          ></erd>
+        </div>
         <div>
           <div>服务代码：</div>
           <div>服务地址：</div>
@@ -45,6 +54,9 @@
           <keep-alive>
             <component :is="componentName" :data="serverInfo" :id="currentServiceId"></component>
           </keep-alive>
+        </template>
+        <template v-if="modelInfo">
+          <model-detail-info :data="modelInfo"></model-detail-info>
         </template>
       </el-col>
     </el-row>
@@ -62,15 +74,21 @@
 import useButtonUtils from './utils/service-detail-utils';
 import useStatusUtils from './utils/service-detail-status';
 import ServerBaseInfo from './components/ServerBaseInfo.vue';
+import Erd from '@/components/data-model/erd/Index.vue';
 import ServerPortsInfo from './components/ServerPortsInfo.vue';
-import { ref, reactive, watch, computed } from 'vue';
+import { ref, Ref, reactive, watch, onMounted, provide, computed } from 'vue';
+import ModelDetailInfo from '@/components/data-model/detail-info/ModelDetailInfo.vue';
 import { getServiceList, getServiceById } from '@/api/servers/index';
+import { getServiceModelList } from '@/api/schema/model';
 import { useRoute } from 'vue-router';
+import _ from 'lodash/fp';
 
 export default {
   name: 'ServiceDetail',
   components: {
     ServerBaseInfo,
+    Erd,
+    ModelDetailInfo,
     ServerPortsInfo,
   },
   setup() {
@@ -140,6 +158,62 @@ export default {
       componentName.value = 'ServerPropertyInfo';
     };
 
+    // erd图组件参数构造
+    provide('serviceId', Number(currentServiceId.value));
+    const erdLoading = ref(false);
+    const modelList: Ref<any> = ref({
+      tables: [],
+      relations: [],
+    });
+    const initModelList = async () => {
+      // erdLoading.value = true;
+      const { code, data } = await getServiceModelList({
+        serviceId: currentServiceId.value,
+      });
+      // erdLoading.value = false;
+      let tables: any[] = [];
+      let relations: any[] = [];
+      if (code === 0) {
+        tables = data.models;
+        relations = _.map((relation: any) => [
+          _.findIndex({ id: relation.fromModelId })(tables),
+          _.findIndex({ id: relation.toModelId })(tables),
+          relation.relationType,
+          relation.id,
+        ])(data.relations);
+      }
+      // 模型无定位时增加默认定位
+      tables.forEach((table: any) => {
+        const tablePosition = serverInfo.value?.config?.coordinate[table.id];
+        if (tablePosition) {
+          // eslint-disable-next-line no-param-reassign
+          table.position = tablePosition;
+        } else {
+          // eslint-disable-next-line no-param-reassign
+          table.position = {
+            x: 100,
+            y: 100,
+          };
+        }
+      });
+      modelList.value = {
+        tables,
+        relations,
+      };
+    };
+    // 模型详情数据
+    const modelInfo = ref(null);
+    const modelSelected = (model: any) => {
+      componentName.value = '';
+      modelInfo.value = model;
+    };
+    watch(componentName, () => {
+      if (componentName.value) modelInfo.value = null;
+    });
+
+    onMounted(() => {
+      initModelList();
+    });
     return {
       isShowDownDrawer,
       computedHeight,
@@ -154,6 +228,11 @@ export default {
       openBaseInfo,
       openPropertyInfo,
       openDownloadInfo,
+      modelList,
+      initModelList,
+      erdLoading,
+      modelSelected,
+      modelInfo,
     };
   },
 };
