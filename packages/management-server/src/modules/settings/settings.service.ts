@@ -14,6 +14,7 @@ import { SettingsDataTypeDto } from './dto/settings-data-type.dto';
 import { SettingsTagDto } from './dto/settings-tag.dto';
 import { Created, Deleted, Details, Rows, RowsAndCount, Updated } from 'src/shared/types/response';
 import { Tree } from 'src/shared/types/tree';
+import { escapeLike } from 'src/shared/utils/sql';
 
 @Injectable()
 export class SettingsService {
@@ -36,15 +37,16 @@ export class SettingsService {
       isDelete: false,
     };
     if (query.keyword) {
+      const likeString = escapeLike(query.keyword);
       where[Op.or] = [
         {
           name: {
-            [Op.like]: `%${query.keyword}%`,
+            [Op.like]: likeString,
           },
         },
         {
           description: {
-            [Op.like]: `%${query.keyword}%`,
+            [Op.like]: likeString,
           },
         },
       ];
@@ -52,8 +54,10 @@ export class SettingsService {
     if (isDefined(query.isSystem)) {
       (where as PlainObject).isSystem = query.isSystem;
     }
-    const { conditions } = query;
+    const { conditions = {} } = query as PlainObject;
     conditions.where = where;
+    conditions.order = [['isSystem', 'DESC'], ['id', 'ASC']];
+    conditions.attributes = { exclude: ['isDelete'] };
     if (!getTotal) {
       // 删除分页相关的字段
       delete conditions.offset;
@@ -184,15 +188,16 @@ export class SettingsService {
       isDelete: false,
     };
     if (query.keyword) {
+      const likeString = escapeLike(query.keyword);
       where[Op.or] = [
         {
           name: {
-            [Op.like]: `%${query.keyword}%`,
+            [Op.like]: likeString,
           },
         },
         {
           description: {
-            [Op.like]: `%${query.keyword}%`,
+            [Op.like]: likeString,
           },
         },
       ];
