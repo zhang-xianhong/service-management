@@ -103,8 +103,9 @@ export default {
     // 服务详情信息
     const serverInfo = ref({} as any);
 
+    // 获取服务详情
     const getServerInfo = async () => {
-      const { data } = await getServiceById({ id: currentServiceId });
+      const { data } = await getServiceById({ id: currentServiceId.value });
       serverInfo.value = data;
     };
 
