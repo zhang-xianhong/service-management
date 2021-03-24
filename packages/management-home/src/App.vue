@@ -36,7 +36,8 @@ body {
   .el-popover.el-popper,
   .el-cascader .el-input .el-input__inner,
   .el-input--small .el-input__inner,
-  .el-dialog {
+  .el-dialog,
+  .el-input-group__prepend {
     border-radius: 0;
   }
 }
