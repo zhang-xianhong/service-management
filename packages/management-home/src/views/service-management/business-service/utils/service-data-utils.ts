@@ -27,6 +27,12 @@ export function refreshServiceList(payload = {} as any) {
     }
   });
   return getServiceList(data).then((res) => {
+    if (res.data.rows) {
+      res.data.rows.forEach((x: any) => {
+        // eslint-disable-next-line no-param-reassign
+        x.name = x.name.replace(/^srv-/g, '');
+      });
+    }
     serviceTableList.list = res.data.rows;
     serviceTableList.total = res.data.count;
   });
@@ -66,6 +72,14 @@ export const deleteServiceForList = (arr: Array<any>) => {
 
 export function getAllService() {
   return getServiceList({ all: true }).then((res) => {
-    allService.value = res.data;
+    if (res.data && res.data instanceof Array) {
+      res.data.forEach((x: any) => {
+        // eslint-disable-next-line no-param-reassign
+        x.name = x.name.replace(/^srv-/g, '');
+      });
+      allService.value = res.data;
+    } else {
+      allService.value = [];
+    }
   });
 }
