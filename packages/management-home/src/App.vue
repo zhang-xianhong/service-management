@@ -22,6 +22,23 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: #2c3e50;
+
+  //el样式修改
+  .el-button {
+    border-radius: 0;
+  }
+  .el-button--primary {
+    background-color: #006eff;
+    border-color: #006eff;
+  }
+  .el-input__inner,
+  .el-input-group__append,
+  .el-popover.el-popper,
+  .el-cascader .el-input .el-input__inner,
+  .el-input--small .el-input__inner,
+  .el-dialog {
+    border-radius: 0;
+  }
 }
 .apps {
   width: 100vw;
