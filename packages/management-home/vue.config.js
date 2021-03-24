@@ -21,7 +21,7 @@ module.exports = {
       // 代理所有请求
       '/api': {
         // 后端rest服务
-        target: 'http://10.91.21.72:3000',
+        target: 'http://10.95.22.33:3000',
           // 'http://9.134.45.3/',
         ws: true,
         changeOrigin: true

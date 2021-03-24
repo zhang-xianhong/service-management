@@ -24,16 +24,17 @@ export default defineComponent({
       window.onresize = () => {
         clintWidth.value = document.body.clientWidth;
         // getElementsByClassName('layout-container')[0]
-        layoutBool.value = ref(clintWidth.value > 1440);
+        // @typescript-ignore
+        layoutBool.value = clintWidth.value > 1440;
       };
     });
     const levelList = ref([]);
     const title = ref('');
-    const proxy = getCurrentInstance().proxy as any;
+    const proxy = (getCurrentInstance() as any).proxy as any;
     const getBread = () => {
       const matched = proxy.$route.matched.filter((item: any) => item.meta && item.meta.title);
       levelList.value = matched.filter((item: any) => item.meta && item.meta.title && item.meta.breadcrumb !== false);
-      title.value = levelList.value.reverse()[0].meta.title || '';
+      title.value = (levelList.value.reverse()[0] as any).meta.title || '';
     };
     getBread();
     console.log(levelList.value, 123);

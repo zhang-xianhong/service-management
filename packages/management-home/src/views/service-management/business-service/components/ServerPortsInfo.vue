@@ -116,7 +116,7 @@ export default defineComponent({
 
     // 初始化表格数据
     const initializeTableData = async () => {
-      const { data } = await getServiceApis({ serviceId: props.id });
+      const { data } = await getServiceApis(props.id);
       tableData.value = [...data, { name: '', method: '', url: '', description: '', isSystem: 0 }];
     };
 
@@ -207,7 +207,7 @@ export default defineComponent({
     // 保存接口修改
     const updateApis = async () => {
       const { code } = await updateServiceApis(
-        tableData.value.filter((item: any) => item.name !== ''),
+        { apis: tableData.value.filter((item: any) => item.name !== '' && item.isSystem !== 1) },
         props.id,
       );
       if (code === 0) {

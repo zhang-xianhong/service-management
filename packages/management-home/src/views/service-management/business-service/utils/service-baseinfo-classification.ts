@@ -16,8 +16,10 @@ const classificationValue = ref([] as number[][]);
 const classificationMap: Map<number, any> = new Map();
 
 export default function(initialValue: string) {
-  console.log(initialValue, 6666);
-  classifications.value = initialValue.split(',').map((item: string) => parseInt(item, 10));
+  classifications.value = initialValue
+    .split(',')
+    .filter((item: string) => item !== '')
+    .map((item: string) => parseInt(item, 10));
 
   // 分类信息递归处理
   const handleClassification = (items: any[]) => {
@@ -47,6 +49,7 @@ export default function(initialValue: string) {
   // 将分类Id数组转换成级联框可以识别的数据结构：Array<Array<number>>
   const handleClassificationIds = () =>
     classifications.value.map((id: number) => {
+      console.log(classificationMap, id, 888);
       let target = classificationMap.get(id);
       const result: number[] = [id];
       while (target?.parentId !== null) {
