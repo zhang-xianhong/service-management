@@ -1,7 +1,7 @@
-import { IsString, IsInt, IsOptional } from 'class-validator';
+import { IsString, IsOptional, IsNumber } from 'class-validator';
 
 export class ServiceDependencyDto {
-  @IsInt()
+  @IsNumber()
   readonly id: number;
 
   @IsString()

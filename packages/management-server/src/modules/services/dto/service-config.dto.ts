@@ -1,7 +1,7 @@
-import {  IsInt, IsObject } from 'class-validator';
+import { IsNumber, IsObject } from 'class-validator';
 
 export class ServiceConfigDto {
-  @IsInt()
+  @IsNumber()
   readonly serviceId: number;
 
   @IsObject()

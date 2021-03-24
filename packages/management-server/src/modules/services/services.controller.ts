@@ -44,7 +44,7 @@ export class ServicesController {
   // 删除服务接口
   @Post('/delete')
   async deleteData(@Body() { ids }) {
-    return await this.service.delete(ids);
+    return await this.service.deleteServices(ids);
   }
 
   // 新增服务

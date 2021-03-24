@@ -87,7 +87,7 @@ export class ServicesInfoModel extends BaseModel  {
   // 负责人
   @Column({
     type: DataType.STRING,
-    defaultValue: null,
+    defaultValue: '',
   })
   owner: string;
 

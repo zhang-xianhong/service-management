@@ -12,7 +12,7 @@ export const BUILD_SERVICE_URL = `${BASE_URL}/sa/dev-sa/sa-ci-cd/pipeline/trigge
 // 创建服务仓库
 export const GENERATE_SERVICE_REPOSITORY_URL = `${BASE_URL}/sa/dev-sa/sa-ci-cd/project`;
 
-// 服务SSHUR
-export const SERVICE_SSHURI = `http://${config.BACKEND_SSHURI_HOST}`;
+// 服务SSH URL
+export const SERVICE_SSH_URI = `http://${config.BACKEND_SSHURI_HOST}`;
 // export const INIT_SERVICE_URL = `${BASE_URL}/project/generate/`;
 // ?token=6c850f80c9b1f80b12e0361ef6c36e&ref=develop&applicationName=sa&projectId=11

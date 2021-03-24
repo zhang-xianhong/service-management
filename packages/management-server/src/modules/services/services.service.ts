@@ -4,7 +4,7 @@ import { ApiException } from 'src/shared/utils/api.exception';
 import { ServicesApiModel } from './service-api.model';
 import { ServicesDependencyModel } from './service-dependency.model';
 import { ServicesInfoModel } from './service-info.model';
-import { BUILD_SERVICE_URL, INIT_SERVICE_URL, SERVICE_SSHURI, GENERATE_SERVICE_REPOSITORY_URL } from 'src/shared/constants/url';
+import { BUILD_SERVICE_URL, INIT_SERVICE_URL, SERVICE_SSH_URI, GENERATE_SERVICE_REPOSITORY_URL } from 'src/shared/constants/url';
 import { PlainObject } from 'src/shared/pipes/query.pipe';
 import { InjectModel } from '@nestjs/sequelize';
 import { Op, Sequelize, Transaction } from 'sequelize';
@@ -81,6 +81,9 @@ export class ServicesService {
     }
     const { conditions = {} } = query;
     conditions.where = where;
+    if (query.all) {
+      return await this.infoRepository.findAndCountAll({ where });
+    }
     return await this.infoRepository.findAndCountAll(conditions);
   }
 
@@ -138,6 +141,8 @@ export class ServicesService {
         serviceId,
         isDelete: false,
       },
+      order: [['id', 'ASC']],
+      attributes: { exclude: ['isDelete'] },
       include: [{
         model: ServicesApiParamModel,
         required: false,
@@ -154,7 +159,7 @@ export class ServicesService {
    */
   async createService(data: ServiceInfoDto): Promise<Created> {
     const { name } = data;
-    const { dependencies, ...serviceData } = data;
+    const { dependencies = [], ...serviceData } = data;
     // 验证是否有同名服务
     const service: ServicesInfoModel = await this.infoRepository.findOne({
       where: {
@@ -273,7 +278,7 @@ export class ServicesService {
    */
   async addServiceApis(serviceId: number, data: ServiceApisDto): Promise<BulkCreated> {
     const transaction: Transaction = await this.sequelize.transaction();
-    const { apis } = data;
+    const { apis = [] } = data;
     try {
       // 删除非系统生产接口
       await this.apiRepository.destroy<ServicesApiModel>({
@@ -283,7 +288,7 @@ export class ServicesService {
         },
         transaction,
       });
-      const apisEntities = apis.map(api => ({
+      const apisEntities = apis.filter(item => !item.isSystem).map(api => ({
         ...api,
         serviceId,
       }));
@@ -312,7 +317,7 @@ export class ServicesService {
    */
   async addServiceApiParams(data: ApiDto, transaction: Transaction): Promise<Created> {
     try {
-      const { params, ...apiData } = data;
+      const { params = [], ...apiData } = data;
       const res: ServicesApiModel = await this.apiRepository.create(apiData, { transaction });
       await this.apiParamRepository.destroy<ServicesApiParamModel>({
         where: {
@@ -347,7 +352,7 @@ export class ServicesService {
    * @param data 更新服务
    */
   async updateService(id: number, data: any): Promise<Updated> {
-    const { dependencies, ...serviceData } = data;
+    const { dependencies = [], ...serviceData } = data;
     // 验证是否有同名模块
     const service: ServicesInfoModel = await this.infoRepository.findOne<ServicesInfoModel>({
       where: {
@@ -398,7 +403,7 @@ export class ServicesService {
    * 删除服务
    * @param id
    */
-  async delete(ids: number[]): Promise<Deleted> {
+  async deleteServices(ids: number[]): Promise<Deleted> {
     const transaction: Transaction = await this.sequelize.transaction();
     try {
       const deleteIds: number[] = ids.filter(id => Number(id));
@@ -471,7 +476,7 @@ export class ServicesService {
       if (data?.code === 0) {
         const { data: { sshURI } } = data;
         await this.updateService(id, {
-          deposit: `${SERVICE_SSHURI}${sshURI}`,
+          deposit: `${SERVICE_SSH_URI}${sshURI}`,
           status: SERVICE_STATUS.INITIALIZING,
         });
         return true;
