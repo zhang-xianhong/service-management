@@ -33,7 +33,7 @@ export default defineComponent({
     const getBread = () => {
       const matched = proxy.$route.matched.filter((item: any) => item.meta && item.meta.title);
       levelList.value = matched.filter((item: any) => item.meta && item.meta.title && item.meta.breadcrumb !== false);
-      title.value = levelList.value.reverse()[0].meta.title || '';
+      title.value = (levelList.value.reverse()[0] as any).meta.title || '';
     };
     getBread();
     console.log(levelList.value, 123);

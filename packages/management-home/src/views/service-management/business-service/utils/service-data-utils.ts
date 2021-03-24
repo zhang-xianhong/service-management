@@ -7,6 +7,7 @@ export const serviceTableList = reactive({
   list: [],
   total: 10,
 } as any);
+export const allService = ref([] as any);
 
 export const serviceDetail = reactive({} as any);
 
@@ -62,3 +63,9 @@ export const deleteServiceForList = (arr: Array<any>) => {
     console.log(res);
   });
 };
+
+export function getAllService() {
+  return getServiceList({ all: true }).then((res) => {
+    allService.value = res.data;
+  });
+}
