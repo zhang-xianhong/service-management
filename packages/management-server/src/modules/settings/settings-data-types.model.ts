@@ -20,10 +20,18 @@ export class DataTypesModel extends BaseModel {
 
   // 字段长度
   @Column({
-    type: DataType.INTEGER,
-    defaultValue: 0,
+    type: DataType.BIGINT,
+    defaultValue: null,
   })
   length: number;
+
+  // 数据精度，只有在double和float时有效
+  @Column({
+    type: DataType.INTEGER,
+    defaultValue: 0,
+    comment: '数据精度，只有在double和float时有效',
+  })
+  precision: number;
 
   // 名称
   @Column({
