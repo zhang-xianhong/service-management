@@ -1,40 +1,35 @@
 import { Type } from 'class-transformer';
-import { IsArray, IsNotEmpty, IsString, Matches, MaxLength, ValidateNested } from 'class-validator';
-import { ServiceApiDto } from './service-api.dto';
+import { IsArray, IsNotEmpty, IsNumber, IsOptional, IsString, Matches, MaxLength, ValidateNested } from 'class-validator';
 import { ServiceDependencyDto } from './service-dependency.dto';
 
 export class ServiceInfoDto {
   @Matches(/^srv-[a-z0-9-]+(?<!-)$/)
   @IsString()
   @MaxLength(45)
-  readonly name: string;
+  name: string;
 
   @IsString()
-  readonly url: string;
+  description: string;
 
   @IsString()
-  readonly moduleDependencyId: string;
+  @IsOptional()
+  owner: string;
 
   @IsString()
-  readonly owner: string;
+  @IsOptional()
+  classification: string;
 
   @IsString()
-  readonly classification: string;
+  @IsOptional()
+  tag: string;
 
   @IsString()
-  readonly tag: string;
+  @IsOptional()
+  detail: string;
 
-  @IsString()
-  readonly cloneBy: string;
-
-  @IsString()
-  readonly description: string;
-
-  @ValidateNested({ each: true })
-  @IsArray()
-  @IsNotEmpty()
-  @Type(() => ServiceApiDto)
-  readonly apis?: ServiceApiDto[];
+  @IsNumber()
+  @IsOptional()
+  serverPort: number;
 
   @ValidateNested({ each: true })
   @IsArray()

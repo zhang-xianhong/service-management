@@ -12,6 +12,8 @@ import { ErrorTypes } from 'src/shared/constants/error';
 import { getTreeArr } from 'src/shared/utils/util';
 import { SettingsDataTypeDto } from './dto/settings-data-type.dto';
 import { SettingsTagDto } from './dto/settings-tag.dto';
+import { Created, Deleted, Details, Rows, RowsAndCount, Updated } from 'src/shared/types/response';
+import { Tree } from 'src/shared/types/tree';
 
 @Injectable()
 export class SettingsService {
@@ -28,7 +30,8 @@ export class SettingsService {
    * @param getTotal
    * @returns
    */
-  async findAllDataTypes(query: SearchQuery, getTotal = true) {
+  async findAllDataTypes(query: SearchQuery, getTotal = true):
+  Promise<Rows<DataTypesModel> | RowsAndCount<DataTypesModel>> {
     const where = {
       isDelete: false,
     };
@@ -65,8 +68,8 @@ export class SettingsService {
    * @param id
    * @returns
    */
-  async findDataTypeById(id: number) {
-    const row = await this.dataTypesRepository.findOne({
+  async findDataTypeById(id: number): Promise<Details<DataTypesModel>> {
+    const row: DataTypesModel = await this.dataTypesRepository.findOne({
       where: {
         id,
         isDelete: false,
@@ -82,28 +85,27 @@ export class SettingsService {
     return row;
   }
 
-
   /**
    * 创建数据类型
    * @param postData
    * @returns
    */
-  async createDataType(postData: SettingsDataTypeDto) {
-    const nameExisted = await this.dataTypesRepository.findOne({
+  async createDataType(postData: SettingsDataTypeDto): Promise<Created> {
+    const existDataType: DataTypesModel = await this.dataTypesRepository.findOne({
       where: {
         isDelete: false,
         name: postData.name,
       },
     });
-    if (nameExisted) {
+    if (existDataType) {
       throw new ApiException({
         code: CommonCodes.DATA_EXISTED,
         message: `名称[${postData.name}]已存在`,
       });
     }
-    const res = await this.dataTypesRepository.create(postData);
+    const res: DataTypesModel = await this.dataTypesRepository.create(postData);
     return {
-      dataTypeId: res.id,
+      id: res.id,
     };
   }
 
@@ -113,15 +115,15 @@ export class SettingsService {
    * @param postData
    * @returns
    */
-  async updateDataType(id: number, postData: SettingsDataTypeDto) {
-    const row = await this.findDataTypeById(id);
+  async updateDataType(id: number, postData: SettingsDataTypeDto): Promise<Updated> {
+    const row: DataTypesModel = await this.findDataTypeById(id);
     if (row.isSystem) {
       throw new ApiException({
         code: CommonCodes.PARAMETER_INVALID,
         message: '内置类型禁止更新',
       });
     }
-    const nameExisted = await this.dataTypesRepository.findOne({
+    const existDataType: DataTypesModel = await this.dataTypesRepository.findOne({
       where: {
         isDelete: false,
         name: postData.name,
@@ -130,7 +132,7 @@ export class SettingsService {
         },
       },
     });
-    if (nameExisted) {
+    if (existDataType) {
       throw new ApiException({
         code: CommonCodes.DATA_EXISTED,
         message: `名称[${postData.name}]已存在`,
@@ -140,7 +142,7 @@ export class SettingsService {
       where: { id },
     });
     return {
-      dataTypeId: id,
+      id,
     };
   }
 
@@ -148,7 +150,7 @@ export class SettingsService {
    * 删除数据类型（支持批量）
    * @param ids
    */
-  async deleteDataTypes(ids: Array<number>) {
+  async deleteDataTypes(ids: Array<number>): Promise<Deleted> {
     const [deleted] = await this.dataTypesRepository.update({
       isDelete: true,
     }, {
@@ -161,7 +163,7 @@ export class SettingsService {
     });
     if (deleted === ids.length) {
       return {
-        deleted: ids,
+        ids,
       };
     }
     throw new ApiException({
@@ -176,7 +178,8 @@ export class SettingsService {
    * @param query
    * @param getTotal
    */
-  async findAllTags(query, getTotal = true) {
+  async findAllTags(query, getTotal = true):
+  Promise<Rows<SettingsTagsModel> | RowsAndCount<SettingsTagsModel>>  {
     const where = {
       isDelete: false,
     };
@@ -194,7 +197,7 @@ export class SettingsService {
         },
       ];
     }
-    const { conditions } = query;
+    const { conditions = {} } = query;
     conditions.where = where;
     if (!getTotal) {
       // 删除分页相关的字段
@@ -209,14 +212,14 @@ export class SettingsService {
    * 创建标签
    * @param postData
    */
-  async createTag(postData: SettingsTagDto) {
-    const nameExisted = await this.tagsRepository.findOne({
+  async createTag(postData: SettingsTagDto): Promise<Created> {
+    const existTag: SettingsTagsModel = await this.tagsRepository.findOne({
       where: {
         name: postData.name,
         isDelete: false,
       },
     });
-    if (nameExisted) {
+    if (existTag) {
       throw new ApiException({
         code: CommonCodes.DATA_EXISTED,
         message: '标签名称已存在',
@@ -224,7 +227,7 @@ export class SettingsService {
     }
     const res = await this.tagsRepository.create(postData);
     return {
-      tagId: res.id,
+      id: res.id,
     };
   }
 
@@ -234,8 +237,8 @@ export class SettingsService {
    * @param id
    * @returns
    */
-  async findTagById(id: number) {
-    const row = await this.tagsRepository.findOne({
+  async findTagById(id: number): Promise<Details<SettingsTagsModel>> {
+    const row: SettingsTagsModel = await this.tagsRepository.findOne({
       where: {
         id,
         isDelete: false,
@@ -256,9 +259,9 @@ export class SettingsService {
    * @param postData
    * @returns
    */
-  async updateTag(id: number, postData: SettingsTagDto) {
+  async updateTag(id: number, postData: SettingsTagDto): Promise<Updated> {
     await this.findTagById(id);
-    const nameExisted = await this.tagsRepository.findOne({
+    const existTag: SettingsTagsModel = await this.tagsRepository.findOne({
       where: {
         isDelete: false,
         name: postData.name,
@@ -267,7 +270,7 @@ export class SettingsService {
         },
       },
     });
-    if (nameExisted) {
+    if (existTag) {
       throw new ApiException({
         code: CommonCodes.DATA_EXISTED,
         message: `名称[${postData.name}]已存在`,
@@ -277,7 +280,7 @@ export class SettingsService {
       where: { id },
     });
     return {
-      tagId: id,
+      id,
     };
   }
 
@@ -285,7 +288,7 @@ export class SettingsService {
    * 删除标签（支持批量）
    * @param ids
    */
-  async deleteTags(ids: Array<number>) {
+  async deleteTags(ids: Array<number>): Promise<Deleted> {
     const [deleted] = await this.tagsRepository.update({
       isDelete: true,
     }, {
@@ -297,7 +300,7 @@ export class SettingsService {
     });
     if (deleted === ids.length) {
       return {
-        deleted: ids,
+        ids,
       };
     }
     throw new ApiException({
@@ -312,7 +315,7 @@ export class SettingsService {
    * @param query
    * @param getTotal
    */
-  async findAllCategories() {
+  async findAllCategories(): Promise<Rows<SettingsCategoriesModel>>  {
     return await this.categoriesRepository.findAll({
       where: { isDelete: false },
     });
@@ -323,7 +326,7 @@ export class SettingsService {
    * @param query
    * @param getTotal
    */
-  async findCategoryById(id: number) {
+  async findCategoryById(id: number): Promise<Details<SettingsCategoriesModel>> {
     return await this.categoriesRepository.findOne({
       where: {
         id,
@@ -337,22 +340,21 @@ export class SettingsService {
    * @param query
    * @param getTotal
    */
-  async findCategoriesTree() {
-    const categories = await this.categoriesRepository.findAll({
+  async findCategoriesTree(): Promise<Tree[]> {
+    const categories: SettingsCategoriesModel[] = await this.categoriesRepository.findAll({
       raw: true,
     });
-    const categoriesTree = getTreeArr({ key: 'id', pKey: 'parentId', data: categories });
-    return categoriesTree;
+    return getTreeArr({ key: 'id', pKey: 'parentId', data: categories });
   }
 
   /**
    * 新增分类
    * @param data
    */
-  async createCategory(data: any) {
+  async createCategory(data: any): Promise<Created> {
     const { parentId, ...category } = data;
     if (parentId) {
-      const parent = await this.categoriesRepository.findOne({ where: { id: parentId } });
+      const parent: SettingsCategoriesModel = await this.categoriesRepository.findOne({ where: { id: parentId } });
       if (!parent) {
         throw new ApiException({
           code: CommonCodes.NOT_FOUND,
@@ -363,7 +365,7 @@ export class SettingsService {
     }
     const result = await this.categoriesRepository.create(category);
     return {
-      categoryId: result.id,
+      id: result.id,
     };
   }
 
@@ -371,8 +373,8 @@ export class SettingsService {
    * 更新分类
    * @param data
    */
-  async updateCategory(id: number, data: any) {
-    const category = await this.categoriesRepository.findOne({
+  async updateCategory(id: number, data: any): Promise<Updated> {
+    const category: SettingsCategoriesModel = await this.categoriesRepository.findOne({
       where: {
         isDelete: false,
         id,
@@ -384,9 +386,12 @@ export class SettingsService {
         message: '分类不存在',
       }, HttpStatus.NOT_FOUND);
     }
-    return await this.categoriesRepository.update(data, {
+    await this.categoriesRepository.update(data, {
       where: { id },
     });
+    return {
+      id,
+    };
   }
 
   /**
@@ -394,7 +399,7 @@ export class SettingsService {
    * @param data
    */
   async deleteCategory(id: number) {
-    const category = await this.categoriesRepository.findOne({
+    const category: SettingsCategoriesModel = await this.categoriesRepository.findOne({
       where: {
         isDelete: false,
         id,
@@ -407,7 +412,7 @@ export class SettingsService {
         error: ErrorTypes.NOT_FOUND,
       }, HttpStatus.NOT_FOUND);
     }
-    const data = await this.categoriesRepository.findAll({
+    const data: SettingsCategoriesModel[] = await this.categoriesRepository.findAll({
       where: {
         parentId: id,
         isDelete: false,
