@@ -120,8 +120,8 @@ export const recalcCanvasSize = () => {
 export const move = (index: number, movementX: number, movementY: number): void => {
   const xPos = tables.value[index].position.x + movementX;
   const yPos = tables.value[index].position.y + movementY;
-  tables.value[index].position.x = xPos;
-  tables.value[index].position.y = yPos;
+  tables.value[index].position.x = Math.max(xPos, 0);
+  tables.value[index].position.y = Math.max(yPos, 0);
   recalcCanvasSize();
   relations.value.forEach((relation, rIndex) => {
     if (relation.includes(index)) {

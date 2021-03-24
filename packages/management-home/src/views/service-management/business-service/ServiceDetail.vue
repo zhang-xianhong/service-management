@@ -88,8 +88,8 @@ export default {
   components: {
     ServerBaseInfo,
     Erd,
-    ServerPortsInfo,
     ModelDetailInfo,
+    ServerPortsInfo,
   },
   setup() {
     const { buttons } = useButtonUtils();
@@ -166,11 +166,11 @@ export default {
       relations: [],
     });
     const initModelList = async () => {
-      erdLoading.value = true;
+      // erdLoading.value = true;
       const { code, data } = await getServiceModelList({
         serviceId: currentServiceId.value,
       });
-      erdLoading.value = false;
+      // erdLoading.value = false;
       let tables: any[] = [];
       let relations: any[] = [];
       if (code === 0) {

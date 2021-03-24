@@ -78,6 +78,8 @@ export default defineComponent({
       if (draggingTable && Date.now() - draggingTable.dragging > 100) {
         const coordinate: Record<string, any> = {};
         tables.value.forEach((table: any) => {
+          // eslint-disable-next-line no-param-reassign
+          table.dragging = false;
           coordinate[table.id] = table.position;
         });
         const { code } = await updateConfig({
@@ -90,10 +92,6 @@ export default defineComponent({
           context.emit('model-change');
         }
       }
-      tables.value.forEach((table: any) => {
-        // eslint-disable-next-line no-param-reassign
-        table.dragging = 0;
-      });
       clearNewRelation();
     };
     const drag = (ev: MouseEvent) => {
