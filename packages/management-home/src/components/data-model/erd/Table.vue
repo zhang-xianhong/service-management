@@ -30,7 +30,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, watchEffect, ref, inject } from 'vue';
+import { defineComponent, inject, computed } from 'vue';
 import _ from 'lodash/fp';
 import { drawRelationStart, drawRelationEnd, drawTempRleation, removeTempRleation } from './store';
 import { deleteModel, createRelation } from '@/api/schema/model';
@@ -75,10 +75,7 @@ export default defineComponent({
         if (code === 0) context.emit('model-change');
       }
     };
-    const table = ref({});
-    watchEffect(() => {
-      table.value = props.tableAttr;
-    });
+    const table = computed(() => props.tableAttr);
     return {
       markers,
       drawRelationStart,

@@ -10,4 +10,5 @@ export default {
   CREATE_RELATION: ['/models/relation', 'mock/schema/model-create.json'],
   UPDATE_RELATION: ['/models/relation/_', 'mock/schema/model-create.json'],
   UPDATE_CONFIG: ['/services/config', 'mock/schema/model-create.json'],
+  UPDATE_FIELDS: ['/models/_/fields', 'mock/schema/model-create.json'],
 };

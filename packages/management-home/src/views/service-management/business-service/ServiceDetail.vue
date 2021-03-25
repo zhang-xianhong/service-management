@@ -22,7 +22,7 @@
       </el-col>
     </el-row>
     <el-row :style="{ height: computedHeight }">
-      <el-col :span="16" style="border-right: 1px solid #bbbbbb">
+      <el-col :span="componentName || modelInfo ? 16 : 24" style="height:100%">
         <el-row>
           <!-- 服务下拉选择框 -->
           <el-select v-model="currentServiceId" placeholder="请选择">
@@ -44,19 +44,19 @@
             @select-change="modelSelected"
           ></erd>
         </div>
-        <div>
+        <div v-if="!isShowDownDrawer">
           <div>服务代码：</div>
           <div>服务地址：</div>
         </div>
       </el-col>
-      <el-col :span="8">
+      <el-col v-if="componentName || modelInfo" :span="8" style="border-left: 1px solid #bbbbbb">
         <template v-if="componentName">
           <keep-alive>
             <component :is="componentName" :data="serverInfo" :id="currentServiceId"></component>
           </keep-alive>
         </template>
         <template v-if="modelInfo">
-          <model-detail-info :data="modelInfo"></model-detail-info>
+          <model-detail-info :data="modelInfo" :tags="tags" :classifications="classifications"></model-detail-info>
         </template>
       </el-col>
     </el-row>
@@ -79,7 +79,9 @@ import ServerPortsInfo from './components/ServerPortsInfo.vue';
 import { ref, Ref, reactive, watch, onMounted, provide, computed } from 'vue';
 import ModelDetailInfo from '@/components/data-model/detail-info/ModelDetailInfo.vue';
 import ModelFieldForm from '@/components/data-model/field-form/Index.vue';
-import { getServiceList, getServiceById } from '@/api/servers/index';
+import { getServiceList, getServiceById } from '@/api/servers';
+import { getAllTags } from '@/api/settings/tags';
+import { getClassificationList } from '@/api/settings/classification';
 import { getServiceModelList } from '@/api/schema/model';
 import { useRoute } from 'vue-router';
 import _ from 'lodash/fp';
@@ -130,6 +132,26 @@ export default {
     };
 
     getServerInfo();
+
+    const tags = ref([] as any[]);
+
+    // 获取所有标签
+    const getTags = async () => {
+      const { data } = await getAllTags();
+      tags.value = data || [];
+    };
+
+    getTags();
+
+    const classifications = ref([] as any[]);
+
+    // 获取所有分类信息
+    const getClassifications = async () => {
+      const { data } = await getClassificationList();
+      classifications.value = data || [];
+    };
+
+    getClassifications();
 
     // 服务状态
     const serverStatusInfo = ref({});
@@ -206,13 +228,13 @@ export default {
     };
     // 模型详情数据
     const modelInfo = ref(null);
-    const refFields = ref([]);
-    provide('fields', refFields);
+    provide('currentModel', modelInfo);
+    provide('tags', tags);
+    provide('classifications', classifications);
     const modelSelected = (model: any) => {
       componentName.value = '';
       modelInfo.value = model;
       if (model) {
-        refFields.value = model.fields;
         isShowDownDrawer.value = true;
         drawerName.value = 'ModelFieldForm';
       } else {
@@ -233,6 +255,8 @@ export default {
       isOpenProperties,
       serverInfo,
       serverList,
+      tags,
+      classifications,
       buttons,
       serverStatusInfo,
       componentName,
