@@ -29,7 +29,9 @@
         <el-table-column type="index" width="50" label="序号"> </el-table-column>
         <el-table-column property="name" label="服务名称">
           <template #default="scope">
-            <router-link :to="`service-list/detail/${scope.row.id}`">{{ scope.row.name }}</router-link>
+            <router-link :to="{ path: `service-list/detail/${scope.row.id}`, query: { detailName: scope.row.name } }">{{
+              scope.row.name
+            }}</router-link>
           </template>
         </el-table-column>
         <el-table-column property="description" label="服务描述"></el-table-column>
@@ -201,6 +203,7 @@ import {
 } from './utils/service-data-utils';
 import { addService } from '@/api/servers';
 import Message from 'element-plus/es/el-message';
+import { ElMessage } from 'element-plus';
 
 export default defineComponent({
   name: 'ServiceList',
@@ -247,14 +250,21 @@ export default defineComponent({
       senddata.dependencies = serviceDetail.dependencies.map((x: any) => ({
         id: x,
       }));
-      senddata.name = `srv-${senddata.name}`;
-      console.log(senddata, 'text');
       if (!senddata.name) {
-        return Message.error('请输入服务名称');
+        return ElMessage({
+          showClose: true,
+          message: '请输入服务名称',
+          type: 'error',
+        });
       }
       if (!senddata.description) {
-        return Message.error('请输入服务描述');
+        return ElMessage({
+          showClose: true,
+          message: '请输入服务描述',
+          type: 'error',
+        });
       }
+      senddata.name = `srv-${senddata.name}`;
       addService(senddata)
         .then(() => {
           refreshServiceList(pageInfo);
