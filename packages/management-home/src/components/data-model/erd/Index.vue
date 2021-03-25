@@ -125,7 +125,8 @@ export default defineComponent({
         // eslint-disable-next-line no-param-reassign
         table.dragging = 0;
       });
-      clearNewRelation();
+      const relationEnd = document.querySelector('.erd-table-container:hover');
+      !relationEnd && clearNewRelation();
       clearSelected();
     };
     const drag = (ev: MouseEvent) => {

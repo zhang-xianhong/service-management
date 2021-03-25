@@ -32,7 +32,7 @@
 <script lang="ts">
 import { defineComponent, inject, computed } from 'vue';
 import _ from 'lodash/fp';
-import { drawRelationStart, drawRelationEnd, drawTempRleation, removeTempRleation } from './store';
+import { drawRelationStart, drawRelationEnd, drawTempRleation, removeTempRleation, clearNewRelation } from './store';
 import { deleteModel, createRelation } from '@/api/schema/model';
 export default defineComponent({
   name: 'ErdTable',
@@ -74,6 +74,7 @@ export default defineComponent({
         });
         if (code === 0) context.emit('model-change');
       }
+      clearNewRelation();
     };
     const table = computed(() => props.tableAttr);
     return {
