@@ -6,8 +6,7 @@ const { settings } = URL;
 
 export const getDataTypes = (payload: any): Promise<SuccessResponse<any>> =>
   axios.get(getUrl(settings.GET_DATA_TYPES), { params: payload });
-export const getDataTypesAll = (payload: any): Promise<SuccessResponse<any>> =>
-  axios.get(getUrl(settings.GET_DATA_TYPES_ALL), { params: payload });
+export const getDataTypesAll = (): Promise<SuccessResponse<any>> => axios.get(getUrl(settings.GET_DATA_TYPES_ALL));
 export const addDataType = (payload: any) => axios.post(getUrl(settings.ADD_DATA_TYPE), payload);
 export const updateDataType = (id: string, payload: any) => axios.post(getUrl(settings.UPDATE_DATA_TYPE, id), payload);
 export const getDataTypeDetail = (id: string) => axios.get(getUrl(settings.UPDATE_DATA_TYPE, id));

@@ -2,10 +2,9 @@
   <div
     class="erd-container-wrapper"
     :style="{ width, height }"
-    @mouseup="dragStop"
-    @mouseleave="dragStop"
+    @mouseup.capture="dragStop"
+    @mouseleave="leaveErd"
     @mousemove="drag"
-    @mousedown.capture="clearSelect"
   >
     <div :style="`width: ${viewWidth}px; height: ${viewHeight}px; position: relative;`">
       <add-model @model-change="modelChange"></add-model>
@@ -75,9 +74,9 @@ export default defineComponent({
       relationLines.value = getLines();
       recalcCanvasSize();
     });
-    const dragStop = async () => {
+    const leaveErd = async () => {
       const draggingTable: any = _.find('dragging')(tables.value);
-      if (draggingTable && Date.now() - draggingTable.dragging > 100) {
+      if (draggingTable) {
         const coordinate: Record<string, any> = {};
         tables.value.forEach((table: any) => {
           // eslint-disable-next-line no-param-reassign
@@ -99,6 +98,35 @@ export default defineComponent({
         table.dragging = 0;
       });
       clearNewRelation();
+      clearSelected();
+    };
+    const dragStop = async () => {
+      const draggingTable: any = _.find('dragging')(tables.value);
+      if (draggingTable && Date.now() - draggingTable.dragging > 200) {
+        const coordinate: Record<string, any> = {};
+        tables.value.forEach((table: any) => {
+          // eslint-disable-next-line no-param-reassign
+          table.dragging = 0;
+          coordinate[table.id] = table.position;
+        });
+        const { code } = await updateConfig({
+          serviceId,
+          config: {
+            coordinate,
+          },
+        });
+        if (code === 0) {
+          context.emit('model-change');
+        }
+      } else {
+        context.emit('select-change', draggingTable);
+      }
+      tables.value.forEach((table: any) => {
+        // eslint-disable-next-line no-param-reassign
+        table.dragging = 0;
+      });
+      clearNewRelation();
+      clearSelected();
     };
     const drag = (ev: MouseEvent) => {
       const dragTableIndex = _.findIndex(_.property('dragging'))(tables.value);
@@ -112,11 +140,6 @@ export default defineComponent({
       table.selected = true;
       // eslint-disable-next-line no-param-reassign
       table.dragging = Date.now();
-      context.emit('selectChange', table);
-    };
-    const clearSelect = () => {
-      clearSelected();
-      context.emit('selectChange', null);
     };
     const calcSvgPosition = () => {
       const svgElem = document.querySelector('.erd-container-wrapper svg') as HTMLElement;
@@ -129,7 +152,7 @@ export default defineComponent({
     };
     const allTypes = ref([]);
     const initTypeOption = async () => {
-      const { code, data } = await getDataTypesAll({});
+      const { code, data } = await getDataTypesAll();
       if (code === 0) {
         allTypes.value = data;
       }
@@ -151,9 +174,9 @@ export default defineComponent({
       viewWidth,
       viewHeight,
       clearSelected,
-      clearSelect,
       modelChange,
       allTypes,
+      leaveErd,
     };
   },
 });

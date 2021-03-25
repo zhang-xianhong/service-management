@@ -36,3 +36,6 @@ export const updateRelation = (relationId: string, payload: object): Promise<Suc
 
 export const updateConfig = (payload: object): Promise<SuccessResponse<any>> =>
   axios.post(getUrl(schema.UPDATE_CONFIG), payload);
+
+export const updateFields = (modelId: string, payload: object): Promise<SuccessResponse<any>> =>
+  axios.post(getUrl(schema.UPDATE_FIELDS, modelId), payload);
