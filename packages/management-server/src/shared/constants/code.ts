@@ -41,6 +41,8 @@ export enum CommonCodes {
   INITIALIZE_FAIL = 100010,
   // 初始化失败
   BUILD_FAIL = 100011,
+  // 获取失败
+  FETCH_FAIL = 100012,
 }
 
 // 用户模块

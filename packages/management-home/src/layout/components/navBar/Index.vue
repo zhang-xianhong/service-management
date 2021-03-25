@@ -4,7 +4,7 @@
       <img src="./logo.png" />
     </a>
     <div class="bread-bar">
-      <bread-curmb></bread-curmb>
+      <!--      <bread-curmb></bread-curmb>-->
     </div>
     <div class="position-right-bar">
       <el-dropdown trigger="click" class="header-title">
@@ -56,12 +56,12 @@
 
 <script lang="ts">
 import { defineComponent, reactive } from 'vue';
-import breadCurmb from '@/components/bread-curmb/Index.vue';
+// import breadCurmb from '@/components/bread-curmb/Index.vue';
 
 export default defineComponent({
   name: 'navBar',
   components: {
-    breadCurmb,
+    // breadCurmb,
   },
   setup() {
     const projectList = reactive([

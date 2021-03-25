@@ -1,3 +1,5 @@
+import { logSetTimeOut } from '@/views/service-management/business-service/utils/service-log-data-utils';
+
 export default function() {
   // 初始化
   const initialize = () => {
@@ -22,6 +24,7 @@ export default function() {
   // 日志
   const log = () => {
     console.log('日志');
+    logSetTimeOut();
   };
 
   // 按钮配置

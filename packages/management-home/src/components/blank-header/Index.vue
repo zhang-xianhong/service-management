@@ -1,21 +1,18 @@
 <template>
   <div class="blank-header">
-    <span class="blank-header-back" v-if="back"><i class="el-icon-back"></i></span>
-    <span class="blank-header-title">{{ title }}</span>
-    <span></span>
+    <span class="blank-header-back" @click="jumpBack" v-if="back"><i class="el-icon-back"></i></span>
+    <span class="blank-header-title" :style="{ marginLeft: back ? '0' : '20px' }">{{ title }}</span>
+    <span v-if="detailName" class="blank-header-detail">|</span>
+    <span class="blank-header-detail">{{ detailName }}</span>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, getCurrentInstance, onMounted, ref, watch } from 'vue';
+import { useRoute } from 'vue-router';
+
 export default defineComponent({
   name: 'BlankHeader',
-  props: {
-    back: {
-      type: Boolean,
-      default: () => !false,
-    },
-  },
   setup() {
     const clintWidth = ref(document.body.clientWidth);
     const layoutBool = ref(clintWidth.value > 1440);
@@ -27,16 +24,21 @@ export default defineComponent({
         layoutBool.value = clintWidth.value > 1440;
       };
     });
-    const levelList = ref([]);
-    const title = ref('');
+    const route = useRoute();
+    const title = ref('' as any);
+    const back = ref(false);
+    const detailName = ref('' as any);
     const proxy = (getCurrentInstance() as any).proxy as any;
     const getBread = () => {
-      const matched = proxy.$route.matched.filter((item: any) => item.meta && item.meta.title);
-      levelList.value = matched.filter((item: any) => item.meta && item.meta.title && item.meta.breadcrumb !== false);
-      title.value = (levelList.value.reverse()[0] as any).meta.title || '';
+      title.value = route.meta.title || '';
+      back.value = route.path.includes('detail');
+      detailName.value = route.query.detailName;
     };
     getBread();
-    console.log(levelList.value, 123);
+
+    function jumpBack() {
+      proxy.$router.back();
+    }
     watch(
       () => proxy.$route,
       (route) => {
@@ -46,10 +48,18 @@ export default defineComponent({
         getBread();
       },
     );
+    function logs(res: any) {
+      console.log(res);
+      return res;
+    }
     return {
       clintWidth,
       layoutBool,
       title,
+      jumpBack,
+      detailName,
+      back,
+      logs,
     };
   },
 });
@@ -67,6 +77,14 @@ export default defineComponent({
     width: 60px;
     text-align: center;
     font-size: 18px;
+    color: #006eff;
+    &:hover {
+      transform: scale(1.5);
+    }
+  }
+  &-detail {
+    display: inline-block;
+    margin-left: 10px;
   }
 }
 </style>

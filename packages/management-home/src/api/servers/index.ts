@@ -33,3 +33,8 @@ export const updateServiceApis: (payload: object, id: string) => Promise<Success
   payload: any,
   id: string,
 ) => request.post(getUrl(URL.service.UPDATE_SERVICE_APIS, id), payload);
+
+export const getLogRuntime: (name: string, realtimeTS?: string | number) => Promise<SuccessResponse<any>> = (
+  name: string,
+  realtimeTS?: string | number,
+) => request.get(getUrl(URL.service.GET_LOG_RUNTIME), { params: { name, realtimeTS } });

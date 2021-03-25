@@ -16,3 +16,6 @@ export const GENERATE_SERVICE_REPOSITORY_URL = `${BASE_URL}/sa/dev-sa/sa-ci-cd/p
 export const SERVICE_SSH_URI = `http://${config.BACKEND_SSHURI_HOST}`;
 // export const INIT_SERVICE_URL = `${BASE_URL}/project/generate/`;
 // ?token=6c850f80c9b1f80b12e0361ef6c36e&ref=develop&applicationName=sa&projectId=11
+
+// 日志服务
+export const LOG_SERVICE_URL = `${BASE_URL}/sa/dev-sa/sa-operator-adapter/log/realtimeLog`;

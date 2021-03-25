@@ -1,14 +1,14 @@
 import { Type } from 'class-transformer';
-import { IsString, IsEnum, ValidateNested, IsArray, IsOptional, IsNumber } from 'class-validator';
-import { methodType } from '../service-api.model';
+import { IsString, IsEnum, ValidateNested, IsArray, IsOptional, IsBoolean, IsNumber } from 'class-validator';
+import { METHOD_TYPE } from '../default-apis';
 import { ApiParamDto } from './api-param.dto';
 
 export class ApiDto {
   @IsString()
   readonly url: string;
 
-  @IsEnum(methodType)
-  readonly method: methodType;
+  @IsEnum(METHOD_TYPE)
+  readonly method: METHOD_TYPE;
 
   @IsString()
   readonly name: string;
@@ -17,8 +17,11 @@ export class ApiDto {
   readonly description: string;
 
   @IsNumber()
+  readonly modelId: number;
+
+  @IsBoolean()
   @IsOptional()
-  readonly isSystem: number;
+  readonly isSystem: boolean;
 
   @ValidateNested({ each: true })
   @IsArray()

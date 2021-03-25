@@ -1,5 +1,5 @@
 import { IsString, IsEnum, IsNumber } from 'class-validator';
-import { PARAM_TYPE } from '../service-api-param.model';
+import { PARAM_TYPE } from '../default-apis';
 
 export class ApiParamDto {
   @IsString()

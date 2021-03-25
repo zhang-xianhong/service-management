@@ -29,7 +29,9 @@
         <el-table-column type="index" width="50" label="序号"> </el-table-column>
         <el-table-column property="name" label="服务名称">
           <template #default="scope">
-            <router-link :to="`service-list/detail/${scope.row.id}`">{{ scope.row.name }}</router-link>
+            <router-link :to="{ path: `service-list/detail/${scope.row.id}`, query: { detailName: scope.row.name } }">{{
+              scope.row.name
+            }}</router-link>
           </template>
         </el-table-column>
         <el-table-column property="description" label="服务描述"></el-table-column>
@@ -84,10 +86,22 @@
     <el-dialog title="新增服务" v-model="addServiceDialog" width="600px">
       <div class="add-service-set">
         <el-form :model="serviceDetail">
-          <el-form-item label="服务名称" :label-width="labelWidth">
-            <el-input v-model="serviceDetail.name"></el-input>
+          <el-form-item
+            label="服务名称"
+            :label-width="labelWidth"
+            prop="name"
+            :rules="[{ required: true, message: '请输入服务名称', trigger: 'blur' }]"
+          >
+            <el-input v-model="serviceDetail.name">
+              <template #prepend>srv-</template>
+            </el-input>
           </el-form-item>
-          <el-form-item label="服务描述" :label-width="labelWidth">
+          <el-form-item
+            label="服务描述"
+            prop="description"
+            :label-width="labelWidth"
+            :rules="[{ required: true, message: '请输入服务描述', trigger: 'blur' }]"
+          >
             <el-input v-model="serviceDetail.description"></el-input>
           </el-form-item>
           <el-form-item label="负责人" :label-width="labelWidth">
@@ -119,14 +133,9 @@
           <el-form-item label="服务详情" :label-width="labelWidth">
             <el-input v-model="serviceDetail.detail" type="textarea" :rows="5"></el-input>
           </el-form-item>
-          <el-form-item label="服务依赖" :label-width="labelWidth">
-            <el-select v-model="allService" clearable multiple>
-              <el-option
-                v-for="item in serviceTableList.list"
-                :key="item.id"
-                :label="item.name"
-                :value="item.id"
-              ></el-option>
+          <el-form-item label="服务依赖" :label-width="labelWidth" prop="dependencies">
+            <el-select v-model="serviceDetail.dependencies" clearable multiple>
+              <el-option v-for="item in allService" :key="item.id" :label="item.name" :value="item.id"></el-option>
             </el-select>
           </el-form-item>
         </el-form>
@@ -193,6 +202,8 @@ import {
   allService,
 } from './utils/service-data-utils';
 import { addService } from '@/api/servers';
+import Message from 'element-plus/es/el-message';
+import { ElMessage } from 'element-plus';
 
 export default defineComponent({
   name: 'ServiceList',
@@ -239,7 +250,21 @@ export default defineComponent({
       senddata.dependencies = serviceDetail.dependencies.map((x: any) => ({
         id: x,
       }));
-      console.log(senddata, 'text');
+      if (!senddata.name) {
+        return ElMessage({
+          showClose: true,
+          message: '请输入服务名称',
+          type: 'error',
+        });
+      }
+      if (!senddata.description) {
+        return ElMessage({
+          showClose: true,
+          message: '请输入服务描述',
+          type: 'error',
+        });
+      }
+      senddata.name = `srv-${senddata.name}`;
       addService(senddata)
         .then(() => {
           refreshServiceList(pageInfo);
@@ -296,6 +321,7 @@ export default defineComponent({
     function deleteHandler() {
       return deleteServiceForList(mutiArray.value).then(() => {
         refreshServiceList(pageInfo);
+        Message.success('删除成功');
       });
     }
 
@@ -403,6 +429,11 @@ export default defineComponent({
   }
   .el-textarea__inner {
     width: 400px;
+  }
+  .el-input-group > .el-input__inner {
+    vertical-align: middle;
+    display: table-cell;
+    width: 333px !important;
   }
 }
 .dialog-footer {
