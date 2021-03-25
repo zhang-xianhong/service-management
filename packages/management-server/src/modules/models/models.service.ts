@@ -76,6 +76,9 @@ export class ModelsService {
     } catch (error) {
       this.logger.error(error);
       await transaction.rollback();
+      if (error instanceof ApiException) {
+        throw error;
+      }
       throw new ApiException({
         code: CommonCodes.CREATED_FAIL,
         message: '创建失败',
@@ -181,34 +184,35 @@ export class ModelsService {
       transaction,
     });
     const modelIds: number[] = models.map(model => model.id);
-    const deleteModels = this.infoRepository.update({
-      isDelete: true,
-    }, {
-      where: {
-        id: {
-          [Op.in]: modelIds,
-        },
-      },
-      transaction,
-    });
-    const deleteFields = this.fieldsRepository.update({
-      isDelete: true,
-    }, {
-      where: {
-        modelId: {
-          [Op.in]: modelIds,
-        },
-      },
-      transaction,
-    });
-    const deleteRelations = this.relationRepository.update({
-      isDelete: true,
-    }, {
-      where: {
-        serviceId,
-      },
-    });
-    return await Promise.all([deleteModels, deleteFields, deleteRelations]);
+    return this.deleteModel(modelIds, transaction);
+    // const deleteModels = this.infoRepository.update({
+    //   isDelete: true,
+    // }, {
+    //   where: {
+    //     id: {
+    //       [Op.in]: modelIds,
+    //     },
+    //   },
+    //   transaction,
+    // });
+    // const deleteFields = this.fieldsRepository.update({
+    //   isDelete: true,
+    // }, {
+    //   where: {
+    //     modelId: {
+    //       [Op.in]: modelIds,
+    //     },
+    //   },
+    //   transaction,
+    // });
+    // const deleteRelations = this.relationRepository.update({
+    //   isDelete: true,
+    // }, {
+    //   where: {
+    //     serviceId,
+    //   },
+    // });
+    // return await Promise.all([deleteModels, deleteFields, deleteRelations]);
   }
 
 
@@ -217,8 +221,8 @@ export class ModelsService {
    * @param modelIds
    * @returns
    */
-  async deleteModel(modelIds: number[]): Promise<Deleted> {
-    const transaction = await this.sequelize.transaction();
+  async deleteModel(modelIds: number[], transactionArg?: sequelize.Transaction): Promise<Deleted> {
+    const transaction = transactionArg ||  await this.sequelize.transaction();
     try {
       await this.infoRepository.update({
         isDelete: true,
@@ -266,6 +270,9 @@ export class ModelsService {
     } catch (error) {
       this.logger.error(error);
       await transaction.rollback();
+      if (error instanceof ApiException) {
+        throw error;
+      }
       throw new ApiException({
         code: CommonCodes.DELETED_FAIL,
         message: '删除失败',
