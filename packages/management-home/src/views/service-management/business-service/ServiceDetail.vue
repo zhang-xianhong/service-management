@@ -229,6 +229,8 @@ export default {
     // 模型详情数据
     const modelInfo = ref(null);
     provide('currentModel', modelInfo);
+    provide('tags', tags);
+    provide('classifications', classifications);
     const modelSelected = (model: any) => {
       componentName.value = '';
       modelInfo.value = model;
