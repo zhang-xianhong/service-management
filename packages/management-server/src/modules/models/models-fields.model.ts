@@ -27,10 +27,10 @@ export class ModelsFieldsModel extends BaseModel {
   typeId: number;
 
   // 数据类型
-  @Column({
-    type: DataType.STRING,
-  })
-  type: string;
+  // @Column({
+  //   type: DataType.STRING,
+  // })
+  // type: string;
 
   // 字段描述
   @Column({
@@ -49,12 +49,12 @@ export class ModelsFieldsModel extends BaseModel {
   fieldOrder: number;
 
   // 字段长度
-  @Column({
-    type: DataType.INTEGER,
-    defaultValue: 10000,
-    comment: '字段长度',
-  })
-  length: number;
+  // @Column({
+  //   type: DataType.INTEGER,
+  //   defaultValue: 10000,
+  //   comment: '字段长度',
+  // })
+  // length: number;
 
   // 字段长度
   @Column({

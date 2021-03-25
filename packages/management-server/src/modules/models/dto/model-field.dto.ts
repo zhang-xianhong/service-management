@@ -38,9 +38,6 @@ export class ModelFieldDto {
 
   @IsOptional()
   foreignId: string;
-
-  @IsOptional()
-  id: number;
 }
 
 

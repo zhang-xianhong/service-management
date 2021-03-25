@@ -38,15 +38,12 @@ export const SYSTEM_FIELD_TYPES: FIELD_TYPE[] = [
 
 export const FIELD_UUID_NAME = 'UUID';
 
-// 默认要生成的字段
-export const DEFAULT_FIELDS = [
-  {
-    name: 'id',
-    type: 'UUID', // 根据该类型去data-type表中查找typeID
-    isKey: true,
-    isUnique: true,
-    isIndex: true,
-    isSystem: true,
-    extra: 'auto_increment',
-  },
-];
+// UUID 字段
+export const FIELD_UUID = {
+  name: 'id',
+  isKey: true,
+  isUnique: true,
+  isIndex: true,
+  isSystem: true,
+  extra: 'auto_increment',
+};
