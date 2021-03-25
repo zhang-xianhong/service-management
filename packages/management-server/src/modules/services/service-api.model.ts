@@ -3,14 +3,11 @@
  */
 import { Table, Column, DataType, ForeignKey, BelongsTo, HasMany } from 'sequelize-typescript';
 import { BaseModel } from '../base.entity';
+import { ModelsInfoModel } from '../models/models-info.model';
+import { METHOD_TYPE } from './default-apis';
 import { ServicesApiParamModel } from './service-api-param.model';
 import { ServicesInfoModel } from './service-info.model';
 
-export enum methodType {
-  Get = 'GET',
-  Post = 'POST',
-  Put = 'PUT'
-}
 @Table({
   timestamps: false,
   tableName: 'service_api',
@@ -25,11 +22,11 @@ export class ServicesApiModel extends BaseModel {
 
   // 请求方式
   @Column({
-    type: DataType.STRING,
+    type: DataType.TINYINT,
     field: 'method_type',
-    defaultValue: methodType.Get,
+    defaultValue: METHOD_TYPE.GET,
   })
-  method: methodType;
+  method: METHOD_TYPE;
 
   // 接口名称
   @Column({
@@ -54,6 +51,17 @@ export class ServicesApiModel extends BaseModel {
 
   @BelongsTo(() => ServicesInfoModel)
   serviceInfo: ServicesInfoModel;
+
+  // 隶属模型
+  @ForeignKey(() => ModelsInfoModel)
+  @Column({
+    type: DataType.BIGINT,
+    field: 'model_id',
+  })
+  modelId: number;
+
+  @BelongsTo(() => ModelsInfoModel)
+  model: ModelsInfoModel;
 
   @HasMany(() => ServicesApiParamModel)
   params: ServicesApiParamModel[];
