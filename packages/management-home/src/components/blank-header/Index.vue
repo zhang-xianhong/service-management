@@ -25,7 +25,7 @@ export default defineComponent({
       };
     });
     const route = useRoute();
-    const title = ref('');
+    const title = ref('' as any);
     const back = ref(false);
     const detailName = ref('' as any);
     const proxy = (getCurrentInstance() as any).proxy as any;
