@@ -22,7 +22,7 @@
       </el-col>
     </el-row>
     <el-row :style="{ height: computedHeight }">
-      <el-col :span="componentName || modelInfo ? 16 : 24" style="height:100%">
+      <el-col :span="componentName || modelInfo || relationSelected ? 16 : 24" style="height:100%">
         <el-row>
           <!-- 服务下拉选择框 -->
           <el-select v-model="currentServiceId" placeholder="请选择">
@@ -49,14 +49,17 @@
           <div>服务地址：</div>
         </div>
       </el-col>
-      <el-col v-if="componentName || modelInfo" :span="8" style="border-left: 1px solid #bbbbbb">
+      <el-col v-if="componentName || modelInfo || relationSelected" :span="8" style="border-left: 1px solid #bbbbbb">
         <template v-if="componentName">
           <keep-alive>
             <component :is="componentName" :data="serverInfo" :id="currentServiceId"></component>
           </keep-alive>
         </template>
         <template v-if="modelInfo">
-          <model-detail-info :data="modelInfo" :tags="tags" :classifications="classifications"></model-detail-info>
+          <server-base-info :data="modelInfo"></server-base-info>
+        </template>
+        <template v-if="relationSelected">
+          <relation-info :data="relationSelected"></relation-info>
         </template>
       </el-col>
     </el-row>
@@ -90,12 +93,13 @@ import ServerBaseInfo from './components/ServerBaseInfo.vue';
 import Erd from '@/components/data-model/erd/Index.vue';
 import ServerPortsInfo from './components/ServerPortsInfo.vue';
 import { ref, Ref, reactive, watch, onMounted, provide, computed } from 'vue';
-import ModelDetailInfo from '@/components/data-model/detail-info/ModelDetailInfo.vue';
+import RelationInfo from '@/components/data-model/detail-info/RelationInfo.vue';
 import ModelFieldForm from '@/components/data-model/field-form/Index.vue';
 import { getServiceList, getServiceById } from '@/api/servers';
 import { getAllTags } from '@/api/settings/tags';
 import { getClassificationList } from '@/api/settings/classification';
 import { getServiceModelList } from '@/api/schema/model';
+import { getDataTypesAll } from '@/api/settings/data-types';
 import { useRoute } from 'vue-router';
 import _ from 'lodash/fp';
 import {
@@ -109,9 +113,9 @@ export default {
   components: {
     ServerBaseInfo,
     Erd,
-    ModelDetailInfo,
     ModelFieldForm,
     ServerPortsInfo,
+    RelationInfo,
   },
   setup() {
     const { buttons } = useButtonUtils();
@@ -170,6 +174,16 @@ export default {
     };
 
     getClassifications();
+
+    // 获取所有字段类型
+    const allTypes = ref([]);
+    const initTypeOption = async () => {
+      const { code, data } = await getDataTypesAll();
+      if (code === 0) {
+        allTypes.value = data;
+      }
+    };
+    initTypeOption();
 
     // 服务状态
     const serverStatusInfo = ref({});
@@ -244,17 +258,27 @@ export default {
         relations,
       };
     };
-    // 模型详情数据
+    // 模型、关联详情数据
     const modelInfo = ref(null);
+    const relationSelected = ref(null);
     provide('currentModel', modelInfo);
-    provide('tags', tags);
-    provide('classifications', classifications);
+    provide('configs', { allTypes, tags, classifications });
     const modelSelected = (model: any) => {
       componentName.value = '';
-      modelInfo.value = model;
+      modelInfo.value = null;
+      relationSelected.value = null;
       if (model) {
-        isShowDownDrawer.value = true;
-        drawerName.value = 'ModelFieldForm';
+        if (model.line) {
+          relationSelected.value = model.line;
+          isShowDownDrawer.value = false;
+        } else {
+          modelInfo.value = {
+            ...model,
+            tag: model.tags,
+          };
+          isShowDownDrawer.value = true;
+          drawerName.value = 'ModelFieldForm';
+        }
       } else {
         isShowDownDrawer.value = false;
       }
@@ -287,6 +311,7 @@ export default {
       erdLoading,
       modelSelected,
       modelInfo,
+      relationSelected,
       logDialogVisible,
       logData,
       clearLogInterVal,
