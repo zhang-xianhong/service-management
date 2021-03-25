@@ -64,6 +64,11 @@ a {
   text-decoration: none;
   color: #006eff;
 }
+.el-message--error,
+.el-message--success,
+.el-message--warn {
+  z-index: 3000 !important;
+}
 </style>
 
 <style lang="scss" module>
