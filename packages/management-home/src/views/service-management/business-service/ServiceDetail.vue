@@ -67,6 +67,19 @@
         </keep-alive>
       </div>
     </transition>
+
+    <el-dialog title="日志" v-model="logDialogVisible" width="40%">
+      <!--      <el-input type="textarea" :rows="25" :autosize="{ maxRows: 25, minRows: 25 }" v-model="logData"></el-input>-->
+      <div class="log-content">
+        <div class="log-item" v-for="item in logData" :key="item.instanceId">
+          <div class="log-item-title">{{ item.instanceId }}</div>
+          <div class="log-item-content">{{ item.content }}</div>
+        </div>
+      </div>
+      <div class="dialog-footer">
+        <el-button type="primary" style="margin-top: 20px" @click="clearLogInterVal">关闭</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -83,6 +96,11 @@ import { getServiceList, getServiceById } from '@/api/servers/index';
 import { getServiceModelList } from '@/api/schema/model';
 import { useRoute } from 'vue-router';
 import _ from 'lodash/fp';
+import {
+  logDialogVisible,
+  logData,
+  clearLogInterVal,
+} from '@/views/service-management/business-service/utils/service-log-data-utils';
 
 export default {
   name: 'ServiceDetail',
@@ -245,6 +263,9 @@ export default {
       erdLoading,
       modelSelected,
       modelInfo,
+      logDialogVisible,
+      logData,
+      clearLogInterVal,
     };
   },
 };
@@ -289,5 +310,22 @@ export default {
   height: 400px;
   overflow: auto;
   padding: 12px;
+}
+.dialog-footer {
+  width: 100%;
+  display: block;
+  text-align: center;
+}
+.log-content {
+  width: 100%;
+  height: 400px;
+  overflow-y: auto;
+}
+.log-item {
+  width: 100%;
+  margin-bottom: 20px;
+}
+.log-item-title {
+  color: red;
 }
 </style>

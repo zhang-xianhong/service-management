@@ -9,4 +9,5 @@ export default {
   DELETE_SERVICR: ['/services/delete/_'],
   GET_SERVICE_APIS: ['/services/apis', '/mock/services/api-list.json'],
   UPDATE_SERVICE_APIS: ['/services/_/apis', '/mock/services/api-update.json'],
+  GET_LOG_RUNTIME: ['/logs/runtime'],
 };
