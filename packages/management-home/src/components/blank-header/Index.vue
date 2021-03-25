@@ -1,8 +1,9 @@
 <template>
   <div class="blank-header">
-    <span class="blank-header-back" v-if="back"><i class="el-icon-back"></i></span>
+    <span class="blank-header-back" @click="jumpBack"><i class="el-icon-back"></i></span>
     <span class="blank-header-title">{{ title }}</span>
-    <span></span>
+    <span v-if="detailName" class="blank-header-detail">|</span>
+    <span class="blank-header-detail">{{ detailName }}</span>
   </div>
 </template>
 
@@ -10,12 +11,6 @@
 import { defineComponent, getCurrentInstance, onMounted, ref, watch } from 'vue';
 export default defineComponent({
   name: 'BlankHeader',
-  props: {
-    back: {
-      type: Boolean,
-      default: () => !false,
-    },
-  },
   setup() {
     const clintWidth = ref(document.body.clientWidth);
     const layoutBool = ref(clintWidth.value > 1440);
@@ -29,14 +24,20 @@ export default defineComponent({
     });
     const levelList = ref([]);
     const title = ref('');
+    const back = ref(false);
     const proxy = (getCurrentInstance() as any).proxy as any;
     const getBread = () => {
       const matched = proxy.$route.matched.filter((item: any) => item.meta && item.meta.title);
       levelList.value = matched.filter((item: any) => item.meta && item.meta.title && item.meta.breadcrumb !== false);
       title.value = (levelList.value.reverse()[0] as any).meta.title || '';
+      back.value = (levelList.value.reverse()[0] as any).path.includes('detail');
     };
     getBread();
-    console.log(levelList.value, 123);
+
+    function jumpBack() {
+      proxy.$router.back();
+    }
+    const detailName = ref('');
     watch(
       () => proxy.$route,
       (route) => {
@@ -50,6 +51,9 @@ export default defineComponent({
       clintWidth,
       layoutBool,
       title,
+      jumpBack,
+      detailName,
+      back,
     };
   },
 });
@@ -67,6 +71,14 @@ export default defineComponent({
     width: 60px;
     text-align: center;
     font-size: 18px;
+    color: #006eff;
+    &:hover {
+      transform: scale(1.5);
+    }
+  }
+  &-detail {
+    display: inline-block;
+    margin-left: 10px;
   }
 }
 </style>

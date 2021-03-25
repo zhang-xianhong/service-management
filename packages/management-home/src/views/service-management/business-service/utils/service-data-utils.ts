@@ -72,12 +72,12 @@ export const deleteServiceForList = (arr: Array<any>) => {
 
 export function getAllService() {
   return getServiceList({ all: true }).then((res) => {
-    if (res.data && res.data instanceof Array) {
-      res.data.forEach((x: any) => {
+    if (res.data && res.data.rows) {
+      res.data.rows.forEach((x: any) => {
         // eslint-disable-next-line no-param-reassign
         x.name = x.name.replace(/^srv-/g, '');
       });
-      allService.value = res.data;
+      allService.value = res.data.rows;
     } else {
       allService.value = [];
     }
