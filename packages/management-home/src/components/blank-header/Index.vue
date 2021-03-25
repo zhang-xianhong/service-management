@@ -1,7 +1,7 @@
 <template>
   <div class="blank-header">
-    <span class="blank-header-back" @click="jumpBack"><i class="el-icon-back"></i></span>
-    <span class="blank-header-title">{{ title }}</span>
+    <span class="blank-header-back" @click="jumpBack" v-if="back"><i class="el-icon-back"></i></span>
+    <span class="blank-header-title" :style="{ marginLeft: back ? '0' : '20px' }">{{ title }}</span>
     <span v-if="detailName" class="blank-header-detail">|</span>
     <span class="blank-header-detail">{{ detailName }}</span>
   </div>
@@ -9,6 +9,8 @@
 
 <script lang="ts">
 import { defineComponent, getCurrentInstance, onMounted, ref, watch } from 'vue';
+import { useRoute } from 'vue-router';
+
 export default defineComponent({
   name: 'BlankHeader',
   setup() {
@@ -22,22 +24,21 @@ export default defineComponent({
         layoutBool.value = clintWidth.value > 1440;
       };
     });
-    const levelList = ref([]);
+    const route = useRoute();
     const title = ref('');
     const back = ref(false);
+    const detailName = ref('' as any);
     const proxy = (getCurrentInstance() as any).proxy as any;
     const getBread = () => {
-      const matched = proxy.$route.matched.filter((item: any) => item.meta && item.meta.title);
-      levelList.value = matched.filter((item: any) => item.meta && item.meta.title && item.meta.breadcrumb !== false);
-      title.value = (levelList.value.reverse()[0] as any).meta.title || '';
-      back.value = (levelList.value.reverse()[0] as any).path.includes('detail');
+      title.value = route.meta.title || '';
+      back.value = route.path.includes('detail');
+      detailName.value = route.query.detailName;
     };
     getBread();
 
     function jumpBack() {
       proxy.$router.back();
     }
-    const detailName = ref('');
     watch(
       () => proxy.$route,
       (route) => {
@@ -47,6 +48,10 @@ export default defineComponent({
         getBread();
       },
     );
+    function logs(res: any) {
+      console.log(res);
+      return res;
+    }
     return {
       clintWidth,
       layoutBool,
@@ -54,6 +59,7 @@ export default defineComponent({
       jumpBack,
       detailName,
       back,
+      logs,
     };
   },
 });
