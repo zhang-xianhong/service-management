@@ -1,6 +1,6 @@
 <template>
   <div class="blank-header">
-    <span class="blank-header-back" v-if="back" @click="jumpBack"><i class="el-icon-back"></i></span>
+    <span class="blank-header-back" @click="jumpBack"><i class="el-icon-back"></i></span>
     <span class="blank-header-title">{{ title }}</span>
     <span v-if="detailName" class="blank-header-detail">|</span>
     <span class="blank-header-detail">{{ detailName }}</span>
@@ -11,12 +11,6 @@
 import { defineComponent, getCurrentInstance, onMounted, ref, watch } from 'vue';
 export default defineComponent({
   name: 'BlankHeader',
-  props: {
-    back: {
-      type: Boolean,
-      default: () => !false,
-    },
-  },
   setup() {
     const clintWidth = ref(document.body.clientWidth);
     const layoutBool = ref(clintWidth.value > 1440);
@@ -30,14 +24,15 @@ export default defineComponent({
     });
     const levelList = ref([]);
     const title = ref('');
+    const back = ref(false);
     const proxy = (getCurrentInstance() as any).proxy as any;
     const getBread = () => {
       const matched = proxy.$route.matched.filter((item: any) => item.meta && item.meta.title);
       levelList.value = matched.filter((item: any) => item.meta && item.meta.title && item.meta.breadcrumb !== false);
       title.value = (levelList.value.reverse()[0] as any).meta.title || '';
+      back.value = (levelList.value.reverse()[0] as any).path.includes('detail');
     };
     getBread();
-    console.log(levelList.value, 123);
 
     function jumpBack() {
       proxy.$router.back();
@@ -58,6 +53,7 @@ export default defineComponent({
       title,
       jumpBack,
       detailName,
+      back,
     };
   },
 });

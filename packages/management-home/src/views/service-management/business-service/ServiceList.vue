@@ -131,12 +131,7 @@
           <el-form-item label="服务详情" :label-width="labelWidth">
             <el-input v-model="serviceDetail.detail" type="textarea" :rows="5"></el-input>
           </el-form-item>
-          <el-form-item
-            label="服务依赖"
-            :label-width="labelWidth"
-            prop="dependencies"
-            :rules="[{ required: true, message: '请选择服务依赖', trigger: 'blur' }]"
-          >
+          <el-form-item label="服务依赖" :label-width="labelWidth" prop="dependencies">
             <el-select v-model="serviceDetail.dependencies" clearable multiple>
               <el-option v-for="item in allService" :key="item.id" :label="item.name" :value="item.id"></el-option>
             </el-select>
@@ -259,9 +254,6 @@ export default defineComponent({
       }
       if (!senddata.description) {
         return Message.error('请输入服务描述');
-      }
-      if (senddata.dependencies.length === 0) {
-        return Message.error('请选择服务依赖');
       }
       addService(senddata)
         .then(() => {
