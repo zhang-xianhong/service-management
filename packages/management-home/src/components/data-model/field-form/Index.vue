@@ -61,7 +61,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref, inject, Ref } from 'vue';
+import { defineComponent, onMounted, ref, inject, Ref, watchEffect } from 'vue';
 import { getDataTypesAll } from '@/api/settings/data-types';
 import { updateFields } from '@/api/schema/model';
 import _ from 'lodash/fp';
@@ -69,7 +69,10 @@ export default defineComponent({
   name: 'ColumnForm',
   setup(props, context) {
     const currentModel = inject('currentModel') as Ref<any>;
-    const fields: Ref<any> = _.flow(_.cloneDeep, ref)(currentModel.value.fields);
+    const fields: Ref<Array<any>> = ref([]);
+    watchEffect(() => {
+      fields.value = _.cloneDeep(currentModel.value?.fields || []);
+    });
     const modelId = currentModel.value.id;
     const add = (index: number) => {
       fields.value.splice(index + 1, 0, {

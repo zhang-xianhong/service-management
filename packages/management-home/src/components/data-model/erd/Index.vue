@@ -2,13 +2,13 @@
   <div
     class="erd-container-wrapper"
     :style="{ width, height }"
-    @mouseup.capture="dragStop"
+    @mouseup="handlers.mouseupHandler"
     @mouseleave="leaveErd"
     @mousemove="drag"
   >
     <div :style="`width: ${viewWidth}px; height: ${viewHeight}px; position: relative;`">
       <add-model @model-change="modelChange"></add-model>
-      <erd-relation @model-change="modelChange" @select-change="lineActive"></erd-relation>
+      <erd-relation @model-change="modelChange"></erd-relation>
       <template v-if="allTypes.length">
         <erd-table
           v-for="(table, $index) in tables"
@@ -43,11 +43,12 @@ import {
   viewHeight,
   recalcCanvasSize,
   svgOffset,
+  drawRelationEnd,
 } from './store';
 import ErdTable from './Table.vue';
 import ErdRelation from './Relation.vue';
 import AddModel from './AddModel.vue';
-import { updateConfig } from '@/api/schema/model';
+import { updateConfig, createRelation, updateRelation } from '@/api/schema/model';
 export default defineComponent({
   name: 'Erd',
   props: {
@@ -74,64 +75,10 @@ export default defineComponent({
       relationLines.value = getLines();
       recalcCanvasSize();
     });
-    const leaveErd = async () => {
-      const draggingTable: any = _.find('dragging')(tables.value);
-      if (draggingTable) {
-        const coordinate: Record<string, any> = {};
-        tables.value.forEach((table: any) => {
-          // eslint-disable-next-line no-param-reassign
-          table.dragging = 0;
-          coordinate[table.id] = table.position;
-        });
-        const { code } = await updateConfig({
-          serviceId,
-          config: {
-            coordinate,
-          },
-        });
-        if (code === 0) {
-          context.emit('model-change');
-        }
-      }
-      tables.value.forEach((table: any) => {
-        // eslint-disable-next-line no-param-reassign
-        table.dragging = 0;
-      });
-      clearNewRelation();
-      clearSelected();
-    };
-    const dragStop = async () => {
-      const draggingTable: any = _.find('dragging')(tables.value);
-      if (draggingTable && Date.now() - draggingTable.dragging > 200) {
-        const coordinate: Record<string, any> = {};
-        tables.value.forEach((table: any) => {
-          // eslint-disable-next-line no-param-reassign
-          table.dragging = 0;
-          coordinate[table.id] = table.position;
-        });
-        const { code } = await updateConfig({
-          serviceId,
-          config: {
-            coordinate,
-          },
-        });
-        if (code === 0) {
-          context.emit('model-change');
-        }
-      } else {
-        context.emit('select-change', draggingTable);
-      }
-      tables.value.forEach((table: any) => {
-        // eslint-disable-next-line no-param-reassign
-        table.dragging = 0;
-      });
-      clearNewRelation();
-      clearSelected();
-    };
     const drag = (ev: MouseEvent) => {
+      const dpr = navigator.platform === 'Win32' ? window.devicePixelRatio : 1;
       const dragTableIndex = _.findIndex(_.property('dragging'))(tables.value);
-      ~dragTableIndex &&
-        move(dragTableIndex, ev.movementX / window.devicePixelRatio, ev.movementY / window.devicePixelRatio);
+      ~dragTableIndex && move(dragTableIndex, ev.movementX / dpr, ev.movementY / dpr);
       drawingRelation.value && draw(ev);
     };
     const selectedTable = (table: any) => {
@@ -150,8 +97,140 @@ export default defineComponent({
     const modelChange = () => {
       context.emit('model-change');
     };
-    const lineActive = (line: any) => {
-      context.emit('select-change', line);
+
+    // 判断当前事件类型
+    const getEventType = () => {
+      const hoverTable = document.querySelector('.erd-table-container:hover');
+      if (hoverTable) {
+        if (drawingRelation.value) return 'DrawingRelation';
+        const currentTable = tables.value[Number(hoverTable.getAttribute('table-index'))];
+        const isDrag = currentTable.dragging && Date.now() - currentTable.dragging > 200;
+        if (!isDrag) return 'ClickTable';
+        return 'DragTable';
+      }
+      const hoverRevert = document.querySelector('.relation-revert:hover');
+      if (hoverRevert) {
+        return 'RelationRevert';
+      }
+      const hoverLine = document.querySelector('.relation-line:hover');
+      if (hoverLine) {
+        return 'RelationClick';
+      }
+      return 'Blank';
+    };
+
+    // 拖拽结束事件
+    const dragTableEnd = async () => {
+      const coordinate: Record<string, any> = {};
+      tables.value.forEach((table: any) => {
+        // eslint-disable-next-line no-param-reassign
+        table.dragging = 0;
+        coordinate[table.id] = table.position;
+      });
+      await updateConfig({
+        serviceId,
+        config: {
+          coordinate,
+        },
+      });
+      tables.value.forEach((table: any) => {
+        // eslint-disable-next-line no-param-reassign
+        table.dragging = 0;
+      });
+    };
+
+    // 选中模型
+    const selectTable = () => {
+      const draggingTable: any = _.find('dragging')(tables.value);
+      context.emit('select-change', draggingTable);
+      tables.value.forEach((table: any) => {
+        // eslint-disable-next-line no-param-reassign
+        table.dragging = 0;
+      });
+    };
+
+    // 绘制连线
+    const drawRelation = async () => {
+      const hoverTable = document.querySelector('.erd-table-container:hover') as HTMLElement;
+      const tableIndex = Number(hoverTable.getAttribute('table-index'));
+      const checkRelation = drawRelationEnd(tableIndex);
+      if (checkRelation) {
+        const { code } = await createRelation({
+          fromModelId: _.property('id')(checkRelation[0]),
+          toModelId: _.property('id')(checkRelation[1]),
+          serviceId,
+          relationType: 1,
+        });
+        if (code === 0) context.emit('model-change');
+      }
+    };
+
+    // 选中连线
+    const selectRelation = () => {
+      const hoverRelation = document.querySelector('.relation-line:hover') as HTMLElement;
+      const currentRelation = relations.value[Number(hoverRelation.getAttribute('relation-index'))];
+      context.emit('select-change', currentRelation);
+    };
+
+    // 反转关联
+    const revertRelation = async () => {
+      const hoverRelation = document.querySelector('.relation-line:hover') as HTMLElement;
+      const index = Number(hoverRelation.getAttribute('relation-index'));
+      [relations.value[index][0], relations.value[index][1]] = [relations.value[index][1], relations.value[index][0]];
+      const fromIndex = relations.value[index][0];
+      const toIndex = relations.value[index][1];
+      const { code } = await updateRelation(String(relations.value[index][3]), {
+        fromModelId: (tables.value[fromIndex] as any).id,
+        toModelId: (tables.value[toIndex] as any).id,
+        serviceId,
+        relationType: relations.value[index][2],
+      });
+      if (code === 0) {
+        context.emit('model-change');
+      }
+    };
+
+    // 重置选中状态
+    const clearSelect = () => {
+      clearNewRelation();
+      clearSelected();
+      context.emit('select-change', null);
+    };
+
+    // 鼠标离开画布事件
+    const leaveErd = async () => {
+      const draggingTable: any = _.find('dragging')(tables.value);
+      if (draggingTable) {
+        await dragTableEnd();
+      }
+      clearNewRelation();
+      clearSelected();
+    };
+
+    // erd事件统一处理
+    const handlers = {
+      mouseupHandler: async () => {
+        const evType = getEventType();
+        switch (evType) {
+          case 'DragTable':
+            await dragTableEnd();
+            break;
+          case 'ClickTable':
+            selectTable();
+            break;
+          case 'DrawingRelation':
+            await drawRelation();
+            break;
+          case 'RelationClick':
+            selectRelation();
+            break;
+          case 'RelationRevert':
+            revertRelation();
+            break;
+          default:
+            clearSelect();
+        }
+      },
     };
     onMounted(() => {
       calcSvgPosition();
@@ -163,7 +242,6 @@ export default defineComponent({
     });
     return {
       tables,
-      dragStop,
       drag,
       selectedTable,
       viewWidth,
@@ -172,7 +250,7 @@ export default defineComponent({
       modelChange,
       allTypes,
       leaveErd,
-      lineActive,
+      handlers,
     };
   },
 });

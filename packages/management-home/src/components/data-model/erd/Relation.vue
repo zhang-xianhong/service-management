@@ -31,8 +31,10 @@
       </marker>
     </defs>
     <g
-      v-for="(line, $index) in relationLines.filter((item) => !isNaN(item.startMarker.x))"
+      v-for="(line, $index) in relationLines"
       :key="$index"
+      class="relation-line"
+      :relation-index="$index"
       :class="{ selected: line.selected, 'no-revert': line.noRevert }"
       @click="selectLine(line)"
     >
@@ -43,6 +45,7 @@
       <text v-bind="line.endMarker" text-anchor="middle" dy="4" font-size="10">1</text>
       <g
         :transform="`translate(${line.middleMarker.x - 8} ${line.middleMarker.y - 18}) scale(0.015 0.015)`"
+        class="relation-revert"
         @click="revertRelation($index)"
       >
         <circle stroke-width="50" cx="500" cy="500" r="800" fill="#fff"></circle>
