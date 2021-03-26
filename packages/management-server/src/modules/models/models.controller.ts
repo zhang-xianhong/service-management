@@ -33,6 +33,7 @@ export class ModelsController {
           message: `存在名称[${item.name}]相同的字段`,
         });
       }
+      prev.push(item);
       return prev;
     }, []);
     return await this.service.updateOrCreateFields(id, fields);

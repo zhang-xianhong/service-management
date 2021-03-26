@@ -17,6 +17,7 @@ import { ModelFieldDto } from './dto/model-field.dto';
 import { ModelRelationDto } from './dto/model-relation.dto';
 import { PlainObject } from 'src/shared/pipes/query.pipe';
 import { ServicesService } from '../services/services.service';
+import { isNumeric } from 'src/shared/utils/validator';
 
 @Injectable()
 export class ModelsService {
@@ -189,34 +190,6 @@ export class ModelsService {
     });
     const modelIds: number[] = models.map(model => model.id);
     return this.deleteModel(modelIds, transaction);
-    // const deleteModels = this.infoRepository.update({
-    //   isDelete: true,
-    // }, {
-    //   where: {
-    //     id: {
-    //       [Op.in]: modelIds,
-    //     },
-    //   },
-    //   transaction,
-    // });
-    // const deleteFields = this.fieldsRepository.update({
-    //   isDelete: true,
-    // }, {
-    //   where: {
-    //     modelId: {
-    //       [Op.in]: modelIds,
-    //     },
-    //   },
-    //   transaction,
-    // });
-    // const deleteRelations = this.relationRepository.update({
-    //   isDelete: true,
-    // }, {
-    //   where: {
-    //     serviceId,
-    //   },
-    // });
-    // return await Promise.all([deleteModels, deleteFields, deleteRelations]);
   }
 
 
@@ -325,10 +298,19 @@ export class ModelsService {
         transaction,
       });
       // 重新创建字段
-      const newFields = fields.map(field => ({
-        modelId,
-        ...field,
-      }));
+      const newFields = fields.map((field) => {
+        let { defaultValue } = field;
+        if (defaultValue === 'null') {
+          defaultValue = null;
+        } else if (isNumeric(defaultValue)) {
+          defaultValue = Number(defaultValue);
+        }
+        return {
+          ...field,
+          modelId,
+          defaultValue,
+        };
+      });
       const res = await this.fieldsRepository.bulkCreate(newFields);
       await transaction.commit();
       return res.map(item => item.id);
