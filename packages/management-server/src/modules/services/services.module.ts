@@ -1,4 +1,4 @@
-import { HttpModule, Logger, Module } from '@nestjs/common';
+import { forwardRef, HttpModule, Logger, Module } from '@nestjs/common';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { ServicesApiModel } from './service-api.model';
 import { ServicesDependencyModel } from './service-dependency.model';
@@ -18,7 +18,9 @@ import { ServicesApiParamModel } from './service-api-param.model';
     ServicesConfigModel,
     ServicesApiParamModel,
   ]),
-  HttpModule, ModelsModule],
+  HttpModule,
+  forwardRef(() => ModelsModule),
+  ],
   controllers: [ServicesController],
   providers: [ServicesService, SocketGateway, Logger],
   exports: [ServicesService],

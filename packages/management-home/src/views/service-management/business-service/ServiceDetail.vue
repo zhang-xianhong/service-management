@@ -22,7 +22,7 @@
       </el-col>
     </el-row>
     <el-row :style="{ height: computedHeight }">
-      <el-col :span="componentName || modelInfo ? 16 : 24" style="height:100%">
+      <el-col :span="componentName || modelInfo || relationSelected ? 16 : 24" style="height:100%">
         <el-row>
           <!-- 服务下拉选择框 -->
           <el-select v-model="currentServiceId" placeholder="请选择">
@@ -49,14 +49,17 @@
           <div>服务地址：</div>
         </div>
       </el-col>
-      <el-col v-if="componentName || modelInfo" :span="8" style="border-left: 1px solid #bbbbbb">
+      <el-col v-if="componentName || modelInfo || relationSelected" :span="8" style="border-left: 1px solid #bbbbbb">
         <template v-if="componentName">
           <keep-alive>
             <component :is="componentName" :data="serverInfo" :id="currentServiceId"></component>
           </keep-alive>
         </template>
         <template v-if="modelInfo">
-          <model-detail-info :data="modelInfo" :tags="tags" :classifications="classifications"></model-detail-info>
+          <server-base-info :data="modelInfo"></server-base-info>
+        </template>
+        <template v-if="relationSelected">
+          <relation-info :data="relationSelected"></relation-info>
         </template>
       </el-col>
     </el-row>
@@ -88,13 +91,14 @@ import useStatusUtils from './utils/service-detail-status';
 import ServerBaseInfo from './components/ServerBaseInfo.vue';
 import Erd from '@/components/data-model/erd/Index.vue';
 import ServerPortsInfo from './components/ServerPortsInfo.vue';
-import { ref, Ref, reactive, watch, onMounted, provide, computed } from 'vue';
-import ModelDetailInfo from '@/components/data-model/detail-info/ModelDetailInfo.vue';
+import { ref, Ref, reactive, watch, provide, computed } from 'vue';
+import RelationInfo from '@/components/data-model/detail-info/RelationInfo.vue';
 import ModelFieldForm from '@/components/data-model/field-form/Index.vue';
 import { getServiceList, getServiceById } from '@/api/servers';
 import { getAllTags } from '@/api/settings/tags';
 import { getClassificationList } from '@/api/settings/classification';
 import { getServiceModelList } from '@/api/schema/model';
+import { getDataTypesAll } from '@/api/settings/data-types';
 import { useRoute } from 'vue-router';
 import _ from 'lodash/fp';
 import {
@@ -109,9 +113,9 @@ export default {
   components: {
     ServerBaseInfo,
     Erd,
-    ModelDetailInfo,
     ModelFieldForm,
     ServerPortsInfo,
+    RelationInfo,
   },
   setup() {
     const { buttons } = useButtonUtils();
@@ -143,63 +147,6 @@ export default {
     // 服务详情信息
     const serverInfo = ref({} as any);
 
-    // 获取服务详情
-    const getServerInfo = async () => {
-      const { data } = await getServiceById({ id: currentServiceId.value });
-      serverInfo.value = data;
-    };
-
-    getServerInfo();
-
-    const tags = ref([] as any[]);
-
-    // 获取所有标签
-    const getTags = async () => {
-      const { data } = await getAllTags();
-      tags.value = data || [];
-    };
-
-    getTags();
-
-    const classifications = ref([] as any[]);
-
-    // 获取所有分类信息
-    const getClassifications = async () => {
-      const { data } = await getClassificationList();
-      classifications.value = data || [];
-    };
-
-    getClassifications();
-
-    // 服务状态
-    const serverStatusInfo = ref({});
-
-    watch(serverInfo, () => {
-      serverStatusInfo.value = useStatusUtils(serverInfo.value.status);
-    });
-
-    // 右侧组件名称
-    const componentName = ref('');
-
-    // 打开基本信息
-    const openBaseInfo = () => {
-      componentName.value = 'ServerBaseInfo';
-    };
-
-    // 下侧组件名称
-    const drawerName = ref('');
-
-    // 打开接口配置
-    const openPropertyInfo = () => {
-      isShowDownDrawer.value = true;
-      drawerName.value = 'ServerPortsInfo';
-    };
-
-    // 打开下载详情
-    const openDownloadInfo = () => {
-      componentName.value = 'ServerPropertyInfo';
-    };
-
     // erd图组件参数构造
     provide('serviceId', Number(currentServiceId.value));
     const erdLoading = ref(false);
@@ -207,6 +154,7 @@ export default {
       tables: [],
       relations: [],
     });
+    // 获取模型列表
     const initModelList = async () => {
       // erdLoading.value = true;
       const { code, data } = await getServiceModelList({
@@ -244,27 +192,98 @@ export default {
         relations,
       };
     };
-    // 模型详情数据
+    // 获取服务详情
+    const getServerInfo = async () => {
+      const { data } = await getServiceById({ id: currentServiceId.value });
+      serverInfo.value = data;
+      initModelList();
+    };
+
+    getServerInfo();
+
+    const tags = ref([] as any[]);
+
+    // 获取所有标签
+    const getTags = async () => {
+      const { data } = await getAllTags();
+      tags.value = data || [];
+    };
+
+    getTags();
+
+    const classifications = ref([] as any[]);
+
+    // 获取所有分类信息
+    const getClassifications = async () => {
+      const { data } = await getClassificationList();
+      classifications.value = data || [];
+    };
+
+    getClassifications();
+
+    // 获取所有字段类型
+    const allTypes = ref([]);
+    const initTypeOption = async () => {
+      const { code, data } = await getDataTypesAll();
+      if (code === 0) {
+        allTypes.value = data;
+      }
+    };
+    initTypeOption();
+
+    // 服务状态
+    const serverStatusInfo = ref({});
+
+    watch(serverInfo, () => {
+      serverStatusInfo.value = useStatusUtils(serverInfo.value.status);
+    });
+
+    // 右侧组件名称
+    const componentName = ref('');
+
+    // 打开基本信息
+    const openBaseInfo = () => {
+      componentName.value = 'ServerBaseInfo';
+    };
+
+    // 下侧组件名称
+    const drawerName = ref('');
+
+    // 打开接口配置
+    const openPropertyInfo = () => {
+      isShowDownDrawer.value = true;
+      drawerName.value = 'ServerPortsInfo';
+    };
+
+    // 打开下载详情
+    const openDownloadInfo = () => {
+      componentName.value = 'ServerPropertyInfo';
+    };
+
+    // 模型、关联详情数据
     const modelInfo = ref(null);
+    const relationSelected = ref(null);
     provide('currentModel', modelInfo);
-    provide('tags', tags);
-    provide('classifications', classifications);
+    provide('configs', { allTypes, tags, classifications });
     const modelSelected = (model: any) => {
       componentName.value = '';
-      modelInfo.value = model;
+      modelInfo.value = null;
+      relationSelected.value = null;
       if (model) {
-        isShowDownDrawer.value = true;
-        drawerName.value = 'ModelFieldForm';
+        if (model.line) {
+          relationSelected.value = model.line;
+          isShowDownDrawer.value = false;
+        } else {
+          modelInfo.value = Object.assign(model, { tag: model.tags });
+          isShowDownDrawer.value = true;
+          drawerName.value = 'ModelFieldForm';
+        }
       } else {
         isShowDownDrawer.value = false;
       }
     };
     watch(componentName, () => {
       if (componentName.value) modelInfo.value = null;
-    });
-
-    onMounted(() => {
-      initModelList();
     });
     return {
       isShowDownDrawer,
@@ -287,6 +306,7 @@ export default {
       erdLoading,
       modelSelected,
       modelInfo,
+      relationSelected,
       logDialogVisible,
       logData,
       clearLogInterVal,

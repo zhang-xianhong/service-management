@@ -8,7 +8,7 @@
   >
     <div :style="`width: ${viewWidth}px; height: ${viewHeight}px; position: relative;`">
       <add-model @model-change="modelChange"></add-model>
-      <erd-relation @model-change="modelChange"></erd-relation>
+      <erd-relation @model-change="modelChange" @select-change="lineActive"></erd-relation>
       <template v-if="allTypes.length">
         <erd-table
           v-for="(table, $index) in tables"
@@ -27,7 +27,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, watchEffect, ref, inject } from 'vue';
+import { defineComponent, onMounted, watchEffect, inject } from 'vue';
 import _ from 'lodash/fp';
 import {
   tables,
@@ -47,7 +47,6 @@ import {
 import ErdTable from './Table.vue';
 import ErdRelation from './Relation.vue';
 import AddModel from './AddModel.vue';
-import { getDataTypesAll } from '@/api/settings/data-types';
 import { updateConfig } from '@/api/schema/model';
 export default defineComponent({
   name: 'Erd',
@@ -68,6 +67,7 @@ export default defineComponent({
   components: { ErdTable, ErdRelation, AddModel },
   setup(props, context) {
     const serviceId = inject('serviceId');
+    const { allTypes } = inject('configs') as any;
     watchEffect(() => {
       tables.value = props.modelValue.tables || [];
       relations.value = props.modelValue.relations || [];
@@ -125,7 +125,8 @@ export default defineComponent({
         // eslint-disable-next-line no-param-reassign
         table.dragging = 0;
       });
-      clearNewRelation();
+      const relationEnd = document.querySelector('.erd-table-container:hover');
+      !relationEnd && clearNewRelation();
       clearSelected();
     };
     const drag = (ev: MouseEvent) => {
@@ -150,12 +151,8 @@ export default defineComponent({
     const modelChange = () => {
       context.emit('model-change');
     };
-    const allTypes = ref([]);
-    const initTypeOption = async () => {
-      const { code, data } = await getDataTypesAll();
-      if (code === 0) {
-        allTypes.value = data;
-      }
+    const lineActive = (line: any) => {
+      context.emit('select-change', line);
     };
     onMounted(() => {
       calcSvgPosition();
@@ -164,7 +161,6 @@ export default defineComponent({
       if (closestScroll) {
         closestScroll.addEventListener('scroll', calcSvgPosition);
       }
-      initTypeOption();
     });
     return {
       tables,
@@ -177,6 +173,7 @@ export default defineComponent({
       modelChange,
       allTypes,
       leaveErd,
+      lineActive,
     };
   },
 });

@@ -1,4 +1,4 @@
-import { HttpStatus, Inject, Injectable, Logger, LoggerService } from '@nestjs/common';
+import { forwardRef, HttpStatus, Inject, Injectable, Logger, LoggerService } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import sequelize, { Op, Sequelize } from 'sequelize';
 import { ApiException } from 'src/shared/utils/api.exception';
@@ -16,12 +16,15 @@ import { ModelInfoDto } from './dto/model-info.dto';
 import { ModelFieldDto } from './dto/model-field.dto';
 import { ModelRelationDto } from './dto/model-relation.dto';
 import { PlainObject } from 'src/shared/pipes/query.pipe';
+import { ServicesService } from '../services/services.service';
 
 @Injectable()
 export class ModelsService {
   constructor(
     @Inject(Logger)
     private readonly logger: LoggerService,
+    @Inject(forwardRef(() => ServicesService))
+    private servicesService: ServicesService,
     private sequelize: Sequelize,
     @InjectModel(ModelsInfoModel) private readonly infoRepository: typeof ModelsInfoModel,
     @InjectModel(ModelsFieldsModel) private readonly fieldsRepository: typeof ModelsFieldsModel,
@@ -69,6 +72,7 @@ export class ModelsService {
       });
       // 生成默认字段
       await this.createModelDefaultFields(res.id, transaction);
+      await this.servicesService.addServiceDefaultApis(serviceId, res, transaction);
       await transaction.commit();
       return {
         id: res.id,
@@ -263,6 +267,7 @@ export class ModelsService {
         },
         transaction,
       });
+      await Promise.all(modelIds.map(modelId => this.servicesService.deleteServiceApis(modelId, transaction)));
       await transaction.commit();
       return {
         ids: modelIds,

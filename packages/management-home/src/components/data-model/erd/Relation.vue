@@ -97,6 +97,7 @@ export default defineComponent({
       clearSelected();
       // eslint-disable-next-line no-param-reassign
       line.selected = true;
+      context.emit('select-change', { line });
     };
     return {
       relationLines,

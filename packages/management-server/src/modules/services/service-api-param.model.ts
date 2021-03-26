@@ -3,14 +3,8 @@
  */
 import { Table, Column, DataType, ForeignKey, BelongsTo } from 'sequelize-typescript';
 import { BaseModel } from '../base.entity';
+import { PARAM_TYPE, TYPE } from './default-apis';
 import { ServicesApiModel } from './service-api.model';
-
-
-export enum PARAM_TYPE {
-  RequestBody = 'REQUEST_BODY',
-  PathVariable = 'PATH_VARIABLE',
-  RequestParam = 'REQUEST_PARAM'
-}
 
 @Table({
   timestamps: false,
@@ -26,11 +20,25 @@ export class ServicesApiParamModel extends BaseModel {
 
   // 参数类型
   @Column({
-    type: DataType.STRING,
+    type: DataType.TINYINT,
+    defaultValue: TYPE.String,
+  })
+  type: TYPE;
+
+  // 参数类型
+  @Column({
+    type: DataType.TINYINT,
     field: 'param_type',
-    defaultValue: PARAM_TYPE.RequestBody,
+    defaultValue: PARAM_TYPE.REQUEST_PARAM,
   })
   paramType: PARAM_TYPE;
+
+  // 参数默认值
+  @Column({
+    type: DataType.STRING,
+    field: 'default_value',
+  })
+  defaultValue: string;
 
   // 是否必填
   @Column({
