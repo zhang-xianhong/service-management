@@ -72,8 +72,7 @@
       <!--      <el-input type="textarea" :rows="25" :autosize="{ maxRows: 25, minRows: 25 }" v-model="logData"></el-input>-->
       <div class="log-content">
         <div class="log-item" v-for="item in logData" :key="item.instanceId">
-          <div class="log-item-title">{{ item.instanceId }}</div>
-          <div class="log-item-content">{{ item.content }}</div>
+          <div class="log-item-content" v-html="formatLogData(item.content)"></div>
         </div>
       </div>
       <div class="dialog-footer">
@@ -102,6 +101,7 @@ import {
   logDialogVisible,
   logData,
   clearLogInterVal,
+  formatLogData,
 } from '@/views/service-management/business-service/utils/service-log-data-utils';
 
 export default {
@@ -290,6 +290,7 @@ export default {
       logDialogVisible,
       logData,
       clearLogInterVal,
+      formatLogData,
     };
   },
 };
@@ -342,8 +343,10 @@ export default {
 }
 .log-content {
   width: 100%;
-  height: 400px;
+  height: 550px;
   overflow-y: auto;
+  background-color: rgba(0, 0, 0, 0.8);
+  color: white;
 }
 .log-item {
   width: 100%;
