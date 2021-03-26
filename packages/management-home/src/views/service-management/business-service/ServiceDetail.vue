@@ -75,8 +75,7 @@
       <!--      <el-input type="textarea" :rows="25" :autosize="{ maxRows: 25, minRows: 25 }" v-model="logData"></el-input>-->
       <div class="log-content">
         <div class="log-item" v-for="item in logData" :key="item.instanceId">
-          <div class="log-item-title">{{ item.instanceId }}</div>
-          <div class="log-item-content">{{ item.content }}</div>
+          <div class="log-item-content" v-html="formatLogData(item.content)"></div>
         </div>
       </div>
       <div class="dialog-footer">
@@ -92,7 +91,7 @@ import useStatusUtils from './utils/service-detail-status';
 import ServerBaseInfo from './components/ServerBaseInfo.vue';
 import Erd from '@/components/data-model/erd/Index.vue';
 import ServerPortsInfo from './components/ServerPortsInfo.vue';
-import { ref, Ref, reactive, watch, onMounted, provide, computed } from 'vue';
+import { ref, Ref, reactive, watch, provide, computed } from 'vue';
 import RelationInfo from '@/components/data-model/detail-info/RelationInfo.vue';
 import ModelFieldForm from '@/components/data-model/field-form/Index.vue';
 import { getServiceList, getServiceById } from '@/api/servers';
@@ -106,6 +105,7 @@ import {
   logDialogVisible,
   logData,
   clearLogInterVal,
+  formatLogData,
 } from '@/views/service-management/business-service/utils/service-log-data-utils';
 
 export default {
@@ -147,10 +147,56 @@ export default {
     // 服务详情信息
     const serverInfo = ref({} as any);
 
+    // erd图组件参数构造
+    provide('serviceId', Number(currentServiceId.value));
+    const erdLoading = ref(false);
+    const modelList: Ref<any> = ref({
+      tables: [],
+      relations: [],
+    });
+    // 获取模型列表
+    const initModelList = async () => {
+      // erdLoading.value = true;
+      const { code, data } = await getServiceModelList({
+        serviceId: currentServiceId.value,
+      });
+      // erdLoading.value = false;
+      let tables: any[] = [];
+      let relations: any[] = [];
+      if (code === 0) {
+        tables = data.models;
+        relations = _.map((relation: any) => [
+          _.findIndex({ id: relation.fromModelId })(tables),
+          _.findIndex({ id: relation.toModelId })(tables),
+          relation.relationType,
+          relation.id,
+        ])(data.relations);
+      }
+      // 模型无定位时增加默认定位
+      tables.forEach((table: any, index: number) => {
+        const tablePosition = serverInfo.value?.config?.coordinate[table.id];
+        const oldTablePosition = modelList.value.tables[index]?.position;
+        if (oldTablePosition || tablePosition) {
+          // eslint-disable-next-line no-param-reassign
+          table.position = oldTablePosition || tablePosition;
+        } else {
+          // eslint-disable-next-line no-param-reassign
+          table.position = {
+            x: 100,
+            y: 100,
+          };
+        }
+      });
+      modelList.value = {
+        tables,
+        relations,
+      };
+    };
     // 获取服务详情
     const getServerInfo = async () => {
       const { data } = await getServiceById({ id: currentServiceId.value });
       serverInfo.value = data;
+      initModelList();
     };
 
     getServerInfo();
@@ -214,50 +260,6 @@ export default {
       componentName.value = 'ServerPropertyInfo';
     };
 
-    // erd图组件参数构造
-    provide('serviceId', Number(currentServiceId.value));
-    const erdLoading = ref(false);
-    const modelList: Ref<any> = ref({
-      tables: [],
-      relations: [],
-    });
-    const initModelList = async () => {
-      // erdLoading.value = true;
-      const { code, data } = await getServiceModelList({
-        serviceId: currentServiceId.value,
-      });
-      // erdLoading.value = false;
-      let tables: any[] = [];
-      let relations: any[] = [];
-      if (code === 0) {
-        tables = data.models;
-        relations = _.map((relation: any) => [
-          _.findIndex({ id: relation.fromModelId })(tables),
-          _.findIndex({ id: relation.toModelId })(tables),
-          relation.relationType,
-          relation.id,
-        ])(data.relations);
-      }
-      // 模型无定位时增加默认定位
-      tables.forEach((table: any, index: number) => {
-        const tablePosition = serverInfo.value?.config?.coordinate[table.id];
-        const oldTablePosition = modelList.value.tables[index]?.position;
-        if (oldTablePosition || tablePosition) {
-          // eslint-disable-next-line no-param-reassign
-          table.position = oldTablePosition || tablePosition;
-        } else {
-          // eslint-disable-next-line no-param-reassign
-          table.position = {
-            x: 100,
-            y: 100,
-          };
-        }
-      });
-      modelList.value = {
-        tables,
-        relations,
-      };
-    };
     // 模型、关联详情数据
     const modelInfo = ref(null);
     const relationSelected = ref(null);
@@ -272,10 +274,7 @@ export default {
           relationSelected.value = model.line;
           isShowDownDrawer.value = false;
         } else {
-          modelInfo.value = {
-            ...model,
-            tag: model.tags,
-          };
+          modelInfo.value = Object.assign(model, { tag: model.tags });
           isShowDownDrawer.value = true;
           drawerName.value = 'ModelFieldForm';
         }
@@ -285,10 +284,6 @@ export default {
     };
     watch(componentName, () => {
       if (componentName.value) modelInfo.value = null;
-    });
-
-    onMounted(() => {
-      initModelList();
     });
     return {
       isShowDownDrawer,
@@ -315,6 +310,7 @@ export default {
       logDialogVisible,
       logData,
       clearLogInterVal,
+      formatLogData,
     };
   },
 };
@@ -367,8 +363,10 @@ export default {
 }
 .log-content {
   width: 100%;
-  height: 400px;
+  height: 550px;
   overflow-y: auto;
+  background-color: rgba(0, 0, 0, 0.8);
+  color: white;
 }
 .log-item {
   width: 100%;

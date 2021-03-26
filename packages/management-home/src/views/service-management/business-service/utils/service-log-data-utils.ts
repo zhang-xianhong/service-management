@@ -9,22 +9,29 @@ export const realtime = ref('' as any);
 export const getLogs = (name = 'sa-operator-adapter') => {
   getLogRuntime(name, realtime.value).then((res) => {
     console.log(res);
-    realtime.value = res.data.realtimeTS;
+    realtime.value = res.data.realtimeTs;
     const dataArr = res.data.businessLogSet.content;
-    logData.value = [...logData.value, ...dataArr];
+    const narr = [...logData.value, ...dataArr];
+    narr.reverse();
+    logData.value = narr.splice(0, 50).reverse();
   });
 };
 
 export const logSetTimeOut = (name = 'sa-operator-adapter') => {
   logDialogVisible.value = true;
   getLogs(name);
-  timeout.value = window.setInterval(() => getLogs(name), 5000);
+  timeout.value = window.setInterval(() => getLogs(), 5000);
 };
 
 export const clearLogInterVal = () => {
   window.clearInterval(timeout.value);
+  clearInterval(timeout.value);
   timeout.value = null;
   logDialogVisible.value = false;
   realtime.value = '';
   logData.value = [];
 };
+
+export function formatLogData(str: string) {
+  return str.replace(/^(\d{4}(-\d{2}){2}\s\d{2}(:\d{2}){2},\d{3})/gm, (a, b) => `<span style="color: red">${b}</span>`);
+}
