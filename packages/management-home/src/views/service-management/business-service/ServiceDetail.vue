@@ -18,11 +18,12 @@
         </div>
         <el-button class="detail-icon" icon="el-icon-s-data" @click="openBaseInfo"></el-button>
         <el-button class="detail-icon" icon="el-icon-notebook-2" @click="openPropertyInfo"></el-button>
-        <el-button class="detail-icon" icon="el-icon-download" @click="openDownloadInfo"></el-button>
+        <el-button class="detail-icon" icon="el-icon-document"></el-button>
+        <el-button class="detail-icon" icon="el-icon-download"></el-button>
       </el-col>
     </el-row>
     <el-row :style="{ height: computedHeight }">
-      <el-col :span="componentName || modelInfo || relationSelected ? 16 : 24" style="height:100%">
+      <el-col :span="componentName || relationSelected ? 16 : 24" style="height:100%">
         <el-row>
           <!-- 服务下拉选择框 -->
           <el-select v-model="currentServiceId" placeholder="请选择">
@@ -49,14 +50,17 @@
           <div>服务地址：</div>
         </div>
       </el-col>
-      <el-col v-if="componentName || modelInfo || relationSelected" :span="8" style="border-left: 1px solid #bbbbbb">
+      <el-col v-if="componentName || relationSelected" :span="8" style="border-left: 1px solid #bbbbbb">
         <template v-if="componentName">
           <keep-alive>
-            <component :is="componentName" :data="serverInfo" :id="currentServiceId"></component>
+            <component
+              :is="componentName"
+              :data="computedComponentData"
+              :tags="tags"
+              :classifications="classifications"
+              :id="currentServiceId"
+            ></component>
           </keep-alive>
-        </template>
-        <template v-if="modelInfo">
-          <server-base-info :data="modelInfo"></server-base-info>
         </template>
         <template v-if="relationSelected">
           <relation-info :data="relationSelected"></relation-info>
@@ -94,6 +98,7 @@ import ServerPortsInfo from './components/ServerPortsInfo.vue';
 import { ref, Ref, reactive, watch, provide, computed } from 'vue';
 import RelationInfo from '@/components/data-model/detail-info/RelationInfo.vue';
 import ModelFieldForm from '@/components/data-model/field-form/Index.vue';
+import ModelBaseInfo from './components/ModelBaseInfo.vue';
 import { getServiceList, getServiceById } from '@/api/servers';
 import { getAllTags } from '@/api/settings/tags';
 import { getClassificationList } from '@/api/settings/classification';
@@ -116,6 +121,7 @@ export default {
     ModelFieldForm,
     ServerPortsInfo,
     RelationInfo,
+    ModelBaseInfo,
   },
   setup() {
     const { buttons } = useButtonUtils();
@@ -201,22 +207,22 @@ export default {
 
     getServerInfo();
 
-    const tags = ref([] as any[]);
+    const tags: any[] = [];
 
     // 获取所有标签
     const getTags = async () => {
       const { data } = await getAllTags();
-      tags.value = data || [];
+      tags.push(...(data || []));
     };
 
     getTags();
 
-    const classifications = ref([] as any[]);
+    const classifications: any[] = [];
 
     // 获取所有分类信息
     const getClassifications = async () => {
       const { data } = await getClassificationList();
-      classifications.value = data || [];
+      classifications.push(...(data || []));
     };
 
     getClassifications();
@@ -255,18 +261,14 @@ export default {
       drawerName.value = 'ServerPortsInfo';
     };
 
-    // 打开下载详情
-    const openDownloadInfo = () => {
-      componentName.value = 'ServerPropertyInfo';
-    };
-
     // 模型、关联详情数据
     const modelInfo = ref(null);
     const relationSelected = ref(null);
     provide('currentModel', modelInfo);
     provide('configs', { allTypes, tags, classifications });
+
     const modelSelected = (model: any) => {
-      componentName.value = '';
+      componentName.value = 'ModelBaseInfo';
       modelInfo.value = null;
       relationSelected.value = null;
       if (model) {
@@ -282,9 +284,11 @@ export default {
         isShowDownDrawer.value = false;
       }
     };
-    watch(componentName, () => {
-      if (componentName.value) modelInfo.value = null;
-    });
+
+    const computedComponentData = computed(() =>
+      componentName.value === 'ServerBaseInfo' ? serverInfo.value : modelInfo.value,
+    );
+
     return {
       isShowDownDrawer,
       computedHeight,
@@ -300,7 +304,6 @@ export default {
       drawerName,
       openBaseInfo,
       openPropertyInfo,
-      openDownloadInfo,
       modelList,
       initModelList,
       erdLoading,
@@ -311,6 +314,7 @@ export default {
       logData,
       clearLogInterVal,
       formatLogData,
+      computedComponentData,
     };
   },
 };
