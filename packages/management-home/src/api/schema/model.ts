@@ -23,7 +23,8 @@ export const getModelDetail = (id: number) => axios.get(`${getUrl(schema.GET_MOD
 export const createModel = (payload: object): Promise<SuccessResponse<any>> =>
   axios.post(getUrl(schema.CREATE_MODEL), payload);
 
-export const updateModel = (payload: object, id: number) => axios.post(`${getUrl(schema.UPDATE_MODEL)}/${id}`, payload);
+export const updateModel = (payload: object, id: number): Promise<SuccessResponse<any>> =>
+  axios.post(`${getUrl(schema.UPDATE_MODEL)}/${id}`, payload);
 
 export const deleteModel = (payload: object): Promise<SuccessResponse<any>> =>
   axios.post(getUrl(schema.DELETE_MODEL), payload);
