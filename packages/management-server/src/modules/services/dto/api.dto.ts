@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsString, IsEnum, ValidateNested, IsArray, IsOptional, IsBoolean, IsNumber } from 'class-validator';
+import { IsString, IsEnum, ValidateNested, IsArray, IsOptional, IsNumber } from 'class-validator';
 import { METHOD_TYPE } from '../default-apis';
 import { ApiParamDto } from './api-param.dto';
 
@@ -19,9 +19,9 @@ export class ApiDto {
   @IsNumber()
   readonly modelId: number;
 
-  @IsBoolean()
+  @IsNumber()
   @IsOptional()
-  readonly isSystem: boolean;
+  readonly isSystem: number;
 
   @ValidateNested({ each: true })
   @IsArray()

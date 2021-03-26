@@ -189,7 +189,9 @@ export class ModelsService {
       transaction,
     });
     const modelIds: number[] = models.map(model => model.id);
-    return this.deleteModel(modelIds, transaction);
+    // 不需要单独提交事务
+    const unNeedTransaction = true;
+    return this.deleteModel(modelIds, transaction, unNeedTransaction);
   }
 
 
@@ -198,7 +200,11 @@ export class ModelsService {
    * @param modelIds
    * @returns
    */
-  async deleteModel(modelIds: number[], transactionArg?: sequelize.Transaction): Promise<Deleted> {
+  async deleteModel(
+    modelIds: number[],
+    transactionArg?: sequelize.Transaction,
+    unNeedTransaction?: Boolean,
+  ): Promise<Deleted> {
     const transaction = transactionArg ||  await this.sequelize.transaction();
     try {
       await this.infoRepository.update({
@@ -241,13 +247,13 @@ export class ModelsService {
         transaction,
       });
       await Promise.all(modelIds.map(modelId => this.servicesService.deleteServiceApis(modelId, transaction)));
-      await transaction.commit();
+      !unNeedTransaction && await transaction.commit();
       return {
         ids: modelIds,
       };
     } catch (error) {
       this.logger.error(error);
-      await transaction.rollback();
+      !unNeedTransaction && await transaction.rollback();
       if (error instanceof ApiException) {
         throw error;
       }

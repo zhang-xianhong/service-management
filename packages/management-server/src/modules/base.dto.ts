@@ -1,13 +1,10 @@
-import { IsNotEmpty, IsInt,  Min, IsPositive, ArrayNotEmpty } from 'class-validator';
+import { IsNotEmpty, IsInt, IsPositive, ArrayNotEmpty } from 'class-validator';
 
 /**
  * URL参数ID校验
  */
 export class ParamIdDto {
-  @IsInt()
-  @IsPositive()
   @IsNotEmpty()
-  @Min(1)
   id: number;
 }
 
