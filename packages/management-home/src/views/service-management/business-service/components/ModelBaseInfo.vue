@@ -1,11 +1,11 @@
 <template>
   <div class="baseinfo-container">
     <div class="baseinfo-title">基本信息</div>
-    <el-form :model="formData" label-width="80px">
-      <el-form-item label="服务名称">
+    <el-form :model="formData" label-width="120px">
+      <el-form-item label="数据对象名称">
         <div class="baseinfo-content">{{ formData.name }}</div>
       </el-form-item>
-      <el-form-item label="服务描述">
+      <el-form-item label="数据对象描述">
         <div class="baseinfo-content">{{ formData.description }}</div>
       </el-form-item>
       <el-form-item label="负责人">
@@ -32,14 +32,14 @@
           <el-option v-for="(item, index) in tags" :key="index" :value="item.id" :label="item.name"></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="服务详情">
-        <div v-if="isShowMode" class="baseinfo-content">{{ formData.detail }}</div>
+      <el-form-item label="数据对象详情">
+        <div v-if="isShowMode" class="baseinfo-content">{{ formData.remarks }}</div>
         <el-input
           v-else
           type="textarea"
           placeholder="请输入内容"
           v-model="formData.detail"
-          maxlength="50"
+          maxlength="255"
           show-word-limit
         >
         </el-input>
@@ -56,18 +56,14 @@
 import { reactive, ref, computed } from 'vue';
 import useClassifications from '../utils/service-baseinfo-classification';
 import useTags from '../utils/service-baseinfo-tag';
-import { updateService } from '@/api/servers';
+import { updateModel } from '@/api/schema/model';
 
 export default {
-  name: 'ServerBaseInfo',
+  name: 'ModelBaseInfo',
   props: {
     data: {
       type: Object,
       default: () => ({}),
-    },
-    id: {
-      type: String,
-      default: '',
     },
     tags: {
       type: Array,
@@ -78,22 +74,21 @@ export default {
       default: () => [],
     },
   },
-  setup(props: { data: any; id: string; tags: any[]; classifications: any[] }) {
-    console.log(props, 'props');
+  setup(props: { data: any; tags: any[]; classifications: any[] }) {
     // 是否为显示模式标识，默认为true
     const isShowMode = ref(true);
 
     // 表单数据
     const formData = reactive({
+      id: props.data.id,
+      serviceId: props.data.serviceId,
       name: props.data.name,
       description: props.data.description,
       owner: props.data.owner,
       classification: props.data.classification,
       tag: props.data.tag,
-      detail: props.data.detail,
+      remarks: props.data.remarks || '',
     });
-
-    console.log(formData, 'formData');
 
     // 负责人数组
     const computedOwner = computed(() => formData.owner.split(','));
@@ -111,7 +106,7 @@ export default {
       formData.classification = value.map((item: Array<string>) => item[item.length - 1]).join(',');
     };
 
-    const { tagValue, tagNames } = useTags(formData.tag, props.tags);
+    const { tagNames, tagValue } = useTags(formData.tag, props.tags);
 
     // 标签选择
     const selectTag = (tags: string[]) => {
@@ -125,7 +120,7 @@ export default {
 
     // 保存表单修改
     const saveFormData = async () => {
-      const { code } = await updateService(props.id, formData);
+      const { code } = await updateModel(formData, formData.id);
       if (code === 0) {
         isShowMode.value = true;
         useTags(formData.tag, props.tags);
@@ -141,8 +136,8 @@ export default {
       classificationName,
       classificationValue,
       selectClassification,
-      tagValue,
       tagNames,
+      tagValue,
       selectTag,
       modifyFormData,
       saveFormData,
