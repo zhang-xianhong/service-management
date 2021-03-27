@@ -35,6 +35,9 @@ export const createRelation = (payload: object): Promise<SuccessResponse<any>> =
 export const updateRelation = (relationId: string, payload: object): Promise<SuccessResponse<any>> =>
   axios.post(getUrl(schema.UPDATE_RELATION, relationId), payload);
 
+export const removeRelation = (payload: object): Promise<SuccessResponse<any>> =>
+  axios.post(getUrl(schema.REMOVE_RELATION), payload);
+
 export const updateConfig = (payload: object): Promise<SuccessResponse<any>> =>
   axios.post(getUrl(schema.UPDATE_CONFIG), payload);
 

@@ -68,10 +68,10 @@ import _ from 'lodash/fp';
 export default defineComponent({
   name: 'ColumnForm',
   setup(props, context) {
-    const fields: Ref<any> = ref({});
     const currentModel = inject('currentModel') as Ref<any>;
+    const fields: Ref<Array<any>> = ref([]);
     watchEffect(() => {
-      fields.value = _.cloneDeep(currentModel.value.fields);
+      fields.value = _.cloneDeep(currentModel.value?.fields || []);
     });
     const modelId = currentModel.value.id;
     const add = (index: number) => {

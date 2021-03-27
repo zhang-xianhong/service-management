@@ -1,8 +1,8 @@
 <template>
   <div
     class="erd-table-container"
+    :table-index="index"
     :style="{ left: `${table.position.x}px`, top: `${table.position.y}px` }"
-    @mouseup="relationEnd(index)"
     @mouseenter="drawTempRleation(index)"
     @mouseleave="removeTempRleation()"
   >
@@ -30,10 +30,9 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, inject, computed } from 'vue';
-import _ from 'lodash/fp';
-import { drawRelationStart, drawRelationEnd, drawTempRleation, removeTempRleation, clearNewRelation } from './store';
-import { deleteModel, createRelation } from '@/api/schema/model';
+import { defineComponent, computed, inject } from 'vue';
+import { drawRelationStart, drawTempRleation, removeTempRleation } from './store';
+import { deleteModel } from '@/api/schema/model';
 export default defineComponent({
   name: 'ErdTable',
   props: {
@@ -54,33 +53,19 @@ export default defineComponent({
       required: true,
     },
   },
-  setup(props, context) {
-    const serviceId = inject('serviceId');
+  setup(props) {
+    const erdEmit = inject('erdEmit') as Function;
     const markers = ['top', 'right', 'bottom', 'left'];
     const removeModel = async (id: any) => {
       const { code } = await deleteModel({ ids: [id] });
       if (code === 0) {
-        context.emit('model-change');
+        erdEmit('model-change');
       }
-    };
-    const relationEnd = async (index: number) => {
-      const checkRelation = drawRelationEnd(index);
-      if (checkRelation) {
-        const { code } = await createRelation({
-          fromModelId: _.property('id')(checkRelation[0]),
-          toModelId: _.property('id')(checkRelation[1]),
-          serviceId,
-          relationType: 1,
-        });
-        if (code === 0) context.emit('model-change');
-      }
-      clearNewRelation();
     };
     const table = computed(() => props.tableAttr);
     return {
       markers,
       drawRelationStart,
-      relationEnd,
       drawTempRleation,
       removeTempRleation,
       removeModel,
