@@ -33,12 +33,12 @@
         </el-select>
       </el-form-item>
       <el-form-item label="数据对象详情">
-        <div v-if="isShowMode" class="baseinfo-content">{{ formData.remarks }}</div>
+        <div v-if="isShowMode" class="baseinfo-content">{{ formData.remark }}</div>
         <el-input
           v-else
           type="textarea"
           placeholder="请输入内容"
-          v-model="formData.detail"
+          v-model="formData.remark"
           maxlength="255"
           show-word-limit
         >
@@ -53,7 +53,7 @@
 </template>
 
 <script lang="ts">
-import { reactive, ref, computed } from 'vue';
+import { reactive, ref, computed, watch } from 'vue';
 import useClassifications from '../utils/service-baseinfo-classification';
 import useTags from '../utils/service-baseinfo-tag';
 import { updateModel } from '@/api/schema/model';
@@ -79,38 +79,37 @@ export default {
     const isShowMode = ref(true);
 
     // 表单数据
-    const formData = reactive({
-      id: props.data.id,
-      serviceId: props.data.serviceId,
-      name: props.data.name,
-      description: props.data.description,
-      owner: props.data.owner,
-      classification: props.data.classification,
-      tag: props.data.tag,
-      remarks: props.data.remarks || '',
-    });
+    const formData = ref({} as any);
+
+    watch(
+      () => props.data,
+      (newValue) => {
+        formData.value = newValue;
+      },
+      { immediate: true },
+    );
 
     // 负责人数组
-    const computedOwner = computed(() => formData.owner.split(','));
+    const computedOwner = computed(() => formData.value.owner.split(','));
 
     // 所有负责人
     const allOwners = reactive([]);
 
     const { classificationName, classificationValue } = useClassifications(
-      formData.classification,
+      formData.value.classification,
       props.classifications,
     );
 
     // 分类选择
     const selectClassification = (value: Array<Array<string>>) => {
-      formData.classification = value.map((item: Array<string>) => item[item.length - 1]).join(',');
+      formData.value.classification = value.map((item: Array<string>) => item[item.length - 1]).join(',');
     };
 
-    const { tagNames, tagValue } = useTags(formData.tag, props.tags);
+    const { tagNames, tagValue } = useTags(formData.value.tags, props.tags);
 
     // 标签选择
     const selectTag = (tags: string[]) => {
-      formData.tag = tags.join(',');
+      formData.value.tags = tags.join(',');
     };
 
     // 修改表单数据
@@ -120,11 +119,11 @@ export default {
 
     // 保存表单修改
     const saveFormData = async () => {
-      const { code } = await updateModel(formData, formData.id);
+      const { code } = await updateModel(formData.value, formData.value.id);
       if (code === 0) {
         isShowMode.value = true;
-        useTags(formData.tag, props.tags);
-        useClassifications(formData.classification, props.classifications);
+        useTags(formData.value.tags, props.tags);
+        useClassifications(formData.value.classification, props.classifications);
       }
     };
 
