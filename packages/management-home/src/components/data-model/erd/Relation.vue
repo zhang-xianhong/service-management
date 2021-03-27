@@ -55,9 +55,8 @@
       <g
         :transform="`translate(${line.middleMarker.x - 8} ${line.middleMarker.y - 18}) scale(0.015 0.015)`"
         class="relation-revert"
-        @click="revertRelation($index)"
       >
-        <circle stroke-width="50" cx="500" cy="500" r="800" fill="#fff"></circle>
+        <circle cx="500" cy="500" r="1200"></circle>
         <path d="M320 704h704v128h-704v160l-224-224 224-224v160z"></path>
         <path d="M704 320h-704v-128h704v-160l224 224-224 224z"></path>
       </g>
@@ -84,31 +83,13 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, inject } from 'vue';
-import { relationLines, relations, newRelationLine, tempLinePath, tempRelation, tables } from './store';
-import { updateRelation } from '@/api/schema/model';
+import { defineComponent } from 'vue';
+import { relationLines, newRelationLine, tempLinePath, tempRelation } from './store';
 export default defineComponent({
   name: 'ErdRelation',
   setup() {
-    const serviceId = inject('serviceId');
-    const erdEmit = inject('erdEmit') as Function;
-    const revertRelation = async (index: number) => {
-      [relations.value[index][0], relations.value[index][1]] = [relations.value[index][1], relations.value[index][0]];
-      const fromIndex = relations.value[index][0];
-      const toIndex = relations.value[index][1];
-      const { code } = await updateRelation(String(relations.value[index][3]), {
-        fromModelId: (tables.value[fromIndex] as any).id,
-        toModelId: (tables.value[toIndex] as any).id,
-        serviceId,
-        relationType: relations.value[index][2],
-      });
-      if (code === 0) {
-        erdEmit('model-change');
-      }
-    };
     return {
       relationLines,
-      revertRelation,
       newRelationLine,
       tempLinePath,
       tempRelation,
@@ -140,8 +121,13 @@ svg {
     &.selected {
       stroke: #0595db;
     }
-    &.selected:not(.no-revert) > g path {
-      fill: #0595db;
+    &.selected:not(.no-revert) > g {
+      path {
+        fill: #0595db;
+      }
+      circle {
+        fill: transparent;
+      }
     }
     & > g {
       circle,
