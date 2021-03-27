@@ -66,8 +66,8 @@ export default {
       default: () => ({}),
     },
     id: {
-      type: String,
-      default: '',
+      type: Number,
+      default: 0,
     },
     tags: {
       type: Array,
@@ -78,7 +78,7 @@ export default {
       default: () => [],
     },
   },
-  setup(props: { data: any; id: string; tags: any[]; classifications: any[] }) {
+  setup(props: { data: any; id: number; tags: any[]; classifications: any[] }) {
     console.log(props, 'props');
     // 是否为显示模式标识，默认为true
     const isShowMode = ref(true);
@@ -125,7 +125,7 @@ export default {
 
     // 保存表单修改
     const saveFormData = async () => {
-      const { code } = await updateService(props.id, formData);
+      const { code } = await updateService(String(props.id), formData);
       if (code === 0) {
         isShowMode.value = true;
         useTags(formData.tag, props.tags);
