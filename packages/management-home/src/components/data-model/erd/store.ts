@@ -14,6 +14,7 @@ interface Column {
   relateColumn?: number;
 }
 export interface Table {
+  id?: number;
   name: string;
   description: string;
   owner: number;
@@ -42,7 +43,7 @@ interface Line {
   };
   path: string;
   selected?: boolean;
-  noRevert?: boolean;
+  type?: number | string;
 }
 type Relation = Array<number>;
 export const tables: Ref<Array<Table>> = ref([]);
@@ -57,7 +58,13 @@ export const svgOffset = ref({
 
 const getPos = (index: number) => [tables.value[index].position.x, tables.value[index].position.y];
 const getTableHeight = (index: number) => tables.value[index].fields.length * 30 + 48;
-const getLinePosition = (startPos: Array<number>, endPos: Array<number>, startIndex: number, endIndex: number) => {
+const getLinePosition = (
+  startPos: Array<number>,
+  endPos: Array<number>,
+  startIndex: number,
+  endIndex: number,
+  type: number | string,
+) => {
   if (startIndex === endIndex) {
     return {
       startMarker: {
@@ -73,7 +80,7 @@ const getLinePosition = (startPos: Array<number>, endPos: Array<number>, startIn
         y: startPos[1] + 10,
       },
       path: `M ${startPos[0] + 20} ${startPos[1]} A 25 25 0 1 0 ${startPos[0]} ${startPos[1] + 20}`,
-      noRevert: true,
+      type: 'self',
     };
   }
   const line = getDivLine(
@@ -98,14 +105,14 @@ const getLinePosition = (startPos: Array<number>, endPos: Array<number>, startIn
       y: showLine ? (line[0].y + line[1].y) / 2 : -1000,
     },
     path: line[0]?.x && line[1]?.x ? `M ${line[0]?.x} ${line[0]?.y} L ${line[1]?.x} ${line[1]?.y}` : '',
-    noRevert: false,
+    type,
   };
 };
 export const getLines = () =>
-  _.map(([start, end]) => {
+  _.map(([start, end, type]) => {
     const startPos = getPos(start);
     const endPos = getPos(end);
-    return getLinePosition(startPos, endPos, start, end);
+    return getLinePosition(startPos, endPos, start, end, type);
   })(relations.value);
 
 export const recalcCanvasSize = () => {
@@ -129,7 +136,7 @@ export const move = (index: number, movementX: number, movementY: number): void 
       const end = tables.value[relation[1]].position;
       const startPos = [start.x, start.y];
       const endPos = [end.x, end.y];
-      relationLines.value[rIndex] = getLinePosition(startPos, endPos, relation[0], relation[1]);
+      relationLines.value[rIndex] = getLinePosition(startPos, endPos, relation[0], relation[1], relation[2]);
     }
   });
 };
@@ -156,7 +163,7 @@ export const drawRelationStart = (ev: MouseEvent, index: number) => {
 export const tempLinePath = ref('');
 const drawTempLine = (startIndex: number, endIndex: number) => {
   newRelationLine.value[1] = [-1, -1];
-  const tempLinePosition = getLinePosition(getPos(startIndex), getPos(endIndex), startIndex, endIndex);
+  const tempLinePosition = getLinePosition(getPos(startIndex), getPos(endIndex), startIndex, endIndex, 1);
   tempLinePath.value = tempLinePosition.path;
 };
 export const draw = (ev: MouseEvent) => {

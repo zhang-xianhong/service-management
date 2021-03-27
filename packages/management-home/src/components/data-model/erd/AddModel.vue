@@ -24,8 +24,9 @@ import { defineComponent, inject, nextTick, ref } from 'vue';
 import { createModel } from '@/api/schema/model';
 export default defineComponent({
   name: 'AddModel',
-  setup(props, context) {
+  setup() {
     const serviceId = inject('serviceId');
+    const erdEmit = inject('erdEmit') as Function;
     const formRef: any = ref(null);
     const dialogVisible = ref(false);
     const form = ref({
@@ -49,7 +50,7 @@ export default defineComponent({
       });
       if (code === 0) {
         dialogVisible.value = false;
-        context.emit('model-change');
+        erdEmit('model-change');
       }
     };
     const rules = {

@@ -3,24 +3,27 @@
     <div class="baseinfo-title">基本信息</div>
     <el-form :model="formData" label-width="120px">
       <el-form-item label="数据对象">
-        <div class="baseinfo-content">{{ formData.from }}</div>
+        <div class="baseinfo-content">{{ formData.model }}</div>
       </el-form-item>
       <el-form-item label="关联对象">
-        <div class="baseinfo-content">{{ formData.to }}</div>
+        <div class="baseinfo-content">{{ formData.relationModel }}</div>
       </el-form-item>
-      <el-form-item label="关联类型">
-        <el-radio-group></el-radio-group>
+      <el-form-item label="关联类型" v-if="formData.fromModelId !== formData.toModelId">
+        <el-radio-group v-model="formData.relationType" @change="relationChange">
+          <el-radio :label="0">1对1关联</el-radio>
+          <el-radio :label="1">1对多关联</el-radio>
+        </el-radio-group>
       </el-form-item>
       <el-form-item>
-        <el-button type="danger" @click="removeRelation">删除</el-button>
+        <el-button type="danger" @click="remove">删除</el-button>
       </el-form-item>
     </el-form>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
-// import _ from 'lodash/fp';
+import { defineComponent, ref, inject } from 'vue';
+import { removeRelation, updateRelation } from '@/api/schema/model';
 
 export default defineComponent({
   name: 'RelationInfo',
@@ -31,8 +34,31 @@ export default defineComponent({
     },
   },
   setup(props: any) {
+    const serviceId = inject('serviceId');
+    const afterUpdate = inject('afterUpdate') as Function;
+    const afterRemove = inject('afterRemove') as Function;
+    const formData = ref(props.data);
+    const remove = async () => {
+      const { code } = await removeRelation({ ids: [formData.value.relationId] });
+      if (code === 0) {
+        afterRemove();
+      }
+    };
+    const relationChange = async () => {
+      const { code } = await updateRelation(formData.value.relationId, {
+        fromModelId: formData.value.fromModelId,
+        toModelId: formData.value.toModelId,
+        relationType: formData.value.relationType,
+        serviceId,
+      });
+      if (code === 0) {
+        afterUpdate();
+      }
+    };
     return {
-      formData: props.data,
+      formData,
+      relationChange,
+      remove,
     };
   },
 });

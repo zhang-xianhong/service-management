@@ -35,12 +35,21 @@
       :key="$index"
       class="relation-line"
       :relation-index="$index"
-      :class="{ selected: line.selected, 'no-revert': line.noRevert }"
-      @click="selectLine(line)"
+      :class="{ selected: line.selected, 'no-revert': line.type !== 1 }"
     >
+      <line
+        :x1="line.startMarker.x"
+        :y1="line.startMarker.y"
+        :x2="line.endMarker.x"
+        :y2="line.endMarker.y"
+        stroke-width="25"
+        fill="none"
+        stroke="transparent"
+      ></line>
       <path :d="line.path" stroke-width="1" fill="none"></path>
       <circle :cx="line.startMarker.x" :cy="line.startMarker.y" r="10" fill="#fff"></circle>
-      <text v-bind="line.startMarker" text-anchor="middle" dy="8" font-size="16">*</text>
+      <text v-if="line.type === 1" v-bind="line.startMarker" text-anchor="middle" dy="8" font-size="16">*</text>
+      <text v-if="line.type !== 1" v-bind="line.startMarker" text-anchor="middle" dy="4" font-size="10">1</text>
       <circle :cx="line.endMarker.x" :cy="line.endMarker.y" r="10" fill="#fff"></circle>
       <text v-bind="line.endMarker" text-anchor="middle" dy="4" font-size="10">1</text>
       <g
@@ -76,12 +85,13 @@
 
 <script lang="ts">
 import { defineComponent, inject } from 'vue';
-import { relationLines, relations, clearSelected, newRelationLine, tempLinePath, tempRelation, tables } from './store';
+import { relationLines, relations, newRelationLine, tempLinePath, tempRelation, tables } from './store';
 import { updateRelation } from '@/api/schema/model';
 export default defineComponent({
   name: 'ErdRelation',
-  setup(props, context) {
+  setup() {
     const serviceId = inject('serviceId');
+    const erdEmit = inject('erdEmit') as Function;
     const revertRelation = async (index: number) => {
       [relations.value[index][0], relations.value[index][1]] = [relations.value[index][1], relations.value[index][0]];
       const fromIndex = relations.value[index][0];
@@ -93,19 +103,12 @@ export default defineComponent({
         relationType: relations.value[index][2],
       });
       if (code === 0) {
-        context.emit('model-change');
+        erdEmit('model-change');
       }
-    };
-    const selectLine = (line: any) => {
-      clearSelected();
-      // eslint-disable-next-line no-param-reassign
-      line.selected = true;
-      context.emit('select-change', { line });
     };
     return {
       relationLines,
       revertRelation,
-      selectLine,
       newRelationLine,
       tempLinePath,
       tempRelation,
@@ -125,13 +128,17 @@ svg {
   & > g {
     stroke: #666;
     cursor: pointer;
-    marker-end: url(#triangle);
-    marker-start: url(#circle);
+    & > path {
+      marker-end: url(#triangle);
+      marker-start: url(#circle);
+      &:hover {
+        marker-end: url(#triangle-hover);
+        marker-start: url(#circle-hover);
+      }
+    }
     &:hover,
     &.selected {
       stroke: #0595db;
-      marker-end: url(#triangle-hover);
-      marker-start: url(#circle-hover);
     }
     &.selected:not(.no-revert) > g path {
       fill: #0595db;
@@ -140,7 +147,7 @@ svg {
       circle,
       path {
         stroke: none;
-        fill: transparent;
+        fill: none;
       }
     }
   }

@@ -23,7 +23,7 @@
       </el-col>
     </el-row>
     <el-row :style="{ height: computedHeight }">
-      <el-col :span="componentName || relationSelected ? 16 : 24" style="height:100%">
+      <el-col :span="componentName ? 16 : 24" style="height:100%">
         <el-row>
           <!-- 服务下拉选择框 -->
           <el-select v-model="currentServiceId" placeholder="请选择">
@@ -50,7 +50,7 @@
           <div>服务地址：</div>
         </div>
       </el-col>
-      <el-col v-if="componentName || relationSelected" :span="8" style="border-left: 1px solid #bbbbbb">
+      <el-col v-if="componentName" :span="8" style="border-left: 1px solid #bbbbbb">
         <template v-if="componentName">
           <keep-alive>
             <component
@@ -61,9 +61,6 @@
               :id="currentServiceId"
             ></component>
           </keep-alive>
-        </template>
-        <template v-if="relationSelected">
-          <relation-info :data="relationSelected"></relation-info>
         </template>
       </el-col>
     </el-row>
@@ -263,25 +260,33 @@ export default {
 
     // 模型、关联详情数据
     const modelInfo = ref(null);
-    const relationSelected = ref(null);
     provide('currentModel', modelInfo);
     provide('configs', { allTypes, tags, classifications });
+    provide('afterRemove', () => {
+      isShowDownDrawer.value = false;
+      componentName.value = '';
+      initModelList();
+    });
+    provide('afterUpdate', () => {
+      initModelList();
+    });
 
     const modelSelected = (model: any) => {
-      componentName.value = 'ModelBaseInfo';
       modelInfo.value = null;
-      relationSelected.value = null;
       if (model) {
-        if (model.line) {
-          relationSelected.value = model.line;
+        if (model.relationInfo) {
+          componentName.value = 'RelationInfo';
+          modelInfo.value = model.relationInfo;
           isShowDownDrawer.value = false;
         } else {
+          componentName.value = 'ModelBaseInfo';
           modelInfo.value = Object.assign(model, { tag: model.tags });
           isShowDownDrawer.value = true;
           drawerName.value = 'ModelFieldForm';
         }
       } else {
         isShowDownDrawer.value = false;
+        componentName.value = '';
       }
     };
 
@@ -309,7 +314,6 @@ export default {
       erdLoading,
       modelSelected,
       modelInfo,
-      relationSelected,
       logDialogVisible,
       logData,
       clearLogInterVal,

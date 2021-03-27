@@ -1,14 +1,8 @@
 <template>
-  <div
-    class="erd-container-wrapper"
-    :style="{ width, height }"
-    @mouseup="handlers.mouseupHandler"
-    @mouseleave="leaveErd"
-    @mousemove="drag"
-  >
+  <div class="erd-container-wrapper" :style="{ width, height }" v-on="handlers">
     <div :style="`width: ${viewWidth}px; height: ${viewHeight}px; position: relative;`">
-      <add-model @model-change="modelChange"></add-model>
-      <erd-relation @model-change="modelChange"></erd-relation>
+      <add-model></add-model>
+      <erd-relation></erd-relation>
       <template v-if="allTypes.length">
         <erd-table
           v-for="(table, $index) in tables"
@@ -18,8 +12,6 @@
           :class="{ selected: table.selected }"
           :tableAttr="table"
           :types="allTypes"
-          @mousedown="selectedTable(table)"
-          @model-change="modelChange"
         ></erd-table>
       </template>
     </div>
@@ -27,7 +19,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, watchEffect, inject } from 'vue';
+import { defineComponent, onMounted, watchEffect, inject, provide } from 'vue';
 import _ from 'lodash/fp';
 import {
   tables,
@@ -69,6 +61,8 @@ export default defineComponent({
   setup(props, context) {
     const serviceId = inject('serviceId');
     const { allTypes } = inject('configs') as any;
+    const erdEmit = context.emit;
+    provide('erdEmit', erdEmit);
     watchEffect(() => {
       tables.value = props.modelValue.tables || [];
       relations.value = props.modelValue.relations || [];
@@ -81,7 +75,7 @@ export default defineComponent({
       ~dragTableIndex && move(dragTableIndex, ev.movementX / dpr, ev.movementY / dpr);
       drawingRelation.value && draw(ev);
     };
-    const selectedTable = (table: any) => {
+    const tableMousedown = (table: any) => {
       clearSelected();
       // eslint-disable-next-line no-param-reassign
       table.selected = true;
@@ -95,7 +89,7 @@ export default defineComponent({
       svgOffset.value = { x, y };
     };
     const modelChange = () => {
-      context.emit('model-change');
+      erdEmit('model-change', null);
     };
 
     // 判断当前事件类型
@@ -161,15 +155,26 @@ export default defineComponent({
           serviceId,
           relationType: 1,
         });
-        if (code === 0) context.emit('model-change');
+        if (code === 0) erdEmit('model-change', null);
       }
     };
 
     // 选中连线
     const selectRelation = () => {
       const hoverRelation = document.querySelector('.relation-line:hover') as HTMLElement;
-      const currentRelation = relations.value[Number(hoverRelation.getAttribute('relation-index'))];
-      context.emit('select-change', currentRelation);
+      const relationIndex = Number(hoverRelation.getAttribute('relation-index'));
+      const currentRelation = relations.value[relationIndex];
+      const relationInfo = {
+        model: tables.value[currentRelation[0]].name,
+        relationModel: tables.value[currentRelation[1]].name,
+        relationType: currentRelation[2],
+        relationId: currentRelation[3],
+        fromModelId: tables.value[currentRelation[0]].id,
+        toModelId: tables.value[currentRelation[1]].id,
+      };
+      context.emit('select-change', { relationInfo });
+      clearSelected();
+      relationLines.value[relationIndex].selected = true;
     };
 
     // 反转关联
@@ -186,7 +191,7 @@ export default defineComponent({
         relationType: relations.value[index][2],
       });
       if (code === 0) {
-        context.emit('model-change');
+        erdEmit('model-change', null);
       }
     };
 
@@ -209,7 +214,7 @@ export default defineComponent({
 
     // erd事件统一处理
     const handlers = {
-      mouseupHandler: async () => {
+      mouseup: async () => {
         const evType = getEventType();
         switch (evType) {
           case 'DragTable':
@@ -231,6 +236,15 @@ export default defineComponent({
             clearSelect();
         }
       },
+      mousedown: () => {
+        const hoverTable = document.querySelector('.erd-table-container:hover');
+        if (hoverTable) {
+          const currentTable = tables.value[Number(hoverTable.getAttribute('table-index'))];
+          tableMousedown(currentTable);
+        }
+      },
+      mouseleave: leaveErd,
+      mousemove: drag,
     };
     onMounted(() => {
       calcSvgPosition();
@@ -243,7 +257,7 @@ export default defineComponent({
     return {
       tables,
       drag,
-      selectedTable,
+      tableMousedown,
       viewWidth,
       viewHeight,
       clearSelected,

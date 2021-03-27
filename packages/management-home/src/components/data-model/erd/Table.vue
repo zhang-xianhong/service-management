@@ -30,7 +30,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed } from 'vue';
+import { defineComponent, computed, inject } from 'vue';
 import { drawRelationStart, drawTempRleation, removeTempRleation } from './store';
 import { deleteModel } from '@/api/schema/model';
 export default defineComponent({
@@ -53,12 +53,13 @@ export default defineComponent({
       required: true,
     },
   },
-  setup(props, context) {
+  setup(props) {
+    const erdEmit = inject('erdEmit') as Function;
     const markers = ['top', 'right', 'bottom', 'left'];
     const removeModel = async (id: any) => {
       const { code } = await deleteModel({ ids: [id] });
       if (code === 0) {
-        context.emit('model-change');
+        erdEmit('model-change');
       }
     };
     const table = computed(() => props.tableAttr);
