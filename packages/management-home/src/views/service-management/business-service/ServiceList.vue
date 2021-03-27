@@ -20,7 +20,7 @@
     </div>
     <div class="service-list_content">
       <el-table
-        :data="logs(serviceTableList.list)"
+        :data="serviceTableList.list"
         style="margin-bottom: 20px"
         ref="serverMuitable"
         @selection-change="handleSelection"
@@ -50,6 +50,7 @@
                 :props="sortProps"
                 clearable
                 filterable
+                @change="getSortClassification"
                 placeholder="请选择分类"
               ></el-cascader>
             </el-popover>
@@ -213,6 +214,8 @@ export default defineComponent({
       sortProps: {
         label: 'name',
         value: 'id',
+        emitPath: false,
+        multiple: true,
       },
     };
   },
@@ -250,6 +253,7 @@ export default defineComponent({
       senddata.dependencies = serviceDetail.dependencies.map((x: any) => ({
         id: x,
       }));
+      senddata.classification = serviceDetail.classification.join(',');
       if (!senddata.name) {
         return ElMessage({
           showClose: true,
@@ -283,11 +287,8 @@ export default defineComponent({
       return res;
     }
     function getCascaderForm(res: any) {
-      if (res) {
-        serviceDetail.classification = `${res[0]}`;
-      } else {
-        serviceDetail.classification = '';
-      }
+      serviceDetail.classification = res;
+      console.log(res, serviceDetail.classification);
     }
 
     // 筛选
@@ -355,7 +356,13 @@ export default defineComponent({
 
     const searchForList = () => {
       pageInfo.page = 1;
-      refreshServiceList(pageInfo);
+      const infos = { ...pageInfo };
+      infos.classification = Object.values(pageInfo.classification).join(',');
+      refreshServiceList(infos);
+    };
+
+    const getSortClassification = (res: any) => {
+      pageInfo.classification = res;
     };
 
     return {
@@ -397,6 +404,7 @@ export default defineComponent({
       searchForList,
       getCascaderForm,
       allService,
+      getSortClassification,
     };
   },
 });
