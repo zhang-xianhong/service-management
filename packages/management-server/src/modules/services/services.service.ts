@@ -227,6 +227,19 @@ export class ServicesService {
   async addServiceConfig(data: ServiceConfigDto): Promise<Created> {
     const { serviceId } = data;
     try {
+      const service: ServicesInfoModel = await this.infoRepository.findOne({
+        where: {
+          id: serviceId,
+          isDelete: false,
+        },
+      });
+      if (!service) {
+        throw new ApiException({
+          code: CommonCodes.NOT_FOUND,
+          message: 'service不存在',
+          error: ErrorTypes.NOT_FOUND,
+        });
+      }
       const config: ServicesConfigModel = await this.servicesConfigRepository.findOne({
         where: {
           serviceId,
@@ -252,6 +265,7 @@ export class ServicesService {
       throw new ApiException({
         code: CommonCodes.CREATED_FAIL,
         message: '保存服务配置失败',
+        error: error.message || error,
       });
     }
   }
@@ -267,16 +281,12 @@ export class ServicesService {
     transaction: Transaction,
   ): Promise<BulkCreated> {
     try {
-      const defaultApis = DEFAULT_APIS.map((api) => {
-        const { url, ...apiData } = api;
-        return {
-          ...apiData,
-          url: `${modelInfo.name}${url}`,
-          isSystem: true,
-          modelId: modelInfo.id,
-          serviceId,
-        };
-      });
+      const defaultApis = DEFAULT_APIS.map(api => ({
+        ...api,
+        isSystem: 1,
+        modelId: modelInfo.id,
+        serviceId,
+      }));
       const res = await Promise.all(defaultApis.map(item => this.addServiceApiParams(item, transaction)));
       return {
         ids: res.map(item => item.id),
@@ -286,6 +296,7 @@ export class ServicesService {
       throw new ApiException({
         code: CommonCodes.CREATED_FAIL,
         message: '保存服务默认接口失败',
+        error: error.message || error,
       });
     }
   }
@@ -308,7 +319,7 @@ export class ServicesService {
       });
       await Promise.all(apis.map(item => this.apiParamRepository.destroy({
         where: {
-          apiId: item.id,
+          serviceApiId: item.id,
         },
         transaction,
       })));
@@ -323,6 +334,7 @@ export class ServicesService {
       throw new ApiException({
         code: CommonCodes.CREATED_FAIL,
         message: '删除服务接口失败',
+        error: error.message || error,
       });
     }
   }
@@ -338,6 +350,55 @@ export class ServicesService {
     const transaction: Transaction = await this.sequelize.transaction();
     const { apis = [] } = data;
     try {
+      const service: ServicesInfoModel = await this.infoRepository.findOne({
+        where: {
+          id: serviceId,
+          isDelete: false,
+        },
+      });
+      if (!service) {
+        throw new ApiException({
+          code: CommonCodes.NOT_FOUND,
+          message: 'service不存在',
+          error: ErrorTypes.NOT_FOUND,
+        });
+      }
+      // 校验接口名称是否有重复
+      apis.reduce((prev, item) => {
+        if (prev.includes(item.name)) {
+          throw new ApiException({
+            code: CommonCodes.PARAMETER_INVALID,
+            message: `存在名称[${item.name}]相同的接口`,
+          });
+        }
+        prev.push(item.name);
+        return prev;
+      }, []);
+
+      // 系统接口
+      const systemApis: ServicesApiModel[] = await this.apiRepository.findAll({
+        where: {
+          serviceId,
+          isSystem: true,
+        },
+      });
+      // 是否与系统接口重复
+      let conflictName = '';
+      const hasNameConflictApi: boolean = apis.some((api) => {
+        const sameNameApi = systemApis.find(item => item.name === api.name);
+        if (sameNameApi) {
+          conflictName = api.name;
+          return true;
+        }
+        return false;
+      });
+      if (hasNameConflictApi) {
+        throw new ApiException({
+          code: CommonCodes.DATA_EXISTED,
+          message: `接口名称[${conflictName}]已存在`,
+        });
+      }
+
       const oldApis: ServicesApiModel[] = await this.apiRepository.findAll({
         where: {
           serviceId,
@@ -347,7 +408,7 @@ export class ServicesService {
       // 删除旧接口参数
       await Promise.all(oldApis.map(item => this.apiParamRepository.destroy({
         where: {
-          apiId: item.id,
+          serviceApiId: item.id,
         },
         transaction,
       })));
@@ -374,14 +435,13 @@ export class ServicesService {
       throw new ApiException({
         code: CommonCodes.CREATED_FAIL,
         message: '保存服务接口失败',
-        error,
+        error: error.message || error,
       });
     }
   }
 
   /**
    * 添加接口参数
-   * @param apiId
    * @param data
    * @returns
    */
@@ -391,7 +451,7 @@ export class ServicesService {
       const res: ServicesApiModel = await this.apiRepository.create(apiData, { transaction });
       await this.apiParamRepository.destroy<ServicesApiParamModel>({
         where: {
-          apiId: res.id,
+          serviceApiId: res.id,
         },
         transaction,
       });
@@ -399,7 +459,7 @@ export class ServicesService {
       if (Array.isArray(params) && params.length) {
         const paramsEntities = params.map(param => ({
           ...param,
-          apiId: res.id,
+          serviceApiId: res.id,
         }));
         await this.apiParamRepository.bulkCreate(paramsEntities, { transaction });
       }
@@ -412,7 +472,7 @@ export class ServicesService {
       throw new ApiException({
         code: CommonCodes.CREATED_FAIL,
         message: '保存接口参数失败',
-        error,
+        error: error.message || error,
       });
     }
   }
@@ -423,22 +483,35 @@ export class ServicesService {
    */
   async updateService(id: number, data: any): Promise<Updated> {
     const { dependencies = [], ...serviceData } = data;
-    // 验证是否有同名模块
-    const service: ServicesInfoModel = await this.infoRepository.findOne<ServicesInfoModel>({
-      where: {
-        name: data.name,
-        isDelete: false,
-        id: [Op.notIn[id]],
-      },
-    });
-    if (service) {
-      throw new ApiException({
-        code: CommonCodes.DATA_EXISTED,
-        message: '模型名称已存在',
-      });
-    }
     const transaction: Transaction = await this.sequelize.transaction();
     try {
+      const serviceInfo: ServicesInfoModel = await this.infoRepository.findOne({
+        where: {
+          id,
+          isDelete: false,
+        },
+      });
+      if (!serviceInfo) {
+        throw new ApiException({
+          code: CommonCodes.NOT_FOUND,
+          message: 'service不存在',
+          error: ErrorTypes.NOT_FOUND,
+        });
+      }
+      // 验证是否有同名模块
+      const service: ServicesInfoModel = await this.infoRepository.findOne<ServicesInfoModel>({
+        where: {
+          name: data.name,
+          isDelete: false,
+          id: [Op.notIn[id]],
+        },
+      });
+      if (service) {
+        throw new ApiException({
+          code: CommonCodes.DATA_EXISTED,
+          message: '模型名称已存在',
+        });
+      }
       await this.infoRepository.update(serviceData, {
         where: { id },
         transaction,
@@ -464,7 +537,7 @@ export class ServicesService {
       throw new ApiException({
         code: CommonCodes.UPDATED_FAIL,
         message: '服务更新失败',
-        error,
+        error: error.message || error,
       });
     }
   }
@@ -492,7 +565,8 @@ export class ServicesService {
       }, {
         where: {
           serviceId: { [Op.in]: deleteIds },
-        }, transaction,
+        },
+        transaction,
       });
       // 更新dependency表数据，isDelete置为true
       await this.dependencyRepository.update({
@@ -518,7 +592,8 @@ export class ServicesService {
       return {
         ids: deleteIds,
       };
-    } catch (err) {
+    } catch (error) {
+      this.logger.error(error);
       // 一旦发生错误，事务会回滚
       await transaction.rollback();
       throw new ApiException({
@@ -557,8 +632,8 @@ export class ServicesService {
       throw new ApiException({
         code: CommonCodes.INITIALIZE_FAIL,
         message: '服务初始化失败',
-        error,
-      }, HttpStatus.BAD_REQUEST);
+        error: error.message || error,
+      });
     }
   }
 
@@ -588,8 +663,8 @@ export class ServicesService {
       throw new ApiException({
         code: CommonCodes.BUILD_FAIL,
         message: '服务构建失败',
-        error,
-      }, HttpStatus.BAD_REQUEST);
+        error: error.message || error,
+      });
     }
   }
 
@@ -616,8 +691,8 @@ export class ServicesService {
       throw new ApiException({
         code: CommonCodes.BUILD_FAIL,
         message: '创建服务仓库失败',
-        error,
-      }, HttpStatus.BAD_REQUEST);
+        error: error.message || error,
+      });
     }
   }
 

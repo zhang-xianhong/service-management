@@ -17,6 +17,7 @@ import { ModelFieldDto } from './dto/model-field.dto';
 import { ModelRelationDto } from './dto/model-relation.dto';
 import { PlainObject } from 'src/shared/pipes/query.pipe';
 import { ServicesService } from '../services/services.service';
+import { isNumeric } from 'src/shared/utils/validator';
 
 @Injectable()
 export class ModelsService {
@@ -188,35 +189,9 @@ export class ModelsService {
       transaction,
     });
     const modelIds: number[] = models.map(model => model.id);
-    return this.deleteModel(modelIds, transaction);
-    // const deleteModels = this.infoRepository.update({
-    //   isDelete: true,
-    // }, {
-    //   where: {
-    //     id: {
-    //       [Op.in]: modelIds,
-    //     },
-    //   },
-    //   transaction,
-    // });
-    // const deleteFields = this.fieldsRepository.update({
-    //   isDelete: true,
-    // }, {
-    //   where: {
-    //     modelId: {
-    //       [Op.in]: modelIds,
-    //     },
-    //   },
-    //   transaction,
-    // });
-    // const deleteRelations = this.relationRepository.update({
-    //   isDelete: true,
-    // }, {
-    //   where: {
-    //     serviceId,
-    //   },
-    // });
-    // return await Promise.all([deleteModels, deleteFields, deleteRelations]);
+    // 不需要单独提交事务
+    const unNeedTransaction = true;
+    return this.deleteModel(modelIds, transaction, unNeedTransaction);
   }
 
 
@@ -225,7 +200,11 @@ export class ModelsService {
    * @param modelIds
    * @returns
    */
-  async deleteModel(modelIds: number[], transactionArg?: sequelize.Transaction): Promise<Deleted> {
+  async deleteModel(
+    modelIds: number[],
+    transactionArg?: sequelize.Transaction,
+    unNeedTransaction?: Boolean,
+  ): Promise<Deleted> {
     const transaction = transactionArg ||  await this.sequelize.transaction();
     try {
       await this.infoRepository.update({
@@ -268,13 +247,13 @@ export class ModelsService {
         transaction,
       });
       await Promise.all(modelIds.map(modelId => this.servicesService.deleteServiceApis(modelId, transaction)));
-      await transaction.commit();
+      !unNeedTransaction && await transaction.commit();
       return {
         ids: modelIds,
       };
     } catch (error) {
       this.logger.error(error);
-      await transaction.rollback();
+      !unNeedTransaction && await transaction.rollback();
       if (error instanceof ApiException) {
         throw error;
       }
@@ -325,10 +304,19 @@ export class ModelsService {
         transaction,
       });
       // 重新创建字段
-      const newFields = fields.map(field => ({
-        modelId,
-        ...field,
-      }));
+      const newFields = fields.map((field) => {
+        let { defaultValue } = field;
+        if (defaultValue === 'null') {
+          defaultValue = null;
+        } else if (isNumeric(defaultValue)) {
+          defaultValue = Number(defaultValue);
+        }
+        return {
+          ...field,
+          modelId,
+          defaultValue,
+        };
+      });
       const res = await this.fieldsRepository.bulkCreate(newFields);
       await transaction.commit();
       return res.map(item => item.id);

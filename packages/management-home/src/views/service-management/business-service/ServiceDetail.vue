@@ -26,7 +26,7 @@
       <el-col :span="componentName ? 16 : 24" style="height:100%">
         <el-row>
           <!-- 服务下拉选择框 -->
-          <el-select v-model="currentServiceId" placeholder="请选择">
+          <el-select v-model="currentServiceId" placeholder="请选择" @change="selectService">
             <el-option
               v-for="server in serverList"
               :key="server.id"
@@ -67,7 +67,12 @@
     <transition name="slide-fade">
       <div v-if="isShowDownDrawer" class="detail-drawer__container">
         <keep-alive>
-          <component :is="drawerName" :id="currentServiceId" @back="isShowDownDrawer = false"></component>
+          <component
+            :is="drawerName"
+            :id="currentServiceId"
+            :modelList="modelList.tables"
+            @back="isShowDownDrawer = false"
+          ></component>
         </keep-alive>
       </div>
     </transition>
@@ -132,7 +137,7 @@ export default {
     const route = useRoute();
 
     // 当前服务ID
-    const currentServiceId = ref(route.params.id);
+    const currentServiceId = ref(Number(route.params.id));
 
     // 属性列表是否已打开
     const isOpenProperties = ref(false);
@@ -151,7 +156,7 @@ export default {
     const serverInfo = ref({} as any);
 
     // erd图组件参数构造
-    provide('serviceId', Number(currentServiceId.value));
+    provide('serviceId', currentServiceId.value);
     const erdLoading = ref(false);
     const modelList: Ref<any> = ref({
       tables: [],
@@ -294,10 +299,19 @@ export default {
       componentName.value === 'ServerBaseInfo' ? serverInfo.value : modelInfo.value,
     );
 
+    // 切换服务
+    const selectService = (value: number) => {
+      currentServiceId.value = value;
+      getServerInfo();
+      componentName.value = '';
+      isShowDownDrawer.value = false;
+    };
+
     return {
       isShowDownDrawer,
       computedHeight,
       currentServiceId,
+      selectService,
       isOpenProperties,
       serverInfo,
       serverList,

@@ -1,5 +1,5 @@
 export enum METHOD_TYPE {
-  GET,
+  GET=0,
   POST,
   PUT,
 }
