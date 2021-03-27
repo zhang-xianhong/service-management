@@ -33,6 +33,10 @@ export class ModelFieldDto {
   isParticipleSupport: boolean;
 
   @IsOptional()
+  @MaxLength(255)
+  defaultValue: string | number | null;
+
+  @IsOptional()
   @IsBoolean()
   isPinyinSupport: boolean;
 
