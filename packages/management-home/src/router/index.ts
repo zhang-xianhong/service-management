@@ -75,7 +75,7 @@ const routes: Array<RouteRecordRaw> = [
         },
       },
       {
-        path: 'project-detail',
+        path: 'project-detail/:id',
         component: () => import('@/views/project-management/ProjectDetail.vue'),
         name: 'ProjectDetail',
         meta: {
@@ -83,6 +83,7 @@ const routes: Array<RouteRecordRaw> = [
           icon: 'el-icon-eleme',
           isRootLevel: false,
         },
+        props: true,
       },
     ],
   },
