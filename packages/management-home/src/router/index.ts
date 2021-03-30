@@ -82,6 +82,7 @@ const routes: Array<RouteRecordRaw> = [
           title: '项目详情',
           icon: 'el-icon-eleme',
           isRootLevel: false,
+          hidden: true,
         },
         props: true,
       },
