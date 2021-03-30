@@ -17,19 +17,35 @@ import { ModelFieldDto } from './dto/model-field.dto';
 import { ModelRelationDto } from './dto/model-relation.dto';
 import { PlainObject } from 'src/shared/pipes/query.pipe';
 import { ServicesService } from '../services/services.service';
-import { isNumeric } from 'src/shared/utils/validator';
+import { FIELD_DEFAULT_VERSION } from './config';
+import { ModelsFieldsHistoryModel } from './models-fields-history.model';
+import { MODULE_TYPE } from '../version-control/config';
+import { VersionControlService } from '../version-control/version-control.service';
 
+interface CompareFieldsResult {
+  created?: any[]
+  updated?: any[]
+  removed?: any[]
+  // 保持不变的
+  kept?: any[]
+}
 @Injectable()
 export class ModelsService {
+  // 允许变更的字段，用于对比
+  private readonly COMPARE_FIELDS = ['name', 'description'];
+
   constructor(
     @Inject(Logger)
     private readonly logger: LoggerService,
     @Inject(forwardRef(() => ServicesService))
     private servicesService: ServicesService,
+    @Inject(forwardRef(() => VersionControlService))
+    private versionService: VersionControlService,
     private sequelize: Sequelize,
     @InjectModel(ModelsInfoModel) private readonly infoRepository: typeof ModelsInfoModel,
     @InjectModel(ModelsFieldsModel) private readonly fieldsRepository: typeof ModelsFieldsModel,
     @InjectModel(ModelsRelationModel) private readonly relationRepository: typeof ModelsRelationModel,
+    @InjectModel(ModelsFieldsHistoryModel) private readonly historyRepository: typeof ModelsFieldsHistoryModel,
     @InjectModel(DataTypesModel) private readonly dataTypesRepository: typeof DataTypesModel,
     @InjectModel(ServicesInfoModel) private readonly serviceRepository: typeof ServicesInfoModel,
   ) {}
@@ -74,6 +90,14 @@ export class ModelsService {
       // 生成默认字段
       await this.createModelDefaultFields(res.id, transaction);
       await this.servicesService.addServiceDefaultApis(serviceId, res, transaction);
+      // TODO 创建模型的版本控制
+      // 创建字段的版本控制
+      await this.versionService.createVersion({
+        moduleType: MODULE_TYPE.MODEL_FIELD,
+        moduleId: res.id,
+        serviceId,
+        ghostVersion: FIELD_DEFAULT_VERSION,
+      }, transaction);
       await transaction.commit();
       return {
         id: res.id,
@@ -271,17 +295,18 @@ export class ModelsService {
    * @param fields
    * @returns
    */
-  async updateOrCreateFields(modelId: number, fields: ModelFieldDto[]): Promise<number[]> {
+  async updateOrCreateFields(modelId: number, serviceId: number, fields: ModelFieldDto[]): Promise<any> {
     const currentFields: ModelsFieldsModel[] = await this.fieldsRepository.findAll({
       where: {
         modelId,
       },
     });
-    // 是否与系统字段冲突
+    // 是否与现有字段名称冲突
     let conflictName = '';
     const hasNameConflictField: boolean = fields.some((field) => {
       const sameNameField = currentFields.find(item => item.name === field.name);
-      if (sameNameField && sameNameField.isSystem === true) {
+      if (sameNameField
+        && (sameNameField.isSystem === true || Number(field.id) !== Number(sameNameField.id))) {
         conflictName = field.name;
         return true;
       }
@@ -293,33 +318,26 @@ export class ModelsService {
         message: `名称[${conflictName}]已存在`,
       });
     }
+    const sourceFields = currentFields.filter(field => !field.isSystem);
+    const newFields = fields.map(field => ({
+      modelId,
+      ...field,
+    }));
+    const { created, updated, removed } = await this.compareFields(modelId, newFields, sourceFields);
+    // 没有做任何操作，无用的保存
+    if (!created.length && !updated.length && !removed.length) {
+      return true;
+    }
     const transaction = await this.sequelize.transaction();
     try {
-      // 先删除非系统字段
-      await this.fieldsRepository.destroy({
-        where: {
-          modelId,
-          isSystem: false,
-        },
-        transaction,
-      });
-      // 重新创建字段
-      const newFields = fields.map((field) => {
-        let { defaultValue } = field;
-        if (defaultValue === 'null') {
-          defaultValue = null;
-        } else if (isNumeric(defaultValue)) {
-          defaultValue = Number(defaultValue);
-        }
-        return {
-          ...field,
-          modelId,
-          defaultValue,
-        };
-      });
-      const res = await this.fieldsRepository.bulkCreate(newFields);
+      await this.updateModelFieldsAndHistory(
+        serviceId,
+        modelId,
+        { created, updated, removed },
+        transaction, currentFields,
+      );
       await transaction.commit();
-      return res.map(item => item.id);
+      return true;
     } catch (error) {
       this.logger.error(error);
       await transaction.rollback();
@@ -361,6 +379,7 @@ export class ModelsService {
         ...postData,
         byFieldId: foreignKeyId,
       });
+      await this.updateModelFieldsAndHistory(serviceId, fromModelId, {}, transaction);
       await transaction.commit();
       return {
         id: res.id,
@@ -386,7 +405,7 @@ export class ModelsService {
    * @param postData
    * @returns
    */
-  async updateModelRelation(relationId: number,  postData: ModelRelationDto): Promise<Updated> {
+  async updateModelRelation(relationId: number, postData: ModelRelationDto): Promise<Updated> {
     const relation = await this.relationRepository.findOne({
       where: {
         id: relationId,
@@ -399,10 +418,21 @@ export class ModelsService {
         message: '关系不存在',
       }, HttpStatus.NOT_FOUND);
     }
+    // 防止无效的更新
+    if (relation.fromModelId === postData.fromModelId
+      && relation.toModelId === postData.toModelId
+      && relation.relationType === postData.relationType) {
+      return {
+        id: relationId,
+      };
+    }
     const transaction = await this.sequelize.transaction();
     try {
+      // 创建新外键
       const foreignKey = (await
       this.createModelRelationForeignKey(postData.fromModelId, postData.toModelId, transaction));
+      // 创建外键后更新字段历史
+      await this.updateModelFieldsAndHistory(relation.serviceId, postData.fromModelId, {}, transaction);
       // 删除无用的外键
       if (relation.byFieldId !== foreignKey) {
         await this.fieldsRepository.destroy({
@@ -411,8 +441,10 @@ export class ModelsService {
           },
           transaction,
         });
+        // 删除外键后更新字段历史
+        await this.updateModelFieldsAndHistory(relation.serviceId, relation.fromModelId, {}, transaction);
       }
-      // // 删除
+      // 更新模型关系
       await this.relationRepository.update({
         ...postData,
         byFieldId: foreignKey,
@@ -470,15 +502,21 @@ export class ModelsService {
         transaction,
       });
       // 删除外键
-      await this.fieldsRepository.update({
-        isDelete: true,
-      }, {
+      await this.fieldsRepository.destroy({
         where: {
           id: {
             [Op.in]: foreignKeyIds,
           },
         },
       });
+      // 删除外键后更新字段历史
+      const historyPromises = relations.map(relation => this.updateModelFieldsAndHistory(
+        relation.serviceId,
+        relation.fromModelId,
+        {},
+        transaction,
+      ));
+      await Promise.all(historyPromises);
       await transaction.commit();
       return {
         ids,
@@ -545,31 +583,12 @@ export class ModelsService {
     const [fromModel, toModel] = await Promise.all([this.findModelById(fromId), this.findModelById(toId)]);
     // 外键名称
     const foreignKey = `ref${lowerCamelToUpperCamel(toModel.name)}Id`;
-    // 生成外键
-    let foreignKeyField: ModelsFieldsModel = await this.fieldsRepository.findOne({
-      where: {
-        name: foreignKey,
-        isDelete: false,
-      },
+    const fieldEntity = await this.buildSystemField(fromModel.id, false, transaction);
+    fieldEntity.name = foreignKey;
+    fieldEntity.description = `模型“${fromModel.name}” - “${toModel.name}”间外键`;
+    const foreignKeyField = await this.fieldsRepository.create(fieldEntity, {
       transaction,
     });
-    if (!foreignKeyField) {
-      const fieldEntity = await this.buildSystemField(fromModel.id, false, transaction);
-      fieldEntity.name = foreignKey;
-      fieldEntity.description = `模型“${fromModel.name}” - “${toModel.name}”间外键`;
-      foreignKeyField = await this.fieldsRepository.create(fieldEntity, {
-        transaction,
-      });
-    } else if (foreignKeyField.isDelete) {
-      await this.fieldsRepository.update({
-        isDelete: false,
-      }, {
-        where: {
-          id: foreignKeyField.id,
-        },
-        transaction,
-      });
-    }
     return foreignKeyField.id;
   }
 
@@ -603,5 +622,133 @@ export class ModelsService {
     fieldEntity.isSystem = true;
     fieldEntity.modelId = modelId;
     return fieldEntity;
+  }
+
+
+  /**
+   * 对比字段变更
+   * @param modelId
+   * @param newFields
+   * @param sourceFields
+   * @returns
+   */
+  private async compareFields(modelId: number, newFields: any[] = [], sourceFields?: any[]):
+  Promise<CompareFieldsResult> {
+    const originFields = sourceFields || await this.fieldsRepository.findAll({
+      where: {
+        modelId,
+        isSystem: false,
+      },
+      raw: true,
+    });
+    const created = [];
+    const mayUpdated = [];
+    const updated = [];
+    const kept = [];
+    newFields.forEach((newField) => {
+      if (newField.id) {
+        // 说明它可能是更新的
+        mayUpdated.push(newField);
+      } else {
+        // 新增的
+        created.push(newField);
+      }
+    });
+    const removed = originFields
+      .filter(originField => !mayUpdated.find(newField => Number(newField.id) === Number(originField.id)));
+    mayUpdated.forEach((field) => {
+      const originField = originFields.find(originField => Number(field.id) === Number(originField.id));
+      if (!originField) {
+        throw new ApiException({
+          code: CommonCodes.PARAMETER_INVALID,
+          message: '无效的字段ID',
+        });
+      }
+      const isUpdate = this.COMPARE_FIELDS.some(key => field[key] !== originField[key]);
+      if (isUpdate) {
+        updated.push(field);
+      } else {
+        kept.push(field);
+      }
+    });
+    return {
+      created,
+      updated,
+      removed,
+      kept,
+    };
+  }
+
+
+  /**
+   * 批量更新字段
+   * @param fields
+   * @param transaction
+   * @returns
+   */
+  private async bulkUpdateFields(fields: any[], transaction: sequelize.Transaction) {
+    const promises = fields.map((field) => {
+      const updatedValue = { ...field, updateTime: new Date() };
+      delete updatedValue.id;
+      return this.fieldsRepository.update(updatedValue, {
+        where: {
+          id: field.id,
+        },
+        transaction,
+      });
+    });
+    return await Promise.all(promises);
+  }
+
+
+  private async updateModelFieldsAndHistory(
+    serviceId: number,
+    modelId: number,
+    { created = [], updated = [], removed = [] }: CompareFieldsResult,
+    transaction: sequelize.Transaction,
+    sourceFields?: ModelsFieldsModel[],
+  ) {
+    const currentFields: ModelsFieldsModel[] = sourceFields || await this.fieldsRepository.findAll({
+      where: {
+        modelId,
+      },
+    });
+    try {
+      // 获取上一个ghostVersion
+      const { preGhostVersion } = await this.versionService.findAndUpdateGhostVersion(
+        MODULE_TYPE.MODEL_FIELD,
+        modelId,
+        transaction,
+      );
+      // 2. 备份字段到历史表
+      await this.historyRepository.create({
+        serviceId,
+        modelId,
+        fieldVersion: preGhostVersion,
+        content: currentFields,
+      }, {
+        transaction,
+      });
+      // 2. 创建新字段
+      const createdFields = created?.map(field => ({
+        ...field,
+        modelId,
+      }));
+      createdFields?.length && await this.fieldsRepository.bulkCreate(createdFields);
+      // 3. 删除被删除字段
+      const removedFieldIds = removed?.map(field => field.id);
+      removedFieldIds?.length && await this.fieldsRepository.destroy({
+        where: {
+          id: {
+            [Op.in]: removedFieldIds,
+          },
+        },
+      });
+      // 4. 更新字段
+      updated?.length && await this.bulkUpdateFields(updated, transaction);
+      return true;
+    } catch (error) {
+      throw error;
+    }
   }
 }
