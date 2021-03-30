@@ -1,0 +1,12 @@
+{
+  "code": 0,
+  "data": {
+    "name": "测试项目",
+    "description": "测试一下的描述",
+    "template": "JAVA",
+    "owner": "",
+    "level": 0,
+    "remark": "左侧为部门及部门下的人员, 右侧为项目角色小组, 左侧树形结构参考微信",
+    "status": 0
+  }
+}
