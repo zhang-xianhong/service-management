@@ -69,6 +69,7 @@ export default defineComponent({
   name: 'ColumnForm',
   setup(props, context) {
     const currentModel = inject('currentModel') as Ref<any>;
+    const serviceId = inject('serviceId') as number;
     const fields: Ref<Array<any>> = ref([]);
     watchEffect(() => {
       fields.value = _.cloneDeep(currentModel.value?.fields || []);
@@ -97,6 +98,7 @@ export default defineComponent({
     };
     const save = async () => {
       const { code } = await updateFields(modelId, {
+        serviceId,
         fields: _.flow(
           _.filter((field: any) => !field.isSystem),
           _.map(
