@@ -64,8 +64,7 @@
           <el-tree :data="treeData" :default-expand-all="true">
             <template #default="{ node, data }">
               <div class="customNode">
-                <i v-if="node.level < 3 && node.expanded" class="el-icon-folder-opened"></i>
-                <i v-if="node.level < 3 && !node.expanded" class="el-icon-folder"></i>
+                <i v-if="node.level < 3" class="el-icon-folder"></i>
                 <span>{{ node.label }}</span>
                 <i
                   v-if="node.level === 2"
@@ -82,6 +81,13 @@
         <el-table></el-table>
       </div>
     </el-row>
+    <tree-selector
+      :option="allUser"
+      v-model="selectedUser"
+      optionPlaceholder="请输入部门/人员名称"
+      optionLabel="选择人员"
+      valueLabel="A项目-B岗位"
+    ></tree-selector>
   </div>
 </template>
 
@@ -89,6 +95,7 @@
 import _ from 'lodash/fp';
 import { reactive, ref } from 'vue';
 import { getProjectDetail } from '@/api/project/project';
+import TreeSelector from './components/TreeSelector.vue';
 export default {
   name: 'ProjectDetail',
   props: {
@@ -96,6 +103,7 @@ export default {
       required: true,
     },
   },
+  components: { TreeSelector },
   setup(props: any) {
     const editMode = ref(false);
     const detailInfo = reactive({
@@ -193,6 +201,35 @@ export default {
     const addMember = () => {
       //
     };
+    const allUser = [
+      {
+        label: '腾云西子',
+        children: [
+          {
+            label: 'A部门',
+            children: [],
+          },
+          {
+            label: 'V部门',
+            children: [],
+          },
+          {
+            label: 'B部门',
+            children: [],
+          },
+          {
+            label: 'D部门',
+            children: [],
+          },
+        ],
+      },
+    ];
+    const selectedUser = [
+      {
+        label: '东尼大木',
+        department: '有关组织',
+      },
+    ];
 
     return {
       editMode,
@@ -205,6 +242,8 @@ export default {
       cancel,
       treeData,
       addMember,
+      allUser,
+      selectedUser,
     };
   },
 };
