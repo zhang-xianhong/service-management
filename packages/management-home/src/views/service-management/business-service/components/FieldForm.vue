@@ -70,6 +70,7 @@ export default defineComponent({
   setup(props, context) {
     const currentModel = inject('currentModel') as Ref<any>;
     const serviceId = inject('serviceId') as number;
+    const afterUpdate = inject('afterUpdate') as Function;
     const fields: Ref<Array<any>> = ref([]);
     watchEffect(() => {
       fields.value = _.cloneDeep(currentModel.value?.fields || []);
@@ -118,6 +119,7 @@ export default defineComponent({
       });
       if (code === 0) {
         currentModel.value.fields = fields.value;
+        afterUpdate();
         context.emit('back');
       }
     };
