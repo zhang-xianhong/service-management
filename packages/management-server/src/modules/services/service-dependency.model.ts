@@ -25,13 +25,6 @@ export class ServicesDependencyModel extends BaseModel {
   })
   remark: string;
 
-  // 版本号
-  @Column({
-    type: DataType.INTEGER,
-    defaultValue: 0,
-  })
-  version: number;
-
   // 隶属服务
   @ForeignKey(() => ServicesInfoModel)
   @Column({

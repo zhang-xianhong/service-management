@@ -25,7 +25,10 @@ export class ModelsController {
 
   // 更新创建模型字段
   @Post('/:id/fields')
-  async updateOrCreateFields(@Body() { fields }: ModelFieldsDto, @Param() { id }: ParamIdDto): Promise<number[]> {
+  async updateOrCreateFields(
+    @Body() { fields, serviceId }: ModelFieldsDto,
+      @Param() { id }: ParamIdDto,
+  ): Promise<number[]> {
     fields.reduce((prev, item) => {
       if (prev.includes(item.name)) {
         throw new ApiException({
@@ -36,7 +39,7 @@ export class ModelsController {
       prev.push(item);
       return prev;
     }, []);
-    return await this.service.updateOrCreateFields(id, fields);
+    return await this.service.updateOrCreateFields(id, serviceId, fields);
   }
 
   /**

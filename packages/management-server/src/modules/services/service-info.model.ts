@@ -76,14 +76,6 @@ export class ServicesInfoModel extends BaseModel  {
   })
   description: string;
 
-  // 版本号/修改次数
-  @Column({
-    type: DataType.INTEGER,
-    comment: '要素字段-系统维护',
-    defaultValue: null,
-  })
-  version: number;
-
   // 负责人
   @Column({
     type: DataType.STRING,

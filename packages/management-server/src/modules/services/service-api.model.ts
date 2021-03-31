@@ -67,12 +67,6 @@ export class ServicesApiModel extends BaseModel {
   @HasMany(() => ServicesApiParamModel)
   params: ServicesApiParamModel[];
 
-  // 版本号
-  @Column({
-    type: DataType.INTEGER,
-    defaultValue: 0,
-  })
-  version: number;
 
   // 是否系统自动生产接口
   @Column({

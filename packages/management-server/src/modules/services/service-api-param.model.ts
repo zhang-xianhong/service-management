@@ -72,11 +72,4 @@ export class ServicesApiParamModel extends BaseModel {
 
   @BelongsTo(() => ServicesApiModel)
   apiInfo: ServicesApiModel;
-
-  // 版本号
-  @Column({
-    type: DataType.INTEGER,
-    defaultValue: 0,
-  })
-  version: number;
 }
