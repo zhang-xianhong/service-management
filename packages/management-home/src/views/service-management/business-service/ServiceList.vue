@@ -3,12 +3,9 @@
     <div class="service-list_header">
       <div class="service-list_left">
         <el-button icon="el-icon-plus" type="primary" @click="toggleServiceDialog">新建</el-button>
-        <!--        此版本暂不支持-->
-        <!--        <el-button>克隆</el-button>-->
-        <!--        <el-button>继承</el-button>-->
-        <el-button @click="runService">启动</el-button>
-        <el-button @click="stopService">停止</el-button>
-        <el-button @click="deleteHandler">删除</el-button>
+        <el-button @click="runService" :disabled="!mutiArray.length">启动</el-button>
+        <el-button @click="stopService" :disabled="!mutiArray.length">停止</el-button>
+        <el-button @click="deleteHandler" :disabled="!mutiArray.length">删除</el-button>
       </div>
       <div class="service-list_right">
         <el-input placeholder="请输入服务名称/标签/分类" style="width: 250px" v-model="pageInfo.keyword">
@@ -56,7 +53,7 @@
             </el-popover>
           </template>
         </el-table-column>
-        <el-table-column property="tags" label="标签">
+        <el-table-column property="tag" label="标签">
           <template #header>
             <i class="el-icon-search"></i>
             <el-popover placement="bottom" :width="200" trigger="manual" :visible="tagTitleVisiable">
@@ -127,7 +124,7 @@
             ></el-cascader>
           </el-form-item>
           <el-form-item label="服务标签" :label-width="labelWidth">
-            <el-select v-model="serviceDetail.tag" placeholder="请选择标签" clearable multiple>
+            <el-select v-model="serviceDetail.tags" placeholder="请选择标签" clearable multiple>
               <el-option v-for="(item, index) in tags" :key="index" :label="item.name" :value="item.id"></el-option>
             </el-select>
           </el-form-item>
@@ -204,7 +201,7 @@ import {
 } from './utils/service-data-utils';
 import { addService } from '@/api/servers';
 import Message from 'element-plus/es/el-message';
-import { ElMessage } from 'element-plus';
+import { ElMessage, ElMessageBox } from 'element-plus';
 
 export default defineComponent({
   name: 'ServiceList',
@@ -220,6 +217,9 @@ export default defineComponent({
     };
   },
   setup() {
+    getClassifications();
+    getTagsForService();
+
     refreshServiceList();
 
     const mutiArray = ref([]);
@@ -249,11 +249,11 @@ export default defineComponent({
     };
     function addServiceByForm() {
       const senddata = { ...serviceDetail };
-      senddata.tag = serviceDetail.tag.join(',');
+      senddata.tags = serviceDetail.tags.join(',');
       senddata.dependencies = serviceDetail.dependencies.map((x: any) => ({
         id: x,
       }));
-      senddata.classification = serviceDetail.classification.join(',');
+      senddata.classification = serviceDetail.classification ? serviceDetail.classification.join(',') : '';
       if (!senddata.name) {
         return ElMessage({
           showClose: true,
@@ -278,9 +278,6 @@ export default defineComponent({
           addServiceDialog.value = false;
         });
     }
-
-    getClassifications();
-    getTagsForService();
 
     function logs(res: any) {
       console.log(res, 'this is logs');
@@ -320,10 +317,23 @@ export default defineComponent({
     });
 
     function deleteHandler() {
-      return deleteServiceForList(mutiArray.value).then(() => {
-        refreshServiceList(pageInfo);
-        Message.success('删除成功');
-      });
+      ElMessageBox.confirm('删除动作不可撤销, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+      })
+        .then(() =>
+          deleteServiceForList(mutiArray.value).then(() => {
+            refreshServiceList(pageInfo);
+            Message.success('删除成功');
+          }),
+        )
+        .catch(() => {
+          Message({
+            type: 'info',
+            message: '已取消删除',
+          });
+        });
     }
 
     const runDialogVisible = ref(false);
@@ -405,6 +415,7 @@ export default defineComponent({
       getCascaderForm,
       allService,
       getSortClassification,
+      mutiArray,
     };
   },
 });

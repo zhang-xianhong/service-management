@@ -1,4 +1,5 @@
-import { logSetTimeOut } from '@/views/service-management/business-service/utils/service-log-data-utils';
+import { logSetTimeOut } from './service-log-data-utils';
+import { buildServiceData } from './service-detail-data';
 
 export default function() {
   // 初始化
@@ -9,6 +10,13 @@ export default function() {
   // 启动
   const start = () => {
     console.log('启动');
+  };
+
+  const build = () => {
+    console.log('构建');
+    buildServiceData().then((res) => {
+      logSetTimeOut('sa-operator-adapter', res.data.traceId);
+    });
   };
 
   // 停止
@@ -34,6 +42,12 @@ export default function() {
       type: 'primary',
       eventOption: {
         click: () => initialize(),
+      },
+    },
+    {
+      label: '构建',
+      eventOption: {
+        click: () => build(),
       },
     },
     {

@@ -71,9 +71,10 @@
       </div>
     </transition>
 
-    <el-dialog title="日志" v-model="logDialogVisible" width="40%">
+    <el-dialog title="日志" v-model="logDialogVisible" width="40%" @close="clearLogInterVal">
       <!--      <el-input type="textarea" :rows="25" :autosize="{ maxRows: 25, minRows: 25 }" v-model="logData"></el-input>-->
-      <div class="log-content">
+      <div class="log-content" id="log_content">
+        <div style="color: red" v-if="logData.length === 0">日志加载中......</div>
         <div class="log-item" v-for="item in logData" :key="item.instanceId">
           <div class="log-item-content" v-html="formatLogData(item.content)"></div>
         </div>
@@ -100,6 +101,7 @@ import { getClassificationList } from '@/api/settings/classification';
 import { getServiceModelList } from '@/api/schema/model';
 import { getDataTypesAll } from '@/api/settings/data-types';
 import { useRoute } from 'vue-router';
+import { currentServiceIdForData } from './utils/service-detail-data';
 import _ from 'lodash/fp';
 import {
   logDialogVisible,
@@ -130,6 +132,7 @@ export default {
 
     // 当前服务ID
     const currentServiceId = ref(route.params.id);
+    currentServiceIdForData.value = route.params.id;
 
     // 属性列表是否已打开
     const isOpenProperties = ref(false);
