@@ -4,6 +4,7 @@ import { QueryPipe, SearchQuery } from 'src/shared/pipes/query.pipe';
 import { ApiException } from 'src/shared/utils/api.exception';
 import { isEmpty } from 'src/shared/utils/validator';
 import { DeletedIdsDto, ParamIdDto } from '../base.dto';
+import { ServiceBuildDto, ServiceIdDto } from './dto/service-actions.dto';
 import { ServiceApisDto } from './dto/service-apis.dto';
 import { ServiceConfigDto } from './dto/service-config.dto';
 import { ServiceInfoDto } from './dto/service-info.dto';
@@ -61,14 +62,14 @@ export class ServicesController {
   }
 
   // 初始化服务
-  @Get('/init/:id')
-  async initService(@Param() { id }: ParamIdDto) {
-    return await this.service.initService(id);
+  @Post('/initialize')
+  async initializeService(@Body() { serviceId }: ServiceIdDto) {
+    return await this.service.initializeService(serviceId);
   }
 
   // 构建服务
   @Post('/build')
-  async buildService(@Body() postData) {
+  async buildService(@Body() postData: ServiceBuildDto) {
     return await this.service.buildService(postData);
   }
 

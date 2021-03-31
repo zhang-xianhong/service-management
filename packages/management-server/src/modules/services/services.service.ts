@@ -4,7 +4,7 @@ import { ApiException } from 'src/shared/utils/api.exception';
 import { ServicesApiModel } from './service-api.model';
 import { ServicesDependencyModel } from './service-dependency.model';
 import { ServicesInfoModel } from './service-info.model';
-import { BUILD_SERVICE_URL, INIT_SERVICE_URL, SERVICE_SSH_URI, GENERATE_SERVICE_REPOSITORY_URL } from 'src/shared/constants/url';
+import { BUILD_SERVICE_URL, INIT_SERVICE_URL, GENERATE_SERVICE_REPOSITORY_URL } from 'src/shared/constants/url';
 import { PlainObject } from 'src/shared/pipes/query.pipe';
 import { InjectModel } from '@nestjs/sequelize';
 import { Op, Sequelize, Transaction } from 'sequelize';
@@ -24,6 +24,7 @@ import { ApiDto } from './dto/api.dto';
 import { DEFAULT_APIS } from './default-apis';
 import { ModelsRelationModel } from '../models/models-relation.model';
 import { escapeLike } from 'src/shared/utils/sql';
+import { ServiceBuildDto } from './dto/service-actions.dto';
 @Injectable()
 export class ServicesService {
   constructor(
@@ -599,63 +600,54 @@ export class ServicesService {
       throw new ApiException({
         code: CommonCodes.DELETED_FAIL,
         message: '服务删除失败',
-      });
+      }, HttpStatus.BAD_REQUEST);
     }
   }
 
+
   /**
-   * 调用后端接口，初始化服务
-   * @param id
+   * 初始化服务
+   * @param serviceId
+   * @returns
    */
-  async initService(id: number) {
-    const service = await this.getServiceById(id);
-    if (service.status !== SERVICE_STATUS.UNINITIALIZED
-      && service.status !== SERVICE_STATUS.INITIALIZATION_FAILED) {
-      throw new ApiException({
-        code: CommonCodes.PARAMETER_INVALID,
-        message: '当前服务不能初始化',
-      });
-    }
+  async initializeService(serviceId: number): Promise<PlainObject> {
+    await this.httpService.get(`${INIT_SERVICE_URL}/${serviceId}`).toPromise();
     try {
-      const { data }: any = await this.httpService.get(`${INIT_SERVICE_URL}${id}`).toPromise();
+      const { data } = await this.httpService.get(`${INIT_SERVICE_URL}/${serviceId}`).toPromise();
       if (data?.code === 0) {
-        const { data: { sshURI } } = data;
-        await this.updateService(id, {
-          deposit: `${SERVICE_SSH_URI}${sshURI}`,
-          status: SERVICE_STATUS.INITIALIZING,
-        });
-        return true;
+        return data.data;
       }
       throw data.message;
     } catch (error) {
       this.logger.error(error);
       throw new ApiException({
-        code: CommonCodes.INITIALIZE_FAIL,
-        message: '服务初始化失败',
+        code: CommonCodes.BUILD_FAIL,
+        message: '服务构建失败',
         error: error.message || error,
-      });
+      }, HttpStatus.BAD_REQUEST);
     }
   }
 
+
   /**
-   * 构建服务
-   * @param id
+   * 服务构建
+   * @param params
+   * @returns
    */
-  async buildService(data: any) {
-    const { serviceId, branch, userId } = data;
-    const service = await this.getServiceById(serviceId);
-    if (service.status !== SERVICE_STATUS.BUILD_FAILED
-      && service.status !== SERVICE_STATUS.UN_BUILD) {
-      throw new ApiException({
-        code: CommonCodes.PARAMETER_INVALID,
-        message: '当前服务不能构建',
-      });
-    }
+  async buildService(params: ServiceBuildDto): Promise<{traceId: string}> {
+    const { serviceId, branch: ref, userId } = params;
     try {
-      const { data } = await this.httpService.get(`${BUILD_SERVICE_URL}?serviceId=${serviceId}&ref=${branch}&userId=${userId}`).toPromise();
+      const { data } = await this.httpService.get(BUILD_SERVICE_URL, {
+        params: {
+          serviceId,
+          ref,
+          userId,
+        },
+      }).toPromise();
       if (data?.code === 0) {
-        await this.updateServiceStatus(serviceId, SERVICE_STATUS.BUILDING);
-        return data.data;
+        return {
+          traceId: data.data,
+        };
       }
       throw data.message;
     } catch (error) {
@@ -667,6 +659,7 @@ export class ServicesService {
       });
     }
   }
+
 
   /**
    * 创建服务物理项目仓库

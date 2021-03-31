@@ -740,7 +740,7 @@ export class ModelsService {
     newFields: any[] = [],
     sourceFields?: any[],
   ): Promise<CompareFieldsResult> {
-    const originFields =      sourceFields
+    const originFields = sourceFields
       || (await this.fieldsRepository.findAll({
         where: {
           modelId,
