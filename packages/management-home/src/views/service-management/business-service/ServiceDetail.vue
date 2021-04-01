@@ -283,6 +283,7 @@ export default {
           x.disabled = true;
         });
       }
+      buttons.value[buttons.value.length - 1].disabled = false;
       buttons.value[0].label = +status === 0 ? '初始化' : '同步配置';
       console.log(buttons.value);
     });

@@ -6,7 +6,7 @@ export const logData = ref([] as any);
 export const timeout = ref(null as any);
 export const realtime = ref('' as any);
 
-export const getLogs = (name = 'sa-operator-adapter', keyword?: any) => {
+export const getLogs = (name = 'sa-ci-cd', keyword?: any) => {
   getLogRuntime(name, realtime.value, keyword).then((res) => {
     realtime.value = res.data.realtimeTs;
     const dataArr = res.data.businessLogSet.content;
@@ -20,7 +20,7 @@ export const getLogs = (name = 'sa-operator-adapter', keyword?: any) => {
   });
 };
 
-export const logSetTimeOut = (name = 'sa-operator-adapter', keyword?: any) => {
+export const logSetTimeOut = (name = 'sa-ci-cd', keyword?: any) => {
   logDialogVisible.value = true;
   getLogs(name, keyword);
   timeout.value = window.setInterval(() => getLogs(name, keyword), 5000);
