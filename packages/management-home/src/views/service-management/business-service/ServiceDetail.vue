@@ -97,7 +97,7 @@ import useStatusUtils from './utils/service-detail-status';
 import ServerBaseInfo from './components/ServerBaseInfo.vue';
 import Erd from '@/components/data-model/erd/Index.vue';
 import ServerPortsInfo from './components/ServerPortsInfo.vue';
-import { ref, Ref, reactive, watch, provide, computed } from 'vue';
+import { ref, Ref, reactive, watch, provide, computed, onBeforeUnmount } from 'vue';
 import RelationInfo from './components/RelationInfo.vue';
 import ModelFieldForm from './components/FieldForm.vue';
 import ModelBaseInfo from './components/ModelBaseInfo.vue';
@@ -207,7 +207,13 @@ export default {
       initModelList();
     };
 
+    const intervalId = setInterval(() => getServerInfo(), 5000);
+
     getServerInfo();
+
+    onBeforeUnmount(() => {
+      clearInterval(intervalId);
+    });
 
     const tags: any[] = [];
 
@@ -242,9 +248,12 @@ export default {
     // 服务状态
     const serverStatusInfo = ref({});
 
-    watch(serverInfo, () => {
-      serverStatusInfo.value = useStatusUtils(serverInfo.value.status);
-    });
+    watch(
+      () => serverInfo.value.status,
+      () => {
+        serverStatusInfo.value = useStatusUtils(serverInfo.value.status);
+      },
+    );
 
     // 右侧组件名称
     const componentName = ref('');

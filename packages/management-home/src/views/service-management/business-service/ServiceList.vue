@@ -220,7 +220,13 @@ export default defineComponent({
     };
   },
   setup() {
+    const intervalId = setInterval(() => refreshServiceList(), 5000);
+
     refreshServiceList();
+
+    onBeforeUnmount(() => {
+      clearInterval(intervalId);
+    });
 
     const mutiArray = ref([]);
 
