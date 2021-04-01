@@ -4,51 +4,51 @@
       <el-table :data="fields" :height="330">
         <el-table-column type="index" width="50"></el-table-column>
         <el-table-column prop="name" label="属性名称">
-          <template #default="{ row }">
-            <el-input v-model="row.name" :disabled="row.isSystem"></el-input>
+          <template #default="scope">
+            <el-input v-model="scope.row.name" :disabled="isFieldDisabled(scope)"></el-input>
           </template>
         </el-table-column>
         <el-table-column prop="description" label="属性描述">
-          <template #default="{ row }">
-            <el-input v-model="row.description" :disabled="row.isSystem"></el-input>
+          <template #default="scope">
+            <el-input v-model="scope.row.description" :disabled="isFieldDisabled(scope)"></el-input>
           </template>
         </el-table-column>
         <el-table-column prop="type" label="数据类型">
-          <template #default="{ row }">
-            <el-select v-model="row.typeId" :disabled="row.isSystem">
+          <template #default="scope">
+            <el-select v-model="scope.row.typeId" :disabled="isFieldDisabled(scope)">
               <el-option v-for="type in allTypes" :key="type.id" :label="type.name" :value="type.id"></el-option>
             </el-select>
           </template>
         </el-table-column>
         <el-table-column prop="notNull" label="非空" width="60">
-          <template #default="{ row }">
-            <el-checkbox v-model="row.notNull" :disabled="row.isSystem"></el-checkbox>
+          <template #default="scope">
+            <el-checkbox v-model="scope.row.notNull" :disabled="isFieldDisabled(scope)"></el-checkbox>
           </template>
         </el-table-column>
         <el-table-column prop="isUnique" label="唯一" width="60">
-          <template #default="{ row }">
-            <el-checkbox v-model="row.isUnique" :disabled="row.isSystem"></el-checkbox>
+          <template #default="scope">
+            <el-checkbox v-model="scope.row.isUnique" :disabled="isFieldDisabled(scope)"></el-checkbox>
           </template>
         </el-table-column>
         <el-table-column prop="isIndex" label="索引" width="60">
-          <template #default="{ row }">
-            <el-checkbox v-model="row.isIndex" :disabled="row.isSystem"></el-checkbox>
+          <template #default="scope">
+            <el-checkbox v-model="scope.row.isIndex" :disabled="isFieldDisabled(scope)"></el-checkbox>
           </template>
         </el-table-column>
         <el-table-column prop="isParticipleSupport" label="分词" width="60">
-          <template #default="{ row }">
-            <el-checkbox v-model="row.isParticipleSupport" :disabled="row.isSystem"></el-checkbox>
+          <template #default="scope">
+            <el-checkbox v-model="scope.row.isParticipleSupport" :disabled="isFieldDisabled(scope)"></el-checkbox>
           </template>
         </el-table-column>
         <el-table-column prop="isPinyinSupport" label="拼音" width="60">
-          <template #default="{ row }">
-            <el-checkbox v-model="row.isPinyinSupport" :disabled="row.isSystem"></el-checkbox>
+          <template #default="scope">
+            <el-checkbox v-model="scope.row.isPinyinSupport" :disabled="isFieldDisabled(scope)"></el-checkbox>
           </template>
         </el-table-column>
         <el-table-column prop="operations" label="操作" width="180">
-          <template #default="{ row, $index }">
-            <a @click="add($index)" class="operator">添加</a>
-            <a @click="remove($index)" class="operator" :disabled="row.isSystem">删除</a>
+          <template #default="scope">
+            <a @click="add(scope.$index)" class="operator">添加</a>
+            <a @click="remove(scope.$index)" class="operator" :disabled="isFieldDisabled(scope)">删除</a>
           </template>
         </el-table-column>
       </el-table>
@@ -71,6 +71,7 @@ export default defineComponent({
     const currentModel = inject('currentModel') as Ref<any>;
     const serviceId = inject('serviceId') as number;
     const afterUpdate = inject('afterUpdate') as Function;
+    const serverInfo = inject('serverInfo') as Ref<any>;
     const fields: Ref<Array<any>> = ref([]);
     watchEffect(() => {
       fields.value = _.cloneDeep(currentModel.value?.fields || []);
@@ -123,6 +124,9 @@ export default defineComponent({
         context.emit('back');
       }
     };
+    const isFieldDisabled = (scope: any) =>
+      scope.row.isSystem ||
+      (scope.row.id && serverInfo.value.status !== 0 && !['name', 'description'].includes(scope.column.property));
 
     onMounted(() => {
       initTypeOption();
@@ -134,6 +138,7 @@ export default defineComponent({
       allTypes,
       back,
       save,
+      isFieldDisabled,
     };
   },
 });

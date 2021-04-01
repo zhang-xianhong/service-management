@@ -1,6 +1,10 @@
 <template>
   <div class="erd-container-wrapper" :style="{ width, height }" v-on="handlers">
-    <div :style="`width: ${viewWidth}px; height: ${viewHeight}px; position: relative;`">
+    <div class="mask" v-if="maskText">{{ maskText }}</div>
+    <div
+      :style="`width: ${viewWidth}px; height: ${viewHeight}px; position: relative;`"
+      :class="{ 'cannot-operate': !!maskText }"
+    >
       <add-model></add-model>
       <erd-relation></erd-relation>
       <template v-if="allTypes.length">
@@ -19,7 +23,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, watchEffect, inject, provide } from 'vue';
+import { defineComponent, onMounted, watchEffect, inject, provide, computed } from 'vue';
 import _ from 'lodash/fp';
 import {
   tables,
@@ -55,6 +59,10 @@ export default defineComponent({
     height: {
       type: [Number, String],
       required: true,
+    },
+    serviceStatus: {
+      type: Number,
+      default: 0,
     },
   },
   components: { ErdTable, ErdRelation, AddModel },
@@ -246,6 +254,17 @@ export default defineComponent({
       mouseleave: leaveErd,
       mousemove: drag,
     };
+    const maskText = computed(() => {
+      switch (props.serviceStatus) {
+        case 10:
+          return '应用变更中, 请稍后...';
+        case 20:
+          return '应用启动中, 请稍后...';
+        default:
+          return '';
+      }
+    });
+
     onMounted(() => {
       calcSvgPosition();
       const svgElem = document.querySelector('.erd-container-wrapper svg') as HTMLElement;
@@ -265,6 +284,7 @@ export default defineComponent({
       allTypes,
       leaveErd,
       handlers,
+      maskText,
     };
   },
 });
@@ -274,5 +294,18 @@ export default defineComponent({
 .erd-container-wrapper {
   position: relative;
   overflow: auto;
+  .cannot-operate {
+    pointer-events: none;
+    filter: blur(5px);
+  }
+  .mask {
+    width: 100%;
+    height: 30px;
+    margin-top: 30vh;
+    text-align: center;
+    position: absolute;
+    z-index: 1;
+    font-size: 22px;
+  }
 }
 </style>

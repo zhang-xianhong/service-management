@@ -42,6 +42,7 @@
             width="100%"
             height="100%"
             v-model="modelList"
+            :serviceStatus="serverInfo.status"
             @model-change="initModelList"
             @select-change="modelSelected"
           ></erd>
@@ -180,6 +181,7 @@ export default {
 
     // erd图组件参数构造
     provide('serviceId', currentServiceId.value);
+    provide('serverInfo', serverInfo);
     const erdLoading = ref(false);
     const modelList: Ref<any> = ref({
       tables: [],
@@ -403,7 +405,7 @@ export default {
 
 <style lang="scss" scoped>
 .detail {
-  height: 90vh;
+  height: calc(100vh - 170px);
   &-icon {
     padding: 9px;
   }
