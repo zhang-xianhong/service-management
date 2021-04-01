@@ -10,4 +10,7 @@ export default {
   GET_SERVICE_APIS: ['/services/apis', '/mock/services/api-list.json'],
   UPDATE_SERVICE_APIS: ['/services/_/apis', '/mock/services/api-update.json'],
   GET_LOG_RUNTIME: ['/logs/runtime'],
+  GET_CHANGES: ['/services/_/changes'],
+  POST_CHANGES_APPLY: ['/services/changes/apply'],
+  START_SERVICE: ['/services/start'],
 };

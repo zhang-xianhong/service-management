@@ -55,6 +55,38 @@ const routes: Array<RouteRecordRaw> = [
     ],
   },
   {
+    path: '/project-management',
+    redirect: '/project-list',
+    component: Layout,
+    meta: {
+      isRootLevel: true,
+      title: '项目管理',
+      icon: 'el-icon-eleme',
+    },
+    children: [
+      {
+        path: 'project-list',
+        component: () => import('@/views/project-management/ProjectList.vue'),
+        name: 'ProjectList',
+        meta: {
+          title: '项目列表',
+          icon: 'el-icon-eleme',
+          isRootLevel: false,
+        },
+      },
+      {
+        path: 'project-detail',
+        component: () => import('@/views/project-management/ProjectDetail.vue'),
+        name: 'ProjectDetail',
+        meta: {
+          title: '项目详情',
+          icon: 'el-icon-eleme',
+          isRootLevel: false,
+        },
+      },
+    ],
+  },
+  {
     path: '/service-management',
     redirect: '/service-list',
     component: Layout,

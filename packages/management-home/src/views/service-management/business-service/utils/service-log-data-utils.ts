@@ -6,21 +6,24 @@ export const logData = ref([] as any);
 export const timeout = ref(null as any);
 export const realtime = ref('' as any);
 
-export const getLogs = (name = 'sa-operator-adapter') => {
-  getLogRuntime(name, realtime.value).then((res) => {
-    console.log(res);
+export const getLogs = (name = 'sa-operator-adapter', keyword?: any) => {
+  getLogRuntime(name, realtime.value, keyword).then((res) => {
     realtime.value = res.data.realtimeTs;
     const dataArr = res.data.businessLogSet.content;
     const narr = [...logData.value, ...dataArr];
     narr.reverse();
     logData.value = narr.splice(0, 50).reverse();
+    const ele = document.getElementById('log_content') as any;
+    setTimeout(() => {
+      ele.scrollTop = ele.scrollHeight;
+    }, 200);
   });
 };
 
-export const logSetTimeOut = (name = 'sa-operator-adapter') => {
+export const logSetTimeOut = (name = 'sa-operator-adapter', keyword?: any) => {
   logDialogVisible.value = true;
-  getLogs(name);
-  timeout.value = window.setInterval(() => getLogs(), 5000);
+  getLogs(name, keyword);
+  timeout.value = window.setInterval(() => getLogs(name, keyword), 5000);
 };
 
 export const clearLogInterVal = () => {
