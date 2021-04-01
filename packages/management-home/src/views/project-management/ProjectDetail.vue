@@ -6,56 +6,7 @@
           项目信息
           <span class="edit-btn" v-if="!editMode" @click="editMode = true">编辑</span>
         </div>
-        <el-form inline label-width="80px" :model="formData">
-          <el-form-item label="项目名称">
-            <div v-if="!editMode" class="form-content">{{ detailInfo.name }}</div>
-            <el-input class="form-content" v-if="editMode" v-model="formData.name"></el-input>
-          </el-form-item>
-          <el-form-item label="项目描述">
-            <div v-if="!editMode" class="form-content">{{ detailInfo.description }}</div>
-            <el-input class="form-content" v-if="editMode" v-model="formData.description"></el-input>
-          </el-form-item>
-          <el-form-item label="代码模板">
-            <div v-if="!editMode" class="form-content">{{ detailInfo.template }}</div>
-            <el-select class="form-content" v-if="editMode" v-model="formData.template"></el-select>
-          </el-form-item>
-          <el-form-item label="负 责 人">
-            <div v-if="!editMode" class="form-content">{{ detailInfo.owner }}</div>
-            <el-input class="form-content" v-if="editMode" v-model="formData.owner"></el-input>
-          </el-form-item>
-          <el-form-item label="项目级别">
-            <div v-if="!editMode" class="form-content">{{ getLabel(detailInfo.level)(projectLevels) }}</div>
-            <el-radio-group class="form-content" v-if="editMode" v-model="formData.level">
-              <el-radio v-for="level in projectLevels" :key="level.value" :label="level.value">{{
-                level.label
-              }}</el-radio>
-            </el-radio-group>
-          </el-form-item>
-          <el-form-item label="项目简介">
-            <div v-if="!editMode" class="form-content multiline">
-              {{ detailInfo.remark }}
-            </div>
-            <el-input
-              class="form-content"
-              type="textarea"
-              :rows="4"
-              v-if="editMode"
-              v-model="formData.remark"
-            ></el-input>
-          </el-form-item>
-          <el-form-item label="项目状态">
-            <div v-if="!editMode" class="form-content">{{ getLabel(detailInfo.status)(statusOptions) }}</div>
-            <el-radio-group class="form-content" v-if="editMode" v-model="formData.status">
-              <el-radio v-for="status in statusOptions" :key="status.value" :label="status.value">{{
-                status.label
-              }}</el-radio>
-            </el-radio-group>
-          </el-form-item>
-        </el-form>
-        <div style="text-align: center;" v-if="editMode">
-          <el-button @click="save" type="primary">保存</el-button>
-          <el-button @click="cancel">取消</el-button>
-        </div>
+        <basic-info-form :id="id" :editMode="editMode" @cancel="editMode = false"></basic-info-form>
       </div>
     </el-row>
     <el-row class="user-info">
@@ -78,7 +29,16 @@
         </el-scrollbar>
       </div>
       <div class="user-table">
-        <el-table></el-table>
+        <el-table :data="userList" height="calc(100% - 50px)">
+          <el-table-column type="index" width="55"></el-table-column>
+          <el-table-column v-for="column in columns" :key="column.prop" :label="column.label"></el-table-column>
+          <el-table-column prop="operator" width="55">
+            <template #default="{ row, $index }">
+              <i class="el-icon-error" @click="removeUser(row, $index)"></i>
+            </template>
+          </el-table-column>
+        </el-table>
+        <el-pagination :hide-on-single-page="false" :total="userList.length"> </el-pagination>
       </div>
     </el-row>
     <tree-selector
@@ -87,15 +47,16 @@
       optionPlaceholder="请输入部门/人员名称"
       optionLabel="选择人员"
       valueLabel="A项目-B岗位"
+      ref="treeSelectorRef"
     ></tree-selector>
   </div>
 </template>
 
 <script lang="ts">
-import _ from 'lodash/fp';
-import { reactive, ref } from 'vue';
-import { getProjectDetail } from '@/api/project/project';
+import { ref } from 'vue';
 import TreeSelector from './components/TreeSelector.vue';
+import BasicInfoForm from './components/BasicInfoForm.vue';
+import { ElMessageBox } from 'element-plus';
 export default {
   name: 'ProjectDetail',
   props: {
@@ -103,72 +64,10 @@ export default {
       required: true,
     },
   },
-  components: { TreeSelector },
-  setup(props: any) {
+  components: { TreeSelector, BasicInfoForm },
+  setup() {
+    const treeSelectorRef: any = ref(null);
     const editMode = ref(false);
-    const detailInfo = reactive({
-      name: '',
-      description: '',
-      template: '',
-      owner: '',
-      level: '',
-      remark: '',
-      status: '',
-    });
-    const formData = reactive({
-      name: '',
-      description: '',
-      template: '',
-      owner: '',
-      level: '',
-      remark: '',
-      status: '',
-    });
-    const projectLevels = [
-      {
-        value: 0,
-        label: '通用级',
-      },
-      {
-        value: 1,
-        label: '行业级',
-      },
-      {
-        value: 2,
-        label: '租户级',
-      },
-    ];
-    const statusOptions = [
-      {
-        value: 0,
-        label: '启用',
-      },
-      {
-        value: 1,
-        label: '冻结',
-      },
-    ];
-    const getLabel = (id: any) => (collection: Array<any>) =>
-      _.flow(_.find({ value: id }), _.property('label'))(collection);
-
-    // 初始化项目信息
-    const getProjectInfo = async () => {
-      const { code, data } = await getProjectDetail(props.id);
-      if (code === 0) {
-        Object.assign(detailInfo, data);
-        Object.assign(formData, data);
-      }
-    };
-    getProjectInfo();
-
-    // 表单操作
-    const save = () => {
-      //
-    };
-    const cancel = () => {
-      editMode.value = false;
-      Object.assign(formData, detailInfo);
-    };
 
     // 用户树
     const treeData = ref([
@@ -199,8 +98,10 @@ export default {
       },
     ]);
     const addMember = () => {
-      //
+      treeSelectorRef.value.show();
     };
+
+    // tree selector数据
     const allUser = [
       {
         label: '腾云西子',
@@ -231,25 +132,64 @@ export default {
       },
     ];
 
+    // 用户列表
+    const userList = ref([]);
+    const columns = [
+      {
+        prop: 'account',
+        label: '登录账号',
+      },
+      {
+        prop: 'name',
+        label: '姓名',
+      },
+      {
+        prop: 'gender',
+        label: '性别',
+      },
+      {
+        prop: 'phone',
+        label: '手机',
+      },
+      {
+        prop: 'mail',
+        label: '邮箱',
+      },
+      {
+        prop: 'stauts',
+        label: '状态',
+      },
+      {
+        prop: 'department',
+        label: '部门',
+      },
+    ];
+    const removeUser = (row: any) => {
+      ElMessageBox.confirm(`是否将${row.name}从${row.department}中移除？`, '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+      }).then(() => {
+        //
+      });
+    };
+
     return {
       editMode,
-      detailInfo,
-      formData,
-      getLabel,
-      projectLevels,
-      statusOptions,
-      save,
-      cancel,
       treeData,
       addMember,
       allUser,
       selectedUser,
+      userList,
+      columns,
+      removeUser,
+      treeSelectorRef,
     };
   },
 };
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .project-detail {
   margin: -20px;
   height: calc(100vh - 130px);
@@ -259,11 +199,7 @@ export default {
     margin-bottom: 20px;
     background: white;
     padding: 20px;
-    &:deep(label) {
-      text-align: justify;
-      text-justify: inter-word;
-    }
-    &:deep(.el-form-item) {
+    .el-form-item {
       height: 32px;
     }
     .form-content {
@@ -301,7 +237,7 @@ export default {
     padding: 20px;
     .customNode {
       width: 100%;
-      &:deep(.el-icon-circle-plus):hover {
+      .el-icon-circle-plus:hover {
         color: $primary;
       }
     }

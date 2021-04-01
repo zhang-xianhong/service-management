@@ -63,9 +63,13 @@ export default {
     },
   },
   setup() {
-    const dialogVisible = ref(true);
+    const dialogVisible = ref(false);
+    const show = () => {
+      dialogVisible.value = true;
+    };
     return {
       dialogVisible,
+      show,
     };
   },
 };
