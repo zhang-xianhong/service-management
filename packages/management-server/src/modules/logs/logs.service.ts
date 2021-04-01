@@ -28,7 +28,7 @@ export class LogsService {
           name,
           realtimeTs,
           searchWords: keyword,
-          logConfigName: 'log4j2',
+          logConfigName: 'log4j2-web',
         },
       }).toPromise();
       if (data.error) {

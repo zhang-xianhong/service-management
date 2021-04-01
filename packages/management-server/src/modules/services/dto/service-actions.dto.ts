@@ -6,7 +6,7 @@ export class ServiceIdDto {
   serviceId: number;
 }
 
-export class ServiceBuildDto {
+export class ServiceStartDto {
   @IsNotEmpty()
   serviceId: number;
 
