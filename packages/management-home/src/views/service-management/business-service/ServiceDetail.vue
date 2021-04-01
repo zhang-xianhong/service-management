@@ -277,9 +277,11 @@ export default {
       const { status } = serverInfo.value;
       if (+status === 10 || +status === 20) {
         buttons.value.forEach((x) => {
+          // eslint-disable-next-line no-param-reassign
           x.disabled = true;
         });
       }
+      buttons.value[buttons.value.length - 1].disabled = false;
       buttons.value[0].label = +status === 0 ? '初始化' : '同步配置';
       console.log(buttons.value);
     });
