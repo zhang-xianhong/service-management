@@ -7,14 +7,15 @@
           :key="index"
           :type="button.type || undefined"
           v-on="button.eventOption"
+          :disabled="button.disabled"
         >
           {{ button.label }}
         </el-button>
       </el-col>
       <el-col :span="8" style="text-align:right;">
         <div class="detail-status">
-          <span :style="{ background: serverStatusInfo.color }" class="detail-status__icon"></span>
-          {{ serverStatusInfo.label }}
+          <!--          <span :style="{ background: serverStatusInfo.color }" class="detail-status__icon"></span>-->
+          {{ statusMap[serverInfo.status] }}
         </div>
         <el-button class="detail-icon" icon="el-icon-s-data" @click="openBaseInfo"></el-button>
         <el-button class="detail-icon" icon="el-icon-notebook-2" @click="openPropertyInfo"></el-button>
@@ -83,6 +84,18 @@
         <el-button type="primary" style="margin-top: 20px" @click="clearLogInterVal">关闭</el-button>
       </div>
     </el-dialog>
+    <el-dialog title="变更记录" v-model="sqlDialogVisiable" width="40%" @close="clearSql">
+      <div class="log-content sql-content" id="sql_content">
+        <div style="color: blue" v-if="sqlData.length === 0">变更记录加载中......</div>
+        <div class="log-item" v-for="(item, index) in Object.values(sqlData)" :key="index">
+          <div class="log-item-content">{{ logs(item) }}</div>
+        </div>
+      </div>
+      <div class="dialog-footer">
+        <el-button type="primary" style="margin-top: 20px" @click="enterLogs">确定</el-button>
+        <el-button style="margin-top: 20px" @click="clearSql">关闭</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -101,7 +114,14 @@ import { getClassificationList } from '@/api/settings/classification';
 import { getServiceModelList } from '@/api/schema/model';
 import { getDataTypesAll } from '@/api/settings/data-types';
 import { useRoute } from 'vue-router';
-import { currentServiceIdForData } from './utils/service-detail-data';
+import { statusMap } from '@/views/service-management/business-service/utils/service-status-map';
+import {
+  currentServiceIdForData,
+  sqlDialogVisiable,
+  sqlData,
+  clearSql,
+  getTreaceId,
+} from './utils/service-detail-data';
 import _ from 'lodash/fp';
 import {
   logDialogVisible,
@@ -239,6 +259,15 @@ export default {
 
     watch(serverInfo, () => {
       serverStatusInfo.value = useStatusUtils(serverInfo.value.status);
+      console.log(serverInfo.value, 12323232323);
+      const { status } = serverInfo.value;
+      if (+status === 10 || +status === 20) {
+        buttons.value.forEach((x) => {
+          x.disabled = true;
+        });
+      }
+      buttons.value[0].label = +status === 0 ? '初始化' : '同步配置';
+      console.log(buttons.value);
     });
 
     // 右侧组件名称
@@ -288,6 +317,16 @@ export default {
     watch(componentName, () => {
       if (componentName.value) modelInfo.value = null;
     });
+    const logs = (res: any) => {
+      console.log(res, 'this is log');
+      return res;
+    };
+
+    const enterLogs = () => {
+      getTreaceId().then((res) => {
+        console.log(res, '2e323');
+      });
+    };
     return {
       isShowDownDrawer,
       computedHeight,
@@ -314,6 +353,12 @@ export default {
       logData,
       clearLogInterVal,
       formatLogData,
+      sqlDialogVisiable,
+      sqlData,
+      logs,
+      clearSql,
+      enterLogs,
+      statusMap,
     };
   },
 };
@@ -370,6 +415,13 @@ export default {
   overflow-y: auto;
   background-color: rgba(0, 0, 0, 0.8);
   color: white;
+}
+.sql-content {
+  background-color: white;
+  border: solid 1px rgba(0, 0, 0, 0.4);
+  color: black;
+  font-weight: 400;
+  padding: 10px;
 }
 .log-item {
   width: 100%;

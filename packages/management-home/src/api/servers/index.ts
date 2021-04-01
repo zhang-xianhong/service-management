@@ -40,3 +40,12 @@ export const getLogRuntime: (
   keyword?: any,
 ) => Promise<SuccessResponse<any>> = (name: string, realtimeTS?: string | number, keyword?: any) =>
   request.get(getUrl(URL.service.GET_LOG_RUNTIME), { params: { name, realtimeTS, keyword } });
+
+export const getChanges: (id: any) => Promise<SuccessResponse<any>> = (id: string) =>
+  request.get(getUrl(URL.service.GET_CHANGES, id));
+
+export const getChangesApply: (serviceId: string) => Promise<SuccessResponse<any>> = (serviceId: string) =>
+  request.post(getUrl(URL.service.POST_CHANGES_APPLY), { serviceId });
+
+export const startService: (payload: object) => Promise<SuccessResponse<any>> = (payload: any) =>
+  request.post(getUrl(URL.service.START_SERVICE), payload, { timeout: 60000 });

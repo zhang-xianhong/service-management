@@ -3,9 +3,9 @@
     <div class="service-list_header">
       <div class="service-list_left">
         <el-button icon="el-icon-plus" type="primary" @click="toggleServiceDialog">新建</el-button>
-        <el-button @click="runService" :disabled="!mutiArray.length">启动</el-button>
-        <el-button @click="stopService" :disabled="!mutiArray.length">停止</el-button>
-        <el-button @click="deleteHandler" :disabled="!mutiArray.length">删除</el-button>
+        <el-button @click="runService" :disabled="computedDisabled">启动</el-button>
+        <el-button @click="stopService" :disabled="computedDisabled">停止</el-button>
+        <el-button @click="deleteHandler" :disabled="computedDisabled">删除</el-button>
       </div>
       <div class="service-list_right">
         <el-input placeholder="请输入服务名称/标签/分类" style="width: 250px" v-model="pageInfo.keyword">
@@ -33,7 +33,7 @@
         </el-table-column>
         <el-table-column property="description" label="服务描述"></el-table-column>
         <el-table-column property="owner" label="负责人"></el-table-column>
-        <el-table-column property="status" label="服务状态"></el-table-column>
+        <el-table-column property="statusStr" label="服务状态"></el-table-column>
         <el-table-column property="classification" label="分类">
           <template #header>
             <i class="el-icon-search"></i>
@@ -185,7 +185,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, ref, onBeforeUnmount } from 'vue';
+import { defineComponent, reactive, ref, onBeforeUnmount, computed } from 'vue';
 import {
   refreshServiceList,
   serviceTableList,
@@ -375,6 +375,19 @@ export default defineComponent({
       pageInfo.classification = res;
     };
 
+    const computedDisabled = computed(() => {
+      let res = false;
+      if (mutiArray.value.length === 0) {
+        return !res;
+      }
+      mutiArray.value.forEach((x: any) => {
+        if (+x.status === 20 || +x.status === 10) {
+          res = true;
+        }
+      });
+      return res;
+    });
+
     return {
       serviceTableList,
       serviceDetail,
@@ -416,6 +429,7 @@ export default defineComponent({
       allService,
       getSortClassification,
       mutiArray,
+      computedDisabled,
     };
   },
 });

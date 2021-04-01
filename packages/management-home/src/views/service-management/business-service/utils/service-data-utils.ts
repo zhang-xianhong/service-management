@@ -2,6 +2,7 @@ import { getServiceList, deleteService } from '@/api/servers';
 import { getAllTags } from '@/api/settings/tags';
 import { reactive, ref } from 'vue';
 import { getClassificationList } from '@/api/settings/classification';
+import { statusMap } from '@/views/service-management/business-service/utils/service-status-map';
 
 export const serviceTableList = reactive({
   list: [],
@@ -37,10 +38,14 @@ export function refreshServiceList(payload = {} as any) {
         x.classification = arr.map((x: any) => sortMap.value[x]).join(',');
         const tagarr = x.tag.split(',');
         x.tag = tagarr.map((x: any) => tagMap.value[x]).join(',');
+        // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+        // @ts-ignore
+        x.statusStr = statusMap[x.status];
       });
     }
     serviceTableList.list = res.data.rows;
     serviceTableList.total = res.data.count;
+    console.log(serviceTableList.list, 11111111);
   });
 }
 
