@@ -279,6 +279,7 @@ export default {
       const { status } = serverInfo.value;
       if (+status === 10 || +status === 20) {
         buttons.value.forEach((x) => {
+          // eslint-disable-next-line no-param-reassign
           x.disabled = true;
         });
       }
@@ -354,7 +355,7 @@ export default {
     };
 
     watch(componentName, () => {
-      if (componentName.value) modelInfo.value = null;
+      if (componentName.value !== 'ModelBaseInfo') modelInfo.value = null;
     });
     const logs = (res: any) => {
       console.log(res, 'this is log');

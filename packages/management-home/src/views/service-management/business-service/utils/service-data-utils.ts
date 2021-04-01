@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 import { getServiceList, deleteService } from '@/api/servers';
 import { getAllTags } from '@/api/settings/tags';
 import { reactive, ref } from 'vue';
@@ -32,7 +33,6 @@ export function refreshServiceList(payload = {} as any) {
   return getServiceList(data).then((res) => {
     if (res.data.rows) {
       res.data.rows.forEach((x: any) => {
-        // eslint-disable-next-line no-param-reassign
         x.name = x.name.replace(/^srv-/g, '');
         const arr = x.classification.split(',');
         x.classification = arr.map((x: any) => sortMap.value[x]).join(',');
