@@ -1,17 +1,46 @@
 import { logSetTimeOut } from './service-log-data-utils';
 import { ref } from 'vue';
-import { getSqlData, startServiceData } from '@/views/service-management/business-service/utils/service-detail-data';
+import {
+  getSqlData,
+  startServiceData,
+  stopServiceData,
+} from '@/views/service-management/business-service/utils/service-detail-data';
+import { ElMessageBox } from 'element-plus';
+import Message from 'element-plus/es/el-message';
 
 export default function() {
+  const buttons = ref([] as any);
   // 初始化
   const initialize = () => {
-    console.log('初始化');
-    getSqlData();
+    const name = buttons.value[0].label;
+    ElMessageBox.confirm(`确定${name}此服务, 是否继续?`, '提示', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning',
+    })
+      .then(() => getSqlData())
+      .catch(() => {
+        Message({
+          type: 'info',
+          message: '已取消操作',
+        });
+      });
   };
   // 启动
   const start = () => {
     console.log('启动');
-    startServiceData();
+    ElMessageBox.confirm(`确定启动此服务, 是否继续?`, '提示', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning',
+    })
+      .then(() => startServiceData())
+      .catch(() => {
+        Message({
+          type: 'info',
+          message: '已取消操作',
+        });
+      });
   };
 
   // const build = () => {
@@ -24,6 +53,7 @@ export default function() {
   // 停止
   const stop = () => {
     console.log('停止');
+    stopServiceData();
   };
 
   // 发布
@@ -38,7 +68,7 @@ export default function() {
   };
 
   // 按钮配置
-  const buttons = ref([
+  buttons.value = [
     {
       label: '初始化',
       type: 'primary',
@@ -81,7 +111,7 @@ export default function() {
       },
       disabled: false,
     },
-  ]);
+  ];
 
   return {
     buttons,

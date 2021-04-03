@@ -15,7 +15,7 @@
       <el-col :span="8" style="text-align:right;">
         <div class="detail-status">
           <!--          <span :style="{ background: serverStatusInfo.color }" class="detail-status__icon"></span>-->
-          {{ statusMap[serverInfo.status] }}
+          {{ serverStatusInfo.label }}
         </div>
         <el-button class="detail-icon" icon="el-icon-s-data" @click="openBaseInfo"></el-button>
         <el-button class="detail-icon" icon="el-icon-notebook-2" @click="openPropertyInfo"></el-button>
@@ -78,7 +78,7 @@
       </div>
     </transition>
 
-    <el-dialog title="日志" v-model="logDialogVisible" width="40%" @close="clearLogInterVal">
+    <el-dialog title="日志" v-model="logDialogVisible" width="80%" @close="clearLogInterVal">
       <!--      <el-input type="textarea" :rows="25" :autosize="{ maxRows: 25, minRows: 25 }" v-model="logData"></el-input>-->
       <div class="log-content" id="log_content">
         <div style="color: red" v-if="logData.length === 0">日志加载中......</div>
@@ -90,7 +90,7 @@
         <el-button type="primary" style="margin-top: 20px" @click="clearLogInterVal">关闭</el-button>
       </div>
     </el-dialog>
-    <el-dialog title="变更记录" v-model="sqlDialogVisiable" width="40%" @close="clearSql">
+    <el-dialog title="变更记录" v-model="sqlDialogVisiable" width="60%" @close="clearSql">
       <div class="log-content sql-content" id="sql_content">
         <div style="color: blue" v-if="sqlData.length === 0">变更记录加载中......</div>
         <div class="log-item" v-for="(item, index) in Object.values(sqlData)" :key="index">
@@ -128,6 +128,7 @@ import {
   sqlData,
   clearSql,
   getTreaceId,
+  thenRefresh,
 } from './utils/service-detail-data';
 import _ from 'lodash/fp';
 import {
@@ -273,24 +274,27 @@ export default {
 
     watch(serverInfo, () => {
       serverStatusInfo.value = useStatusUtils(serverInfo.value.status);
-      console.log(serverInfo.value, 12323232323);
       const { status } = serverInfo.value;
-      if (+status === 10 || +status === 20) {
-        buttons.value.forEach((x) => {
-          // eslint-disable-next-line no-param-reassign
-          x.disabled = true;
-        });
+      buttons.value.forEach((x: any) => {
+        // eslint-disable-next-line no-param-reassign
+        x.disabled = +status === 10 || +status === 20;
+      });
+      if (+status === 0) {
+        buttons.value[1].disabled = true;
+        buttons.value[2].disabled = true;
       }
       buttons.value[buttons.value.length - 1].disabled = false;
       buttons.value[0].label = +status === 0 ? '初始化' : '同步配置';
+      serverStatusInfo.value = {
+        label: (statusMap as any)[status],
+        color: '',
+      };
       console.log(buttons.value);
     });
-    watch(
-      () => serverInfo.value.status,
-      () => {
-        serverStatusInfo.value = useStatusUtils(serverInfo.value.status);
-      },
-    );
+
+    watch(thenRefresh, () => {
+      getServerInfo();
+    });
 
     // 右侧组件名称
     const componentName = ref('');
@@ -450,10 +454,11 @@ export default {
 }
 .log-content {
   width: 100%;
-  height: 550px;
+  height: 750px;
   overflow-y: auto;
   background-color: rgba(0, 0, 0, 0.8);
-  color: white;
+  font-size: 13px;
+  color: #666666;
 }
 .sql-content {
   background-color: white;

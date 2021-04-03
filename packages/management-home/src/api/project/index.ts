@@ -1,10 +1,9 @@
-import axios from '@/utils/request';
+import request from '@/utils/request';
 import URL from '@/shared/constant/url';
 import { getUrl } from '../utils';
-import { DataListResponse } from '@/types/response';
-const { project } = URL;
+import { SuccessResponse } from '@/types/response';
 
-export const getProjectList = (payload?: object): Promise<DataListResponse> =>
-  axios.get(getUrl(project.GET_MODEL_LIST), {
+export const getProjectList: (payload: object) => Promise<SuccessResponse<any>> = (payload: object) =>
+  request.get(getUrl(URL.project.GET_PROJECT_LIST), {
     params: payload,
   });
