@@ -25,14 +25,12 @@
       </el-form-item>
       <el-form-item label="代码模板">
         <div v-if="!editMode" class="form-content">
-          {{ detailInfo.template }}
+          {{ detailInfo.templateName }}
         </div>
-        <el-select
-          class="form-content"
-          v-if="editMode"
-          v-model="formData.template"
-          placeholder="请选择代码模板"
-        ></el-select>
+        <el-select class="form-content" v-if="editMode" v-model="formData.templateId" placeholder="请选择代码模板">
+          <el-option v-for="template in templates" :key="template.id" :label="template.name" :value="template.id">
+          </el-option>
+        </el-select>
       </el-form-item>
       <el-form-item label="负 责 人">
         <div v-if="!editMode" class="form-content">
@@ -86,8 +84,9 @@
 
 <script lang="ts">
 import _ from 'lodash/fp';
-import { reactive } from 'vue';
-import { getProjectDetail } from '@/api/project/project';
+import { reactive, ref, Ref } from 'vue';
+import { getProjectDetail, updateProject } from '@/api/project/project';
+import { getAllTemplates } from '@/api/settings/templates';
 export default {
   name: 'BasicInfoForm',
   props: {
@@ -102,7 +101,7 @@ export default {
     const detailInfo = reactive({
       name: '',
       description: '',
-      template: '',
+      templateId: '',
       owner: '',
       level: '',
       remark: '',
@@ -111,7 +110,7 @@ export default {
     const formData = reactive({
       name: '',
       description: '',
-      template: '',
+      templateId: '',
       owner: '',
       level: '',
       remark: '',
@@ -141,22 +140,39 @@ export default {
         label: '冻结',
       },
     ];
+    const templates = ref([]) as Ref<Array<Record<string, string>>>;
     const getLabel = (id: any) => (collection: Array<any>) =>
-      _.flow(_.find({ value: id }), _.property('label'))(collection);
+      _.flow(_.find({ value: id }), (item: any) => item || { label: '' }, _.property('label'))(collection);
+
+    // 初始化模板信息
+    const getTemplates = async () => {
+      const { code, data } = await getAllTemplates();
+      if (code === 0) {
+        templates.value = data;
+      }
+    };
+    getTemplates();
 
     // 初始化项目信息
     const getProjectInfo = async () => {
       const { code, data } = await getProjectDetail(props.id);
       if (code === 0) {
-        Object.assign(detailInfo, data);
-        Object.assign(formData, data);
+        const projectInfo = data;
+        projectInfo.templateId = data.template.id;
+        projectInfo.templateName = data.template.name;
+        Object.assign(detailInfo, projectInfo);
+        Object.assign(formData, projectInfo);
       }
     };
     getProjectInfo();
 
     // 表单操作
-    const save = () => {
-      //
+    const save = async () => {
+      const { code } = await updateProject(props.id, formData);
+      if (code === 0) {
+        Object.assign(detailInfo, formData);
+        context.emit('submit');
+      }
     };
     const cancel = () => {
       context.emit('cancel');
@@ -168,6 +184,7 @@ export default {
       getLabel,
       projectLevels,
       statusOptions,
+      templates,
       save,
       cancel,
     };

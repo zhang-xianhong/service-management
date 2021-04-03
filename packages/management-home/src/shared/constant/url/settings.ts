@@ -17,4 +17,5 @@ export default {
   DELETE_CLASSIFICATION: ['/settings/categories/delete/_', '/mock/settings/classification-delete.json'],
   UPDATE_CLASSIFICATION: ['/settings/categories/_', '/mock/settings/classification-update.json'],
   ADD_CLASSIFICATION: ['/settings/categories', '/mock/settings/classification-update.json'],
+  GET_ALL_TEMPLATE: ['/settings/templates/all', '/mock/settings/all-templates.json'],
 };

@@ -6,7 +6,12 @@
           项目信息
           <span class="edit-btn" v-if="!editMode" @click="editMode = true">编辑</span>
         </div>
-        <basic-info-form :id="id" :editMode="editMode" @cancel="editMode = false"></basic-info-form>
+        <basic-info-form
+          :id="id"
+          :editMode="editMode"
+          @submit="editMode = false"
+          @cancel="editMode = false"
+        ></basic-info-form>
       </div>
     </el-row>
     <el-row class="user-info">

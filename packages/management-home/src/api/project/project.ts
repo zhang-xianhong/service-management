@@ -11,3 +11,6 @@ export const getProjectList = (payload?: object): Promise<DataListResponse> =>
 
 export const getProjectDetail = (payload?: string): Promise<SuccessResponse<any>> =>
   axios.get(getUrl(project.GET_PROJECT_DETAIL, payload));
+
+export const updateProject = (projectId: number, payload: Record<string, string>): Promise<SuccessResponse<any>> =>
+  axios.post(getUrl(project.UPDATE_PROJECT, String(projectId)), payload);
