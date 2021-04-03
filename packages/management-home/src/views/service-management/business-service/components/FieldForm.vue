@@ -124,9 +124,7 @@ export default defineComponent({
         context.emit('back');
       }
     };
-    const isFieldDisabled = (scope: any) =>
-      scope.row.isSystem ||
-      (scope.row.id && serverInfo.value.status !== 0 && !['name', 'description'].includes(scope.column.property));
+    const isFieldDisabled = (scope: any) => scope.row.isSystem;
 
     onMounted(() => {
       initTypeOption();
