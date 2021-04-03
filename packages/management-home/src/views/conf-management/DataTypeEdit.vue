@@ -13,8 +13,11 @@
         ></el-option>
       </el-select>
     </el-form-item>
+    <el-form-item v-if="typeForm.type === 'Float' || typeForm.type === 'Double'" label="精度" prop="length" required>
+      <el-input-number v-model="typeForm.precision" :min="0" :max="10"></el-input-number>
+    </el-form-item>
     <el-form-item label="长度" prop="length" required>
-      <el-input-number v-model="typeForm.length" :min="1"></el-input-number>
+      <el-input-number v-model="typeForm.length" :min="1" :max="4294967295"></el-input-number>
     </el-form-item>
     <el-form-item label="类型描述" prop="description" required>
       <el-input v-model="typeForm.description" placeholder="请选择"></el-input>
@@ -46,6 +49,7 @@ export default {
       type: '',
       length: 1,
       description: '',
+      precision: 0,
     });
 
     // 是否为新建数据类型
@@ -55,12 +59,13 @@ export default {
     const initTypeForm = async () => {
       if (!isCreate.value) {
         const {
-          data: { name, description, length, type },
+          data: { name, description, length, type, precision },
         } = await getDataTypeDetail(route.params.id as string);
         typeForm.name = name;
         typeForm.description = description;
         typeForm.length = length;
         typeForm.type = type;
+        typeForm.precision = precision;
       }
     };
 

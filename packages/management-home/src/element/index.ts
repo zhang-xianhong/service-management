@@ -50,6 +50,9 @@ import {
   ElCard,
   ElTree,
   ElButtonGroup,
+  ElStep,
+  ElSteps,
+  ElUpload,
 } from 'element-plus';
 
 const components = [
@@ -95,6 +98,9 @@ const components = [
   ElTimelineItem,
   ElCard,
   ElTree,
+  ElStep,
+  ElSteps,
+  ElUpload,
 ];
 const plugins = [ElInfiniteScroll, ElLoading, ElMessage, ElMessageBox, ElNotification];
 

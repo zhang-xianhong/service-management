@@ -36,7 +36,7 @@
       </el-table-column>
     </el-table>
   </el-row>
-  <el-row>
+  <el-row style="justify-content:flex-end">
     <el-pagination
       :current-page="searchProps.page"
       :page-size="searchProps.pageSize"
