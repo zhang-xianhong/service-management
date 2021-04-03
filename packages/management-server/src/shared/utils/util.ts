@@ -51,3 +51,15 @@ export const lowerCamelToUpperCamel = (string: string): string => {
 };
 
 
+/**
+ * 根据数据字典类型key 计算数据字典数据key
+ * @param string
+ * @returns
+ */
+export const getDictionaryKey = (lastTypeKey: string, index: number): string => {
+  const [, typePrefix, variable] =  lastTypeKey.match(/^(\w{6})(\w{2})$/);
+  const typeIndex = Number(variable) > 10 ? Number(variable) + index + 1 : `0${Number(variable) + index + 1}`;
+  return `${typePrefix}${typeIndex}`;
+};
+
+

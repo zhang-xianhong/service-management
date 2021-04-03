@@ -24,3 +24,6 @@ export const SERVICE_SSH_URI = `http://${config.BACKEND_SSHURI_HOST}`;
 
 // 日志服务
 export const LOG_SERVICE_URL = `${BASE_URL}/sa/dev-sa/sa-operator-adapter/log/realtimeLog`;
+
+// 创建IDAAS租户
+export const  CREATE_IDAAS_TENANT = `${BASE_URL}/sa/dev-sa/tenant/`;
