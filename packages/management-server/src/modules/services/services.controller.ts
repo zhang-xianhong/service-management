@@ -61,10 +61,16 @@ export class ServicesController {
     return await this.service.addServiceApis(id, body);
   }
 
-  // 启动变更
+  // 启动服务
   @Post('/start')
   async buildService(@Body() postData: ServiceStartDto) {
     return await this.service.startService(postData);
+  }
+
+  // 停止服务
+  @Post('/stop')
+  async stopService(@Body() { serviceId }: ServiceIdDto) {
+    return await this.service.stopService(serviceId);
   }
 
   /**

@@ -1,41 +1,146 @@
 {
-  "code": 0,
-  "data": {
-    "total": 3,
-    "list": [
-      {
-        "id": "1",
-        "name": "test 001",
-        "person": "张一",
-        "tel": "12345454545",
-        "email": "22222@qq.com",
-        "manager": "里斯",
-        "managerTel": "1232323232",
-        "status": 1
-      },
-      {
-        "id": "2",
-        "name": "test 001",
-        "person": "张一",
-        "tel": "12345454545",
-        "email": "22222@qq.com",
-        "manager": "里斯",
-        "managerTel": "1232323232",
-        "status": 1
-      },
-      {
-        "id": "3",
-        "name": "test 001",
-        "person": "张一",
-        "tel": "12345454545",
-        "email": "22222@qq.com",
-        "manager": "里斯",
-        "managerTel": "1232323232",
-        "status": 1
-      }
-    ]
-  },
-  "message": "successful",
-  "httpStatus": 200,
-  "timestamp": 1614328643228
+    "code": 0,
+    "data": {
+        "count": 3,
+        "rows": [
+            {
+                "id": 3,
+                "createTime": "2021-03-31T03:20:48.000Z",
+                "updateTime": "2021-03-31T03:20:48.000Z",
+                "createUser": null,
+                "updateUser": null,
+                "name": "开心麻花信息",
+                "nameShort": "开心",
+                "industryId": 11,
+                "natureId": 11,
+                "scaleId": 22,
+                "license": "1241241234",
+                "addr": "",
+                "addrDetail": "",
+                "intro": "",
+                "licenseUrl": "test.url",
+                "logoUrl": "logoUrl",
+                "status": 0,
+                "contact": {
+                    "id": 1,
+                    "createTime": "2021-03-30T07:37:15.000Z",
+                    "updateTime": "2021-03-30T07:37:15.000Z",
+                    "createUser": null,
+                    "updateUser": null,
+                    "tenantId": 1,
+                    "name": "陶瓷阿",
+                    "phone": "15529270019",
+                    "IDCard": "622301199110011319",
+                    "email": "qqq@qq.com",
+                    "frontPhoto": "www.url",
+                    "reversePhoto": "rrr.url"
+                },
+                "manager": {
+                    "id": 1,
+                    "createTime": "2021-03-30T07:37:15.000Z",
+                    "updateTime": "2021-03-30T07:37:15.000Z",
+                    "createUser": null,
+                    "updateUser": null,
+                    "tenantId": 1,
+                    "account": "www-testast",
+                    "name": "陶瓷阿",
+                    "phone": "15529270019",
+                    "password": "123123123"
+                }
+            },
+            {
+                "id": 2,
+                "createTime": "2021-03-30T07:39:32.000Z",
+                "updateTime": "2021-03-30T07:39:31.000Z",
+                "createUser": null,
+                "updateUser": null,
+                "name": "开心麻花",
+                "nameShort": "开心",
+                "industryId": 11,
+                "natureId": 11,
+                "scaleId": 22,
+                "license": "1241241234",
+                "addr": "",
+                "addrDetail": "",
+                "intro": "",
+                "licenseUrl": "test.url",
+                "logoUrl": "logoUrl",
+                "status": 0,
+                "contact": {
+                    "id": 1,
+                    "createTime": "2021-03-30T07:37:15.000Z",
+                    "updateTime": "2021-03-30T07:37:15.000Z",
+                    "createUser": null,
+                    "updateUser": null,
+                    "tenantId": 1,
+                    "name": "陶瓷阿",
+                    "phone": "15529270019",
+                    "IDCard": "622301199110011319",
+                    "email": "qqq@qq.com",
+                    "frontPhoto": "www.url",
+                    "reversePhoto": "rrr.url"
+                },
+                "manager": {
+                    "id": 1,
+                    "createTime": "2021-03-30T07:37:15.000Z",
+                    "updateTime": "2021-03-30T07:37:15.000Z",
+                    "createUser": null,
+                    "updateUser": null,
+                    "tenantId": 1,
+                    "account": "www-testast",
+                    "name": "陶瓷阿",
+                    "phone": "15529270019",
+                    "password": "123123123"
+                }
+            },
+            {
+                "id": 1,
+                "createTime": "2021-03-30T07:37:15.000Z",
+                "updateTime": "2021-03-30T07:37:15.000Z",
+                "createUser": null,
+                "updateUser": null,
+                "name": "开心麻花有限公司www",
+                "nameShort": "开心",
+                "industryId": 11,
+                "natureId": 11,
+                "scaleId": 22,
+                "license": "1241241234",
+                "addr": "",
+                "addrDetail": "",
+                "intro": "",
+                "licenseUrl": "test.url",
+                "logoUrl": "logoUrl",
+                "status": 0,
+                "contact": {
+                    "id": 1,
+                    "createTime": "2021-03-30T07:37:15.000Z",
+                    "updateTime": "2021-03-30T07:37:15.000Z",
+                    "createUser": null,
+                    "updateUser": null,
+                    "tenantId": 1,
+                    "name": "陶瓷阿",
+                    "phone": "15529270019",
+                    "IDCard": "622301199110011319",
+                    "email": "qqq@qq.com",
+                    "frontPhoto": "www.url",
+                    "reversePhoto": "rrr.url"
+                },
+                "manager": {
+                    "id": 1,
+                    "createTime": "2021-03-30T07:37:15.000Z",
+                    "updateTime": "2021-03-30T07:37:15.000Z",
+                    "createUser": null,
+                    "updateUser": null,
+                    "tenantId": 1,
+                    "account": "www-testast",
+                    "name": "陶瓷阿",
+                    "phone": "15529270019",
+                    "password": "123123123"
+                }
+            }
+        ]
+    },
+    "message": "successful",
+    "httpStatus": 200,
+    "timestamp": 1617261308938
 }

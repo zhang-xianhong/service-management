@@ -1,0 +1,86 @@
+{
+    "code": 0,
+    "data": {
+        "id": 3,
+        "createTime": "2021-04-01T10:06:51.000Z",
+        "updateTime": "2021-04-01T10:06:50.000Z",
+        "createUser": null,
+        "updateUser": null,
+        "isDelete": false,
+        "typeKey": "CB100300",
+        "value": "企业规模",
+        "description": "企业规模信息",
+        "isLock": 0,
+        "status": 0,
+        "dictionaries": [
+            {
+                "id": 15,
+                "createTime": "2021-04-01T12:03:20.000Z",
+                "updateTime": "2021-04-01T12:03:20.000Z",
+                "createUser": null,
+                "updateUser": null,
+                "typeId": 3,
+                "key": "CB100301",
+                "value": "1-49人",
+                "description": "",
+                "isLock": 0,
+                "status": 0
+            },
+            {
+                "id": 16,
+                "createTime": "2021-04-01T12:03:20.000Z",
+                "updateTime": "2021-04-01T12:03:20.000Z",
+                "createUser": null,
+                "updateUser": null,
+                "typeId": 3,
+                "key": "CB100302",
+                "value": "50-99人",
+                "description": "",
+                "isLock": 0,
+                "status": 0
+            },
+            {
+                "id": 17,
+                "createTime": "2021-04-01T12:03:20.000Z",
+                "updateTime": "2021-04-01T12:03:20.000Z",
+                "createUser": null,
+                "updateUser": null,
+                "typeId": 3,
+                "key": "CB100303",
+                "value": "100-499人",
+                "description": "",
+                "isLock": 0,
+                "status": 0
+            },
+            {
+                "id": 18,
+                "createTime": "2021-04-01T12:03:20.000Z",
+                "updateTime": "2021-04-01T12:03:20.000Z",
+                "createUser": null,
+                "updateUser": null,
+                "typeId": 3,
+                "key": "CB100304",
+                "value": "500-999人",
+                "description": "",
+                "isLock": 0,
+                "status": 0
+            },
+            {
+                "id": 19,
+                "createTime": "2021-04-01T12:03:20.000Z",
+                "updateTime": "2021-04-01T12:03:20.000Z",
+                "createUser": null,
+                "updateUser": null,
+                "typeId": 3,
+                "key": "CB100305",
+                "value": "1000人以上",
+                "description": "",
+                "isLock": 0,
+                "status": 0
+            }
+        ]
+    },
+    "message": "successful",
+    "httpStatus": 200,
+    "timestamp": 1617278986479
+}
