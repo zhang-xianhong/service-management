@@ -135,13 +135,6 @@ export class ModelsFieldsModel extends BaseModel {
   })
   foreignId: string;
 
-  // 版本号
-  @Column({
-    type: DataType.INTEGER,
-    defaultValue: 0,
-  })
-  version: number;
-
   // 是否唯一
   @Column({
     field: 'is_unique',

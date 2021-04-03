@@ -42,6 +42,9 @@ export class ModelFieldDto {
 
   @IsOptional()
   foreignId: string;
+
+  @IsOptional()
+  id: string;
 }
 
 
@@ -51,4 +54,7 @@ export class ModelFieldsDto {
   @IsArray()
   @Type(() => ModelFieldDto)
   fields?: ModelFieldDto[];
+
+  @IsNotEmpty()
+  serviceId: number;
 }

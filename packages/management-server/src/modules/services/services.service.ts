@@ -4,7 +4,7 @@ import { ApiException } from 'src/shared/utils/api.exception';
 import { ServicesApiModel } from './service-api.model';
 import { ServicesDependencyModel } from './service-dependency.model';
 import { ServicesInfoModel } from './service-info.model';
-import { BUILD_SERVICE_URL, INIT_SERVICE_URL, SERVICE_SSH_URI, GENERATE_SERVICE_REPOSITORY_URL } from 'src/shared/constants/url';
+import { BUILD_SERVICE_URL, INIT_SERVICE_URL, GENERATE_SERVICE_REPOSITORY_URL, GET_SERVICE_DIFF } from 'src/shared/constants/url';
 import { PlainObject } from 'src/shared/pipes/query.pipe';
 import { InjectModel } from '@nestjs/sequelize';
 import { Op, Sequelize, Transaction } from 'sequelize';
@@ -24,6 +24,8 @@ import { ApiDto } from './dto/api.dto';
 import { DEFAULT_APIS } from './default-apis';
 import { ModelsRelationModel } from '../models/models-relation.model';
 import { escapeLike } from 'src/shared/utils/sql';
+import { ServiceStartDto } from './dto/service-actions.dto';
+import { getLogName } from './config';
 @Injectable()
 export class ServicesService {
   constructor(
@@ -599,63 +601,30 @@ export class ServicesService {
       throw new ApiException({
         code: CommonCodes.DELETED_FAIL,
         message: '服务删除失败',
-      });
+      }, HttpStatus.BAD_REQUEST);
     }
   }
 
   /**
-   * 调用后端接口，初始化服务
-   * @param id
+   * 启动服务
+   * @param params
+   * @returns
    */
-  async initService(id: number) {
-    const service = await this.getServiceById(id);
-    if (service.status !== SERVICE_STATUS.UNINITIALIZED
-      && service.status !== SERVICE_STATUS.INITIALIZATION_FAILED) {
-      throw new ApiException({
-        code: CommonCodes.PARAMETER_INVALID,
-        message: '当前服务不能初始化',
-      });
-    }
+  async startService(params: ServiceStartDto): Promise<{traceId: string, logName: string}> {
+    const { serviceId, branch: ref = 'master', userId } = params;
     try {
-      const { data }: any = await this.httpService.get(`${INIT_SERVICE_URL}${id}`).toPromise();
+      const { data } = await this.httpService.get(BUILD_SERVICE_URL, {
+        params: {
+          serviceId,
+          ref,
+          userId,
+        },
+      }).toPromise();
       if (data?.code === 0) {
-        const { data: { sshURI } } = data;
-        await this.updateService(id, {
-          deposit: `${SERVICE_SSH_URI}${sshURI}`,
-          status: SERVICE_STATUS.INITIALIZING,
-        });
-        return true;
-      }
-      throw data.message;
-    } catch (error) {
-      this.logger.error(error);
-      throw new ApiException({
-        code: CommonCodes.INITIALIZE_FAIL,
-        message: '服务初始化失败',
-        error: error.message || error,
-      });
-    }
-  }
-
-  /**
-   * 构建服务
-   * @param id
-   */
-  async buildService(data: any) {
-    const { serviceId, branch, userId } = data;
-    const service = await this.getServiceById(serviceId);
-    if (service.status !== SERVICE_STATUS.BUILD_FAILED
-      && service.status !== SERVICE_STATUS.UN_BUILD) {
-      throw new ApiException({
-        code: CommonCodes.PARAMETER_INVALID,
-        message: '当前服务不能构建',
-      });
-    }
-    try {
-      const { data } = await this.httpService.get(`${BUILD_SERVICE_URL}?serviceId=${serviceId}&ref=${branch}&userId=${userId}`).toPromise();
-      if (data?.code === 0) {
-        await this.updateServiceStatus(serviceId, SERVICE_STATUS.BUILDING);
-        return data.data;
+        return {
+          traceId: data.data,
+          logName: getLogName(SERVICE_STATUS.STARTING),
+        };
       }
       throw data.message;
     } catch (error) {
@@ -664,9 +633,75 @@ export class ServicesService {
         code: CommonCodes.BUILD_FAIL,
         message: '服务构建失败',
         error: error.message || error,
-      });
+      }, HttpStatus.BAD_REQUEST);
     }
   }
+
+
+  /**
+   * 获取服务变更记录
+   * @param serviceId
+   * @returns
+   */
+  async getServiceModelChanges(serviceId: number): Promise<any[]> {
+    try {
+      const { data } = await this.httpService.get(GET_SERVICE_DIFF, {
+        params: {
+          serviceId,
+        },
+      }).toPromise();
+      if (data?.code === 0) {
+        return data.data;
+      }
+      throw data.message;
+    } catch (error) {
+      this.logger.error(error);
+      throw new ApiException({
+        code: CommonCodes.FETCH_FAIL,
+        message: '获取服务变更失败',
+        error: error.message || error,
+      }, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+
+  /**
+   * 服务应用变更
+   * @param serviceId
+   * @returns
+   */
+  async applyChanges(serviceId: number) {
+    const service = await this.getServiceById(serviceId);
+    const { status } = service;
+    if (status === SERVICE_STATUS.APPLYING
+      || status ===  SERVICE_STATUS.STARTING
+      || status === SERVICE_STATUS.STOPPING) {
+      throw new ApiException({
+        code: CommonCodes.UPDATED_FAIL,
+        message: '当前服务不允许应用配置',
+      }, HttpStatus.BAD_REQUEST);
+    }
+    // 将状态变更为应用中
+    // await this.updateServiceStatus(serviceId, SERVICE_STATUS.APPLYING);
+    try {
+      const { data } = await this.httpService.get(`${INIT_SERVICE_URL}/${serviceId}`).toPromise();
+      if (data?.code === 0) {
+        return {
+          logName: getLogName(service.status),
+          ...data.data,
+        };
+      }
+      throw data.message;
+    } catch (error) {
+      this.logger.error(error);
+      throw new ApiException({
+        code: CommonCodes.BUILD_FAIL,
+        message: '应用配置失败',
+        error: error.message || error,
+      }, HttpStatus.BAD_REQUEST);
+    }
+  }
+
 
   /**
    * 创建服务物理项目仓库
@@ -696,6 +731,7 @@ export class ServicesService {
     }
   }
 
+
   /**
    * 更新服务状态
    * @param serviceId
@@ -705,22 +741,22 @@ export class ServicesService {
     const update: PlainObject = {
       status,
     };
-    const service: ServicesInfoModel = await this.infoRepository.findOne({
-      where: {
-        serviceId,
-      },
-    });
-    // 初始化成功后, 初始化次数加1
-    if (status === SERVICE_STATUS.UN_BUILD) {
-      update.initTimes = service.initTimes + 1;
-    }
-    // 构建成功后, 构建次数加1
-    if (status === SERVICE_STATUS.BUILT) {
-      update.builtTimes = service.builtTimes + 1;
-    }
+    // const service: ServicesInfoModel = await this.infoRepository.findOne({
+    //   where: {
+    //     serviceId,
+    //   },
+    // });
+    // // 初始化成功后, 初始化次数加1
+    // if (status === SERVICE_STATUS.UN_BUILD) {
+    //   update.initTimes = service.initTimes + 1;
+    // }
+    // // 构建成功后, 构建次数加1
+    // if (status === SERVICE_STATUS.BUILT) {
+    //   update.builtTimes = service.builtTimes + 1;
+    // }
     await this.infoRepository.update(update, {
       where: {
-        serviceId,
+        id: serviceId,
       },
     });
     // 推送消息到前端

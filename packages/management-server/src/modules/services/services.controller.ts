@@ -4,6 +4,7 @@ import { QueryPipe, SearchQuery } from 'src/shared/pipes/query.pipe';
 import { ApiException } from 'src/shared/utils/api.exception';
 import { isEmpty } from 'src/shared/utils/validator';
 import { DeletedIdsDto, ParamIdDto } from '../base.dto';
+import { ServiceIdDto, ServiceStartDto } from './dto/service-actions.dto';
 import { ServiceApisDto } from './dto/service-apis.dto';
 import { ServiceConfigDto } from './dto/service-config.dto';
 import { ServiceInfoDto } from './dto/service-info.dto';
@@ -60,16 +61,29 @@ export class ServicesController {
     return await this.service.addServiceApis(id, body);
   }
 
-  // 初始化服务
-  @Get('/init/:id')
-  async initService(@Param() { id }: ParamIdDto) {
-    return await this.service.initService(id);
+  // 启动变更
+  @Post('/start')
+  async buildService(@Body() postData: ServiceStartDto) {
+    return await this.service.startService(postData);
   }
 
-  // 构建服务
-  @Post('/build')
-  async buildService(@Body() postData) {
-    return await this.service.buildService(postData);
+  /**
+   * 获取服务变更记录
+   * @param param0
+   * @returns
+   */
+  @Get('/:id/changes')
+  async getServiceChanges(@Param() { id }) {
+    return await this.service.getServiceModelChanges(id);
+  }
+
+  /**
+   * 应用变更
+   * @param param0
+   */
+  @Post('/changes/apply')
+  async applyChanges(@Body() { serviceId }: ServiceIdDto) {
+    return await this.service.applyChanges(serviceId);
   }
 
   /**
