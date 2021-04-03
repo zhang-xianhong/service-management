@@ -5,11 +5,14 @@ const BASE_URL = `http://${config.BACKEND_SERVICE_API_HOST}:${config.BACKEND_SER
 // 服务变更记录
 export const GET_SERVICE_DIFF = `${BASE_URL}/sa/dev-sa/sa-service-generator/version/diff/dev`;
 
-// 初始化服务
+// 服务变更
 export const INIT_SERVICE_URL = `${BASE_URL}/sa/dev-sa/sa-service-generator/project/generate`;
 
-// 初始化服务
+// 启动CI/CD
 export const BUILD_SERVICE_URL = `${BASE_URL}/sa/dev-sa/sa-ci-cd/pipeline/triggerPipelineProcess`;
+
+// 停止服务
+export const STOP_SERVICE_URL = `${BASE_URL}/sa/dev-sa/sa-operator-adapter/deploy/container/stop`;
 
 // 创建服务仓库
 export const GENERATE_SERVICE_REPOSITORY_URL = `${BASE_URL}/sa/dev-sa/sa-ci-cd/project`;

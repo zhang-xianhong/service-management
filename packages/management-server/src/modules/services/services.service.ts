@@ -4,7 +4,7 @@ import { ApiException } from 'src/shared/utils/api.exception';
 import { ServicesApiModel } from './service-api.model';
 import { ServicesDependencyModel } from './service-dependency.model';
 import { ServicesInfoModel } from './service-info.model';
-import { BUILD_SERVICE_URL, INIT_SERVICE_URL, GENERATE_SERVICE_REPOSITORY_URL, GET_SERVICE_DIFF } from 'src/shared/constants/url';
+import { BUILD_SERVICE_URL, INIT_SERVICE_URL, GENERATE_SERVICE_REPOSITORY_URL, GET_SERVICE_DIFF, SERVICE_SSH_URI, STOP_SERVICE_URL } from 'src/shared/constants/url';
 import { PlainObject } from 'src/shared/pipes/query.pipe';
 import { InjectModel } from '@nestjs/sequelize';
 import { Op, Sequelize, Transaction } from 'sequelize';
@@ -26,6 +26,7 @@ import { ModelsRelationModel } from '../models/models-relation.model';
 import { escapeLike } from 'src/shared/utils/sql';
 import { ServiceStartDto } from './dto/service-actions.dto';
 import { getLogName } from './config';
+import { FIELD_UUID_NAME } from 'src/shared/constants/field-types';
 @Injectable()
 export class ServicesService {
   constructor(
@@ -90,6 +91,7 @@ export class ServicesService {
     return await this.infoRepository.findAndCountAll(conditions);
   }
 
+
   /**
    * 通过ID获取服务详情
    * @param id
@@ -120,8 +122,10 @@ export class ServicesService {
     return {
       ...restConfig,
       config: config?.config,
+      sshHost: SERVICE_SSH_URI,
     };
   }
+
 
   /**
    * 根据服务id获取服务模型数据
@@ -133,6 +137,7 @@ export class ServicesService {
   }> {
     return await this.modelsService.findModelsByServiceId(serviceId);
   }
+
 
   /**
    * 根据服务id获取接口数据
@@ -166,6 +171,7 @@ export class ServicesService {
     });
     return apisData;
   }
+
 
   /**
    * 创建服务
@@ -221,6 +227,8 @@ export class ServicesService {
       });
     }
   }
+
+
   /**
    * 添加服务配置
    * @param serviceId
@@ -272,6 +280,7 @@ export class ServicesService {
     }
   }
 
+
   /**
    * 添加服务默认接口
    * @param serviceId
@@ -302,6 +311,7 @@ export class ServicesService {
       });
     }
   }
+
 
   /**
    * 删除服务默认接口
@@ -442,6 +452,7 @@ export class ServicesService {
     }
   }
 
+
   /**
    * 添加接口参数
    * @param data
@@ -480,8 +491,8 @@ export class ServicesService {
   }
 
   /**
-   *
-   * @param data 更新服务
+   *更新服务
+   * @param data
    */
   async updateService(id: number, data: any): Promise<Updated> {
     const { dependencies = [], ...serviceData } = data;
@@ -543,6 +554,7 @@ export class ServicesService {
       });
     }
   }
+
 
   /**
    * 删除服务
@@ -612,6 +624,7 @@ export class ServicesService {
    */
   async startService(params: ServiceStartDto): Promise<{traceId: string, logName: string}> {
     const { serviceId, branch: ref = 'master', userId } = params;
+    await this.verifyEmptyModel(serviceId);
     try {
       const { data } = await this.httpService.get(BUILD_SERVICE_URL, {
         params: {
@@ -631,12 +644,42 @@ export class ServicesService {
       this.logger.error(error);
       throw new ApiException({
         code: CommonCodes.BUILD_FAIL,
-        message: '服务构建失败',
-        error: error.message || error,
+        message: '启动服务失败',
+        error: error?.message || error,
       }, HttpStatus.BAD_REQUEST);
     }
   }
 
+  /**
+   * 停止服务
+   * @param serviceId
+   * @returns
+   */
+  async stopService(serviceId: number) {
+    try {
+      const service = await this.getServiceById(serviceId);
+      const { data } = await this.httpService.get(STOP_SERVICE_URL, {
+        params: {
+          name: service.name,
+        },
+      }).toPromise();
+      console.log(data);
+      if (!data?.error) {
+        return {
+          traceId: data.data,
+          logName: getLogName(SERVICE_STATUS.STOPPING),
+        };
+      }
+      throw data.error;
+    } catch (error) {
+      this.logger.error(error);
+      throw new ApiException({
+        code: CommonCodes.PARAMETER_INVALID,
+        message: '停止服务失败',
+        error: error?.message || error,
+      }, HttpStatus.BAD_REQUEST);
+    }
+  }
 
   /**
    * 获取服务变更记录
@@ -672,6 +715,7 @@ export class ServicesService {
    */
   async applyChanges(serviceId: number) {
     const service = await this.getServiceById(serviceId);
+    await this.verifyEmptyModel(serviceId);
     const { status } = service;
     if (status === SERVICE_STATUS.APPLYING
       || status ===  SERVICE_STATUS.STARTING
@@ -681,11 +725,18 @@ export class ServicesService {
         message: '当前服务不允许应用配置',
       }, HttpStatus.BAD_REQUEST);
     }
-    // 将状态变更为应用中
-    // await this.updateServiceStatus(serviceId, SERVICE_STATUS.APPLYING);
     try {
       const { data } = await this.httpService.get(`${INIT_SERVICE_URL}/${serviceId}`).toPromise();
       if (data?.code === 0) {
+        if (service.status === 0) {
+          await this.infoRepository.update({
+            deposit: data.webURI,
+          }, {
+            where: {
+              id: service.id,
+            },
+          });
+        }
         return {
           logName: getLogName(service.status),
           ...data.data,
@@ -770,6 +821,7 @@ export class ServicesService {
     };
   }
 
+
   /**
    * 根据服务ID获取服务
    * @param id
@@ -790,5 +842,31 @@ export class ServicesService {
       }, HttpStatus.NOT_FOUND);
     }
     return service;
+  }
+
+
+  /**
+   * 应用配置等操作时判断fields是否只有一个ID字段
+   * @param serviceId
+   */
+  private async verifyEmptyModel(serviceId: number): Promise<boolean> {
+    const { models } = await this.modelsService.findModelsByServiceId(serviceId);
+    let modelName = '';
+    const isEmptyModel = models.some((model) => {
+      const fields = model.fields as any;
+      const hasExceptIdField = fields.length > 1
+      && (fields).some(field => !field.isSystem || field.name !== FIELD_UUID_NAME);
+      if (!hasExceptIdField) {
+        modelName = model.name;
+      }
+      return !hasExceptIdField;
+    });
+    if (isEmptyModel) {
+      throw new ApiException({
+        code: CommonCodes.PARAMETER_INVALID,
+        message: `请为模型[${modelName}]至少添加一个非[${FIELD_UUID_NAME}]属性`,
+      });
+    }
+    return false;
   }
 }
