@@ -1,49 +1,68 @@
 import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
 import { QueryPipe, SearchQuery } from 'src/shared/pipes/query.pipe';
+import { DeletedIdsDto, ParamIdDto } from '../base.dto';
+import { MemberDto } from './dto/member.dto';
+import { MemberDeleteDto } from './dto/member-delete.dto';
+import { ProjectDto } from './dto/project.dto';
 import { ProjectsService } from './projects.service';
 
-@Controller('project')
+@Controller('projects')
 export class ProjectsController {
-  constructor(private readonly projectService: ProjectsService) {}
+  constructor(private readonly service: ProjectsService) {}
 
   @Get()
-  async projectList(@Query(new QueryPipe) query: SearchQuery) {
-    if (query.keyword) {
-      // 处理 search
-    }
-    const [list, total] = await this.projectService.findAll({
-      ...query.conditions,
-    });
-    return {
-      total,
-      list,
-    };
+  async findAll(@Query(new QueryPipe()) query: SearchQuery) {
+    return this.service.findAll(query);
   }
 
-  /**
-   * 获取项目信息
-   */
-  @Get(':id')
-  projectInfo(@Param() { id }) {
-    return this.projectService.findOne(id);
-  }
-
-  /**
-   *
-   * @param body 新增项目
-   */
   @Post()
-  create(@Body() body) {
-    this.projectService.create(body);
+  async createProject(@Body() postData: ProjectDto) {
+    return await this.service.createProject(postData);
   }
 
-  /**
-   *
-   * @param param0 更新项目
-   * @param body
-   */
+  @Get(':id')
+  async findById(@Param() { id }: ParamIdDto) {
+    return this.service.findOne(id);
+  }
+
+  @Get(':id/members')
+  async findProjectMembers(@Param() { id }: ParamIdDto) {
+    return this.service.findMembersByProjectId(id);
+  }
+
+  // 删除项目
+  @Post('/delete')
+  async deleteProjects(@Body() { ids }: DeletedIdsDto) {
+    return this.service.deleteProjects(ids);
+  }
+
+  // 更新项目
   @Post(':id')
-  update(@Param() { id }, @Body() body) {
-    this.projectService.update(id, body);
+  async updateProject(@Param() { id }: ParamIdDto, @Body() postData: ProjectDto) {
+    return this.service.updateProject(id, postData);
+  }
+
+
+  /**
+   * 新增组内成员
+   * @param param0
+   * @param postData
+   * @returns
+   */
+  @Post('/:id/members')
+  async addMember(@Param() { id }: ParamIdDto, @Body() postData: MemberDto) {
+    return await this.service.addMember(id, postData);
+  }
+
+
+  /**
+   * 从项目的某个组里移除成员
+   * @param param0
+   * @param deleteIds
+   * @returns
+   */
+  @Post('/:id/members/delete')
+  async deleteMembers(@Param() { id }: ParamIdDto, @Body() { ids, projectRoleId }: MemberDeleteDto) {
+    return await this.service.deleteMembers(id, projectRoleId, ids);
   }
 }

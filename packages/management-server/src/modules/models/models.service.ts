@@ -39,7 +39,10 @@ interface CompareFieldsResult {
 @Injectable()
 export class ModelsService {
   // 允许变更的字段，用于对比
-  private readonly COMPARE_FIELDS = ['name', 'description'];
+  // 真实业务中只允许修改'name', 'description'
+  // 后续需要根据service.status去判断
+  private readonly COMPARE_FIELDS = ['name', 'description', 'typeId', 'notNull',
+    'isUnique', 'isIndex', 'isParticipleSupport', 'isPinyinSupport'];
 
   constructor(
     @Inject(Logger)
@@ -139,9 +142,10 @@ export class ModelsService {
   /**
    * 通过服务ID获取模型列表
    * @param serviceId
+   * @param getRelations
    * @returns
    */
-  async findModelsByServiceId(serviceId: number): Promise<{
+  async findModelsByServiceId(serviceId: number, getRelations = true): Promise<{
     models: Rows<ModelsInfoModel>;
     relations: Rows<ModelsRelationModel>;
   }> {
@@ -161,12 +165,12 @@ export class ModelsService {
         },
       ],
     });
-    const relationsPromise = this.relationRepository.findAll({
+    const relationsPromise = getRelations ? this.relationRepository.findAll({
       where: {
         serviceId,
         isDelete: false,
       },
-    });
+    }) : Promise.resolve([]);
 
     const [models, relations] = await Promise.all([
       modelsPromise,
@@ -763,12 +767,14 @@ export class ModelsService {
     });
     const removed = originFields
       .filter(originField => !mayUpdated.find(newField => Number(newField.id) === Number(originField.id)));
+
+    // 查找更新的字段
     mayUpdated.forEach((field) => {
       const originField = originFields.find(originField => Number(field.id) === Number(originField.id));
       if (!originField) {
         throw new ApiException({
           code: CommonCodes.PARAMETER_INVALID,
-          message: '无效的字段ID',
+          message: `无效的字段ID [${field.id}]`,
         });
       }
       const isUpdate = this.COMPARE_FIELDS.some(key => field[key] !== originField[key]);

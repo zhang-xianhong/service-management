@@ -141,4 +141,60 @@ export class SettingsController {
   async createCategory(@Body() body: SettingsCategoryDto) {
     return await this.service.createCategory(body);
   }
+
+  // 数据字典相关
+  // 获取数据字典类型列表
+  @Get('/dictionaries/type')
+  async dictionaryTypes(@Query(new QueryPipe()) query: SearchQuery) {
+    return await this.service.getDictionaryTypes(query);
+  }
+
+  // 获取字典详情
+  @Get('/dictionaries/:typeKey')
+  async getDictionaries(@Param() { typeKey }) {
+    return await this.service.findDictionaryInfo(typeKey);
+  }
+  // 添加数据字典类型
+  @Post('/dictionaries/type')
+  async addDictionaryType(@Body() body) {
+    return await this.service.addDictionaryType(body);
+  }
+
+  // 添加数据字典数据
+  @Post('/dictionaries/:id')
+  async addDictionaryData(@Param(){ id }, @Body() body) {
+    return await this.service.addDictionaries(id, body);
+  }
+
+  // 获取行政区域
+  @Get('/regions')
+  async getRegionList(@Query() { level }) {
+    return await this.service.getRegionListByLevel(level);
+  }
+  // 获取行政区域树
+  @Get('/regions/tree')
+  async getRegionTree(@Query() { code }) {
+    return await this.service.getRegionTree(code);
+  }
+
+  /* 模板相关 */
+  /**
+   * 获取模板列表(分页)
+   * @param query
+   * @returns
+   */
+  @Get('/templates')
+  async getTemplates(@Query(new QueryPipe()) query: SearchQuery) {
+    const data = await this.service.findAllTemplates(query);
+    return data;
+  }
+
+  /**
+    * 获取模板列表(未分页)
+    * @returns
+    */
+  @Get('/templates/all')
+  async getAllTemplates(@Query(new QueryPipe()) query: SearchQuery) {
+    return await this.service.findAllTemplates(query, false);
+  }
 }
