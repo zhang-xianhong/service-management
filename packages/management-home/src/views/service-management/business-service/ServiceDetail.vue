@@ -48,7 +48,12 @@
         </div>
         <div v-if="!isShowDownDrawer">
           <div>服务代码：</div>
-          <div>服务地址：</div>
+          <div>
+            服务地址：
+            <a :href="serverInfo.sshHost + (serverInfo.deposit ? serverInfo.deposit : '')" target="_blank">
+              {{ serverInfo.sshHost + (serverInfo.deposit ? serverInfo.deposit : '') }}
+            </a>
+          </div>
         </div>
       </el-col>
       <el-col v-if="componentName" :span="8" style="border-left: 1px solid #bbbbbb">

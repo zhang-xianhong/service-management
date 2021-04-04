@@ -4,4 +4,6 @@ export default {
   GET_MODEL_LIST: ['/projects', '/mock/schema/project-list.json'],
   GET_PROJECT_DETAIL: ['/projects/_', '/mock/project/project-detail.json'],
   UPDATE_PROJECT: ['/projects/_', '/mock/project/project-detail.json'],
+  POST_ADD_PROJECT: ['/projects'],
+  DELETE_PROJECT: ['/projects/delete'],
 };
