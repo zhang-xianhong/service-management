@@ -1,0 +1,44 @@
+{
+  "code": 0,
+  "data": {
+      "tenant": {
+          "id": 1,
+          "createTime": "2021-04-04T07:55:02.000Z",
+          "updateTime": "2021-04-04T07:55:02.000Z",
+          "createUser": null,
+          "updateUser": null,
+          "isDelete": false,
+          "version": 0,
+          "name": "西腾子云",
+          "nameShort": "西腾",
+          "industryId": null,
+          "natureId": null,
+          "scaleId": null,
+          "license": "",
+          "addr": "",
+          "addrDetail": "",
+          "intro": "",
+          "licenseUrl": "",
+          "logoUrl": "",
+          "status": 0
+      },
+      "users": [],
+      "depts": [
+          {
+              "deptId": 19,
+              "parentId": 0,
+              "deptName": "welink",
+              "status": 0
+          },
+          {
+              "deptId": 20,
+              "parentId": 0,
+              "deptName": "Default Department",
+              "status": 0
+          }
+      ]
+  },
+  "message": "successful",
+  "httpStatus": 200,
+  "timestamp": 1617523978352
+}
