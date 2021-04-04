@@ -71,7 +71,6 @@ export default defineComponent({
     const currentModel = inject('currentModel') as Ref<any>;
     const serviceId = inject('serviceId') as number;
     const afterUpdate = inject('afterUpdate') as Function;
-    const serverInfo = inject('serverInfo') as Ref<any>;
     const fields: Ref<Array<any>> = ref([]);
     watchEffect(() => {
       fields.value = _.cloneDeep(currentModel.value?.fields || []);
@@ -124,9 +123,7 @@ export default defineComponent({
         context.emit('back');
       }
     };
-    const isFieldDisabled = (scope: any) =>
-      scope.row.isSystem ||
-      (scope.row.id && serverInfo.value.status !== 0 && !['name', 'description'].includes(scope.column.property));
+    const isFieldDisabled = (scope: any) => scope.row.isSystem;
 
     onMounted(() => {
       initTypeOption();
