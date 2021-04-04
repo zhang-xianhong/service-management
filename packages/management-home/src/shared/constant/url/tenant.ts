@@ -2,4 +2,6 @@
 export default {
   GET_TENANT_LIST: ['/tenants', '/mock/tenant/tenant-list.json'],
   GET_TENANT_DEPT: ['/tenants/department/tree', '/mock/tenant/tenant-department.json'],
+  GET_TENANT_DETAIL: ['/tenants/_', '/mock/tenant/tenant-detail.json'],
+  UPDATE_TENT: ['/tenants/_', 'mock/services/delete.json'],
 };

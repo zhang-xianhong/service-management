@@ -27,5 +27,8 @@ export class ModelInfoDto {
 
   @IsOptional()
   tags: string;
+
+  @IsOptional()
+  remark: string;
 }
 

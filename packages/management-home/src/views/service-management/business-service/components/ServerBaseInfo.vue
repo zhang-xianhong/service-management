@@ -19,7 +19,7 @@
         <el-cascader
           v-else
           v-model="classificationValue"
-          :options="allClassifications"
+          :options="classifications"
           :show-all-levels="false"
           :props="{ multiple: true, label: 'name', value: 'id' }"
           @change="selectClassification"
@@ -28,8 +28,8 @@
       </el-form-item>
       <el-form-item label="标签">
         <div v-if="isShowMode" class="baseinfo-content">{{ tagNames }}</div>
-        <el-select v-else v-model="tags" multiple filterable placeholder="请选择" @change="selectTag">
-          <el-option v-for="(item, index) in allTags" :key="index" :value="item.id" :label="item.name"></el-option>
+        <el-select v-else v-model="tagValue" multiple filterable placeholder="请选择" @change="selectTag">
+          <el-option v-for="(item, index) in tags" :key="index" :value="item.id" :label="item.name"></el-option>
         </el-select>
       </el-form-item>
       <el-form-item label="服务详情">
@@ -66,11 +66,20 @@ export default {
       default: () => ({}),
     },
     id: {
-      type: String,
-      default: '',
+      type: Number,
+      default: 0,
+    },
+    tags: {
+      type: Array,
+      default: () => [],
+    },
+    classifications: {
+      type: Array,
+      default: () => [],
     },
   },
-  setup(props: { data: any; id: string }) {
+  setup(props: { data: any; id: number; tags: any[]; classifications: any[] }) {
+    console.log(props, 'props');
     // 是否为显示模式标识，默认为true
     const isShowMode = ref(true);
 
@@ -84,21 +93,25 @@ export default {
       detail: props.data.detail,
     });
 
+    console.log(formData, 'formData');
+
     // 负责人数组
     const computedOwner = computed(() => formData.owner.split(','));
 
     // 所有负责人
     const allOwners = reactive([]);
 
-    const { allClassifications, classificationName, classificationValue } = useClassifications(formData.classification);
+    const { classificationName, classificationValue } = useClassifications(
+      formData.classification,
+      props.classifications,
+    );
 
     // 分类选择
     const selectClassification = (value: Array<Array<string>>) => {
       formData.classification = value.map((item: Array<string>) => item[item.length - 1]).join(',');
-      useClassifications(formData.classification);
     };
 
-    const { tags, tagNames, allTags } = useTags(formData.tag);
+    const { tagValue, tagNames } = useTags(formData.tag, props.tags);
 
     // 标签选择
     const selectTag = (tags: string[]) => {
@@ -112,11 +125,11 @@ export default {
 
     // 保存表单修改
     const saveFormData = async () => {
-      const { code } = await updateService(props.id, formData);
+      const { code } = await updateService(String(props.id), formData);
       if (code === 0) {
         isShowMode.value = true;
-        useTags(formData.tag);
-        useClassifications(formData.classification);
+        useTags(formData.tag, props.tags);
+        useClassifications(formData.classification, props.classifications);
       }
     };
 
@@ -125,13 +138,11 @@ export default {
       formData,
       computedOwner,
       allOwners,
-      allClassifications,
       classificationName,
       classificationValue,
       selectClassification,
-      tags,
+      tagValue,
       tagNames,
-      allTags,
       selectTag,
       modifyFormData,
       saveFormData,

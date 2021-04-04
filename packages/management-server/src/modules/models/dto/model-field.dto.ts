@@ -33,11 +33,18 @@ export class ModelFieldDto {
   isParticipleSupport: boolean;
 
   @IsOptional()
+  @MaxLength(255)
+  defaultValue: string | number | null;
+
+  @IsOptional()
   @IsBoolean()
   isPinyinSupport: boolean;
 
   @IsOptional()
   foreignId: string;
+
+  @IsOptional()
+  id: string;
 }
 
 
@@ -47,4 +54,7 @@ export class ModelFieldsDto {
   @IsArray()
   @Type(() => ModelFieldDto)
   fields?: ModelFieldDto[];
+
+  @IsNotEmpty()
+  serviceId: number;
 }

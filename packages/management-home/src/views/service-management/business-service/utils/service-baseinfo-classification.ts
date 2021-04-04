@@ -1,11 +1,7 @@
 import { ref } from 'vue';
-import { getClassificationList } from '@/api/settings/classification';
 
 // 分类Id数组
-const classifications = ref([] as number[]);
-
-// 分类信息列表
-const allClassifications = ref([]);
+const selectedClassifications = ref([] as number[]);
 
 // 分类名称
 const classificationName = ref('');
@@ -15,8 +11,8 @@ const classificationValue = ref([] as number[][]);
 // 分类信息Map
 const classificationMap: Map<number, any> = new Map();
 
-export default function(initialValue: string) {
-  classifications.value = initialValue
+export default function(initialValue: string, classifications: any[]) {
+  selectedClassifications.value = initialValue
     .split(',')
     .filter((item: string) => item !== '')
     .map((item: string) => parseInt(item, 10));
@@ -36,7 +32,7 @@ export default function(initialValue: string) {
 
   // 生成分类信息展示名称
   const getClassificationNames = () => {
-    const names = classifications.value.map((id: number) => {
+    const names = selectedClassifications.value.map((id: number) => {
       const target = classificationMap.get(id);
       if (target?.name) {
         return target.name;
@@ -48,11 +44,10 @@ export default function(initialValue: string) {
 
   // 将分类Id数组转换成级联框可以识别的数据结构：Array<Array<number>>
   const handleClassificationIds = () =>
-    classifications.value.map((id: number) => {
-      console.log(classificationMap, id, 888);
+    selectedClassifications.value.map((id: number) => {
       let target = classificationMap.get(id);
       const result: number[] = [id];
-      while (target?.parentId !== null) {
+      while (target?.parentId) {
         result.unshift(target.parentId);
         target = classificationMap.get(target.parentId);
       }
@@ -61,9 +56,7 @@ export default function(initialValue: string) {
 
   // 获取所有分类信息并处理
   const getClassifications = async () => {
-    const { data } = await getClassificationList();
-    handleClassification(data);
-    allClassifications.value = data;
+    handleClassification(classifications);
     const result = await handleClassificationIds();
     classificationValue.value = result;
     getClassificationNames();
@@ -72,9 +65,7 @@ export default function(initialValue: string) {
   getClassifications();
 
   return {
-    allClassifications,
     classificationName,
     classificationValue,
-    getClassificationNames,
   };
 }

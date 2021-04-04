@@ -26,12 +26,6 @@ export class ModelsFieldsModel extends BaseModel {
   })
   typeId: number;
 
-  // 数据类型
-  // @Column({
-  //   type: DataType.STRING,
-  // })
-  // type: string;
-
   // 字段描述
   @Column({
     type: DataType.TEXT,
@@ -47,14 +41,6 @@ export class ModelsFieldsModel extends BaseModel {
     comment: '决定属性的排序，从0依次递减',
   })
   fieldOrder: number;
-
-  // 字段长度
-  // @Column({
-  //   type: DataType.INTEGER,
-  //   defaultValue: 10000,
-  //   comment: '字段长度',
-  // })
-  // length: number;
 
   // 字段长度
   @Column({
@@ -148,13 +134,6 @@ export class ModelsFieldsModel extends BaseModel {
     comment: '外联字段ID',
   })
   foreignId: string;
-
-  // 版本号
-  @Column({
-    type: DataType.INTEGER,
-    defaultValue: 0,
-  })
-  version: number;
 
   // 是否唯一
   @Column({

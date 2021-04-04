@@ -1,34 +1,27 @@
 import { ref } from 'vue';
-import { getAllTags } from '@/api/settings/tags';
 
-const tags = ref([] as number[]);
-
-const allTags = ref([] as any[]);
+const tagValue = ref([] as number[]);
 
 const tagNames = ref('');
 
-export default function(initialValue: string) {
-  tags.value = initialValue.split(',').map((item: string) => Number.parseInt(item, 10));
+export default function(initialValue: string, tags: any[]) {
+  tagValue.value = initialValue
+    .split(',')
+    .filter((item: string) => item !== '')
+    .map((item: string) => Number.parseInt(item, 10));
 
-  const getTagNames = () => {
-    const nameArr = tags.value.map((tag: number) => {
-      const target = allTags.value.filter((item: any) => item.id === tag)[0];
+  const getTagNames = (tags: any[]) => {
+    const nameArr = tagValue.value.map((tag: number) => {
+      const target = tags.filter((item: any) => item.id === tag)[0];
       return target?.name || '';
     });
     tagNames.value = nameArr.join(',');
   };
 
-  const getTagList = async () => {
-    const { data } = await getAllTags();
-    allTags.value = data;
-    getTagNames();
-  };
-
-  getTagList();
+  getTagNames(tags);
 
   return {
-    tags,
-    allTags,
+    tagValue,
     tagNames,
   };
 }

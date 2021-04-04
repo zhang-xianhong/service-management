@@ -28,14 +28,6 @@ export class ModelsInfoModel extends BaseModel {
   })
   engine: string;
 
-  // 版本
-  @Column({
-    type: DataType.INTEGER,
-    defaultValue: 0,
-    comment: '版本号/修改次数',
-  })
-  version: number;
-
   // 负责人
   @Column({
     type: DataType.STRING,

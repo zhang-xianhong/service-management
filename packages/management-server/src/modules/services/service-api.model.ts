@@ -25,6 +25,7 @@ export class ServicesApiModel extends BaseModel {
     type: DataType.TINYINT,
     field: 'method_type',
     defaultValue: METHOD_TYPE.GET,
+    comment: '0:GET，1:POST，3:PUT',
   })
   method: METHOD_TYPE;
 
@@ -66,12 +67,6 @@ export class ServicesApiModel extends BaseModel {
   @HasMany(() => ServicesApiParamModel)
   params: ServicesApiParamModel[];
 
-  // 版本号
-  @Column({
-    type: DataType.INTEGER,
-    defaultValue: 0,
-  })
-  version: number;
 
   // 是否系统自动生产接口
   @Column({

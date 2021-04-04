@@ -1,8 +1,6 @@
 import { Body, Controller, Get, Param, Post, Query  } from '@nestjs/common';
-import { CommonCodes } from 'src/shared/constants/code';
 import { QueryPipe, SearchQuery } from 'src/shared/pipes/query.pipe';
-import { ApiException } from 'src/shared/utils/api.exception';
-import { isNumeric } from 'src/shared/utils/validator';
+import { DeletedIdsDto, ParamIdDto } from '../base.dto';
 import { SettingsCategoryDto } from './dto/settings-category.dto';
 import { SettingsDataTypeDto } from './dto/settings-data-type.dto';
 import { SettingsTagDto } from './dto/settings-tag.dto';
@@ -27,7 +25,7 @@ export class SettingsController {
 
   // 获取数据类型详情
   @Get('/data-types/:id')
-  async getDataTypeById(@Param() { id }) {
+  async getDataTypeById(@Param() { id }: ParamIdDto) {
     return await this.service.findDataTypeById(id);
   }
 
@@ -39,14 +37,13 @@ export class SettingsController {
 
   // 删除数据类型
   @Post('/data-types/delete')
-  async deleteDataType(@Body() { ids }) {
-    const deletedIds = this.getDeletedIds(ids);
-    return await this.service.deleteDataTypes(deletedIds);
+  async deleteDataType(@Body() { ids }: DeletedIdsDto) {
+    return await this.service.deleteDataTypes(ids);
   }
 
   // 更新数据类型
   @Post('/data-types/:id')
-  async updateDataType(@Param() { id }, @Body() postData: SettingsDataTypeDto) {
+  async updateDataType(@Param() { id }: ParamIdDto, @Body() postData: SettingsDataTypeDto) {
     return await this.service.updateDataType(id, postData);
   }
 
@@ -77,7 +74,7 @@ export class SettingsController {
    * @returns
    */
   @Get('/tags/:id')
-  async getTagById(@Param() { id }) {
+  async getTagById(@Param() { id }: ParamIdDto) {
     return await this.service.findTagById(id);
   }
 
@@ -96,9 +93,8 @@ export class SettingsController {
     * @returns
     */
   @Post('/tags/delete')
-  async deleteTags(@Body() { ids }) {
-    const deletedIds = this.getDeletedIds(ids);
-    return await this.service.deleteTags(deletedIds);
+  async deleteTags(@Body() { ids }: DeletedIdsDto) {
+    return await this.service.deleteTags(ids);
   }
 
   /**
@@ -108,7 +104,7 @@ export class SettingsController {
    * @returns
    */
   @Post('/tags/:id')
-  async updateTag(@Param() { id }, @Body() postData: SettingsTagDto) {
+  async updateTag(@Param() { id }: ParamIdDto, @Body() postData: SettingsTagDto) {
     return await this.service.updateTag(id, postData);
   }
 
@@ -125,19 +121,19 @@ export class SettingsController {
   }
   // 获取分类详情
   @Get('/categories/:id')
-  async getCategory(@Param() { id }) {
+  async getCategory(@Param() { id }: ParamIdDto) {
     return this.service.findCategoryById(id);
   }
 
   // 更新分类
   @Post('/categories/:id')
-  async updateCategory(@Param(){ id }, @Body() body) {
+  async updateCategory(@Param(){ id }: ParamIdDto, @Body() body) {
     return await this.service.updateCategory(id, body);
   }
 
   // 更新分类
   @Post('/categories/delete/:id')
-  async deleteCategory(@Param(){ id }) {
+  async deleteCategory(@Param(){ id }: ParamIdDto) {
     return await this.service.deleteCategory(id);
   }
   // 新增分类
@@ -146,19 +142,59 @@ export class SettingsController {
     return await this.service.createCategory(body);
   }
 
+  // 数据字典相关
+  // 获取数据字典类型列表
+  @Get('/dictionaries/type')
+  async dictionaryTypes(@Query(new QueryPipe()) query: SearchQuery) {
+    return await this.service.getDictionaryTypes(query);
+  }
+
+  // 获取字典详情
+  @Get('/dictionaries/:typeKey')
+  async getDictionaries(@Param() { typeKey }) {
+    return await this.service.findDictionaryInfo(typeKey);
+  }
+  // 添加数据字典类型
+  @Post('/dictionaries/type')
+  async addDictionaryType(@Body() body) {
+    return await this.service.addDictionaryType(body);
+  }
+
+  // 添加数据字典数据
+  @Post('/dictionaries/:id')
+  async addDictionaryData(@Param(){ id }, @Body() body) {
+    return await this.service.addDictionaries(id, body);
+  }
+
+  // 获取行政区域
+  @Get('/regions')
+  async getRegionList(@Query() { level }) {
+    return await this.service.getRegionListByLevel(level);
+  }
+  // 获取行政区域树
+  @Get('/regions/tree')
+  async getRegionTree(@Query() { code }) {
+    return await this.service.getRegionTree(code);
+  }
+
+  /* 模板相关 */
   /**
-   * 获取删除的ID集合
-   * @param ids
+   * 获取模板列表(分页)
+   * @param query
    * @returns
    */
-  private getDeletedIds(ids: Array<number>) {
-    const deletedIds = (Array.isArray(ids) ? ids : []).filter(id => isNumeric(id));
-    if (!deletedIds.length) {
-      throw new ApiException({
-        code: CommonCodes.PARAMETER_INVALID,
-        message: '无效的ID集合',
-      });
-    }
-    return deletedIds;
+  @Get('/templates')
+  async getTemplates(@Query(new QueryPipe()) query: SearchQuery) {
+    const data = await this.service.findAllTemplates(query);
+    return data;
+  }
+
+  /**
+    * 获取模板列表(未分页)
+    * @returns
+    */
+  @Get('/templates/all')
+  async getAllTemplates(@Query(new QueryPipe()) query: SearchQuery) {
+    return await this.service.findAllTemplates(query, false);
   }
 }

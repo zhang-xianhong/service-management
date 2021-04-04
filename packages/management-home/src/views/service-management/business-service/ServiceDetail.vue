@@ -7,25 +7,27 @@
           :key="index"
           :type="button.type || undefined"
           v-on="button.eventOption"
+          :disabled="button.disabled"
         >
           {{ button.label }}
         </el-button>
       </el-col>
       <el-col :span="8" style="text-align:right;">
         <div class="detail-status">
-          <span :style="{ background: serverStatusInfo.color }" class="detail-status__icon"></span>
+          <!--          <span :style="{ background: serverStatusInfo.color }" class="detail-status__icon"></span>-->
           {{ serverStatusInfo.label }}
         </div>
         <el-button class="detail-icon" icon="el-icon-s-data" @click="openBaseInfo"></el-button>
         <el-button class="detail-icon" icon="el-icon-notebook-2" @click="openPropertyInfo"></el-button>
-        <el-button class="detail-icon" icon="el-icon-download" @click="openDownloadInfo"></el-button>
+        <el-button class="detail-icon" icon="el-icon-document"></el-button>
+        <el-button class="detail-icon" icon="el-icon-download"></el-button>
       </el-col>
     </el-row>
     <el-row :style="{ height: computedHeight }">
-      <el-col :span="componentName || modelInfo || relationSelected ? 16 : 24" style="height:100%">
+      <el-col :span="componentName ? 16 : 24" style="height:100%">
         <el-row>
           <!-- 服务下拉选择框 -->
-          <el-select v-model="currentServiceId" placeholder="请选择">
+          <el-select v-model="currentServiceId" placeholder="请选择" @change="selectService">
             <el-option
               v-for="server in serverList"
               :key="server.id"
@@ -40,46 +42,70 @@
             width="100%"
             height="100%"
             v-model="modelList"
+            :serviceStatus="serverInfo.status"
             @model-change="initModelList"
             @select-change="modelSelected"
           ></erd>
         </div>
         <div v-if="!isShowDownDrawer">
           <div>服务代码：</div>
-          <div>服务地址：</div>
+          <div>
+            服务地址：
+            <a :href="serverInfo.sshHost + (serverInfo.deposit ? serverInfo.deposit : '')" target="_blank">
+              {{ serverInfo.sshHost + (serverInfo.deposit ? serverInfo.deposit : '') }}
+            </a>
+          </div>
         </div>
       </el-col>
-      <el-col v-if="componentName || modelInfo || relationSelected" :span="8" style="border-left: 1px solid #bbbbbb">
+      <el-col v-if="componentName" :span="8" style="border-left: 1px solid #bbbbbb">
         <template v-if="componentName">
           <keep-alive>
-            <component :is="componentName" :data="serverInfo" :id="currentServiceId"></component>
+            <component
+              :is="componentName"
+              :data="computedComponentData"
+              :tags="tags"
+              :classifications="classifications"
+              :id="currentServiceId"
+            ></component>
           </keep-alive>
-        </template>
-        <template v-if="modelInfo">
-          <server-base-info :data="modelInfo"></server-base-info>
-        </template>
-        <template v-if="relationSelected">
-          <relation-info :data="relationSelected"></relation-info>
         </template>
       </el-col>
     </el-row>
     <transition name="slide-fade">
       <div v-if="isShowDownDrawer" class="detail-drawer__container">
         <keep-alive>
-          <component :is="drawerName" :id="currentServiceId" @back="isShowDownDrawer = false"></component>
+          <component
+            :is="drawerName"
+            :id="currentServiceId"
+            :modelList="modelList.tables"
+            @back="isShowDownDrawer = false"
+          ></component>
         </keep-alive>
       </div>
     </transition>
 
-    <el-dialog title="日志" v-model="logDialogVisible" width="40%">
+    <el-dialog title="日志" v-model="logDialogVisible" width="80%" @close="clearLogInterVal">
       <!--      <el-input type="textarea" :rows="25" :autosize="{ maxRows: 25, minRows: 25 }" v-model="logData"></el-input>-->
-      <div class="log-content">
+      <div class="log-content" id="log_content">
+        <div style="color: red" v-if="logData.length === 0">日志加载中......</div>
         <div class="log-item" v-for="item in logData" :key="item.instanceId">
           <div class="log-item-content" v-html="formatLogData(item.content)"></div>
         </div>
       </div>
       <div class="dialog-footer">
         <el-button type="primary" style="margin-top: 20px" @click="clearLogInterVal">关闭</el-button>
+      </div>
+    </el-dialog>
+    <el-dialog title="变更记录" v-model="sqlDialogVisiable" width="60%" @close="clearSql">
+      <div class="log-content sql-content" id="sql_content">
+        <div style="color: blue" v-if="sqlData.length === 0">变更记录加载中......</div>
+        <div class="log-item" v-for="(item, index) in Object.values(sqlData)" :key="index">
+          <div class="log-item-content">{{ logs(item) }}</div>
+        </div>
+      </div>
+      <div class="dialog-footer">
+        <el-button type="primary" style="margin-top: 20px" @click="enterLogs">确定</el-button>
+        <el-button style="margin-top: 20px" @click="clearSql">关闭</el-button>
       </div>
     </el-dialog>
   </div>
@@ -91,15 +117,25 @@ import useStatusUtils from './utils/service-detail-status';
 import ServerBaseInfo from './components/ServerBaseInfo.vue';
 import Erd from '@/components/data-model/erd/Index.vue';
 import ServerPortsInfo from './components/ServerPortsInfo.vue';
-import { ref, Ref, reactive, watch, provide, computed } from 'vue';
-import RelationInfo from '@/components/data-model/detail-info/RelationInfo.vue';
-import ModelFieldForm from '@/components/data-model/field-form/Index.vue';
+import { ref, Ref, reactive, watch, provide, computed, onBeforeUnmount } from 'vue';
+import RelationInfo from './components/RelationInfo.vue';
+import ModelFieldForm from './components/FieldForm.vue';
+import ModelBaseInfo from './components/ModelBaseInfo.vue';
 import { getServiceList, getServiceById } from '@/api/servers';
 import { getAllTags } from '@/api/settings/tags';
 import { getClassificationList } from '@/api/settings/classification';
 import { getServiceModelList } from '@/api/schema/model';
 import { getDataTypesAll } from '@/api/settings/data-types';
 import { useRoute } from 'vue-router';
+import { statusMap } from '@/views/service-management/business-service/utils/service-status-map';
+import {
+  currentServiceIdForData,
+  sqlDialogVisiable,
+  sqlData,
+  clearSql,
+  getTreaceId,
+  thenRefresh,
+} from './utils/service-detail-data';
 import _ from 'lodash/fp';
 import {
   logDialogVisible,
@@ -116,6 +152,7 @@ export default {
     ModelFieldForm,
     ServerPortsInfo,
     RelationInfo,
+    ModelBaseInfo,
   },
   setup() {
     const { buttons } = useButtonUtils();
@@ -129,7 +166,8 @@ export default {
     const route = useRoute();
 
     // 当前服务ID
-    const currentServiceId = ref(route.params.id);
+    const currentServiceId = ref(Number(route.params.id));
+    currentServiceIdForData.value = route.params.id;
 
     // 属性列表是否已打开
     const isOpenProperties = ref(false);
@@ -148,7 +186,8 @@ export default {
     const serverInfo = ref({} as any);
 
     // erd图组件参数构造
-    provide('serviceId', Number(currentServiceId.value));
+    provide('serviceId', currentServiceId.value);
+    provide('serverInfo', serverInfo);
     const erdLoading = ref(false);
     const modelList: Ref<any> = ref({
       tables: [],
@@ -199,24 +238,30 @@ export default {
       initModelList();
     };
 
+    const intervalId = setInterval(() => getServerInfo(), 5000);
+
     getServerInfo();
 
-    const tags = ref([] as any[]);
+    onBeforeUnmount(() => {
+      clearInterval(intervalId);
+    });
+
+    const tags: any[] = [];
 
     // 获取所有标签
     const getTags = async () => {
       const { data } = await getAllTags();
-      tags.value = data || [];
+      tags.push(...(data || []));
     };
 
     getTags();
 
-    const classifications = ref([] as any[]);
+    const classifications: any[] = [];
 
     // 获取所有分类信息
     const getClassifications = async () => {
       const { data } = await getClassificationList();
-      classifications.value = data || [];
+      classifications.push(...(data || []));
     };
 
     getClassifications();
@@ -236,6 +281,26 @@ export default {
 
     watch(serverInfo, () => {
       serverStatusInfo.value = useStatusUtils(serverInfo.value.status);
+      const { status } = serverInfo.value;
+      buttons.value.forEach((x: any) => {
+        // eslint-disable-next-line no-param-reassign
+        x.disabled = +status === 10 || +status === 20;
+      });
+      if (+status === 0) {
+        buttons.value[1].disabled = true;
+        buttons.value[2].disabled = true;
+      }
+      buttons.value[buttons.value.length - 1].disabled = false;
+      buttons.value[0].label = +status === 0 ? '初始化' : '同步配置';
+      serverStatusInfo.value = {
+        label: (statusMap as any)[status],
+        color: '',
+      };
+      console.log(buttons.value);
+    });
+
+    watch(thenRefresh, () => {
+      getServerInfo();
     });
 
     // 右侧组件名称
@@ -255,40 +320,68 @@ export default {
       drawerName.value = 'ServerPortsInfo';
     };
 
-    // 打开下载详情
-    const openDownloadInfo = () => {
-      componentName.value = 'ServerPropertyInfo';
-    };
-
     // 模型、关联详情数据
     const modelInfo = ref(null);
-    const relationSelected = ref(null);
     provide('currentModel', modelInfo);
     provide('configs', { allTypes, tags, classifications });
-    const modelSelected = (model: any) => {
+    provide('afterRemove', () => {
+      isShowDownDrawer.value = false;
       componentName.value = '';
+      initModelList();
+    });
+    provide('afterUpdate', () => {
+      initModelList();
+    });
+
+    const modelSelected = (model: any) => {
       modelInfo.value = null;
-      relationSelected.value = null;
       if (model) {
-        if (model.line) {
-          relationSelected.value = model.line;
+        if (model.relationInfo) {
+          componentName.value = 'RelationInfo';
+          modelInfo.value = model.relationInfo;
           isShowDownDrawer.value = false;
         } else {
+          componentName.value = 'ModelBaseInfo';
           modelInfo.value = Object.assign(model, { tag: model.tags });
           isShowDownDrawer.value = true;
           drawerName.value = 'ModelFieldForm';
         }
       } else {
         isShowDownDrawer.value = false;
+        componentName.value = '';
       }
     };
+
+    const computedComponentData = computed(() =>
+      componentName.value === 'ServerBaseInfo' ? serverInfo.value : modelInfo.value,
+    );
+
+    // 切换服务
+    const selectService = (value: number) => {
+      currentServiceId.value = value;
+      getServerInfo();
+      componentName.value = '';
+      isShowDownDrawer.value = false;
+    };
+
     watch(componentName, () => {
-      if (componentName.value) modelInfo.value = null;
+      if (componentName.value !== 'ModelBaseInfo') modelInfo.value = null;
     });
+    const logs = (res: any) => {
+      console.log(res, 'this is log');
+      return res;
+    };
+
+    const enterLogs = () => {
+      getTreaceId().then((res) => {
+        console.log(res, '2e323');
+      });
+    };
     return {
       isShowDownDrawer,
       computedHeight,
       currentServiceId,
+      selectService,
       isOpenProperties,
       serverInfo,
       serverList,
@@ -300,17 +393,22 @@ export default {
       drawerName,
       openBaseInfo,
       openPropertyInfo,
-      openDownloadInfo,
       modelList,
       initModelList,
       erdLoading,
       modelSelected,
       modelInfo,
-      relationSelected,
       logDialogVisible,
       logData,
       clearLogInterVal,
       formatLogData,
+      computedComponentData,
+      sqlDialogVisiable,
+      sqlData,
+      logs,
+      clearSql,
+      enterLogs,
+      statusMap,
     };
   },
 };
@@ -318,7 +416,7 @@ export default {
 
 <style lang="scss" scoped>
 .detail {
-  height: 90vh;
+  height: calc(100vh - 170px);
   &-icon {
     padding: 9px;
   }
@@ -363,10 +461,18 @@ export default {
 }
 .log-content {
   width: 100%;
-  height: 550px;
+  height: 750px;
   overflow-y: auto;
   background-color: rgba(0, 0, 0, 0.8);
-  color: white;
+  font-size: 13px;
+  color: #666666;
+}
+.sql-content {
+  background-color: white;
+  border: solid 1px rgba(0, 0, 0, 0.4);
+  color: black;
+  font-weight: 400;
+  padding: 10px;
 }
 .log-item {
   width: 100%;

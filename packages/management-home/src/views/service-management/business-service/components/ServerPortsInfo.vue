@@ -13,11 +13,19 @@
           <el-option
             v-for="(option, index) in requestMethodOptions"
             :key="index"
-            :label="option"
-            :value="option"
+            :label="option.label"
+            :value="option.value"
           ></el-option>
         </el-select>
-        <template v-else>{{ scope.row.method }}</template>
+        <template v-else>{{ getMethodName(scope.row.method) }}</template>
+      </template>
+    </el-table-column>
+    <el-table-column label="数据模型" prop="modelId">
+      <template #default="scope">
+        <el-select v-if="!scope.row.isSystem" v-model="scope.row.modelId" placeholder="请选择数据模型">
+          <el-option v-for="(model, index) in modelList" :key="index" :label="model.name" :value="model.id"></el-option>
+        </el-select>
+        <template v-else>{{ scope.row.modelName }}</template>
       </template>
     </el-table-column>
     <el-table-column label="URL" prop="url">
@@ -47,10 +55,10 @@
     <el-button @click="cancelChange">取消</el-button>
   </div>
   <!-- 参数配置弹窗 -->
-  <el-dialog title="参数配置" v-model="dialogVisible" width="30%">
+  <el-dialog title="参数配置" v-model="dialogVisible" width="50%">
     <el-row>
       <el-col :span="4" style="text-align: center;vertical-align: middle;line-height: 32px;">
-        {{ dialogState.method }}
+        {{ getMethodName(dialogState.method) }}
       </el-col>
       <el-col :span="20">
         <el-input v-model="dialogState.url" placeholder="请输入URL"></el-input>
@@ -58,9 +66,11 @@
     </el-row>
     <el-row>
       <el-button-group>
-        <el-button @click="dialogState.paramType = 'REQUEST_PARAM'">params</el-button>
-        <el-button @click="dialogState.paramType = 'PATH_VARIABLE'">query</el-button>
-        <el-button v-if="dialogState.method === 'POST'" @click="dialogState.paramType = 'REQUEST_BODY'">body</el-button>
+        <el-button @click="dialogState.paramType = ParamTypeEnum.REQUEST_PARAM">params</el-button>
+        <el-button @click="dialogState.paramType = ParamTypeEnum.PATH_VARIABLE">query</el-button>
+        <el-button v-if="dialogState.method === 1" @click="dialogState.paramType = ParamTypeEnum.REQUEST_BODY">
+          body
+        </el-button>
       </el-button-group>
       <el-table :data="computedParams" border>
         <el-table-column prop="name" label="参数名称">
@@ -68,7 +78,19 @@
             <el-input v-model="scope.row.name" placeholder="请输入参数名称"></el-input>
           </template>
         </el-table-column>
-        <el-table-column label="参数类型">{{ dialogState.paramType }}</el-table-column>
+        <el-table-column label="参数类型">{{ ParamTypeEnum[dialogState.paramType] }}</el-table-column>
+        <el-table-column prop="type" label="数据类型">
+          <template #default="scope">
+            <el-select v-model="scope.row.type" placeholder="请选择数据类型">
+              <el-option
+                v-for="(item, index) in dataTypeOptions"
+                :key="index"
+                :label="item.label"
+                :value="item.value"
+              ></el-option>
+            </el-select>
+          </template>
+        </el-table-column>
         <el-table-column prop="required" label="是否必填">
           <template #default="scope">
             <el-select v-model="scope.row.required">
@@ -98,12 +120,52 @@
 import { defineComponent, ref, reactive, watch, getCurrentInstance, SetupContext } from 'vue';
 import { getServiceApis, updateServiceApis } from '@/api/servers';
 
+// 参数类型枚举
+enum ParamTypeEnum {
+  'REQUEST_PARAM',
+  'REQUEST_BODY',
+  'PATH_VARIABLE',
+}
+
+// 请求方式枚举
+enum RequestMethodEnum {
+  'GET',
+  'POST',
+  'PUT',
+}
+
+// 请求方式选项
+const requestMethodOptions = Object.entries(RequestMethodEnum)
+  .slice(0, Object.entries(RequestMethodEnum).length / 2)
+  .map(([key, value]) => ({ label: value, value: Number.parseInt(key, 10) }));
+
+// 数据类型枚举
+enum DataTypeEnum {
+  'String',
+  'Integer',
+  'Long',
+  'Float',
+  'Double',
+  'Boolean',
+  'Date',
+  'File',
+}
+
+// 数据类型选项
+const dataTypeOptions = Object.entries(DataTypeEnum)
+  .slice(0, Object.entries(DataTypeEnum).length / 2)
+  .map(([key, value]) => ({ label: value, value: Number.parseInt(key, 10) }));
+
 export default defineComponent({
   name: 'ServerPortsInfo',
   props: {
     id: {
       type: String,
       default: '',
+    },
+    modelList: {
+      type: Array,
+      default: () => [],
     },
   },
   emits: ['back'],
@@ -137,8 +199,10 @@ export default defineComponent({
       tableData.value.splice(index, 1);
     };
 
-    // 请求方式选项数组
-    const requestMethodOptions = ['PUT', 'GET', 'POST', 'DELETE'];
+    const getMethodName = (id: number) => {
+      const target = requestMethodOptions.filter((item) => item.value === id);
+      return target[0]?.label || '';
+    };
 
     const currentItemIndex = ref(0);
 
@@ -149,8 +213,10 @@ export default defineComponent({
     const dialogState = reactive({
       method: '',
       url: '',
+      name: '',
       params: [] as any[],
-      paramType: 'REQUEST_PARAM',
+      type: '',
+      paramType: 0,
     });
 
     // 参数列表表格数据
@@ -161,8 +227,11 @@ export default defineComponent({
       () => dialogState.paramType,
       () => {
         const result = dialogState.params.filter((item: any) => item.paramType === dialogState.paramType);
-        result.push({ name: '', paramType: dialogState.paramType, required: '' });
+        result.push({ name: '', paramType: dialogState.paramType, required: '', type: '' });
         computedParams.value = result;
+      },
+      {
+        immediate: true,
       },
     );
 
@@ -170,8 +239,10 @@ export default defineComponent({
     const openParamsModel = (index: number, rowData: any) => {
       currentItemIndex.value = index;
       dialogVisible.value = true;
+      dialogState.name = rowData.name || '';
       dialogState.method = rowData.method;
       dialogState.url = rowData.url;
+      dialogState.type = rowData.type;
       dialogState.params = rowData.params || [];
     };
 
@@ -181,6 +252,8 @@ export default defineComponent({
         name: '',
         paramType,
         required: '',
+        type: '',
+        isSystem: 0,
       });
     };
 
@@ -191,10 +264,12 @@ export default defineComponent({
 
     // 参数配置修改
     const handleParamsModify = () => {
-      const params = computedParams.value.map((param: any, index: number) => ({
-        ...param,
-        ...{ paramOrder: index, description: '' },
-      }));
+      const params = computedParams.value
+        .map((param: any, index: number) => ({
+          ...param,
+          ...{ paramOrder: index, description: '' },
+        }))
+        .filter((item: any) => item.name !== '');
       tableData.value[currentItemIndex.value].params = params;
       dialogVisible.value = false;
     };
@@ -207,21 +282,23 @@ export default defineComponent({
     // 保存接口修改
     const updateApis = async () => {
       const { code } = await updateServiceApis(
-        { apis: tableData.value.filter((item: any) => item.name !== '' && item.isSystem !== 1) },
+        { apis: tableData.value.filter((item: any) => item.name !== '' && item.isSystem === 0) },
         props.id,
       );
       if (code === 0) {
         (instance as any).proxy.$message({
           type: 'success',
-          message: '删除成功',
+          message: '保存成功',
         });
         cancelChange();
       }
     };
 
     return {
+      ParamTypeEnum,
       tableData,
       requestMethodOptions,
+      getMethodName,
       dialogVisible,
       dialogState,
       computedParams,
@@ -233,6 +310,7 @@ export default defineComponent({
       handleParamsModify,
       updateApis,
       cancelChange,
+      dataTypeOptions,
     };
   },
 });

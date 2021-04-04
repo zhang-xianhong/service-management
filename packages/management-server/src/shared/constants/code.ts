@@ -86,3 +86,9 @@ export enum SettingCodes {
   // 存在叶子节点
   EXIST_CHILD_NODES = 50001,
 }
+
+// 状态
+export enum StatusCodes {
+  STATUS_AVAILABLE = 0,
+  STATUS_UNAVAILABLE = 1,
+}

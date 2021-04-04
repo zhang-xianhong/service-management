@@ -22,6 +22,7 @@ export class ServicesApiParamModel extends BaseModel {
   @Column({
     type: DataType.TINYINT,
     defaultValue: TYPE.String,
+    comment: '0:String，1:Integer，2:Long，3:Float，4:Double，5:Boolean，6:Date，7:File',
   })
   type: TYPE;
 
@@ -30,6 +31,7 @@ export class ServicesApiParamModel extends BaseModel {
     type: DataType.TINYINT,
     field: 'param_type',
     defaultValue: PARAM_TYPE.REQUEST_PARAM,
+    comment: '0:REQUEST_PARAM，1:REQUEST_BODY，2:PATH_VARIABLE',
   })
   paramType: PARAM_TYPE;
 
@@ -64,17 +66,10 @@ export class ServicesApiParamModel extends BaseModel {
   @ForeignKey(() => ServicesApiModel)
   @Column({
     type: DataType.BIGINT,
-    field: 'api_id',
+    field: 'service_api_id',
   })
-  apiId: number;
+  serviceApiId: number;
 
   @BelongsTo(() => ServicesApiModel)
   apiInfo: ServicesApiModel;
-
-  // 版本号
-  @Column({
-    type: DataType.INTEGER,
-    defaultValue: 0,
-  })
-  version: number;
 }

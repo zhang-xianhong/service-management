@@ -1,69 +1,100 @@
 <template>
-  <div class="tenant">
-    <div class="tenant-head">
-      <div class="tenant-head_left">
-        <el-button icon="el-icon-plus" type="primary">新建</el-button>
-        <el-button>冻结</el-button>
-        <el-button>删除</el-button>
-      </div>
-      <div class="tenant-head_right">
-        <el-input placeholder="请输入企业名称" style="width: 250px">
-          <template #append>
-            <el-button icon="el-icon-search"></el-button>
-          </template>
-        </el-input>
-      </div>
-    </div>
-    <div class="tenant-content">
-      <el-table :data="listData.list">
-        <el-table-column property="name" label="项目名称"></el-table-column>
-        <el-table-column property="person" label="负责人"></el-table-column>
-        <el-table-column property="tel" label="联系电话"></el-table-column>
-        <el-table-column property="email" label="电子邮箱"></el-table-column>
-        <el-table-column property="manager" label="管理员"></el-table-column>
-        <el-table-column property="managerTel" label="管理员电话"></el-table-column>
-        <el-table-column property="status" label="状态"></el-table-column>
-      </el-table>
-    </div>
-  </div>
+  <company-info :isEdit="isEdit" v-model="tenantDetail"></company-info>
+  <user-info :isEdit="isEdit" v-model="tenantDetail"></user-info>
+  <manager-info :isEdit="isEdit" v-model="tenantDetail"></manager-info>
+  <el-row>
+    <el-button v-if="!isEdit" type="primary" @click="isEdit = true">修改</el-button>
+    <el-button v-else type="primary" @click="onSave">保存</el-button>
+  </el-row>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue';
-import { getTenantListForTable } from '@/views/tenant-management/tenant-serve-tools/tenant-data-utils';
+import { ref, getCurrentInstance } from 'vue';
+import CompanyInfo from './components/CompanyInfo.vue';
+import UserInfo from './components/UserInfo.vue';
+import ManagerInfo from './components/ManagerInfo.vue';
+import { getTenantDetail, updateTenant } from '@/api/tenant';
 
-export default defineComponent({
-  name: 'Tenant',
+export default {
+  name: 'TenantEdit',
+  components: {
+    CompanyInfo,
+    UserInfo,
+    ManagerInfo,
+  },
   setup() {
-    const listData = ref({} as any);
-    function refreshTable() {
-      getTenantListForTable().then((res) => {
-        listData.value = res.data;
-        console.log(listData.value);
+    // 组件实例
+    const instance = getCurrentInstance();
+
+    // TODO: 后续从用户信息中获取，目前先写死
+    const tenantId = '1';
+
+    const isEdit = ref(false);
+
+    // 租户详情
+    const tenantDetail = ref({
+      contact: {},
+      manager: {},
+    } as any);
+
+    const getDetail = async () => {
+      const { data } = await getTenantDetail(tenantId);
+      tenantDetail.value = data;
+    };
+
+    getDetail();
+
+    const onSave = async () => {
+      const { code } = await updateTenant(tenantId, {
+        ...tenantDetail.value,
+        ...{ contact: undefined, manager: undefined },
       });
-    }
-    refreshTable();
+      if (code === 0) {
+        (instance as any).proxy.$message({
+          type: 'success',
+          message: '更新成功',
+        });
+        isEdit.value = false;
+      }
+    };
+
     return {
-      listData,
+      isEdit,
+      tenantDetail,
+      onSave,
     };
   },
-});
+};
 </script>
 
 <style lang="scss">
-.tenant {
-  &-head {
-    width: 100%;
-    height: 40px;
-    line-height: 40px;
-    display: flex;
-    margin-bottom: 10px;
-    & > div {
-      flex: 1;
-    }
-    &_right {
-      text-align: right;
-    }
+.tenant-form {
+  width: 100%;
+}
+.form-item {
+  width: 40%;
+}
+.avatar-uploader .el-upload {
+  border: 1px dashed #d9d9d9;
+  border-radius: 6px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  &:hover {
+    border-color: #409eff;
   }
+}
+.avatar-uploader-icon {
+  font-size: 28px;
+  color: #8c939d;
+  width: 178px;
+  height: 178px;
+  line-height: 178px;
+  text-align: center;
+}
+.avatar {
+  width: 178px;
+  height: 178px;
+  display: block;
 }
 </style>

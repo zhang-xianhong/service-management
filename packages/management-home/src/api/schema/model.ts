@@ -23,7 +23,8 @@ export const getModelDetail = (id: number) => axios.get(`${getUrl(schema.GET_MOD
 export const createModel = (payload: object): Promise<SuccessResponse<any>> =>
   axios.post(getUrl(schema.CREATE_MODEL), payload);
 
-export const updateModel = (payload: object, id: number) => axios.post(`${getUrl(schema.UPDATE_MODEL)}/${id}`, payload);
+export const updateModel = (payload: object, id: number): Promise<SuccessResponse<any>> =>
+  axios.post(`${getUrl(schema.UPDATE_MODEL)}/${id}`, payload);
 
 export const deleteModel = (payload: object): Promise<SuccessResponse<any>> =>
   axios.post(getUrl(schema.DELETE_MODEL), payload);
@@ -33,6 +34,9 @@ export const createRelation = (payload: object): Promise<SuccessResponse<any>> =
 
 export const updateRelation = (relationId: string, payload: object): Promise<SuccessResponse<any>> =>
   axios.post(getUrl(schema.UPDATE_RELATION, relationId), payload);
+
+export const removeRelation = (payload: object): Promise<SuccessResponse<any>> =>
+  axios.post(getUrl(schema.REMOVE_RELATION), payload);
 
 export const updateConfig = (payload: object): Promise<SuccessResponse<any>> =>
   axios.post(getUrl(schema.UPDATE_CONFIG), payload);

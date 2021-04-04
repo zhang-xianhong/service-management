@@ -1,6 +1,6 @@
-import { escape } from 'mysql2';
-
 export type LikePattern = '%value%' | '%value' | 'value%';
+
+const  addSlashes = (string = '') => string.replace(/[_%[\]]/g, match => `\\${match}`);
 
 /**
  * 转义模糊查询
@@ -10,7 +10,7 @@ export type LikePattern = '%value%' | '%value' | 'value%';
  * @returns
  */
 export const escapeLike = (keyword: string, pattern: LikePattern = '%value%') => {
-  const value = escape(keyword);
+  const value = addSlashes(keyword);
   return pattern.replace('value', value);
 };
 

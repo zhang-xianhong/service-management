@@ -3,6 +3,8 @@ import { CommonCodes } from 'src/shared/constants/code';
 import { QueryPipe, SearchQuery } from 'src/shared/pipes/query.pipe';
 import { ApiException } from 'src/shared/utils/api.exception';
 import { isEmpty } from 'src/shared/utils/validator';
+import { DeletedIdsDto, ParamIdDto } from '../base.dto';
+import { ServiceIdDto, ServiceStartDto } from './dto/service-actions.dto';
 import { ServiceApisDto } from './dto/service-apis.dto';
 import { ServiceConfigDto } from './dto/service-config.dto';
 import { ServiceInfoDto } from './dto/service-info.dto';
@@ -37,13 +39,13 @@ export class ServicesController {
 
   // 获取服务详情
   @Get('/:id')
-  async findOneById(@Param() { id }) {
+  async findOneById(@Param() { id }: ParamIdDto) {
     return await this.service.findById(Number(id));
   }
 
   // 删除服务接口
   @Post('/delete')
-  async deleteData(@Body() { ids }) {
+  async deleteData(@Body() { ids }: DeletedIdsDto) {
     return await this.service.deleteServices(ids);
   }
 
@@ -55,20 +57,39 @@ export class ServicesController {
 
   // 新增/更新服务接口
   @Post('/:id/apis')
-  async createApi(@Param() { id }, @Body() body: ServiceApisDto) {
+  async createApi(@Param() { id }: ParamIdDto, @Body() body: ServiceApisDto) {
     return await this.service.addServiceApis(id, body);
   }
 
-  // 初始化服务
-  @Get('/init/:id')
-  async initService(@Param() { id }) {
-    return await this.service.initService(id);
+  // 启动服务
+  @Post('/start')
+  async buildService(@Body() postData: ServiceStartDto) {
+    return await this.service.startService(postData);
   }
 
-  // 构建服务
-  @Post('/build')
-  async buildService(@Body() postData) {
-    return await this.service.buildService(postData);
+  // 停止服务
+  @Post('/stop')
+  async stopService(@Body() { serviceId }: ServiceIdDto) {
+    return await this.service.stopService(serviceId);
+  }
+
+  /**
+   * 获取服务变更记录
+   * @param param0
+   * @returns
+   */
+  @Get('/:id/changes')
+  async getServiceChanges(@Param() { id }) {
+    return await this.service.getServiceModelChanges(id);
+  }
+
+  /**
+   * 应用变更
+   * @param param0
+   */
+  @Post('/changes/apply')
+  async applyChanges(@Body() { serviceId }: ServiceIdDto) {
+    return await this.service.applyChanges(serviceId);
   }
 
   /**
@@ -89,7 +110,7 @@ export class ServicesController {
 
   // 更新服务
   @Post('/:id')
-  async update(@Param() { id }, @Body() body) {
+  async update(@Param() { id }: ParamIdDto, @Body() body) {
     return await this.service.updateService(id, body);
   }
 }
