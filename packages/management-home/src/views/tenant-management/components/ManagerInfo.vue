@@ -11,35 +11,21 @@
       label-position="left"
     >
       <el-form-item prop="account" class="form-item" label="管理员账号" required>
-        <el-input v-model="managerInfo.account" style="width: 400px" placeholder="请输入小写英文账号"></el-input>
+        {{ managerInfo.account }}
       </el-form-item>
-      <el-form-item prop="password" class="form-item" label="初始密码" required>
-        <el-input
-          show-password
-          v-model="managerInfo.password"
-          style="width: 400px"
-          placeholder="请输入初始密码"
-        ></el-input>
-      </el-form-item>
+      <!-- <el-form-item prop="password" class="form-item" label="初始密码" required>
+        {{ managerInfo.password }}
+      </el-form-item> -->
       <el-form-item prop="name" class="form-item" label="管理员姓名" required>
-        <el-input v-model="managerInfo.name" style="width: 400px" placeholder="请输入中文租户管理员姓名"></el-input>
+        {{ managerInfo.name }}
       </el-form-item>
-      <el-form-item prop="confirmPassword" class="form-item" label="确认初始密码" required>
-        <el-input
-          show-password
-          v-model="managerInfo.confirmPassword"
-          style="width: 400px"
-          placeholder="请确认初始密码"
-        ></el-input>
-      </el-form-item>
+      <!-- <el-form-item prop="confirmPassword" class="form-item" label="确认初始密码" required>
+        {{ managerInfo.confirmPassword }}
+      </el-form-item> -->
       <el-form-item prop="phone" class="form-item" label="管理员电话" required>
-        <el-input v-model="managerInfo.phone" style="width: 400px" placeholder="请输入管理员电话号码"></el-input>
+        {{ managerInfo.phone }}
       </el-form-item>
     </el-form>
-  </el-row>
-  <el-row>
-    <el-button @click="goPreviousStep">上一步</el-button>
-    <el-button type="primary" @click="onSubmit">完成</el-button>
   </el-row>
 </template>
 
@@ -121,24 +107,10 @@ export default {
       confirmPassword: [{ validator: checkPasswordValidator, trigger: 'blur' }],
     };
 
-    const goPreviousStep = () => {
-      ctx.emit('go', 2);
-    };
-
-    const onSubmit = () => {
-      formRef.value.validate((validator: boolean) => {
-        if (validator) {
-          ctx.emit('submit');
-        }
-      });
-    };
-
     return {
       formRef,
       managerInfo,
       rules,
-      goPreviousStep,
-      onSubmit,
     };
   },
 };
