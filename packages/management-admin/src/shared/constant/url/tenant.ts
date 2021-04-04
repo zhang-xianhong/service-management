@@ -5,4 +5,6 @@ export default {
   DELETE_TENANT: ['/tenants/delete/_', '/mock/services/delete.json'],
   FREEZE_TENANT: ['/tenants/freeze/_', '/mock/services/delete.json'],
   ENABLE_TENANT: ['/tenants/enable/_', '/mock/services/delete.json'],
+  CREATE_TENANT: ['/tenants', '/mock/services/delete.json'],
+  UPDATE_TENT: ['/tenants/_', 'mock/services/delete.json'],
 };

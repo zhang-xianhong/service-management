@@ -17,3 +17,9 @@ export const freezeTenant: (id: string) => Promise<SuccessResponse<any>> = (id: 
 
 export const enableTenant: (id: string) => Promise<SuccessResponse<any>> = (id: string) =>
   request.post(getUrl(URL.tenant.ENABLE_TENANT, id));
+
+export const createTenant: (payload: any) => Promise<SuccessResponse<any>> = (payload: any) =>
+  request.post(getUrl(URL.tenant.CREATE_TENANT), payload);
+
+export const updateTenant: (id: string, payload: any) => Promise<SuccessResponse<any>> = (id: string, payload: any) =>
+  request.post(getUrl(URL.tenant.UPDATE_TENT, id), payload);

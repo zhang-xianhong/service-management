@@ -70,19 +70,29 @@
         <el-input v-else v-model="companyInfo.license" style="width: 400px" placeholder="请输入营业执照号"></el-input>
       </el-form-item>
       <el-form-item prop="licenseUrl" class="form-item" label="营业执照" required>
-        <img v-if="companyInfo.licenseUrl" :src="companyInfo.licenseUrl" class="avatar" />
+        <img v-if="licenseUrl" :src="licenseUrl" class="avatar" />
         <el-upload
           v-else
           class="avatar-uploader"
-          action="https://jsonplaceholder.typicode.com/posts/"
+          :action="IMAGE_UPLOAD"
+          accept=".jpg,.bmp,.png,jpeg"
           :show-file-list="false"
+          :before-upload="beforeUpload"
+          @success="licenseUploadSuccess"
         >
           <i class="el-icon-plus avatar-uploader-icon"></i>
         </el-upload>
       </el-form-item>
       <el-form-item prop="logoUrl" class="form-item" label="企业logo">
-        <el-upload class="avatar-uploader" action="https://jsonplaceholder.typicode.com/posts/" :show-file-list="false">
-          <img v-if="companyInfo.logoUrl" :src="companyInfo.companyLogoUrl" class="avatar" />
+        <el-upload
+          class="avatar-uploader"
+          :action="IMAGE_UPLOAD"
+          accept=".jpg,.bmp,.png,jpeg"
+          :show-file-list="false"
+          :before-upload="beforeUpload"
+          @success="logoUploadSuccess"
+        >
+          <img v-if="logoUrl" :src="logoUrl" class="avatar" />
           <i v-else class="el-icon-plus avatar-uploader-icon"></i>
         </el-upload>
       </el-form-item>
@@ -94,8 +104,11 @@
 </template>
 
 <script lang="ts">
-import { computed, SetupContext, ref, WritableComputedRef } from 'vue';
+import { computed, SetupContext, ref, WritableComputedRef, getCurrentInstance, Ref, watch } from 'vue';
 import useCompanyInfo from '../utils/tenant-config';
+import { IMAGE_UPLOAD } from '@/shared/constant/file';
+import { SuccessResponse } from '@/types/response';
+import { getImageUrl } from '@/api/files';
 
 interface CompanyInfoInterface {
   name: string; // 企业名称
@@ -113,7 +126,7 @@ interface CompanyInfoInterface {
 
 export default {
   name: 'CompanyInfo',
-  emits: ['go', 'update:modelValue'],
+  emits: ['go', 'submit'],
   props: {
     isEdit: {
       type: Boolean,
@@ -125,12 +138,48 @@ export default {
     },
   },
   setup(props: { isEdit: boolean; modelValue: any }, ctx: SetupContext) {
+    // 组件实例
+    const instance = getCurrentInstance();
+
+    // 表单引用
     const formRef: any = ref(null);
 
-    const companyInfo: WritableComputedRef<CompanyInfoInterface> = computed({
-      get: () => props.modelValue || {},
-      set: (newValue: any) => ctx.emit('update:modelValue', newValue),
-    });
+    // 企业信息
+    const companyInfo: WritableComputedRef<CompanyInfoInterface> = computed(() => props.modelValue);
+
+    // 企业执照图片url
+    const licenseUrl: Ref<string> = ref('');
+
+    // 企业logo图片url
+    const logoUrl: Ref<string> = ref('');
+
+    // 根据fileKey获取文件url
+    const getFileUrl = async (type: 'licenseUrl' | 'logoUrl') => {
+      if (companyInfo.value[type]) {
+        const { data } = await getImageUrl({ fileKey: companyInfo.value[type] });
+        return data.url;
+      }
+    };
+
+    watch(
+      () => companyInfo.value.licenseUrl,
+      async () => {
+        if (!licenseUrl.value) {
+          const url = await getFileUrl('licenseUrl');
+          licenseUrl.value = url;
+        }
+      },
+    );
+
+    watch(
+      () => companyInfo.value.logoUrl,
+      async () => {
+        if (!logoUrl.value) {
+          const url = await getFileUrl('logoUrl');
+          logoUrl.value = url;
+        }
+      },
+    );
 
     // 表单校验规则
     const rules = {
@@ -149,9 +198,11 @@ export default {
       license: [{ required: true, message: '请输入营业执照号', trigger: 'blur' }],
       licenseUrl: [{ required: true, message: '请上传营业执照', trigger: 'blur' }],
     };
+
     // 行业选项信息
     const industryOptions = ref([] as any[]);
 
+    // 已选行业展示
     const computedIndustryName = computed(
       () =>
         industryOptions.value.filter((item: any) => item.key === companyInfo.value.industryId)[0]?.value ||
@@ -164,6 +215,7 @@ export default {
     // 企业性质选项信息
     const natureOptions = ref([] as any[]);
 
+    // 已选企业性质展示
     const computedNature = computed(
       () =>
         natureOptions.value.filter((item: any) => item.key === companyInfo.value.natureId)[0]?.value ||
@@ -173,18 +225,57 @@ export default {
     // 企业规模选项信息
     const scaleOptions = ref([] as any[]);
 
+    // 已选企业规模展示
     const computedScale = computed(
       () =>
         scaleOptions.value.filter((item: any) => item.key === companyInfo.value.scaleId)[0]?.value ||
         companyInfo.value.scaleId,
     );
 
+    // 获取企业所有配置相关信息
     useCompanyInfo().then((res: any) => {
       industryOptions.value = res.industryOptions;
       natureOptions.value = res.natureOptions;
       scaleOptions.value = res.scaleOptions;
       provinceOptions.value = res.provinceOptions;
     });
+
+    // 图片上传大小校验
+    const beforeUpload = (file: { size: number }) => {
+      if (file.size > 1024 * 1024 * 3) {
+        (instance as any).proxy.$message({
+          type: 'warning',
+          message: '上传图片大小不能超过 3Mb',
+        });
+        return false;
+      }
+    };
+
+    // 企业执照上传成功回调
+    const licenseUploadSuccess = (res: SuccessResponse<any>, file: { raw: unknown }) => {
+      if (res.code === 0 && res.data?.fileKey) {
+        companyInfo.value.licenseUrl = res.data.fileKey;
+        licenseUrl.value = URL.createObjectURL(file.raw);
+      } else {
+        (instance as any).proxy.$message({
+          type: 'error',
+          message: '上传失败，请重新上传！',
+        });
+      }
+    };
+
+    // 企业logo上传成功回调
+    const logoUploadSuccess = (res: SuccessResponse<any>, file: { raw: unknown }) => {
+      if (res.code === 0 && res.data?.fileKey) {
+        companyInfo.value.logoUrl = res.data.fileKey;
+        logoUrl.value = URL.createObjectURL(file.raw);
+      } else {
+        (instance as any).proxy.$message({
+          type: 'error',
+          message: '上传失败，请重新上传！',
+        });
+      }
+    };
 
     // 点击前往下一步
     const goNextStep = () => {
@@ -194,9 +285,13 @@ export default {
         }
       });
     };
+
     return {
+      IMAGE_UPLOAD,
       formRef,
       companyInfo,
+      licenseUrl,
+      logoUrl,
       rules,
       industryOptions,
       computedIndustryName,
@@ -206,6 +301,9 @@ export default {
       scaleOptions,
       computedScale,
       goNextStep,
+      beforeUpload,
+      licenseUploadSuccess,
+      logoUploadSuccess,
     };
   },
 };

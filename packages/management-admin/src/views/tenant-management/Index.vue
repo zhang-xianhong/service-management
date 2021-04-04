@@ -99,8 +99,8 @@ interface TableStateInterface {
 
 // 租户状态
 enum statusEnum {
-  'FREEZE',
   'START',
+  'FREEZE',
 }
 
 export default {

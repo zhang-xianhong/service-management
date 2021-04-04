@@ -11,9 +11,10 @@
       label-position="left"
     >
       <el-form-item prop="account" class="form-item" label="管理员账号" required>
-        <el-input v-model="managerInfo.account" style="width: 400px" placeholder="请输入小写英文账号"></el-input>
+        <template v-if="isEdit">{{ managerInfo.account }}</template>
+        <el-input v-else v-model="managerInfo.account" style="width: 400px" placeholder="请输入小写英文账号"></el-input>
       </el-form-item>
-      <el-form-item prop="password" class="form-item" label="初始密码" required>
+      <el-form-item v-if="!isEdit" prop="password" class="form-item" label="初始密码" required>
         <el-input
           show-password
           v-model="managerInfo.password"
@@ -22,9 +23,15 @@
         ></el-input>
       </el-form-item>
       <el-form-item prop="name" class="form-item" label="管理员姓名" required>
-        <el-input v-model="managerInfo.name" style="width: 400px" placeholder="请输入中文租户管理员姓名"></el-input>
+        <template v-if="isEdit">{{ managerInfo.name }}</template>
+        <el-input
+          v-else
+          v-model="managerInfo.name"
+          style="width: 400px"
+          placeholder="请输入中文租户管理员姓名"
+        ></el-input>
       </el-form-item>
-      <el-form-item prop="confirmPassword" class="form-item" label="确认初始密码" required>
+      <el-form-item v-if="!isEdit" prop="confirmPassword" class="form-item" label="确认初始密码" required>
         <el-input
           show-password
           v-model="managerInfo.confirmPassword"
@@ -33,7 +40,8 @@
         ></el-input>
       </el-form-item>
       <el-form-item prop="phone" class="form-item" label="管理员电话" required>
-        <el-input v-model="managerInfo.phone" style="width: 400px" placeholder="请输入管理员电话号码"></el-input>
+        <template v-if="isEdit">{{ managerInfo.phone }}</template>
+        <el-input v-else v-model="managerInfo.phone" style="width: 400px" placeholder="请输入管理员电话号码"></el-input>
       </el-form-item>
     </el-form>
   </el-row>
@@ -46,6 +54,7 @@
 <script lang="ts">
 import { computed, ref, SetupContext, WritableComputedRef } from 'vue';
 
+// 管理员信息接口
 interface ManagerInfoInterface {
   account: string;
   name: string;
@@ -64,7 +73,10 @@ export default {
     },
     modelValue: {
       type: Object,
-      default: () => ({}),
+      default: () => ({
+        contact: {},
+        manager: {},
+      }),
     },
   },
   setup(props: { isEdit: boolean; modelValue: any }, ctx: SetupContext) {
@@ -72,10 +84,7 @@ export default {
     const formRef: any = ref(null);
 
     // 管理员信息
-    const managerInfo: WritableComputedRef<ManagerInfoInterface> = computed({
-      get: () => props.modelValue?.manager || {},
-      set: (newValue: any) => ctx.emit('update:modelValue', newValue),
-    });
+    const managerInfo: WritableComputedRef<ManagerInfoInterface> = computed(() => props.modelValue.manager);
 
     // 初始密码校验
     const validatePass = (rule: any, value: string, callback: Function) => {

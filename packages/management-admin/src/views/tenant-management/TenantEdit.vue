@@ -7,17 +7,17 @@
     </el-steps>
   </el-row>
   <keep-alive>
-    <component :is="componentName" @go="goStep" :isEdit="isEdit" v-model="tenantDetail"></component>
+    <component :is="componentName" :isEdit="isEdit" v-model="tenantDetail" @go="goStep" @submit="onSubmit"></component>
   </keep-alive>
 </template>
 
 <script lang="ts">
-import { reactive, toRefs, ref } from 'vue';
+import { reactive, toRefs, ref, getCurrentInstance } from 'vue';
 import CompanyInfo from './components/CompanyInfo.vue';
 import UserInfo from './components/UserInfo.vue';
 import ManagerInfo from './components/ManagerInfo.vue';
-import { useRoute } from 'vue-router';
-import { getTenantDetail } from '@/api/tenant';
+import { useRoute, useRouter } from 'vue-router';
+import { getTenantDetail, createTenant, updateTenant } from '@/api/tenant';
 
 export default {
   name: 'TenantEdit',
@@ -27,14 +27,20 @@ export default {
     ManagerInfo,
   },
   setup() {
+    const instance = getCurrentInstance();
     // 路由信息
     const route = useRoute();
+
+    const router = useRouter();
 
     const tenantId = route.params.id as string;
 
     const isEdit = parseInt(tenantId, 10) > 0;
 
-    const tenantDetail = ref({} as any);
+    const tenantDetail = ref({
+      contact: {},
+      manager: {},
+    } as any);
 
     const getDetail = async () => {
       const { data } = await getTenantDetail(tenantId);
@@ -52,13 +58,49 @@ export default {
 
     const goStep = (step: number) => {
       state.activeStep = step;
-      state.componentName = step === 2 ? 'UserInfo' : 'ManagerInfo';
+      switch (step) {
+        case 1:
+          state.componentName = 'CompanyInfo';
+          break;
+        case 2:
+          state.componentName = 'UserInfo';
+          break;
+        default:
+          state.componentName = 'ManagerInfo';
+      }
     };
+
+    const onSubmit = async () => {
+      if (isEdit) {
+        const { code } = await updateTenant(tenantId, {
+          ...tenantDetail.value,
+          ...{ contact: undefined, manager: undefined },
+        });
+        if (code === 0) {
+          (instance as any).proxy.$message({
+            type: 'success',
+            message: '更新成功',
+          });
+          router.back();
+        }
+      } else {
+        const { code } = await createTenant(tenantDetail.value);
+        if (code === 0) {
+          (instance as any).proxy.$message({
+            type: 'success',
+            message: '新建成功',
+          });
+          router.back();
+        }
+      }
+    };
+
     return {
       ...toRefs(state),
       isEdit,
       tenantDetail,
       goStep,
+      onSubmit,
     };
   },
 };

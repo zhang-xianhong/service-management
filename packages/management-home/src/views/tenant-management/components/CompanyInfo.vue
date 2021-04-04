@@ -66,7 +66,7 @@
         <el-input v-model="companyInfo.license" style="width: 400px" placeholder="请输入营业执照号"></el-input>
       </el-form-item>
       <el-form-item prop="licenseUrl" class="form-item" label="营业执照" required>
-        <el-upload class="avatar-uploader" action="https://jsonplaceholder.typicode.com/posts/" :show-file-list="false">
+        <el-upload class="avatar-uploader" :action="upload" accept=".jpg,.bmp,.png,jpeg" :show-file-list="false">
           <img v-if="companyInfo.licenseUrl" :src="companyInfo.licenseUrl" class="avatar" />
           <i v-else class="el-icon-plus avatar-uploader-icon"></i>
         </el-upload>
@@ -85,8 +85,9 @@
 </template>
 
 <script lang="ts">
-import { computed, SetupContext, ref, WritableComputedRef } from 'vue';
+import { computed, SetupContext, ref, WritableComputedRef, getCurrentInstance } from 'vue';
 import useCompanyInfo from '../utils/tenant-config';
+import { upload } from '@/api/file';
 
 interface CompanyInfoInterface {
   name: string; // 企业名称
@@ -116,6 +117,8 @@ export default {
     },
   },
   setup(props: { isEdit: boolean; modelValue: any }, ctx: SetupContext) {
+    const instance = getCurrentInstance();
+
     const formRef: any = ref(null);
 
     const companyInfo: WritableComputedRef<CompanyInfoInterface> = computed({
@@ -159,6 +162,16 @@ export default {
       provinceOptions.value = res.provinceOptions;
     });
 
+    const beforeUpload = (file: { size: number }) => {
+      if (file.size > 1024 * 1024 * 3) {
+        (instance as any).proxy.$message({
+          type: 'warning',
+          message: '上传图片大小不能超过 3Mb',
+        });
+        return false;
+      }
+    };
+
     // 点击前往下一步
     const goNextStep = () => {
       formRef.value.validate(async (valid: boolean) => {
@@ -168,6 +181,7 @@ export default {
       });
     };
     return {
+      upload,
       formRef,
       companyInfo,
       rules,
@@ -176,6 +190,7 @@ export default {
       natureOptions,
       scaleOptions,
       goNextStep,
+      beforeUpload,
     };
   },
 };
