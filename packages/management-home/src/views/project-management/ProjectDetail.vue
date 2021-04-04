@@ -7,7 +7,7 @@
           <span class="edit-btn" v-if="!editMode" @click="editMode = true">编辑</span>
         </div>
         <basic-info-form
-          :id="id"
+          :project-detail="projectDetail"
           :editMode="editMode"
           @submit="editMode = false"
           @cancel="editMode = false"
@@ -17,10 +17,16 @@
     <el-row class="user-info">
       <div class="user-tree">
         <el-scrollbar>
-          <el-tree :data="treeData" :default-expand-all="true">
+          <el-tree
+            :data="treeData"
+            :default-expand-all="true"
+            :expand-on-click-node="false"
+            @node-click="nodeClickHandler"
+          >
             <template #default="{ node, data }">
               <div class="customNode">
-                <i v-if="node.level < 3" class="el-icon-folder"></i>
+                <svg-icon v-if="node.level < 3" icon-name="folder" icon-class="tree-node-folder"></svg-icon>
+                <svg-icon v-if="node.level === 3" icon-name="member" icon-class="tree-node-member"></svg-icon>
                 <span>{{ node.label }}</span>
                 <i
                   v-if="node.level === 2"
@@ -36,10 +42,15 @@
       <div class="user-table">
         <el-table :data="userList" height="calc(100% - 50px)">
           <el-table-column type="index" width="55"></el-table-column>
-          <el-table-column v-for="column in columns" :key="column.prop" :label="column.label"></el-table-column>
+          <el-table-column
+            v-for="column in columns"
+            :key="column.prop"
+            :label="column.label"
+            :prop="column.prop"
+          ></el-table-column>
           <el-table-column prop="operator" width="55">
             <template #default="{ row, $index }">
-              <i class="el-icon-error" @click="removeUser(row, $index)"></i>
+              <i class="el-icon-error remove-user-icon" @click="removeUser(row, $index)"></i>
             </template>
           </el-table-column>
         </el-table>
@@ -47,7 +58,7 @@
       </div>
     </el-row>
     <tree-selector
-      :option="allUser"
+      :option="allDeptUser"
       v-model="selectedUser"
       optionPlaceholder="请输入部门/人员名称"
       optionLabel="选择人员"
@@ -58,10 +69,21 @@
 </template>
 
 <script lang="ts">
-import { ref } from 'vue';
+import _ from 'lodash/fp';
+import { ref, Ref } from 'vue';
 import TreeSelector from './components/TreeSelector.vue';
 import BasicInfoForm from './components/BasicInfoForm.vue';
 import { ElMessageBox } from 'element-plus';
+import { getMemberList, getProjectDetail } from '@/api/project/project';
+import { getTenentDepartment } from '@/api/tenant';
+const userStatus = {
+  '-1': '阵亡',
+  0: '存活',
+};
+const genderLabel = {
+  0: '男',
+  1: '女',
+};
 export default {
   name: 'ProjectDetail',
   props: {
@@ -70,36 +92,15 @@ export default {
     },
   },
   components: { TreeSelector, BasicInfoForm },
-  setup() {
+  setup(props: any) {
     const treeSelectorRef: any = ref(null);
     const editMode = ref(false);
 
     // 用户树
-    const treeData = ref([
+    const treeData: Ref<any> = ref([
       {
-        label: '测试项目',
-        children: [
-          {
-            label: '项目经理',
-            children: [],
-          },
-          {
-            label: '产品',
-            children: [],
-          },
-          {
-            label: '研发',
-            children: [],
-          },
-          {
-            label: '测试',
-            children: [],
-          },
-          {
-            label: '运维',
-            children: [],
-          },
-        ],
+        label: '',
+        children: [],
       },
     ]);
     const addMember = () => {
@@ -107,45 +108,18 @@ export default {
     };
 
     // tree selector数据
-    const allUser = [
-      {
-        label: '腾云西子',
-        children: [
-          {
-            label: 'A部门',
-            children: [],
-          },
-          {
-            label: 'V部门',
-            children: [],
-          },
-          {
-            label: 'B部门',
-            children: [],
-          },
-          {
-            label: 'D部门',
-            children: [],
-          },
-        ],
-      },
-    ];
-    const selectedUser = [
-      {
-        label: '东尼大木',
-        department: '有关组织',
-      },
-    ];
+    const allDeptUser: Ref<Array<any>> = ref([]);
+    const selectedUser = ref([]);
 
     // 用户列表
-    const userList = ref([]);
+    const userList: Ref<any[]> = ref([]);
     const columns = [
       {
-        prop: 'account',
+        prop: 'userName',
         label: '登录账号',
       },
       {
-        prop: 'name',
+        prop: 'displayName',
         label: '姓名',
       },
       {
@@ -153,19 +127,19 @@ export default {
         label: '性别',
       },
       {
-        prop: 'phone',
+        prop: 'phoneNumber',
         label: '手机',
       },
       {
-        prop: 'mail',
+        prop: 'primaryMail',
         label: '邮箱',
       },
       {
-        prop: 'stauts',
+        prop: 'status',
         label: '状态',
       },
       {
-        prop: 'department',
+        prop: 'deptName',
         label: '部门',
       },
     ];
@@ -178,17 +152,89 @@ export default {
         //
       });
     };
+    // 初始化项目信息
+    const projectDetail = ref({});
+    const getProjectInfo = async () => {
+      const { code, data } = await getProjectDetail(props.id);
+      if (code === 0) {
+        const projectInfo = data;
+        projectInfo.templateId = data.template.id;
+        projectInfo.templateName = data.template.name;
+        projectDetail.value = projectInfo;
+        treeData.value[0].label = data.name;
+      }
+    };
+    getProjectInfo();
+
+    const allUsers = ref([]);
+    const initUserList = async () => {
+      const { code, data } = await getMemberList({
+        projectId: props.id,
+      });
+      if (code === 0) {
+        allUsers.value = data.users.map((user: any) => ({
+          ...user,
+          status: userStatus[user.status as 0 | -1],
+          gender: genderLabel[user.gender as 0 | 1],
+        }));
+        treeData.value[0].children = _.map((role: any) => ({
+          id: role.role.id,
+          label: role.role.name,
+          children: _.map((member: any) => {
+            const user: any = _.find({ id: member.userId })(data.users);
+            return {
+              label: user.displayName,
+              value: user.id,
+            };
+          })(role.members),
+        }))(data.roles);
+      }
+    };
+    initUserList();
+
+    const nodeClickHandler = (data: any, node: any) => {
+      if (node.level === 1) {
+        userList.value = allUsers.value;
+      }
+      if (node.level === 2) {
+        userList.value = _.intersectionWith((node: any, user: any) => node.value === user.id)(allUsers.value)(
+          node.data.children,
+        );
+      }
+    };
+
+    const initDepartments = async () => {
+      const { code, data } = await getTenentDepartment({ deptId: 0 });
+      if (code === 0) {
+        allDeptUser.value = [
+          {
+            name: data.tenant.name,
+            _children: _.concat(
+              data.users.map((user: any) => ({ ...user, name: user.name, isLeaf: true })),
+              _.map((dept: any) => ({
+                value: dept.deptId,
+                name: dept.deptName,
+                isLeaf: false,
+              }))(data.depts),
+            ),
+          },
+        ];
+      }
+    };
+    initDepartments();
 
     return {
       editMode,
       treeData,
       addMember,
-      allUser,
+      allDeptUser,
       selectedUser,
       userList,
       columns,
       removeUser,
       treeSelectorRef,
+      projectDetail,
+      nodeClickHandler,
     };
   },
 };
@@ -242,14 +288,30 @@ export default {
     padding: 20px;
     .customNode {
       width: 100%;
-      .el-icon-circle-plus:hover {
-        color: $primary;
+      .el-icon-circle-plus {
+        font-size: 18px;
+        &:hover {
+          color: #333;
+        }
+      }
+      .svg-icon {
+        margin-right: 0.5em;
+        &.tree-node-folder {
+          color: #66bbff;
+        }
       }
     }
   }
   .user-table {
     width: calc(100% - 320px);
     background: white;
+    .remove-user-icon {
+      font-size: 1.5em;
+      &:hover {
+        cursor: pointer;
+        color: $danger;
+      }
+    }
   }
 }
 </style>

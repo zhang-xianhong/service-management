@@ -9,7 +9,17 @@
             <el-input :placeholder="optionPlaceholder" suffix-icon="el-icon-search"></el-input>
           </div>
           <div class="tree-wrapper">
-            <el-tree :data="option" :default-expand-all="true"></el-tree>
+            <el-tree :default-expand-all="false" :load="loadNode" lazy :props="treeProps">
+              <template #default="{ data }">
+                <el-checkbox
+                  v-model="checkedUser[data.id]"
+                  @change="checkUser(data)"
+                  v-if="data.isLeaf"
+                  style="margin-left: -1em;"
+                ></el-checkbox>
+                {{ data.name }}
+              </template>
+            </el-tree>
           </div>
         </div>
       </el-col>
@@ -19,8 +29,8 @@
           <div class="field-label">{{ valueLabel }}</div>
           <div class="list-wrapper">
             <div v-for="(user, $index) in modelValue" :key="$index">
-              <span>{{ user.label }}</span>
-              <span>{{ user.department }}</span>
+              <span>{{ user.displayName }}</span>
+              <span>{{ user.deptId }}</span>
               <i class="el-icon-error" style="float: right;"></i>
             </div>
           </div>
@@ -36,8 +46,10 @@
   </el-dialog>
 </template>
 
-<script>
-import { ref } from 'vue';
+<script lang="ts">
+import _ from 'lodash/fp';
+import { computed, ref } from 'vue';
+import { getTenentDepartment } from '@/api/tenant';
 export default {
   name: 'TreeSelector',
   props: {
@@ -62,14 +74,63 @@ export default {
       type: String,
     },
   },
-  setup() {
+  setup(props: any, context: any) {
     const dialogVisible = ref(false);
     const show = () => {
       dialogVisible.value = true;
     };
+    const treeProps = {
+      label: 'name',
+      children: 'children',
+      isLeaf: 'isLeaf',
+    };
+    const loadNode = async (node: any, resolve: Function) => {
+      if (node.level === 0) {
+        resolve(props.option);
+      }
+      if (node.level === 1) {
+        resolve(node.data._children);
+      }
+      if (node.level > 1) {
+        const { code, data } = await getTenentDepartment({ deptId: node.data.value });
+        if (code === 0) {
+          const children = _.concat(
+            data.users.map((user: any) => ({ ...user, name: user.displayName, isLeaf: true })),
+            _.map((dept: any) => ({
+              value: dept.deptId,
+              name: dept.deptName,
+              isLeaf: false,
+            }))(data.depts),
+          );
+          resolve(children);
+        } else {
+          resolve([]);
+        }
+      }
+    };
+    const checkedUser = computed(() => {
+      const checked: Record<string, boolean> = {};
+      props.modelValue.forEach((user: any) => {
+        checked[user.id] = true;
+      });
+      return checked;
+    });
+    const checkUser = (user: any) => {
+      const checked = _.find({ id: user.id })(props.modelValue);
+      if (!checked) {
+        context.emit('update:modelValue', _.concat(props.modelValue, user));
+      } else {
+        context.emit('update:modelValue', _.reject({ id: user.id })(props.modelValue));
+      }
+    };
+
     return {
       dialogVisible,
       show,
+      loadNode,
+      treeProps,
+      checkedUser,
+      checkUser,
     };
   },
 };
@@ -102,6 +163,7 @@ export default {
   border: 1px solid #ccc;
   height: 35vh;
   color: #444;
+  overflow: auto;
 }
 .list-wrapper {
   color: #444;
@@ -119,8 +181,14 @@ export default {
     i {
       line-height: 22px;
     }
+    i {
+      font-size: 18px;
+      &:hover {
+        color: $danger;
+      }
+    }
     i:hover {
-      color: $primary;
+      color: $danger;
     }
     span + span {
       margin-left: 10px;

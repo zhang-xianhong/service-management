@@ -1,0 +1,118 @@
+{
+  "code": 0,
+  "data": {
+    "roles": [
+      {
+        "id": 1,
+        "createTime": "2021-04-04T03:32:22.000Z",
+        "updateTime": "2021-04-04T02:50:21.000Z",
+        "createUser": null,
+        "updateUser": null,
+        "tenantId": null,
+        "projectId": 3,
+        "role": {
+          "id": 3,
+          "name": "研发",
+          "description": null
+        },
+        "members": [
+          {
+            "userId": 32
+          },
+          {
+            "userId": 33
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "createTime": "2021-04-04T03:33:24.000Z",
+        "updateTime": "2021-04-04T02:50:21.000Z",
+        "createUser": null,
+        "updateUser": null,
+        "tenantId": null,
+        "projectId": 3,
+        "role": {
+          "id": 5,
+          "name": "运维",
+          "description": null
+        },
+        "members": []
+      },
+      {
+        "id": 3,
+        "createTime": "2021-04-04T02:50:21.000Z",
+        "updateTime": "2021-04-04T02:50:21.000Z",
+        "createUser": null,
+        "updateUser": null,
+        "tenantId": null,
+        "projectId": 3,
+        "role": {
+          "id": 3,
+          "name": "研发",
+          "description": null
+        },
+        "members": []
+      },
+      {
+        "id": 4,
+        "createTime": "2021-04-04T02:50:21.000Z",
+        "updateTime": "2021-04-04T02:50:21.000Z",
+        "createUser": null,
+        "updateUser": null,
+        "tenantId": null,
+        "projectId": 3,
+        "role": {
+          "id": 4,
+          "name": "测试",
+          "description": null
+        },
+        "members": []
+      },
+      {
+        "id": 5,
+        "createTime": "2021-04-04T02:50:21.000Z",
+        "updateTime": "2021-04-04T02:50:21.000Z",
+        "createUser": null,
+        "updateUser": null,
+        "tenantId": null,
+        "projectId": 3,
+        "role": {
+          "id": 5,
+          "name": "运维",
+          "description": null
+        },
+        "members": []
+      }
+    ],
+    "users": [
+      {
+        "deptId": 20,
+        "userName": "admin@yufuid.com",
+        "displayName": "admin",
+        "status": 0,
+        "deptName": "Default Department",
+        "phoneNumber": null,
+        "primaryMail": "admin@yufuid.com",
+        "gender": 1,
+        "position": null,
+        "id": 32
+      },
+      {
+        "deptId": 20,
+        "userName": "test@yufuid.com",
+        "displayName": "test",
+        "status": -1,
+        "deptName": "Default Department",
+        "phoneNumber": "",
+        "primaryMail": "test@yufuid.com",
+        "gender": 1,
+        "position": null,
+        "id": 33
+      }
+    ]
+  },
+  "message": "successful",
+  "httpStatus": 200,
+  "timestamp": 1617522071781
+}

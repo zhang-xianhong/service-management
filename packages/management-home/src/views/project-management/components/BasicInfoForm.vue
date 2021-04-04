@@ -1,7 +1,7 @@
 <template>
   <div>
-    <el-form inline label-width="80px" :model="formData">
-      <el-form-item label="项目名称">
+    <el-form inline label-width="80px" :model="formData" :rules="rules">
+      <el-form-item label="项目名称" prop="name">
         <div v-if="!editMode" class="form-content">
           {{ detailInfo.name }}
         </div>
@@ -12,7 +12,7 @@
           placeholder="请输入项目英文名称"
         ></el-input>
       </el-form-item>
-      <el-form-item label="项目描述">
+      <el-form-item label="项目描述" prop="description">
         <div v-if="!editMode" class="form-content">
           {{ detailInfo.description }}
         </div>
@@ -23,7 +23,7 @@
           placeholder="请输入中文项目描述，最多支持40个字符"
         ></el-input>
       </el-form-item>
-      <el-form-item label="代码模板">
+      <el-form-item label="代码模板" prop="templateId">
         <div v-if="!editMode" class="form-content">
           {{ detailInfo.templateName }}
         </div>
@@ -43,7 +43,7 @@
           placeholder="请添加单个或多个项目负责人"
         ></el-input>
       </el-form-item>
-      <el-form-item label="项目级别">
+      <el-form-item label="项目级别" prop="level">
         <div v-if="!editMode" class="form-content">
           {{ getLabel(detailInfo.level)(projectLevels) }}
         </div>
@@ -64,7 +64,7 @@
           placeholder="请输入中文项目简介，最多支持255个字"
         ></el-input>
       </el-form-item>
-      <el-form-item label="项目状态">
+      <el-form-item label="项目状态" prop="status">
         <div v-if="!editMode" class="form-content">
           {{ getLabel(detailInfo.status)(statusOptions) }}
         </div>
@@ -84,16 +84,16 @@
 
 <script lang="ts">
 import _ from 'lodash/fp';
-import { reactive, ref, Ref } from 'vue';
-import { getProjectDetail, updateProject } from '@/api/project/project';
+import { reactive, ref, Ref, watchEffect } from 'vue';
+import { updateProject } from '@/api/project/project';
 import { getAllTemplates } from '@/api/settings/templates';
 export default {
   name: 'BasicInfoForm',
   props: {
-    id: {
+    editMode: {
       required: true,
     },
-    editMode: {
+    projectDetail: {
       required: true,
     },
   },
@@ -103,18 +103,24 @@ export default {
       description: '',
       templateId: '',
       owner: '',
-      level: '',
+      level: 0,
       remark: '',
-      status: '',
+      status: 0,
     });
     const formData = reactive({
       name: '',
       description: '',
       templateId: '',
       owner: '',
-      level: '',
+      level: 0,
       remark: '',
-      status: '',
+      status: 0,
+    });
+    let projectDetail = {};
+    watchEffect(() => {
+      projectDetail = props.projectDetail;
+      Object.assign(detailInfo, projectDetail);
+      Object.assign(formData, projectDetail);
     });
     const projectLevels = [
       {
@@ -153,19 +159,6 @@ export default {
     };
     getTemplates();
 
-    // 初始化项目信息
-    const getProjectInfo = async () => {
-      const { code, data } = await getProjectDetail(props.id);
-      if (code === 0) {
-        const projectInfo = data;
-        projectInfo.templateId = data.template.id;
-        projectInfo.templateName = data.template.name;
-        Object.assign(detailInfo, projectInfo);
-        Object.assign(formData, projectInfo);
-      }
-    };
-    getProjectInfo();
-
     // 表单操作
     const save = async () => {
       const { code } = await updateProject(props.id, formData);
@@ -178,6 +171,15 @@ export default {
       context.emit('cancel');
       Object.assign(formData, detailInfo);
     };
+
+    // 校验规则
+    const rules = {
+      name: [{ required: true, message: '请输入项目名称', trigger: 'blur' }],
+      description: [{ required: true, message: '请输入项目描述', trigger: 'blur' }],
+      templateId: [{ required: true, message: '请选择代码模板', trigger: 'blur' }],
+      level: [{ required: true, message: '请选择项目级别', trigger: 'blur' }],
+      status: [{ required: true, message: '请选择项目状态', trigger: 'blur' }],
+    };
     return {
       detailInfo,
       formData,
@@ -187,6 +189,7 @@ export default {
       templates,
       save,
       cancel,
+      rules,
     };
   },
 };
