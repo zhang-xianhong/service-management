@@ -17,4 +17,7 @@ export default {
   DELETE_CLASSIFICATION: ['/settings/categories/delete/_', '/mock/settings/classification-delete.json'],
   UPDATE_CLASSIFICATION: ['/settings/categories/_', '/mock/settings/classification-update.json'],
   ADD_CLASSIFICATION: ['/settings/categories', '/mock/settings/classification-update.json'],
+  GET_DICTIONARY_TYPES: ['/settings/dictionaries/type', 'mock/settings/dictionary-types.json'],
+  GET_DICTIONARY_DETAIL: ['/settings/dictionaries/_', 'mock/settings/dictionary-detail.json'],
+  GET_REGIONS: ['/settings/regions', 'mock/settings/regions.json'],
 };

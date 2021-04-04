@@ -191,8 +191,8 @@ const routes: Array<RouteRecordRaw> = [
     },
     children: [
       {
-        path: 'tenant-list',
-        component: () => import(/* webpackChunkName: "conf" */ '@/views/tenant-management/Index.vue'),
+        path: 'tenant-detail',
+        component: () => import(/* webpackChunkName: "tenant" */ '@/views/tenant-management/Index.vue'),
         name: 'TenantList',
         meta: {
           title: '租户管理',

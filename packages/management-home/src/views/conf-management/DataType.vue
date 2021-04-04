@@ -36,7 +36,7 @@
       </el-table-column>
     </el-table>
   </el-row>
-  <el-row>
+  <el-row style="justify-content:flex-end">
     <el-pagination
       :current-page="searchProps.page"
       :page-size="searchProps.pageSize"
@@ -151,16 +151,19 @@ export default {
     const sortChange = ({ order, prop }: { order: 'ascending' | 'descending'; prop: string }) => {
       tableState.searchProps.sortField = prop;
       tableState.searchProps.sortType = order;
+      getTableData();
     };
 
     // 每页条数改变
     const handlePageSizeChange = (pageSize: number) => {
       tableState.searchProps.pageSize = pageSize;
+      getTableData();
     };
 
     // 页数切换
     const handlePageChange = (pageNum: number) => {
       tableState.searchProps.page = pageNum;
+      getTableData();
     };
 
     return {

@@ -6,23 +6,40 @@ import { ApiException } from 'src/shared/utils/api.exception';
 import { CommonCodes, SettingCodes } from 'src/shared/constants/code';
 import { SettingsCategoriesModel } from './settings-categories.model';
 import { InjectModel } from '@nestjs/sequelize';
-import { Op } from 'sequelize';
+import sequelize, { Op } from 'sequelize';
 import { isDefined } from 'src/shared/utils/validator';
 import { ErrorTypes } from 'src/shared/constants/error';
-import { getTreeArr } from 'src/shared/utils/util';
+import { getDictionaryKey, getTreeArr } from 'src/shared/utils/util';
 import { SettingsDataTypeDto } from './dto/settings-data-type.dto';
 import { SettingsTagDto } from './dto/settings-tag.dto';
 import { Created, Deleted, Details, Rows, RowsAndCount, Updated } from 'src/shared/types/response';
 import { Tree } from 'src/shared/types/tree';
 import { escapeLike } from 'src/shared/utils/sql';
+import { SettingsDictionaryTypeModel } from './settings-dictionary-type.model';
+import { SettingsDictionaryModel } from './settings-dictionary.model';
+import { SettingsRegionModel } from './settings-region.model';
+import { SettingsTemplatesModel } from './settings-templates.model';
+import { SettingsProjectRolesModel } from './settings_project_roles.model';
 
 @Injectable()
 export class SettingsService {
   constructor(
-    @InjectModel(DataTypesModel) private readonly dataTypesRepository: typeof DataTypesModel,
-    @InjectModel(SettingsTagsModel) private readonly tagsRepository: typeof SettingsTagsModel,
-    @InjectModel(SettingsCategoriesModel) private readonly categoriesRepository: typeof SettingsCategoriesModel,
-    // private connection: Connection,
+    @InjectModel(DataTypesModel)
+    private readonly dataTypesRepository: typeof DataTypesModel,
+    @InjectModel(SettingsTagsModel)
+    private readonly tagsRepository: typeof SettingsTagsModel,
+    @InjectModel(SettingsCategoriesModel)
+    private readonly categoriesRepository: typeof SettingsCategoriesModel,
+    @InjectModel(SettingsDictionaryTypeModel)
+    private readonly dictionaryTypeRepository: typeof SettingsDictionaryTypeModel,
+    @InjectModel(SettingsDictionaryModel)
+    private readonly dictionaryRepository: typeof SettingsDictionaryModel,
+    @InjectModel(SettingsRegionModel)
+    private readonly regionRepository: typeof SettingsRegionModel,
+    @InjectModel(SettingsTemplatesModel)
+    private readonly templateRepository: typeof SettingsTemplatesModel,
+    @InjectModel(SettingsProjectRolesModel)
+    private readonly projectRolesRepository: typeof SettingsProjectRolesModel,
   ) { }
 
   /**
@@ -183,7 +200,7 @@ export class SettingsService {
    * @param getTotal
    */
   async findAllTags(query, getTotal = true):
-  Promise<Rows<SettingsTagsModel> | RowsAndCount<SettingsTagsModel>>  {
+  Promise<Rows<SettingsTagsModel> | RowsAndCount<SettingsTagsModel>> {
     const where = {
       isDelete: false,
     };
@@ -320,7 +337,7 @@ export class SettingsService {
    * @param query
    * @param getTotal
    */
-  async findAllCategories(): Promise<Rows<SettingsCategoriesModel>>  {
+  async findAllCategories(): Promise<Rows<SettingsCategoriesModel>> {
     return await this.categoriesRepository.findAll({
       where: { isDelete: false },
     });
@@ -438,5 +455,199 @@ export class SettingsService {
     return {
       categoryId: id,
     };
+  }
+
+  /**
+   * 获取数据字典类型列表
+   * @param query
+   * @returns
+   */
+  async getDictionaryTypes(query) {
+    const where: any = {
+      isDelete: false,
+      status: 0,
+    };
+    if (query.isLock) {
+      where.isLock = query.isLock;
+    }
+    return await this.dictionaryTypeRepository.findAll({
+      where,
+    });
+  }
+
+  /**
+   * 获取数据字典数据
+   * @param typeKey
+   * @returns
+   */
+  async findDictionaryInfo(typeKey: string) {
+    const dictionary = await this.dictionaryTypeRepository.findOne({
+      where: {
+        typeKey,
+        isDelete: false,
+      },
+      include: [{
+        model: SettingsDictionaryModel,
+        required: false,
+        attributes: { exclude: ['isDelete'] },
+      }],
+    });
+    if (!dictionary) {
+      throw new ApiException({
+        code: CommonCodes.NOT_FOUND,
+        message: '数据不存在',
+      }, HttpStatus.NOT_FOUND);
+    }
+    return dictionary;
+  }
+
+  /**
+   * 新增数据字典类型
+   * @param data
+   */
+  async addDictionaryType(data: any) {
+    const res = await this.dictionaryTypeRepository.create(data);
+    return {
+      id: res.id,
+    };
+  }
+
+  /**
+   *新增数据字典数据
+   * @param id
+   * @param data
+   */
+  async addDictionaries(id: number, data: any) {
+    const { typeKey } = await this.dictionaryTypeRepository.findOne({
+      where: {
+        id,
+      },
+    });
+    if (!typeKey) {
+      throw new ApiException({
+        code: CommonCodes.NOT_FOUND,
+        message: '数据不存在',
+      }, HttpStatus.NOT_FOUND);
+    }
+    // 获取最大typeKey
+    const [lastDictionary] = await this.dictionaryRepository.findAll({
+      where: {
+        typeId: id,
+        isDelete: false,
+      },
+      order: [['id', 'DESC']],
+    });
+    const lastTypeKey =  lastDictionary ? lastDictionary.key : typeKey;
+
+
+    const dictionaries = data.map((item, index) => ({
+      ...item,
+      typeId: id,
+      key: getDictionaryKey(lastTypeKey, index),
+    }));
+    console.log(dictionaries);
+    await this.dictionaryRepository.bulkCreate(dictionaries);
+    return {
+      ids: dictionaries.map(i => i.key),
+    };
+  }
+
+  async getRegionTree(code = 0) {
+    const regions: SettingsRegionModel[] = await this.regionRepository.findAll({
+      where: {
+        parentId: code,
+      },
+      raw: true,
+    });
+    return getTreeArr({ key: 'code', pKey: 'parentId', data: regions });
+  }
+  async getRegionListByLevel(level: number) {
+    return await this.regionRepository.findAll({
+      where: {
+        level,
+      },
+      attributes: { exclude: ['parentId', 'level'] },
+    });
+  }
+
+
+  /**
+   * 获取模板列表
+   * @param query
+   * @param getTotal
+   * @returns
+   */
+  async findAllTemplates(query: SearchQuery, getTotal = true):
+  Promise<Rows<SettingsTemplatesModel> | RowsAndCount<SettingsTemplatesModel>> {
+    const where = {
+      isDelete: false,
+    };
+    if (query.keyword) {
+      const likeString = escapeLike(query.keyword);
+      where[Op.or] = [
+        {
+          name: {
+            [Op.like]: likeString,
+          },
+        },
+        {
+          description: {
+            [Op.like]: likeString,
+          },
+        },
+      ];
+    }
+    if (isDefined(query.isSystem)) {
+      (where as PlainObject).isSystem = query.isSystem;
+    }
+    const { conditions = {} } = query as PlainObject;
+    conditions.where = where;
+    conditions.order = [['isSystem', 'DESC'], ['id', 'ASC']];
+    conditions.attributes = { exclude: ['isDelete'] };
+    if (!getTotal) {
+      // 删除分页相关的字段
+      delete conditions.offset;
+      delete conditions.limit;
+      return await this.templateRepository.findAll(conditions);
+    }
+    return await this.templateRepository.findAndCountAll(conditions);
+  }
+
+
+  /**
+   * 通过ID获取模板
+   * @param id
+   * @returns
+   */
+  async findTemplateById(id: number): Promise<Details<SettingsTemplatesModel>> {
+    const row: SettingsTemplatesModel = await this.templateRepository.findOne({
+      where: {
+        id,
+        isDelete: false,
+      },
+    });
+    if (!row) {
+      throw new ApiException({
+        code: CommonCodes.NOT_FOUND,
+        message: '模板不存在',
+        error: ErrorTypes.NOT_FOUND,
+      });
+    }
+    return row;
+  }
+
+
+  /**
+   * 获取所有项目角色
+   * @returns
+   */
+  async findAllProjectRoles(transaction?: sequelize.Transaction): Promise<Rows<SettingsProjectRolesModel>> {
+    const where = {
+      isDelete: false,
+    };
+    return await this.projectRolesRepository.findAll({
+      where,
+      transaction,
+    });
   }
 }
