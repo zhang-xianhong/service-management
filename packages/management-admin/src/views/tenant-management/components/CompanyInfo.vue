@@ -114,7 +114,7 @@ interface CompanyInfoInterface {
   name: string; // 企业名称
   nameShort: string; // 企业简称
   industryId: string; // 行业
-  province: string; // 省份
+  addr: string; // 省份
   natureId: string; // 企业性质
   addrDetail: string; // 详细地址
   scaleId: string; // 企业规模

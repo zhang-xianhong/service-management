@@ -1,4 +1,4 @@
 // 0 表示 api地址， // 1 表示mock地址
 export default {
-  UPLOAD_PICTURE: ['/files/upload', 'mock/files/upload.json'],
+  GET_IMAGE_URL: ['/files/url', 'mock/files/image-url.json'],
 };

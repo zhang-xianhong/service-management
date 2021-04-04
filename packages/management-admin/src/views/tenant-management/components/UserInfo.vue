@@ -121,7 +121,6 @@ export default {
     watch(
       () => userInfo.value.frontPhoto,
       async () => {
-        console.log('hahhahha');
         if (!frontPhoto.value) {
           const url = await getFileUrl('frontPhoto');
           frontPhoto.value = url;
