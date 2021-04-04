@@ -26,4 +26,12 @@ export const SERVICE_SSH_URI = `http://${config.BACKEND_SSHURI_HOST}`;
 export const LOG_SERVICE_URL = `${BASE_URL}/sa/dev-sa/sa-operator-adapter/log/realtimeLog`;
 
 // 创建IDAAS租户
-export const  CREATE_IDAAS_TENANT = `${BASE_URL}/sa/dev-sa/tenant/`;
+export const CREATE_IDAAS_TENANT = `${BASE_URL}/sa/dev-sa/tenant/`;
+
+
+// 用户相关接口
+export const USER_SERVICE_BASE_URL = `${BASE_URL}/sa/dev-sa/sa-account`;
+// 批量查询用户接口
+export const USER_BATCH_SEARCH_URL = `${USER_SERVICE_BASE_URL}/user/profile/batch`;
+// 查询租户部门接口
+export const FETCH_DEPARTMENT_TREE_URL = `${USER_SERVICE_BASE_URL}/dept/:deptId/tree`;

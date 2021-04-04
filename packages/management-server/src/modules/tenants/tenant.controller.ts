@@ -49,4 +49,11 @@ export class TenantController {
   async enableTenant(@Param() { id }) {
     return await this.tenantService.enableTenant(id);
   }
+
+  // 获取租户下的部门树
+  @Get('/department/tree')
+  async getDepartmentTree(@Query() { deptId, level }) {
+    const tenantId = 1;
+    return await this.tenantService.getDepartmentTree(tenantId, deptId, level);
+  }
 }

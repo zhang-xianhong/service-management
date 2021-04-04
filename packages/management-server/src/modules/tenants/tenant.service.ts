@@ -6,6 +6,7 @@ import { CommonCodes, StatusCodes } from 'src/shared/constants/code';
 import { Deleted, Updated } from 'src/shared/types/response';
 import { ApiException } from 'src/shared/utils/api.exception';
 import { escapeLike } from 'src/shared/utils/sql';
+import { UsersService } from '../users/users.service';
 import { TenantUpdateInfoDto } from './dto/tenant-update-info.dto';
 import { TenantContactModel } from './tenant-contact.model';
 import { TenantInfoModel } from './tenant-info.model';
@@ -16,6 +17,7 @@ export class TenantService {
   constructor(
     private sequelize: Sequelize,
     private httpService: HttpService,
+    private userService: UsersService,
     private readonly logger: Logger,
     @InjectModel(TenantInfoModel)
     private readonly tenantRepository: typeof TenantInfoModel,
@@ -311,5 +313,28 @@ export class TenantService {
         error: error.message || error,
       });
     }
+  }
+
+  /**
+   * 获取租户部门树
+   * @param tenantId
+   * @param deptId
+   * @param level
+   * @returns
+   */
+  async getDepartmentTree(tenantId: number, deptId = 0, level = 0) {
+    const tenantRequest = Number(deptId) === 0 ? this.tenantRepository.findOne({
+      where: {
+        id: tenantId,
+        isDelete: false,
+      },
+    }) : Promise.resolve(null);
+    const departmentTreeRequest = this.userService.fetchDepartmentTree(deptId, level);
+    const [tenant, department] = await Promise.all([tenantRequest, departmentTreeRequest]);
+    const res = {
+      tenant,
+      ...department,
+    };
+    return res;
   }
 }
