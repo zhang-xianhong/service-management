@@ -4,6 +4,7 @@ import App from './App.vue';
 import './permission';
 
 import Element from './element';
+import SvgIcon from './icons';
 import Store from './store';
 import Router from './router';
 import DataList from './components/data-list/Index.vue';
@@ -24,6 +25,7 @@ app.config.globalProperties.$showModule = showModule;
 
 app
   .use(Element)
+  .use(SvgIcon)
   .use(Store)
   .use(Router)
   .mount('#app');

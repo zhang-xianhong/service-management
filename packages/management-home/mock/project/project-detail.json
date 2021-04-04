@@ -16,7 +16,11 @@
         "id": 11,
         "username": "usr1"
       }
-    ]
+    ],
+    "template": {
+      "id": 1,
+      "name": "JAVA"
+    }
   },
   "message": "successful",
   "httpStatus": 200,
