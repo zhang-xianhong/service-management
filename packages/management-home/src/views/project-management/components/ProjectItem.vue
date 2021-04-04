@@ -42,7 +42,8 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue';
+import { defineComponent, getCurrentInstance, ref } from 'vue';
+
 export default defineComponent({
   name: 'ProjectItem',
   props: {
@@ -83,9 +84,13 @@ export default defineComponent({
       console.log(props.dataObj.id);
       ctx.emit('deleteProject', props.dataObj.id);
     };
+    const { proxy } = getCurrentInstance() as any;
 
     const jump2detail = () => {
-      console.log('this is jump 2 detail');
+      proxy.$router.push({
+        path: `/project-management/project-detail/${props.dataObj.id}`,
+        query: { detailName: props.dataObj.name },
+      });
     };
 
     return {
