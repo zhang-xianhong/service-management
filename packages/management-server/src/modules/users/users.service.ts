@@ -1,88 +1,73 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
-import { User } from './users.entity';
-import { ApiException } from '../../shared/utils/api.exception';
-import { CommonCodes, UserCodes } from '../../shared/constants/code';
-import { genPassword, validPassword } from '../../shared/utils/password';
-
-
-// import { UserDto } from './dto/user.dto';
+import { HttpService, HttpStatus, Injectable, Logger } from '@nestjs/common';
+import { CommonCodes } from 'src/shared/constants/code';
+import { USER_BATCH_SEARCH_URL, FETCH_DEPARTMENT_TREE_URL } from 'src/shared/constants/url';
 import { PlainObject } from 'src/shared/pipes/query.pipe';
-import { Op } from 'sequelize';
-import { InjectModel } from '@nestjs/sequelize';
+import { ApiException } from 'src/shared/utils/api.exception';
+
+interface UserInfo extends PlainObject {
+  userName: string
+  displayName?: string
+  gender?: number
+  phoneNumber?: string
+  primaryEmail?: string
+}
+
 @Injectable()
 export class UsersService {
-  constructor(@InjectModel(User)
-  private usersRepository: typeof User) { }
+  constructor(
+    private readonly httpService: HttpService,
+    private readonly logger: Logger,
+  ) { }
 
-  async findAll(query) {
-    const where: PlainObject = {
-      isDelete: false,
-    };
-    if (query.classification) {
-      where.classification = query.classification;
+  /**
+   * 批量查询用户信息
+   * @param userIds
+   * @returns
+   */
+  async fetchUsersByUserIds(userIds: number[]): Promise<UserInfo[]> {
+    if (userIds.length === 0) {
+      return [];
     }
-    if (query.tags) {
-      where.tags = query.tags;
-    }
-    if (query.keyword) {
-      where.username = { [Op.like]: `%${query.keyword}%` };
-    }
-    const { conditions = {} } = query;
-    conditions.where = where;
-    const data = await this.usersRepository.findAndCountAll<User>(conditions);
-    return data;
-  }
-
-  async findBy(where: object) {
-    return await this.usersRepository.findOne({ where });
-  }
-
-  async findById(id: number) {
-    const user = await this.findBy({ id });
-    if (!user) {
+    try {
+      const { data }: any = await this.httpService.get(USER_BATCH_SEARCH_URL, {
+        params: {
+          userIds: userIds.join(','),
+        },
+      }).toPromise();
+      if (data?.code === 0) {
+        return data?.data;
+      }
+      throw data?.message;
+    } catch (error) {
+      this.logger.error(error);
       throw new ApiException({
-        code: CommonCodes.NOT_FOUND,
-        message: '用户不存在',
-      }, HttpStatus.NOT_FOUND);
+        code: CommonCodes.FETCH_FAIL,
+        message: error?.message || '查询用户信息失败',
+        error,
+      }, HttpStatus.BAD_REQUEST);
     }
-    delete user.salt;
-    delete user.hash;
-    return user;
   }
 
-  async create(data) {
-    const { username, password } = data;
-    const usernameExisted = await this.findBy({ username });
-    if (usernameExisted) {
-      throw new ApiException({
-        code: UserCodes.USERNAME_EXISTED,
-        message: '该用户名已被注册',
-      });
-    }
 
-    const saveData = { ...data };
-    const { hash, salt } = genPassword(password);
-    saveData.hash = hash;
-    saveData.salt = salt;
-    const res = await this.usersRepository.create(saveData);
-    return {
-      id: res.id,
-    };
-  }
-
-  async login({ username, password }) {
-    const user = await this.findBy({ username });
-    // 用户不存在或者密码校验失败，都提示用户名密码错误
-    const isError = !user || !validPassword(password, user.hash, user.salt);
-    if (isError) {
+  async fetchDepartmentTree(deptId: number, level: number) {
+    try {
+      const url = FETCH_DEPARTMENT_TREE_URL.replace(':deptId', String(deptId));
+      const { data }: any = await this.httpService.get(url, {
+        params: {
+          level,
+        },
+      }).toPromise();
+      if (data?.code === 0) {
+        return data?.data;
+      }
+      throw data?.message;
+    } catch (error) {
+      this.logger.error(error);
       throw new ApiException({
-        code: UserCodes.LOGIN_INVALID,
-        message: '用户名或密码错误',
-      });
+        code: CommonCodes.FETCH_FAIL,
+        message: error?.message || '查询部门信息失败',
+        error,
+      }, HttpStatus.BAD_REQUEST);
     }
-    return {
-      id: user.id,
-      username: user.username,
-    };
   }
 }

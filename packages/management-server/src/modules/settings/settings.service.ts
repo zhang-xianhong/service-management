@@ -6,7 +6,7 @@ import { ApiException } from 'src/shared/utils/api.exception';
 import { CommonCodes, SettingCodes } from 'src/shared/constants/code';
 import { SettingsCategoriesModel } from './settings-categories.model';
 import { InjectModel } from '@nestjs/sequelize';
-import { Op } from 'sequelize';
+import sequelize, { Op } from 'sequelize';
 import { isDefined } from 'src/shared/utils/validator';
 import { ErrorTypes } from 'src/shared/constants/error';
 import { getDictionaryKey, getTreeArr } from 'src/shared/utils/util';
@@ -18,6 +18,8 @@ import { escapeLike } from 'src/shared/utils/sql';
 import { SettingsDictionaryTypeModel } from './settings-dictionary-type.model';
 import { SettingsDictionaryModel } from './settings-dictionary.model';
 import { SettingsRegionModel } from './settings-region.model';
+import { SettingsTemplatesModel } from './settings-templates.model';
+import { SettingsProjectRolesModel } from './settings_project_roles.model';
 
 @Injectable()
 export class SettingsService {
@@ -34,6 +36,10 @@ export class SettingsService {
     private readonly dictionaryRepository: typeof SettingsDictionaryModel,
     @InjectModel(SettingsRegionModel)
     private readonly regionRepository: typeof SettingsRegionModel,
+    @InjectModel(SettingsTemplatesModel)
+    private readonly templateRepository: typeof SettingsTemplatesModel,
+    @InjectModel(SettingsProjectRolesModel)
+    private readonly projectRolesRepository: typeof SettingsProjectRolesModel,
   ) { }
 
   /**
@@ -561,6 +567,87 @@ export class SettingsService {
         level,
       },
       attributes: { exclude: ['parentId', 'level'] },
+    });
+  }
+
+
+  /**
+   * 获取模板列表
+   * @param query
+   * @param getTotal
+   * @returns
+   */
+  async findAllTemplates(query: SearchQuery, getTotal = true):
+  Promise<Rows<SettingsTemplatesModel> | RowsAndCount<SettingsTemplatesModel>> {
+    const where = {
+      isDelete: false,
+    };
+    if (query.keyword) {
+      const likeString = escapeLike(query.keyword);
+      where[Op.or] = [
+        {
+          name: {
+            [Op.like]: likeString,
+          },
+        },
+        {
+          description: {
+            [Op.like]: likeString,
+          },
+        },
+      ];
+    }
+    if (isDefined(query.isSystem)) {
+      (where as PlainObject).isSystem = query.isSystem;
+    }
+    const { conditions = {} } = query as PlainObject;
+    conditions.where = where;
+    conditions.order = [['isSystem', 'DESC'], ['id', 'ASC']];
+    conditions.attributes = { exclude: ['isDelete'] };
+    if (!getTotal) {
+      // 删除分页相关的字段
+      delete conditions.offset;
+      delete conditions.limit;
+      return await this.templateRepository.findAll(conditions);
+    }
+    return await this.templateRepository.findAndCountAll(conditions);
+  }
+
+
+  /**
+   * 通过ID获取模板
+   * @param id
+   * @returns
+   */
+  async findTemplateById(id: number): Promise<Details<SettingsTemplatesModel>> {
+    const row: SettingsTemplatesModel = await this.templateRepository.findOne({
+      where: {
+        id,
+        isDelete: false,
+      },
+    });
+    if (!row) {
+      throw new ApiException({
+        code: CommonCodes.NOT_FOUND,
+        message: '模板不存在',
+        error: ErrorTypes.NOT_FOUND,
+      });
+    }
+    return row;
+  }
+
+
+  /**
+   * 获取所有项目角色
+   * @returns
+   */
+  async findAllProjectRoles(transaction?: sequelize.Transaction): Promise<Rows<SettingsProjectRolesModel>> {
+    const where = {
+      isDelete: false,
+    };
+    return await this.projectRolesRepository.findAll({
+      where,
+      transaction,
     });
   }
 }

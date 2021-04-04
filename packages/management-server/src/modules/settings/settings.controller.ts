@@ -176,4 +176,25 @@ export class SettingsController {
   async getRegionTree(@Query() { code }) {
     return await this.service.getRegionTree(code);
   }
+
+  /* 模板相关 */
+  /**
+   * 获取模板列表(分页)
+   * @param query
+   * @returns
+   */
+  @Get('/templates')
+  async getTemplates(@Query(new QueryPipe()) query: SearchQuery) {
+    const data = await this.service.findAllTemplates(query);
+    return data;
+  }
+
+  /**
+    * 获取模板列表(未分页)
+    * @returns
+    */
+  @Get('/templates/all')
+  async getAllTemplates(@Query(new QueryPipe()) query: SearchQuery) {
+    return await this.service.findAllTemplates(query, false);
+  }
 }
