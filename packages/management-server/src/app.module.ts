@@ -14,7 +14,7 @@ import { SequelizeModule } from '@nestjs/sequelize';
 import { LogsModule } from './modules/logs/logs.module';
 import { TenantModule } from './modules/tenants/tenant.module';
 import { VersionControlModule } from './modules/version-control/version-control.module';
-
+import { FileModule } from './modules/files/files.module';
 
 @Module({
   imports: [
@@ -41,6 +41,7 @@ import { VersionControlModule } from './modules/version-control/version-control.
     VersionControlModule,
     LogsModule,
     TenantModule,
+    FileModule,
   ],
 })
 
