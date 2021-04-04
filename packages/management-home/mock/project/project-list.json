@@ -1,0 +1,35 @@
+{
+  "code": 0,
+  "data": {
+    "total": 2,
+    "list": [
+      {
+        "id": 1,
+        "name": "proj_one",
+        "description": "项目1",
+        "status": 1,
+        "readOnly": false,
+        "generatorType": "JAVA",
+        "owner": "1,2,3",
+        "levelName": "通用级",
+        "level": 0,
+        "remark": "ssddffasddf"
+      },
+      {
+        "id": 2,
+        "name": "proj_two",
+        "description": "项目2",
+        "status": 0,
+        "readOnly": false,
+        "generatorType": "C++",
+        "owner": "1,2,3",
+        "levelName": "行业级",
+        "level": 2,
+        "remark": "z'x'c'vczcxvcxz"
+      }
+    ]
+  },
+  "message": "successful",
+  "httpStatus": 200,
+  "timestamp": 1614328643228
+}

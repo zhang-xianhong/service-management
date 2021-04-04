@@ -13,7 +13,7 @@ module.exports = {
   },
   devServer: {
     host: 'dev.sa.qq.com',
-    port: '3000',
+    port: '80',
     watchOptions: {
       ignored: /node_modules/
     },
@@ -22,7 +22,7 @@ module.exports = {
       '/api': {
         // 后端rest服务
         // target: 'http://10.91.22.33:3000',
-        target: 'http://10.95.22.25:3000',
+        target: 'http://9.134.45.3',
         ws: true,
         changeOrigin: true
         // 添加所有请求路径前缀/api/

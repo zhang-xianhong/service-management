@@ -1,0 +1,24 @@
+{
+  "code": 0,
+  "data": {
+    "id": 1,
+    "name": "proj_one",
+    "description": "项目1",
+    "status": 1,
+    "readOnly": false,
+    "generatorType": "JAVA",
+    "owner": "1,2,3",
+    "levelName": "通用级",
+    "level": 0,
+    "remark": "ssddffasddf",
+    "users": [
+      {
+        "id": 11,
+        "username": "usr1"
+      }
+    ]
+  },
+  "message": "successful",
+  "httpStatus": 200,
+  "timestamp": 1614328643228
+}

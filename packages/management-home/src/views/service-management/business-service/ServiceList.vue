@@ -140,7 +140,13 @@
       </div>
       <template #footer>
         <span class="dialog-footer">
-          <el-button @click="addServiceDialog = false">取 消</el-button>
+          <el-button
+            @click="
+              addServiceDialog = false;
+              clearDialog();
+            "
+            >取 消</el-button
+          >
           <el-button type="primary" @click="addServiceByForm">确 定</el-button>
         </span>
       </template>
@@ -253,6 +259,12 @@ export default defineComponent({
       pageInfo.page = res;
       refreshServiceList(pageInfo);
     };
+    function clearDialog() {
+      const keys = Object.keys(serviceDetail);
+      keys.forEach((x) => {
+        serviceDetail[x] = '';
+      });
+    }
     function addServiceByForm() {
       const senddata = { ...serviceDetail };
       senddata.tags = serviceDetail.tags.join(',');
@@ -279,6 +291,7 @@ export default defineComponent({
         .then(() => {
           refreshServiceList(pageInfo);
           addServiceDialog.value = false;
+          clearDialog();
         })
         .catch(() => {
           addServiceDialog.value = false;
@@ -436,6 +449,7 @@ export default defineComponent({
       getSortClassification,
       mutiArray,
       computedDisabled,
+      clearDialog,
     };
   },
 });
