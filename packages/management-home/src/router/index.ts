@@ -75,14 +75,16 @@ const routes: Array<RouteRecordRaw> = [
         },
       },
       {
-        path: 'project-detail',
+        path: 'project-detail/:id',
         component: () => import('@/views/project-management/ProjectDetail.vue'),
         name: 'ProjectDetail',
         meta: {
           title: '项目详情',
           icon: 'el-icon-eleme',
           isRootLevel: false,
+          hidden: true,
         },
+        props: true,
       },
     ],
   },
@@ -191,23 +193,12 @@ const routes: Array<RouteRecordRaw> = [
     },
     children: [
       {
-        path: 'tenant-list',
+        path: 'tenant-detail',
         component: () => import(/* webpackChunkName: "tenant" */ '@/views/tenant-management/Index.vue'),
         name: 'TenantList',
         meta: {
           title: '租户管理',
           icon: 'el-icon-eleme',
-          isRootLevel: false,
-        },
-      },
-      {
-        path: 'tenant-list/edit/:id',
-        component: () => import(/* webpackChunkName: "tenant" */ '@/views/tenant-management/TenantEdit.vue'),
-        name: 'TenantEdit',
-        meta: {
-          title: '租户管理',
-          icon: 'el-icon-eleme',
-          hidden: true,
           isRootLevel: false,
         },
       },

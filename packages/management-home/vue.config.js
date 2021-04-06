@@ -2,6 +2,10 @@ const fs = require('fs')
 const Mock = require('mockjs')
 const path = require('path')
 
+function resolve(dir) {
+  return path.join(__dirname, dir);
+}
+
 module.exports = {
   // lintOnSave: false,
   css: {
@@ -22,7 +26,7 @@ module.exports = {
       '/api': {
         // 后端rest服务
         // target: 'http://10.91.22.33:3000',
-        target: 'http://10.95.22.50:3000',
+        target: 'http://9.134.45.3',
         ws: true,
         changeOrigin: true
         // 添加所有请求路径前缀/api/
@@ -48,5 +52,23 @@ module.exports = {
         })
       })
     }
-  }
-}
+  },
+  chainWebpack(config) {
+    // set svg-sprite-loader
+    config.module
+      .rule('svg')
+      .exclude.add(resolve('src/icons'))
+      .end();
+    config.module
+      .rule('icons')
+      .test(/\.svg$/)
+      .include.add(resolve('src/icons'))
+      .end()
+      .use('svg-sprite-loader')
+      .loader('svg-sprite-loader')
+      .options({
+        symbolId: 'icon-[name]',
+      })
+      .end();
+  },
+};

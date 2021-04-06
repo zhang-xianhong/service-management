@@ -3,7 +3,7 @@
  */
 import { Table, Column, DataType } from 'sequelize-typescript';
 import { BaseModel } from '../base.entity';
-import { PROJECT_LEVEL, PROJECT_STATUS } from './config';
+import { PROJECT_LEVEL, PROJECT_LICENSE, PROJECT_STATUS } from './config';
 
 @Table({
   timestamps: false,
@@ -68,4 +68,12 @@ export class ProjectsModel extends BaseModel {
     comment: JSON.stringify(PROJECT_LEVEL),
   })
   level: PROJECT_LEVEL;
+
+  // 许可类型
+  @Column({
+    type: DataType.TINYINT,
+    defaultValue: PROJECT_LICENSE.LEASE,
+    comment: `许可类型： ${JSON.stringify(PROJECT_LICENSE)}`,
+  })
+  license: PROJECT_LICENSE;
 }

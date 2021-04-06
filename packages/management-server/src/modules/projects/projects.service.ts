@@ -3,14 +3,15 @@ import { InjectModel } from '@nestjs/sequelize';
 import { Op, Sequelize } from 'sequelize';
 import { CommonCodes } from 'src/shared/constants/code';
 import { PlainObject } from 'src/shared/pipes/query.pipe';
-import { Created, Deleted, Rows, RowsAndCount, Updated } from 'src/shared/types/response';
+import { Created, Deleted, Updated } from 'src/shared/types/response';
 import { ApiException } from 'src/shared/utils/api.exception';
 import { escapeLike } from 'src/shared/utils/sql';
+import { FilesService } from '../files/files.service';
 import { SettingsService } from '../settings/settings.service';
 import { SettingsProjectRolesModel } from '../settings/settings_project_roles.model';
 import { UsersService } from '../users/users.service';
 import { MemberDto } from './dto/member.dto';
-import { ProjectDto } from './dto/project.dto';
+import { ProjectDto, ProjectUpdateDto } from './dto/project.dto';
 import { ProjectsMembersModel } from './projects-members.model';
 import { ProjectsRolesModel } from './projects-roles.model';
 import { ProjectsModel } from './projects.model';
@@ -29,13 +30,14 @@ export class ProjectsService {
     private readonly settingsService: SettingsService,
     private readonly sequelize: Sequelize,
     private readonly userService: UsersService,
+    private readonly fileService: FilesService,
   ) {}
 
   /**
    * 获取项目列表
    * @param query
    */
-  async findAll(query: any, getTotal = true): Promise<RowsAndCount<ProjectsModel> | Rows<ProjectsModel>> {
+  async findAll(query: any, getTotal = true): Promise<any> {
     const where: any = {
       isDelete: false,
     };
@@ -58,10 +60,16 @@ export class ProjectsService {
 
     const { conditions = {} } = query;
     conditions.where = where;
+    conditions.raw = true;
     if (!getTotal) {
-      return await this.repository.findAll({ where });
+      const rows = await this.repository.findAll({ where });
+      return await this.getProjectRowsAfterFileKeyToUrl(rows);
     }
-    return await this.repository.findAndCountAll(conditions);
+    const { rows, count } = (await this.repository.findAndCountAll(conditions));
+    return {
+      rows: await this.getProjectRowsAfterFileKeyToUrl(rows),
+      count,
+    };
   }
 
 
@@ -142,21 +150,24 @@ export class ProjectsService {
    * @param postData
    * @returns
    */
-  async updateProject(id: number, postData: ProjectDto): Promise<Updated> {
-    const project = await this.repository.findOne({
-      where: {
-        name: postData.name,
-        isDelete: false,
-        id: {
-          [Op.not]: id,
+  async updateProject(id: number, postData: ProjectUpdateDto): Promise<Updated> {
+    const { name } = postData;
+    if (name) {
+      const project = await this.repository.findOne({
+        where: {
+          name,
+          isDelete: false,
+          id: {
+            [Op.not]: id,
+          },
         },
-      },
-    });
-    if (project) {
-      throw new ApiException({
-        code: CommonCodes.DATA_EXISTED,
-        message: `项目名称${postData.name}已存在`,
       });
+      if (project) {
+        throw new ApiException({
+          code: CommonCodes.DATA_EXISTED,
+          message: `项目名称${postData.name}已存在`,
+        });
+      }
     }
     await this.repository.update({
       ...postData,
@@ -316,5 +327,15 @@ export class ProjectsService {
       }, HttpStatus.NOT_FOUND);
     }
     return projectRole;
+  }
+
+
+  private async getProjectRowsAfterFileKeyToUrl(rows: any[]) {
+    const promises = rows.map(item => (item.thumbnail ? this.fileService.getObjectUrl(item.thumbnail) : Promise.resolve('')));
+    const urls = await Promise.all(promises);
+    return rows.map((item, index) => ({
+      ...item,
+      thumbnail: urls[index],
+    }));
   }
 }

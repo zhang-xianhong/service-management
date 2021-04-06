@@ -2,7 +2,7 @@ import { HttpService, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Op, Sequelize, Transaction } from 'sequelize';
 import { CommonCodes, StatusCodes } from 'src/shared/constants/code';
-// import { CREATE_IDAAS_TENANT } from 'src/shared/constants/url';
+import { CREATE_IDAAS_TENANT } from 'src/shared/constants/url';
 import { Deleted, Updated } from 'src/shared/types/response';
 import { ApiException } from 'src/shared/utils/api.exception';
 import { escapeLike } from 'src/shared/utils/sql';
@@ -31,9 +31,9 @@ export class TenantService {
     const where: any = {
       isDelete: false,
     };
-    if (query.name) {
+    if (query.keyword) {
       where.name = {
-        [Op.like]: escapeLike(query.name),
+        [Op.like]: escapeLike(query.keyword),
       };
     }
     const { conditions = {} } = query;
@@ -116,6 +116,7 @@ export class TenantService {
           transaction,
         },
       );
+
       // 添加租户管理员
       await this.managerRepository.create(
         {
@@ -126,20 +127,24 @@ export class TenantService {
           transaction,
         },
       );
-      await transaction.commit();
-      return {
-        id: res.id,
+      const tenantParams = {
+        adminDisplayName: manager.name,
+        adminName: manager.account,
+        adminPassword: manager.password,
+        logoUrl: infoData.logoUrl,
+        tenantDisplayName: infoData.nameShort,
+        tenantName: infoData.name,
       };
-      // 创建iDaas租户 需等待java接口联调
-      // const { data } = await this.httpService.post(`${CREATE_IDAAS_TENANT}/${res.id}`).toPromise();
-      // if (data?.code === 0) {
-      //   await transaction.commit();
-      //   return {
-      //     id: res.id,
-      //     idaas: data.data,
-      //   };
-      // }
-      // throw data.message;
+      // 创建iDaas租户
+      const { data } = await this.httpService.post(`${CREATE_IDAAS_TENANT}/${res.id}`, tenantParams).toPromise();
+      if (data?.code === 0) {
+        await transaction.commit();
+        return {
+          id: res.id,
+          idaas: data.data,
+        };
+      }
+      throw data.message;
     } catch (error) {
       this.logger.error(error);
       await transaction.rollback();

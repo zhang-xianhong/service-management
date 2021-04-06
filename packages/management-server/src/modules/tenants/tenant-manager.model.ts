@@ -2,6 +2,7 @@
  * 项目管理员
  */
 import { Table, Column, DataType, Length, ForeignKey } from 'sequelize-typescript';
+import { genPassword } from 'src/shared/utils/password';
 import { BaseModel } from '../base.entity';
 import { TenantInfoModel } from './tenant-info.model';
 
@@ -14,6 +15,7 @@ export class TenantManagerModel extends BaseModel {
   @ForeignKey(() => TenantInfoModel)
   @Column({
     type: DataType.BIGINT,
+    field: 'tenant_id',
   })
   tenantId: number;
 
@@ -44,6 +46,10 @@ export class TenantManagerModel extends BaseModel {
   @Column({
     type: DataType.STRING,
     defaultValue: '',
+    set(val: string) {
+      const { hash } = genPassword(val);
+      this.setDataValue('password', hash);
+    },
   })
   password: string;
 }

@@ -15,3 +15,11 @@ export enum PROJECT_STATUS {
   // 启用
   ENABLED = 1,
 }
+
+// 许可类型
+export enum PROJECT_LICENSE {
+  // 永久
+  PERMANENT = 0,
+  // 租用
+  LEASE = 1
+}

@@ -1,6 +1,5 @@
-import { Optional } from '@nestjs/common';
 import { Type } from 'class-transformer';
-import { IsNotEmpty, IsNumber, IsOptional, IsString, Matches, MaxLength, MinLength, ValidateNested } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString, Matches, MaxLength, MinLength, ValidateNested } from 'class-validator';
 import { TenantContactDto } from './tenant-contact.dto';
 import { TenantManagerDto } from './tenant-manager.dto';
 
@@ -17,26 +16,25 @@ export class TenantInfoDto {
     message: '只能输入中文、大小写字母及()',
   })
   @IsString()
-  @Optional()
+  @IsOptional()
   @MinLength(2)
   @MaxLength(40)
   nameShort: string;
 
-  @IsNumber()
-  industryId: number;
+  @IsString()
+  industryId: string;
 
-  @IsNumber()
-  natureId: number;
+  @IsString()
+  natureId: string;
 
-  @IsNumber()
-  scaleId: number;
+  @IsString()
+  scaleId: string;
 
   @IsString()
   license: string;
 
-  @IsString()
   @IsOptional()
-  addr: string;
+  addr: string | number;
 
   @IsString()
   @IsOptional()

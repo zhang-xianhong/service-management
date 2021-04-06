@@ -6,7 +6,6 @@ import { SequelizeModule } from '@nestjs/sequelize';
 import { TenantContactModel } from './tenant-contact.model';
 import { TenantManagerModel } from './tenant-manager.model';
 import { UsersModule } from '../users/users.module';
-
 @Module({
   imports: [SequelizeModule.forFeature([
     TenantInfoModel,

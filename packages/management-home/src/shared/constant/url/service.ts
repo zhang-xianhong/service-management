@@ -13,4 +13,5 @@ export default {
   GET_CHANGES: ['/services/_/changes'],
   POST_CHANGES_APPLY: ['/services/changes/apply'],
   START_SERVICE: ['/services/start'],
+  STOP_SERVICE: ['/services/stop'],
 };

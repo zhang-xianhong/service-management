@@ -1,7 +1,7 @@
 /**
  * 租户实体
  */
-import { Table, Column, DataType, Length, HasOne  } from 'sequelize-typescript';
+import { Table, Column, DataType, Length, HasOne } from 'sequelize-typescript';
 import { BaseModel } from '../base.entity';
 import { TenantContactModel } from './tenant-contact.model';
 import { TenantManagerModel } from './tenant-manager.model';
@@ -12,7 +12,7 @@ import { TenantManagerModel } from './tenant-manager.model';
 })
 export class TenantInfoModel extends BaseModel {
   // 企业名称
-  @Length({ min: 2, max: 40 })
+  @Length({ max: 40 })
   @Column({
     type: DataType.STRING,
     defaultValue: '',
@@ -20,7 +20,7 @@ export class TenantInfoModel extends BaseModel {
   name: string;
 
   // 企业简称
-  @Length({ min: 2, max: 40 })
+  @Length({ max: 40 })
   @Column({
     type: DataType.STRING,
     field: 'name_short',
@@ -30,27 +30,27 @@ export class TenantInfoModel extends BaseModel {
 
   // 所属行业
   @Column({
-    type: DataType.BIGINT,
+    type: DataType.STRING,
     field: 'industry_id',
-    defaultValue: null,
+    defaultValue: '',
   })
-  industryId: number;
+  industryId: string;
 
   // 企业性质
   @Column({
-    type: DataType.BIGINT,
+    type: DataType.STRING,
     field: 'nature_id',
-    defaultValue: null,
+    defaultValue: '',
   })
-  natureId: number;
+  natureId: string;
 
   // 企业规模
   @Column({
-    type: DataType.BIGINT,
+    type: DataType.STRING,
     field: 'scale_id',
-    defaultValue: null,
+    defaultValue: '',
   })
-  scaleId: number;
+  scaleId: string;
 
   // 营业执照号
   @Column({

@@ -1,0 +1,56 @@
+{
+  "code": 0,
+  "data": [
+    {
+      "id": 1,
+      "createTime": "2021-04-03T06:07:58.000Z",
+      "updateTime": "2021-04-03T06:07:07.000Z",
+      "createUser": null,
+      "updateUser": null,
+      "version": 0,
+      "name": "Java",
+      "description": "Java包",
+      "url": "https://www.java.com/zh-CN/",
+      "isSystem": false
+    },
+    {
+      "id": 2,
+      "createTime": "2021-04-03T06:07:34.000Z",
+      "updateTime": "2021-04-03T06:07:20.000Z",
+      "createUser": null,
+      "updateUser": null,
+      "version": 0,
+      "name": "NodeJs",
+      "description": "nodeJs包",
+      "url": "https://nodejs.org/en/",
+      "isSystem": false
+    },
+    {
+      "id": 3,
+      "createTime": "2021-04-03T06:08:29.000Z",
+      "updateTime": "2021-04-03T06:08:08.000Z",
+      "createUser": null,
+      "updateUser": null,
+      "version": 0,
+      "name": "Vue3",
+      "description": "vue3.9",
+      "url": "https://vuejs.org/",
+      "isSystem": false
+    },
+    {
+      "id": 4,
+      "createTime": "2021-04-03T06:08:39.000Z",
+      "updateTime": "2021-04-03T06:08:17.000Z",
+      "createUser": null,
+      "updateUser": null,
+      "version": 0,
+      "name": "React",
+      "description": "react 16",
+      "url": "https://zh-hans.reactjs.org/",
+      "isSystem": false
+    }
+  ],
+  "message": "successful",
+  "httpStatus": 200,
+  "timestamp": 1617430642782
+}
