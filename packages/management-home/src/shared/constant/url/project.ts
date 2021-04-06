@@ -7,4 +7,5 @@ export default {
   GET_MODEL_LIST: ['/projects', '/mock/schema/project-list.json'],
   POST_ADD_PROJECT: ['/projects'],
   DELETE_PROJECT: ['/projects/delete'],
+  IMAGE_UPLOAD: ['/files/upload'],
 };

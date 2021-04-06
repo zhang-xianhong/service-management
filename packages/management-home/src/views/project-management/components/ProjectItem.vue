@@ -43,6 +43,7 @@
 
 <script lang="ts">
 import { defineComponent, getCurrentInstance, ref } from 'vue';
+import { imgUpload, updateProject } from '@/api/project/project';
 
 export default defineComponent({
   name: 'ProjectItem',
@@ -68,11 +69,13 @@ export default defineComponent({
       const fileReader = new FileReader();
       fileReader.readAsDataURL(files[0]);
       fileReader.onload = (ev: any) => {
-        const ress = ev.target.result;
-        src.value = ress;
-        console.log(ress);
+        src.value = ev.target.result;
       };
-      console.log(files);
+      const formData = new FormData();
+      formData.append('file', files[0]);
+      imgUpload(formData)
+        .then((res) => updateProject(props.dataObj.id, { thumbnail: res.data.fileKey }))
+        .then(() => ctx.emit('reload-projects'));
     };
     const changePic = (res: any) => {
       console.log('change picture', res);
@@ -108,7 +111,7 @@ export default defineComponent({
 
 <style lang="scss">
 .project-item {
-  width: 300px;
+  width: 280px;
   height: 340px;
   border-radius: 5px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
@@ -119,7 +122,7 @@ export default defineComponent({
   &_pic {
     width: 100%;
     height: 170px;
-    box-shadow: 0 5px 5px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
     .pic-alt {
       display: flex;
       height: 100%;

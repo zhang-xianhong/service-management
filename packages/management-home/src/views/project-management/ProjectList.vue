@@ -18,6 +18,7 @@
         :data-obj="item"
         :key="item.id"
         @delete-project="deleteProject"
+        @reload-projects="getProjectListData"
       ></project-item>
     </div>
     <el-pagination
@@ -174,6 +175,7 @@ export default defineComponent({
       handleCurrentChange,
       pageInfo,
       searchProject,
+      getProjectListData,
     };
   },
 });
