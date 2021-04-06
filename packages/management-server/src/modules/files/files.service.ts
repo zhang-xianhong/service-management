@@ -95,8 +95,8 @@ export class FilesService {
 
   async uploadFile(file) {
     console.log(file);
-    // const { originalname, mimetype, size, buffer } = file;
-    const { originalname, mimetype, size } = file;
+    const { originalname, mimetype, size, buffer } = file;
+    // const { originalname, mimetype, size } = file;
     const fileKey = v4();
     const fileData = {
       fileId: fileKey,
@@ -108,14 +108,14 @@ export class FilesService {
     try {
       await this.fileRepository.create(fileData, { transaction });
       // 暂无 cos 账号
-      // const params = {
-      //   Bucket: cosOpt.Bucket,
-      //   Region: cosOpt.Region,
-      //   Key: fileKey,
-      //   Body: buffer,
-      // };
-      // const data = await this.cos.putObject(params);
-      // console.log('data', data);
+      const params = {
+        Bucket: cosOpt.Bucket,
+        Region: cosOpt.Region,
+        Key: fileKey,
+        Body: buffer,
+      };
+      const data = await this.cos.putObject(params);
+      console.log('data', data);
       await transaction.commit();
       return {
         fileKey,
@@ -131,7 +131,7 @@ export class FilesService {
     }
   }
 
-  async getObjectUrl(key) {
+  async getObjectUrl(key): Promise<string> {
     try {
       const data: any = await new Promise((resolve, reject) => {
         this.cos.getObjectUrl({
@@ -145,9 +145,7 @@ export class FilesService {
           resolve(data);
         });
       });
-      return {
-        url: data.Url,
-      };
+      return data.Url;
     } catch (error) {
       this.logger.error(error);
       throw new ApiException({

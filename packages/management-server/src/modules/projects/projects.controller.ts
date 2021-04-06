@@ -3,7 +3,7 @@ import { QueryPipe, SearchQuery } from 'src/shared/pipes/query.pipe';
 import { DeletedIdsDto, ParamIdDto } from '../base.dto';
 import { MemberDto } from './dto/member.dto';
 import { MemberDeleteDto } from './dto/member-delete.dto';
-import { ProjectDto } from './dto/project.dto';
+import { ProjectDto, ProjectUpdateDto } from './dto/project.dto';
 import { ProjectsService } from './projects.service';
 
 @Controller('projects')
@@ -38,7 +38,7 @@ export class ProjectsController {
 
   // 更新项目
   @Post(':id')
-  async updateProject(@Param() { id }: ParamIdDto, @Body() postData: ProjectDto) {
+  async updateProject(@Param() { id }: ParamIdDto, @Body() postData: ProjectUpdateDto) {
     return this.service.updateProject(id, postData);
   }
 
