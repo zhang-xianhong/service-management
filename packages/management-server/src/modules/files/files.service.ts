@@ -1,10 +1,9 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import * as COS from 'cos-nodejs-sdk-v5';
-// import * as fs  from 'fs';
 import { Sequelize } from 'sequelize';
 import cosOpt from 'src/config/cos';
-import { OCR_COMMON_CONFIG } from 'src/shared/constants';
+import { FILE_MAX_SIZE, OCR_COMMON_CONFIG } from 'src/shared/constants';
 import { CommonCodes } from 'src/shared/constants/code';
 import { ApiException } from 'src/shared/utils/api.exception';
 import { ocr } from 'tencentcloud-sdk-nodejs';
@@ -94,9 +93,13 @@ export class FilesService {
   }
 
   async uploadFile(file) {
-    console.log(file);
     const { originalname, mimetype, size, buffer } = file;
-    // const { originalname, mimetype, size } = file;
+    if (size > FILE_MAX_SIZE) {
+      throw new ApiException({
+        code: CommonCodes.UPLOAD_FAIL,
+        message: '单个文件最大为10M！',
+      });
+    }
     const fileKey = v4();
     const fileData = {
       fileId: fileKey,
@@ -107,7 +110,7 @@ export class FilesService {
     const transaction = await this.sequelize.transaction();
     try {
       await this.fileRepository.create(fileData, { transaction });
-      // 暂无 cos 账号
+      // 调用cos存储
       const params = {
         Bucket: cosOpt.Bucket,
         Region: cosOpt.Region,
@@ -115,11 +118,13 @@ export class FilesService {
         Body: buffer,
       };
       const data = await this.cos.putObject(params);
-      console.log('data', data);
-      await transaction.commit();
-      return {
-        fileKey,
-      };
+      if (data.statusCode === 200) {
+        await transaction.commit();
+        return {
+          fileKey,
+        };
+      }
+      throw '文件上传失败';
     } catch (error) {
       this.logger.error(error);
       await transaction.rollback();
