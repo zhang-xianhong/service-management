@@ -33,10 +33,10 @@
         <label>项目级别</label>
         {{ levelArr[dataObj.level] }}
       </div>
-      <div class="project-item_mess">
-        <label>许可类型</label>
-        {{ dataObj.accessType }}
-      </div>
+      <!--      <div class="project-item_mess">-->
+      <!--        <label>许可类型</label>-->
+      <!--        {{ dataObj.license ? '租用' : '永久' }}-->
+      <!--      </div>-->
     </div>
   </div>
 </template>
@@ -44,6 +44,7 @@
 <script lang="ts">
 import { defineComponent, getCurrentInstance, ref } from 'vue';
 import { imgUpload, updateProject } from '@/api/project/project';
+import Message from 'element-plus/es/el-message';
 
 export default defineComponent({
   name: 'ProjectItem',
@@ -66,6 +67,13 @@ export default defineComponent({
     const src = ref('');
     const changeSelectPic = (res: any) => {
       const { files } = res.target;
+      console.log(files[0], 'this is files message');
+      if (files[0].size > 10 * 1024 * 1024) {
+        return Message.warning('上传图片不得大于10Mb');
+      }
+      if (!(files[0].type.includes('jpeg') || files[0].type.includes('png'))) {
+        return Message.warning('图片格式必须为png/jpeg');
+      }
       const fileReader = new FileReader();
       fileReader.readAsDataURL(files[0]);
       fileReader.onload = (ev: any) => {
@@ -82,7 +90,7 @@ export default defineComponent({
       selectPic.value.click();
     };
 
-    const levelArr = ['统一', '行业', '租户'];
+    const levelArr = ['统一级', '行业级', '租户级'];
     const deleteProject = () => {
       console.log(props.dataObj.id);
       ctx.emit('deleteProject', props.dataObj.id);
@@ -112,7 +120,7 @@ export default defineComponent({
 <style lang="scss">
 .project-item {
   width: 280px;
-  height: 340px;
+  height: 310px;
   border-radius: 5px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
   margin: 10px;

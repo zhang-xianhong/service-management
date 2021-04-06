@@ -83,6 +83,14 @@
             <el-radio v-model="projectDetail.level" :label="2">行业</el-radio>
             <el-radio v-model="projectDetail.level" :label="3">租户</el-radio>
           </el-form-item>
+          <el-form-item
+            label="许可类型"
+            :label-width="labelWidth"
+            :rules="[{ required: true, message: '请输入项目级别', trigger: 'blur' }]"
+          >
+            <el-radio v-model="projectDetail.license" :label="0">永久</el-radio>
+            <el-radio v-model="projectDetail.license" :label="1">租用</el-radio>
+          </el-form-item>
           <el-form-item label="项目状态" :label-width="labelWidth">
             <el-radio v-model="projectDetail.status" :label="1">启用</el-radio>
             <el-radio v-model="projectDetail.status" :label="0">禁用</el-radio>
@@ -135,6 +143,9 @@ export default defineComponent({
       keys.forEach((x) => {
         projectDetail[x] = '';
       });
+      projectDetail.license = 1;
+      projectDetail.level = 3;
+      projectDetail.status = 1;
     };
 
     getProjectListData();
