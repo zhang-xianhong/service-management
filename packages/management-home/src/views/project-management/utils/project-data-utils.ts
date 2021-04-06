@@ -4,7 +4,11 @@ import { getAllTemplates } from '@/api/settings/templates';
 import { ElMessageBox } from 'element-plus';
 import Message from 'element-plus/es/el-message';
 
-export const projectDetail = reactive({} as any);
+export const projectDetail = reactive({
+  license: 1,
+  level: 3,
+  status: 1,
+} as any);
 export const projectList = ref([] as any);
 export const pageInfo = reactive({
   pageSize: 10,
