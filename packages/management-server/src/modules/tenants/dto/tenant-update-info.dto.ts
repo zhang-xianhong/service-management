@@ -1,19 +1,17 @@
-import { Optional } from '@nestjs/common';
 import {  IsOptional, IsString, Matches, MaxLength, MinLength } from 'class-validator';
 
 export class TenantUpdateInfoDto {
   @Matches(/^[\u4e00-\u9fa5a-zA-Z\\(\\)]+$/, {
     message: '只能输入中文、大小写字母及()',
   })
-  @Optional()
+  @IsOptional()
   @IsString()
   @MinLength(2)
   @MaxLength(40)
   nameShort: string;
 
-  @IsString()
   @IsOptional()
-  addr: string;
+  addr: string | number;
 
   @IsString()
   @IsOptional()

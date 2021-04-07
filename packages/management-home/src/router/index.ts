@@ -75,14 +75,16 @@ const routes: Array<RouteRecordRaw> = [
         },
       },
       {
-        path: 'project-detail',
+        path: 'project-detail/:id',
         component: () => import('@/views/project-management/ProjectDetail.vue'),
         name: 'ProjectDetail',
         meta: {
           title: '项目详情',
           icon: 'el-icon-eleme',
           isRootLevel: false,
+          hidden: true,
         },
+        props: true,
       },
     ],
   },

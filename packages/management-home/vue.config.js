@@ -2,6 +2,10 @@ const fs = require('fs')
 const Mock = require('mockjs')
 const path = require('path')
 
+function resolve(dir) {
+  return path.join(__dirname, dir);
+}
+
 module.exports = {
   // lintOnSave: false,
   css: {
@@ -13,7 +17,7 @@ module.exports = {
   },
   devServer: {
     host: 'dev.sa.qq.com',
-    port: '3000',
+    port: '80',
     watchOptions: {
       ignored: /node_modules/
     },
@@ -48,5 +52,23 @@ module.exports = {
         })
       })
     }
-  }
-}
+  },
+  chainWebpack(config) {
+    // set svg-sprite-loader
+    config.module
+      .rule('svg')
+      .exclude.add(resolve('src/icons'))
+      .end();
+    config.module
+      .rule('icons')
+      .test(/\.svg$/)
+      .include.add(resolve('src/icons'))
+      .end()
+      .use('svg-sprite-loader')
+      .loader('svg-sprite-loader')
+      .options({
+        symbolId: 'icon-[name]',
+      })
+      .end();
+  },
+};

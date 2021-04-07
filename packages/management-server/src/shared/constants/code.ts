@@ -43,6 +43,8 @@ export enum CommonCodes {
   BUILD_FAIL = 100011,
   // 获取失败
   FETCH_FAIL = 100012,
+  // 文件上传失败
+  UPLOAD_FAIL = 100013,
 }
 
 // 用户模块

@@ -3,14 +3,15 @@ import { InjectModel } from '@nestjs/sequelize';
 import { Op, Sequelize } from 'sequelize';
 import { CommonCodes } from 'src/shared/constants/code';
 import { PlainObject } from 'src/shared/pipes/query.pipe';
-import { Created, Deleted, Rows, RowsAndCount, Updated } from 'src/shared/types/response';
+import { Created, Deleted, Updated } from 'src/shared/types/response';
 import { ApiException } from 'src/shared/utils/api.exception';
 import { escapeLike } from 'src/shared/utils/sql';
+import { FilesService } from '../files/files.service';
 import { SettingsService } from '../settings/settings.service';
 import { SettingsProjectRolesModel } from '../settings/settings_project_roles.model';
 import { UsersService } from '../users/users.service';
-import { MemberDto } from './dto/member.dto';
-import { ProjectDto } from './dto/project.dto';
+import { MembersDto } from './dto/member.dto';
+import { ProjectDto, ProjectUpdateDto } from './dto/project.dto';
 import { ProjectsMembersModel } from './projects-members.model';
 import { ProjectsRolesModel } from './projects-roles.model';
 import { ProjectsModel } from './projects.model';
@@ -29,13 +30,14 @@ export class ProjectsService {
     private readonly settingsService: SettingsService,
     private readonly sequelize: Sequelize,
     private readonly userService: UsersService,
+    private readonly fileService: FilesService,
   ) {}
 
   /**
    * 获取项目列表
    * @param query
    */
-  async findAll(query: any, getTotal = true): Promise<RowsAndCount<ProjectsModel> | Rows<ProjectsModel>> {
+  async findAll(query: any, getTotal = true): Promise<any> {
     const where: any = {
       isDelete: false,
     };
@@ -58,10 +60,16 @@ export class ProjectsService {
 
     const { conditions = {} } = query;
     conditions.where = where;
+    conditions.raw = true;
     if (!getTotal) {
-      return await this.repository.findAll({ where });
+      const rows = await this.repository.findAll({ where });
+      return await this.getProjectRowsAfterFileKeyToUrl(rows);
     }
-    return await this.repository.findAndCountAll(conditions);
+    const { rows, count } = (await this.repository.findAndCountAll(conditions));
+    return {
+      rows: await this.getProjectRowsAfterFileKeyToUrl(rows),
+      count,
+    };
   }
 
 
@@ -77,17 +85,17 @@ export class ProjectsService {
         isDelete: false,
       },
     });
-    const res: PlainObject = project.toJSON();
-    try {
-      res.template = await this.settingsService.findTemplateById(project.templateId);
-    } catch (error) {
-      res.template = {};
-    }
     if (!project) {
       throw new ApiException({
         code: CommonCodes.NOT_FOUND,
         message: '项目不存在',
       }, HttpStatus.NOT_FOUND);
+    }
+    const res: PlainObject = project.toJSON();
+    try {
+      res.template = await this.settingsService.findTemplateById(project.templateId);
+    } catch (error) {
+      res.template = {};
     }
     return res;
   }
@@ -142,21 +150,24 @@ export class ProjectsService {
    * @param postData
    * @returns
    */
-  async updateProject(id: number, postData: ProjectDto): Promise<Updated> {
-    const project = await this.repository.findOne({
-      where: {
-        name: postData.name,
-        isDelete: false,
-        id: {
-          [Op.not]: id,
+  async updateProject(id: number, postData: ProjectUpdateDto): Promise<Updated> {
+    const { name } = postData;
+    if (name) {
+      const project = await this.repository.findOne({
+        where: {
+          name,
+          isDelete: false,
+          id: {
+            [Op.not]: id,
+          },
         },
-      },
-    });
-    if (project) {
-      throw new ApiException({
-        code: CommonCodes.DATA_EXISTED,
-        message: `项目名称${postData.name}已存在`,
       });
+      if (project) {
+        throw new ApiException({
+          code: CommonCodes.DATA_EXISTED,
+          message: `项目名称${postData.name}已存在`,
+        });
+      }
     }
     await this.repository.update({
       ...postData,
@@ -243,35 +254,66 @@ export class ProjectsService {
 
 
   /**
-   * 项项目组内添加成员
+   * 更新组内成员
    * @param projectId
    * @param postData
    * @returns
    */
-  async addMember(projectId: number, { userId, projectRoleId }: MemberDto): Promise<Created> {
-    await this.findRoleById(projectId, projectRoleId);
-    const member = await this.membersRepository.findOne({
-      where: {
+  async updateMembers(projectId: number, postData: MembersDto): Promise<any> {
+    const { projectRoleId, members } = postData;
+    const transaction = await this.sequelize.transaction();
+    try {
+      await this.membersRepository.destroy({
+        where: {
+          projectId,
+          projectRoleId,
+        },
+        transaction,
+      });
+      const memberModels = Array.from(new Set(members)).map(item => ({
+        userId: item,
         projectRoleId,
-        userId,
         projectId,
-        isDelete: false,
-      },
-    });
-    if (member) {
+      }));
+      await this.membersRepository.bulkCreate(memberModels, {
+        transaction,
+      });
+      await transaction.commit();
+      return members;
+    } catch (error) {
+      this.logger.error(error);
+      await transaction.rollback();
+      if (error instanceof ApiException) {
+        throw error;
+      }
       throw new ApiException({
-        code: CommonCodes.DATA_EXISTED,
-        message: '该用户已在当前组内',
+        code: CommonCodes.CREATED_FAIL,
+        message: '创建失败',
       });
     }
-    const res = await this.membersRepository.create({
-      projectId,
-      projectRoleId,
-      userId,
-    });
-    return {
-      id: res.id,
-    };
+    // await this.findRoleById(projectId, projectRoleId);
+    // const member = await this.membersRepository.findOne({
+    //   where: {
+    //     projectRoleId,
+    //     userId,
+    //     projectId,
+    //     isDelete: false,
+    //   },
+    // });
+    // if (member) {
+    //   throw new ApiException({
+    //     code: CommonCodes.DATA_EXISTED,
+    //     message: '该用户已在当前组内',
+    //   });
+    // }
+    // const res = await this.membersRepository.create({
+    //   projectId,
+    //   projectRoleId,
+    //   userId,
+    // });
+    // return {
+    //   id: res.id,
+    // };
   }
 
   /**
@@ -316,5 +358,15 @@ export class ProjectsService {
       }, HttpStatus.NOT_FOUND);
     }
     return projectRole;
+  }
+
+
+  private async getProjectRowsAfterFileKeyToUrl(rows: any[]) {
+    const promises = rows.map(item => (item.thumbnail ? this.fileService.getObjectUrl(item.thumbnail) : Promise.resolve('')));
+    const urls = await Promise.all(promises);
+    return rows.map((item, index) => ({
+      ...item,
+      thumbnail: urls[index],
+    }));
   }
 }
