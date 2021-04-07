@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
 import { QueryPipe, SearchQuery } from 'src/shared/pipes/query.pipe';
 import { DeletedIdsDto, ParamIdDto } from '../base.dto';
-import { MemberDto } from './dto/member.dto';
+import { MembersDto } from './dto/member.dto';
 import { MemberDeleteDto } from './dto/member-delete.dto';
 import { ProjectDto, ProjectUpdateDto } from './dto/project.dto';
 import { ProjectsService } from './projects.service';
@@ -50,8 +50,8 @@ export class ProjectsController {
    * @returns
    */
   @Post('/:id/members')
-  async addMember(@Param() { id }: ParamIdDto, @Body() postData: MemberDto) {
-    return await this.service.addMember(id, postData);
+  async updateMember(@Param() { id }: ParamIdDto, @Body() postData: MembersDto) {
+    return await this.service.updateMembers(id, postData);
   }
 
 
