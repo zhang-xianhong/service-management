@@ -56,4 +56,11 @@ export class TenantController {
     const tenantId = 1;
     return await this.tenantService.getDepartmentTree(tenantId, deptId, level);
   }
+
+  // 查询租户下的部门和用户
+  @Get('/search/users')
+  async searchDepartmentAndUser(@Query(new QueryPipe) query: SearchQuery) {
+    const tenantId = 1;
+    return await this.tenantService.searchDepartmentAndUser(tenantId, query);
+  }
 }
