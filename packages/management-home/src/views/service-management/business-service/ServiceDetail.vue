@@ -14,8 +14,8 @@
       </el-col>
       <el-col :span="8" style="text-align:right;">
         <div class="detail-status">
-          <!--          <span :style="{ background: serverStatusInfo.color }" class="detail-status__icon"></span>-->
-          {{ serverStatusInfo.label }}
+          <span :style="{ background: serverStatusInfo.color }" class="detail-status__icon"></span>
+          <span :style="{ color: serverStatusInfo.color }">{{ serverStatusInfo.label }}</span>
         </div>
         <el-button class="detail-icon" icon="el-icon-s-data" @click="openBaseInfo"></el-button>
         <el-button class="detail-icon" icon="el-icon-notebook-2" @click="openPropertyInfo"></el-button>
@@ -127,7 +127,11 @@ import { getClassificationList } from '@/api/settings/classification';
 import { getServiceModelList } from '@/api/schema/model';
 import { getDataTypesAll } from '@/api/settings/data-types';
 import { useRoute } from 'vue-router';
-import { statusMap } from '@/views/service-management/business-service/utils/service-status-map';
+import {
+  statusMap,
+  computeStatusLabel,
+  statusColor,
+} from '@/views/service-management/business-service/utils/service-status-map';
 import {
   currentServiceIdForData,
   sqlDialogVisiable,
@@ -292,9 +296,10 @@ export default {
       }
       buttons.value[buttons.value.length - 1].disabled = false;
       buttons.value[0].label = +status === 0 ? '初始化' : '同步配置';
+      const statusmaps = computeStatusLabel(serverInfo.value.initTimes);
       serverStatusInfo.value = {
-        label: (statusMap as any)[status],
-        color: '',
+        label: (statusmaps as any)[status],
+        color: (statusColor as any)[status],
       };
       console.log(buttons.value);
     });
