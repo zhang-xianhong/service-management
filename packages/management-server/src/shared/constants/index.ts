@@ -10,6 +10,9 @@ export const DEFAULT_PAGE_SIZE = 10;
 // 日期时间格式化格式
 export const DATE_TIME_FORMAT = 'YYYY-MM-DD HH:mm:ss';
 
+// 限制文件上传大小
+export const FILE_MAX_SIZE = 10 * 1024 * 1024;
+
 export const OCR_COMMON_CONFIG = {
   Action: 'IDCardOCR',
   Version: '20181119',
