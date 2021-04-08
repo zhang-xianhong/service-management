@@ -174,6 +174,7 @@ export class FilesService {
 
   // 上传到本地
   async uploadToLocal(file) {
+    // /upload/租户名或者ID/xxx.ext
     const { originalname, size, buffer } = file;
     if (size > UPLOAD_MAX_FILE_SIZE) {
       throw new ApiException({
