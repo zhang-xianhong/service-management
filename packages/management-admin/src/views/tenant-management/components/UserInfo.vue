@@ -114,7 +114,7 @@ export default {
     const getFileUrl = async (type: 'frontPhoto' | 'reversePhoto') => {
       if (userInfo.value[type]) {
         const { data } = await getImageUrl({ fileKey: userInfo.value[type] });
-        return data.url;
+        return data;
       }
     };
 

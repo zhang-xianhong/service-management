@@ -7,6 +7,7 @@ import { SettingsModule } from '../settings/settings.module';
 import { ProjectsRolesModel } from './projects-roles.model';
 import { ProjectsMembersModel } from './projects-members.model';
 import { UsersModule } from '../users/users.module';
+import { FileModule } from '../files/files.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { UsersModule } from '../users/users.module';
     ]),
     SettingsModule,
     UsersModule,
+    FileModule,
   ],
   controllers: [ProjectsController],
   providers: [ProjectsService, Logger],

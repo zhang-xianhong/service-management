@@ -129,14 +129,6 @@ export class ServicesInfoModel extends BaseModel  {
   })
   initTimes: number;
 
-  // 构建次数
-  @Column({
-    type: DataType.INTEGER,
-    field: 'built_times',
-    defaultValue: 0,
-  })
-  builtTimes: number;
-
   // 代码质量
   @Column({
     type: DataType.STRING,

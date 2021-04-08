@@ -83,6 +83,7 @@ const routes: Array<RouteRecordRaw> = [
           icon: 'el-icon-eleme',
           isRootLevel: false,
           hidden: true,
+          activeMenu: '/project-management/project-list',
         },
         props: true,
       },
@@ -117,6 +118,7 @@ const routes: Array<RouteRecordRaw> = [
           icon: 'el-icon-eleme',
           isRootLevel: false,
           hidden: true,
+          activeMenu: '/service-management/service-list',
         },
       },
       {
