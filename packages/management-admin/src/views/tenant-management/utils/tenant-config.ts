@@ -26,7 +26,11 @@ export default async () => {
   } = await getDictionaryDetail(scaleId);
 
   // 获取省份信息
-  const { data: provinceOptions } = await getRegions({ params: { level: 1 } });
+  const { data } = await getRegions({ params: { level: 1 } });
+  const provinceOptions = data.map((item: { code: number; name: string }) => ({
+    code: String(item.code),
+    name: item.name,
+  }));
 
   return {
     industryOptions,
