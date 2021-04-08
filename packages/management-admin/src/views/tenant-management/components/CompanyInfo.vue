@@ -157,7 +157,7 @@ export default {
     const getFileUrl = async (type: 'licenseUrl' | 'logoUrl') => {
       if (companyInfo.value[type]) {
         const { data } = await getImageUrl({ fileKey: companyInfo.value[type] });
-        return data.url;
+        return data;
       }
     };
 

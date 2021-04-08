@@ -10,8 +10,9 @@ export class TenantUpdateInfoDto {
   @MaxLength(40)
   nameShort: string;
 
+  @IsString()
   @IsOptional()
-  addr: string | number;
+  addr: string;
 
   @IsString()
   @IsOptional()

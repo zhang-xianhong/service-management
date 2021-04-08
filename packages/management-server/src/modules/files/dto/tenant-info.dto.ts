@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsNotEmpty, IsOptional, IsString, Matches, MaxLength, MinLength, ValidateNested } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsOptional, IsString, Matches, MaxLength, MinLength, ValidateNested } from 'class-validator';
 import { TenantContactDto } from './tenant-contact.dto';
 import { TenantManagerDto } from './tenant-manager.dto';
 
@@ -21,20 +21,21 @@ export class TenantInfoDto {
   @MaxLength(40)
   nameShort: string;
 
-  @IsString()
-  industryId: string;
+  @IsNumber()
+  industryId: number;
 
-  @IsString()
-  natureId: string;
+  @IsNumber()
+  natureId: number;
 
-  @IsString()
-  scaleId: string;
+  @IsNumber()
+  scaleId: number;
 
   @IsString()
   license: string;
 
+  @IsString()
   @IsOptional()
-  addr: string | number;
+  addr: string;
 
   @IsString()
   @IsOptional()

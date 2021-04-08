@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsNumber } from 'class-validator';
+import { IsArray, IsNotEmpty, IsNumber,  ValidateNested } from 'class-validator';
 
 export class MemberDto {
   @IsNotEmpty()
@@ -10,3 +10,13 @@ export class MemberDto {
   userId: number;
 }
 
+// 深度校验
+export class MembersDto {
+  // @ValidateNested({ each: true })
+  @IsArray()
+  members?: number[];
+
+  @IsNotEmpty()
+  @IsNumber()
+  projectRoleId: number;
+}
