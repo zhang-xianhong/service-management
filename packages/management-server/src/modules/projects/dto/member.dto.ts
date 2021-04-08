@@ -1,4 +1,4 @@
-import { IsArray, IsNotEmpty, IsNumber,  ValidateNested } from 'class-validator';
+import { IsArray, IsNotEmpty, IsNumber } from 'class-validator';
 
 export class MemberDto {
   @IsNotEmpty()

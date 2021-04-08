@@ -3,13 +3,23 @@ import { InjectModel } from '@nestjs/sequelize';
 import * as COS from 'cos-nodejs-sdk-v5';
 import { Sequelize } from 'sequelize';
 import cosOpt from 'src/config/cos';
-import { FILE_MAX_SIZE, OCR_COMMON_CONFIG } from 'src/shared/constants';
+import * as crypto from 'crypto';
+import * as fs from 'fs';
+// import { FILE_MAX_SIZE, OCR_COMMON_CONFIG } from 'src/shared/constants';
 import { CommonCodes } from 'src/shared/constants/code';
 import { ApiException } from 'src/shared/utils/api.exception';
 import { ocr } from 'tencentcloud-sdk-nodejs';
 import { v4 } from 'uuid';
 import {  FilesModel } from './files.model';
+import { fromBuffer } from 'file-type';
 
+import {
+  UPLOAD_MAX_FILE_SIZE,
+  ROOT_PATH,
+  UPLOAD_DIR_NAME,
+  UPLOAD_ALLOW_EXTS,
+  OCR_COMMON_CONFIG,
+} from 'src/shared/constants';
 
 @Injectable()
 export class FilesService {
@@ -95,7 +105,7 @@ export class FilesService {
   async uploadFile(file) {
     console.log(file);
     const { originalname, mimetype, size, buffer } = file;
-    if (size > FILE_MAX_SIZE) {
+    if (size > UPLOAD_MAX_FILE_SIZE) {
       throw new ApiException({
         code: CommonCodes.UPLOAD_FAIL,
         message: '单个文件最大为10M！',
@@ -157,6 +167,56 @@ export class FilesService {
         code: CommonCodes.NOT_FOUND,
         message: '获取文件链接失败',
         error: error.message || error,
+      });
+    }
+  }
+
+
+  // 上传到本地
+  async uploadToLocal(file) {
+    const { originalname, size, buffer } = file;
+    if (size > UPLOAD_MAX_FILE_SIZE) {
+      throw new ApiException({
+        code: CommonCodes.UPLOAD_FAIL,
+        message: '文件大小超过限制',
+      });
+    }
+    const transaction = await this.sequelize.transaction();
+    try {
+      const { ext, mime } = (await fromBuffer(buffer)) || {};
+      if (!ext || !UPLOAD_ALLOW_EXTS.includes(ext)) {
+        throw new ApiException({
+          code: CommonCodes.UPLOAD_FAIL,
+          message: '文件类型不支持',
+        });
+      }
+      const md5 = crypto.createHash('md5');
+      const hash = md5.update(buffer).digest('hex');
+      const filePath = `/${UPLOAD_DIR_NAME}/${hash}.${ext}`;
+      const savePath = ROOT_PATH + filePath;
+      // 写数据库
+      const attachment = {
+        path: filePath,
+        hash,
+        size,
+        name: originalname,
+        mimetype: mime,
+      };
+      fs.writeFileSync(savePath, buffer);
+      // await this.repository.create(attachment);
+      await transaction.commit();
+      return {
+        hash,
+        filePath,
+      };
+    } catch (error) {
+      await transaction.rollback();
+      if (error instanceof ApiException) {
+        throw error;
+      }
+      throw new ApiException({
+        code: CommonCodes.UPLOAD_FAIL,
+        message: '文件上传失败',
       });
     }
   }
