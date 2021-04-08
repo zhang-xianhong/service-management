@@ -14,8 +14,8 @@
       </el-col>
       <el-col :span="8" style="text-align:right;">
         <div class="detail-status">
-          <!--          <span :style="{ background: serverStatusInfo.color }" class="detail-status__icon"></span>-->
-          {{ serverStatusInfo.label }}
+          <span :style="{ background: serverStatusInfo.color }" class="detail-status__icon"></span>
+          <span :style="{ color: serverStatusInfo.color }">{{ serverStatusInfo.label }}</span>
         </div>
         <el-button class="detail-icon" icon="el-icon-s-data" @click="openBaseInfo"></el-button>
         <el-button class="detail-icon" icon="el-icon-notebook-2" @click="openPropertyInfo"></el-button>
@@ -117,7 +117,7 @@ import useStatusUtils from './utils/service-detail-status';
 import ServerBaseInfo from './components/ServerBaseInfo.vue';
 import Erd from '@/components/data-model/erd/Index.vue';
 import ServerPortsInfo from './components/ServerPortsInfo.vue';
-import { ref, Ref, reactive, watch, provide, computed, onBeforeUnmount } from 'vue';
+import { ref, Ref, reactive, watch, provide, computed, onBeforeUnmount, getCurrentInstance } from 'vue';
 import RelationInfo from './components/RelationInfo.vue';
 import ModelFieldForm from './components/FieldForm.vue';
 import ModelBaseInfo from './components/ModelBaseInfo.vue';
@@ -127,7 +127,11 @@ import { getClassificationList } from '@/api/settings/classification';
 import { getServiceModelList } from '@/api/schema/model';
 import { getDataTypesAll } from '@/api/settings/data-types';
 import { useRoute } from 'vue-router';
-import { statusMap } from '@/views/service-management/business-service/utils/service-status-map';
+import {
+  statusMap,
+  computeStatusLabel,
+  statusColor,
+} from '@/views/service-management/business-service/utils/service-status-map';
 import {
   currentServiceIdForData,
   sqlDialogVisiable,
@@ -177,6 +181,10 @@ export default {
 
     const getServerList = async () => {
       const { data } = await getServiceList({});
+      data.rows.forEach((x: any) => {
+        // eslint-disable-next-line no-param-reassign
+        x.name = x.name.replace(/^srv-/g, '');
+      });
       serverList.push(...(data.rows || []));
     };
 
@@ -292,9 +300,10 @@ export default {
       }
       buttons.value[buttons.value.length - 1].disabled = false;
       buttons.value[0].label = +status === 0 ? '初始化' : '同步配置';
+      const statusmaps = computeStatusLabel(serverInfo.value.initTimes);
       serverStatusInfo.value = {
-        label: (statusMap as any)[status],
-        color: '',
+        label: (statusmaps as any)[status],
+        color: (statusColor as any)[status],
       };
       console.log(buttons.value);
     });
@@ -356,12 +365,22 @@ export default {
       componentName.value === 'ServerBaseInfo' ? serverInfo.value : modelInfo.value,
     );
 
+    const { proxy } = getCurrentInstance() as any;
     // 切换服务
     const selectService = (value: number) => {
       currentServiceId.value = value;
-      getServerInfo();
+      let name = '';
+      serverList.forEach((x: any) => {
+        if (x.id === value) {
+          name = x.name;
+        }
+      });
       componentName.value = '';
       isShowDownDrawer.value = false;
+      proxy.$router.replace({
+        path: `/service-management/service-list/detail/${value}`,
+        query: { detailName: name },
+      });
     };
 
     watch(componentName, () => {

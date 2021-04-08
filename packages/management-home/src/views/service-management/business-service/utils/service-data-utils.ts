@@ -35,9 +35,15 @@ export function refreshServiceList(payload = {} as any) {
       res.data.rows.forEach((x: any) => {
         x.name = x.name.replace(/^srv-/g, '');
         const arr = x.classification.split(',');
-        x.classification = arr.map((x: any) => sortMap.value[x]).join(',');
+        x.classification = arr
+          .map((x: any) => sortMap.value[x])
+          .filter((x: any) => x)
+          .join(',');
         const tagarr = x.tag.split(',');
-        x.tag = tagarr.map((x: any) => tagMap.value[x]).join(',');
+        x.tag = tagarr
+          .map((x: any) => tagMap.value[x])
+          .filter((x: any) => x)
+          .join(',');
         // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
         // @ts-ignore
         x.statusStr = statusMap[x.status];

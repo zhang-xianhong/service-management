@@ -291,6 +291,32 @@ export class ProjectsService {
         message: '创建失败',
       });
     }
+<<<<<<< HEAD
+=======
+    // await this.findRoleById(projectId, projectRoleId);
+    // const member = await this.membersRepository.findOne({
+    //   where: {
+    //     projectRoleId,
+    //     userId,
+    //     projectId,
+    //     isDelete: false,
+    //   },
+    // });
+    // if (member) {
+    //   throw new ApiException({
+    //     code: CommonCodes.DATA_EXISTED,
+    //     message: '该用户已在当前组内',
+    //   });
+    // }
+    // const res = await this.membersRepository.create({
+    //   projectId,
+    //   projectRoleId,
+    //   userId,
+    // });
+    // return {
+    //   id: res.id,
+    // };
+>>>>>>> develop
   }
 
   /**
