@@ -33,7 +33,14 @@
         </el-table-column>
         <el-table-column property="description" label="服务描述"></el-table-column>
         <el-table-column property="owner" label="负责人"></el-table-column>
-        <el-table-column property="statusStr" label="服务状态"></el-table-column>
+        <el-table-column property="status" label="服务状态">
+          <template #default="scope">
+            <span class="service-list-borders" :style="{ background: statusColor[scope.row.status] }"></span>
+            <span :style="{ color: statusColor[scope.row.status] }">{{
+              computeStatusLabel(scope.row.initTimes)[scope.row.status]
+            }}</span>
+          </template>
+        </el-table-column>
         <el-table-column property="classification" label="分类">
           <template #header>
             <i class="el-icon-search"></i>
@@ -208,6 +215,7 @@ import {
 import { addService } from '@/api/servers';
 import Message from 'element-plus/es/el-message';
 import { ElMessage, ElMessageBox } from 'element-plus';
+import { computeStatusLabel, statusColor } from '@/views/service-management/business-service/utils/service-status-map';
 
 export default defineComponent({
   name: 'ServiceList',
@@ -450,6 +458,8 @@ export default defineComponent({
       mutiArray,
       computedDisabled,
       clearDialog,
+      computeStatusLabel,
+      statusColor,
     };
   },
 });
@@ -457,6 +467,15 @@ export default defineComponent({
 
 <style lang="scss">
 .service-list {
+  .service-list-borders {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background-color: transparent;
+    display: inline-block;
+    vertical-align: center;
+    margin-right: 5px;
+  }
   &_header {
     width: 100%;
     height: 40px;

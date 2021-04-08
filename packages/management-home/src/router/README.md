@@ -13,3 +13,4 @@
         icon<string>                图标
         title<string>               左边栏标题
         permission<string | number> 权限信息，非必填，有此属性则开启页面权限校验
+        activeMenu                  XX详情页保证激活菜单不丢失的参数，从根路由/写到XX-list
