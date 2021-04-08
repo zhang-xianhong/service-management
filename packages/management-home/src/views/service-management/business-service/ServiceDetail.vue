@@ -117,7 +117,7 @@ import useStatusUtils from './utils/service-detail-status';
 import ServerBaseInfo from './components/ServerBaseInfo.vue';
 import Erd from '@/components/data-model/erd/Index.vue';
 import ServerPortsInfo from './components/ServerPortsInfo.vue';
-import { ref, Ref, reactive, watch, provide, computed, onBeforeUnmount } from 'vue';
+import { ref, Ref, reactive, watch, provide, computed, onBeforeUnmount, getCurrentInstance } from 'vue';
 import RelationInfo from './components/RelationInfo.vue';
 import ModelFieldForm from './components/FieldForm.vue';
 import ModelBaseInfo from './components/ModelBaseInfo.vue';
@@ -181,6 +181,9 @@ export default {
 
     const getServerList = async () => {
       const { data } = await getServiceList({});
+      data.rows.forEach((x: any) => {
+        x.name = x.name.replace(/^srv-/g, '');
+      });
       serverList.push(...(data.rows || []));
     };
 
@@ -361,12 +364,22 @@ export default {
       componentName.value === 'ServerBaseInfo' ? serverInfo.value : modelInfo.value,
     );
 
+    const { proxy } = getCurrentInstance() as any;
     // 切换服务
     const selectService = (value: number) => {
       currentServiceId.value = value;
-      getServerInfo();
+      let name = '';
+      serverList.forEach((x: any) => {
+        if (x.id === value) {
+          name = x.name;
+        }
+      });
       componentName.value = '';
       isShowDownDrawer.value = false;
+      proxy.$router.replace({
+        path: `/service-management/service-list/detail/${value}`,
+        query: { detailName: name },
+      });
     };
 
     watch(componentName, () => {
