@@ -18,9 +18,13 @@
       <div class="user-tree">
         <el-scrollbar>
           <el-tree
+            ref="userTreeRef"
             :data="treeData"
             :default-expand-all="true"
             :expand-on-click-node="false"
+            :highlight-current="true"
+            node-key="id"
+            :current-node-key="currentKey"
             @node-click="nodeClickHandler"
           >
             <template #default="{ node, data }">
@@ -62,19 +66,20 @@
       v-model="selectedUser"
       optionPlaceholder="请输入部门/人员名称"
       optionLabel="选择人员"
-      valueLabel="A项目-B岗位"
+      :role="treeSelectorRole"
       ref="treeSelectorRef"
+      @user-changed="reloadUserList"
     ></tree-selector>
   </div>
 </template>
 
 <script lang="ts">
 import _ from 'lodash/fp';
-import { ref, Ref } from 'vue';
+import { ref, Ref, provide } from 'vue';
 import TreeSelector from './components/TreeSelector.vue';
 import BasicInfoForm from './components/BasicInfoForm.vue';
 import { ElMessageBox } from 'element-plus';
-import { getMemberList, getProjectDetail } from '@/api/project/project';
+import { getMemberList, getProjectDetail, deleteMember } from '@/api/project/project';
 import { getTenentDepartment } from '@/api/tenant';
 const userStatus = {
   '-1': '阵亡',
@@ -93,8 +98,11 @@ export default {
   },
   components: { TreeSelector, BasicInfoForm },
   setup(props: any) {
+    provide('projectId', props.id);
     const treeSelectorRef: any = ref(null);
     const editMode = ref(false);
+    const selectedUser: Ref<Array<any>> = ref([]);
+    const userTreeRef: any = ref(null);
 
     // 用户树
     const treeData: Ref<any> = ref([
@@ -103,13 +111,11 @@ export default {
         children: [],
       },
     ]);
-    const addMember = () => {
-      treeSelectorRef.value.show();
-    };
+    const currentKey = ref('');
+    const treeSelectorRole = ref({});
 
     // tree selector数据
     const allDeptUser: Ref<Array<any>> = ref([]);
-    const selectedUser = ref([]);
 
     // 用户列表
     const userList: Ref<any[]> = ref([]);
@@ -143,13 +149,54 @@ export default {
         label: '部门',
       },
     ];
+
+    const allUsers = ref([]);
+    const initUserList = async () => {
+      const { code, data } = await getMemberList({
+        projectId: props.id,
+      });
+      if (code === 0) {
+        allUsers.value = data.users.map((user: any) => ({
+          ...user,
+          status: userStatus[user.status as 0 | -1],
+          gender: genderLabel[user.gender as 0 | 1],
+        }));
+        treeData.value[0].children = _.map((role: any) => ({
+          id: role.id,
+          label: role.role.name,
+          children: _.map((member: any) => {
+            const user: any = _.find({ id: member.userId })(data.users);
+            return {
+              label: user.displayName,
+              id: user.id,
+            };
+          })(role.members),
+        }))(data.roles);
+        userList.value = [];
+      }
+    };
+    initUserList();
+
+    const reloadUserList = async (role: any) => {
+      await initUserList();
+      userTreeRef.value.setCurrentKey(role.id);
+      const treeUser: any = _.find({ id: role.id })(treeData.value[0].children);
+      userList.value = _.intersectionWith((node: any, user: any) => node.id === user.id)(allUsers.value)(
+        treeUser.children,
+      );
+    };
     const removeUser = (row: any) => {
-      ElMessageBox.confirm(`是否将${row.name}从${row.department}中移除？`, '提示', {
+      ElMessageBox.confirm(`是否将${row.displayName}从${row.deptName}中移除？`, '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning',
-      }).then(() => {
-        //
+      }).then(async () => {
+        const { code } = await deleteMember({
+          projectId: Number(props.id),
+          projectRoleId: userTreeRef.value.getCurrentKey(),
+          ids: [row.id],
+        });
+        if (code === 0) reloadUserList({ id: userTreeRef.value.getCurrentKey() });
       });
     };
     // 初始化项目信息
@@ -166,38 +213,12 @@ export default {
     };
     getProjectInfo();
 
-    const allUsers = ref([]);
-    const initUserList = async () => {
-      const { code, data } = await getMemberList({
-        projectId: props.id,
-      });
-      if (code === 0) {
-        allUsers.value = data.users.map((user: any) => ({
-          ...user,
-          status: userStatus[user.status as 0 | -1],
-          gender: genderLabel[user.gender as 0 | 1],
-        }));
-        treeData.value[0].children = _.map((role: any) => ({
-          id: role.role.id,
-          label: role.role.name,
-          children: _.map((member: any) => {
-            const user: any = _.find({ id: member.userId })(data.users);
-            return {
-              label: user.displayName,
-              value: user.id,
-            };
-          })(role.members),
-        }))(data.roles);
-      }
-    };
-    initUserList();
-
     const nodeClickHandler = (data: any, node: any) => {
       if (node.level === 1) {
         userList.value = allUsers.value;
       }
       if (node.level === 2) {
-        userList.value = _.intersectionWith((node: any, user: any) => node.value === user.id)(allUsers.value)(
+        userList.value = _.intersectionWith((node: any, user: any) => node.id === user.id)(allUsers.value)(
           node.data.children,
         );
       }
@@ -223,10 +244,20 @@ export default {
     };
     initDepartments();
 
+    const addMember = (node: any, data: any) => {
+      treeSelectorRole.value = data;
+      selectedUser.value = _.intersectionWith((user: any, node: any) => user.id === node.id)(allUsers.value)(
+        data.children,
+      );
+      treeSelectorRef.value.show();
+    };
+
     return {
+      userTreeRef,
       editMode,
       treeData,
       addMember,
+      treeSelectorRole,
       allDeptUser,
       selectedUser,
       userList,
@@ -235,6 +266,9 @@ export default {
       treeSelectorRef,
       projectDetail,
       nodeClickHandler,
+      initUserList,
+      currentKey,
+      reloadUserList,
     };
   },
 };
