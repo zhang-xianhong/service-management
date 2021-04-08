@@ -93,6 +93,7 @@ export class FilesService {
   }
 
   async uploadFile(file) {
+    console.log(file);
     const { originalname, mimetype, size, buffer } = file;
     if (size > FILE_MAX_SIZE) {
       throw new ApiException({
@@ -110,7 +111,6 @@ export class FilesService {
     const transaction = await this.sequelize.transaction();
     try {
       await this.fileRepository.create(fileData, { transaction });
-      // 调用cos存储
       const params = {
         Bucket: cosOpt.Bucket,
         Region: cosOpt.Region,

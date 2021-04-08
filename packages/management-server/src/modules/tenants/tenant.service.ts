@@ -3,9 +3,11 @@ import { InjectModel } from '@nestjs/sequelize';
 import { Op, Sequelize, Transaction } from 'sequelize';
 import { CommonCodes, StatusCodes } from 'src/shared/constants/code';
 import { CREATE_IDAAS_TENANT } from 'src/shared/constants/url';
+import { SearchQuery } from 'src/shared/pipes/query.pipe';
 import { Deleted, Updated } from 'src/shared/types/response';
 import { ApiException } from 'src/shared/utils/api.exception';
 import { escapeLike } from 'src/shared/utils/sql';
+import { isEmpty } from 'src/shared/utils/validator';
 import { UsersService } from '../users/users.service';
 import { TenantUpdateInfoDto } from './dto/tenant-update-info.dto';
 import { TenantContactModel } from './tenant-contact.model';
@@ -341,5 +343,39 @@ export class TenantService {
       ...department,
     };
     return res;
+  }
+
+
+  /**
+   * 搜索部门和人员
+   * @param tenantId
+   * @param query
+   * @returns
+   */
+  async searchDepartmentAndUser(tenantId: number, query: SearchQuery) {
+    const { offset } = query.conditions;
+    const name = query.keyword;
+    if (isEmpty(name)) {
+      return {
+        users: [],
+        departments: [],
+      };
+    }
+    const params = {
+      limit: 10000, // query中的limit暂时不用
+      offset,
+      name,
+    };
+    const departmentRequest = this.userService.searchDepartment(params);
+    const userRequest = this.userService.searchUser(params);
+    try {
+      const [departments, users] = await Promise.all([departmentRequest, userRequest]);
+      return {
+        users,
+        departments,
+      };
+    } catch (error) {
+      throw error;
+    }
   }
 }

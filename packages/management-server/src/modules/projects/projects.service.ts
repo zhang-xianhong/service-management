@@ -10,7 +10,7 @@ import { FilesService } from '../files/files.service';
 import { SettingsService } from '../settings/settings.service';
 import { SettingsProjectRolesModel } from '../settings/settings_project_roles.model';
 import { UsersService } from '../users/users.service';
-import { MemberDto } from './dto/member.dto';
+import { MembersDto } from './dto/member.dto';
 import { ProjectDto, ProjectUpdateDto } from './dto/project.dto';
 import { ProjectsMembersModel } from './projects-members.model';
 import { ProjectsRolesModel } from './projects-roles.model';
@@ -85,17 +85,17 @@ export class ProjectsService {
         isDelete: false,
       },
     });
-    const res: PlainObject = project.toJSON();
-    try {
-      res.template = await this.settingsService.findTemplateById(project.templateId);
-    } catch (error) {
-      res.template = {};
-    }
     if (!project) {
       throw new ApiException({
         code: CommonCodes.NOT_FOUND,
         message: '项目不存在',
       }, HttpStatus.NOT_FOUND);
+    }
+    const res: PlainObject = project.toJSON();
+    try {
+      res.template = await this.settingsService.findTemplateById(project.templateId);
+    } catch (error) {
+      res.template = {};
     }
     return res;
   }
@@ -254,35 +254,66 @@ export class ProjectsService {
 
 
   /**
-   * 项项目组内添加成员
+   * 更新组内成员
    * @param projectId
    * @param postData
    * @returns
    */
-  async addMember(projectId: number, { userId, projectRoleId }: MemberDto): Promise<Created> {
-    await this.findRoleById(projectId, projectRoleId);
-    const member = await this.membersRepository.findOne({
-      where: {
+  async updateMembers(projectId: number, postData: MembersDto): Promise<any> {
+    const { projectRoleId, members } = postData;
+    const transaction = await this.sequelize.transaction();
+    try {
+      await this.membersRepository.destroy({
+        where: {
+          projectId,
+          projectRoleId,
+        },
+        transaction,
+      });
+      const memberModels = Array.from(new Set(members)).map(item => ({
+        userId: item,
         projectRoleId,
-        userId,
         projectId,
-        isDelete: false,
-      },
-    });
-    if (member) {
+      }));
+      await this.membersRepository.bulkCreate(memberModels, {
+        transaction,
+      });
+      await transaction.commit();
+      return members;
+    } catch (error) {
+      this.logger.error(error);
+      await transaction.rollback();
+      if (error instanceof ApiException) {
+        throw error;
+      }
       throw new ApiException({
-        code: CommonCodes.DATA_EXISTED,
-        message: '该用户已在当前组内',
+        code: CommonCodes.CREATED_FAIL,
+        message: '创建失败',
       });
     }
-    const res = await this.membersRepository.create({
-      projectId,
-      projectRoleId,
-      userId,
-    });
-    return {
-      id: res.id,
-    };
+    // await this.findRoleById(projectId, projectRoleId);
+    // const member = await this.membersRepository.findOne({
+    //   where: {
+    //     projectRoleId,
+    //     userId,
+    //     projectId,
+    //     isDelete: false,
+    //   },
+    // });
+    // if (member) {
+    //   throw new ApiException({
+    //     code: CommonCodes.DATA_EXISTED,
+    //     message: '该用户已在当前组内',
+    //   });
+    // }
+    // const res = await this.membersRepository.create({
+    //   projectId,
+    //   projectRoleId,
+    //   userId,
+    // });
+    // return {
+    //   id: res.id,
+    // };
   }
 
   /**
