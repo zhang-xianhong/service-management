@@ -27,5 +27,5 @@ module.exports = {
     '@typescript-eslint/parser': 'off',
     'comma-dangle': 0,
     'standard/no-callback-literal': 0,
-  }
-}
+  },
+};
