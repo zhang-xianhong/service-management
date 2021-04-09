@@ -13,3 +13,6 @@ export const getTenantDetail: (id: string) => Promise<SuccessResponse<any>> = (i
 
 export const updateTenant: (id: string, payload: any) => Promise<SuccessResponse<any>> = (id: string, payload: any) =>
   request.post(getUrl(URL.tenant.UPDATE_TENT, id), payload);
+
+export const queryInTenant = (payload: any): Promise<SuccessResponse<any>> =>
+  request.get(getUrl(URL.tenant.QUERY_IN_TENT), { params: payload });

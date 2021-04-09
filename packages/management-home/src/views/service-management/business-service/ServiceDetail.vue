@@ -182,6 +182,7 @@ export default {
     const getServerList = async () => {
       const { data } = await getServiceList({});
       data.rows.forEach((x: any) => {
+        // eslint-disable-next-line no-param-reassign
         x.name = x.name.replace(/^srv-/g, '');
       });
       serverList.push(...(data.rows || []));
