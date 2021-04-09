@@ -46,7 +46,7 @@
             label="项目描述"
             :label-width="labelWidth"
             prop="name"
-            :rules="[{ required: true, message: '请输入英文名称', trigger: 'blur' }]"
+            :rules="[{ required: true, message: '请输入项目描述', trigger: 'blur' }]"
           >
             <el-input v-model="projectDetail.description"> </el-input>
           </el-form-item>
@@ -122,6 +122,7 @@ import {
   deleteProject,
   pageInfo,
 } from '@/views/project-management/utils/project-data-utils';
+import Message from 'element-plus/es/el-message';
 
 export default defineComponent({
   name: 'ProjectList',
@@ -152,6 +153,15 @@ export default defineComponent({
     getAllTems();
 
     const submitProjectDetail = () => {
+      if (!projectDetail.name) {
+        return Message.error('项目名称不得为空');
+      }
+      if (!projectDetail.description) {
+        return Message.error('项目描述不得为空');
+      }
+      if (!projectDetail.templateId) {
+        return Message.error('代码模板不得为空');
+      }
       addProjectData().then(() => {
         pageInfo.page = 1;
         getProjectListData();
