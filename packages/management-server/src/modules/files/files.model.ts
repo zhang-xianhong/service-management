@@ -16,6 +16,13 @@ export class FilesModel extends BaseModel {
   })
   fileId: string;
 
+  // 文件地址
+  @Column({
+    type: DataType.STRING,
+    defaultValue: '',
+  })
+  path: string;
+
   // 文件名称
   @Length({ min: 1, max: 64 })
   @Column({

@@ -5,11 +5,9 @@ import { Sequelize } from 'sequelize';
 import cosOpt from 'src/config/cos';
 import * as crypto from 'crypto';
 import * as fs from 'fs';
-// import { FILE_MAX_SIZE, OCR_COMMON_CONFIG } from 'src/shared/constants';
-import { CommonCodes } from 'src/shared/constants/code';
+import { CommonCodes, UploadStorage } from 'src/shared/constants/code';
 import { ApiException } from 'src/shared/utils/api.exception';
 import { ocr } from 'tencentcloud-sdk-nodejs';
-import { v4 } from 'uuid';
 import {  FilesModel } from './files.model';
 import { fromBuffer } from 'file-type';
 
@@ -19,7 +17,9 @@ import {
   UPLOAD_DIR_NAME,
   UPLOAD_ALLOW_EXTS,
   OCR_COMMON_CONFIG,
+  UPLOAD_STORAGE,
 } from 'src/shared/constants';
+import { STATIC_FILE_SERVICE } from 'src/shared/constants/url';
 
 @Injectable()
 export class FilesService {
@@ -102,25 +102,59 @@ export class FilesService {
     }
   }
 
+  // 上传文件
   async uploadFile(file) {
-    console.log(file);
-    const { originalname, mimetype, size, buffer } = file;
+    const { size, buffer } = file;
     if (size > UPLOAD_MAX_FILE_SIZE) {
       throw new ApiException({
         code: CommonCodes.UPLOAD_FAIL,
-        message: '单个文件最大为10M！',
+        message: '文件大小超过限制',
       });
     }
-    const fileKey = v4();
-    const fileData = {
-      fileId: fileKey,
-      name: originalname,
-      fileType: mimetype,
-      size,
-    };
     const transaction = await this.sequelize.transaction();
     try {
-      await this.fileRepository.create(fileData, { transaction });
+      const { ext, mime } = (await fromBuffer(buffer)) || {};
+      if (!ext || !UPLOAD_ALLOW_EXTS.includes(ext)) {
+        throw new ApiException({
+          code: CommonCodes.UPLOAD_FAIL,
+          message: '文件类型不支持',
+        });
+      }
+      const md5 = crypto.createHash('md5');
+      const hash = md5.update(buffer).digest('hex');
+      const fileKey = `${hash}.${ext}`;
+      if (UPLOAD_STORAGE === UploadStorage.COS_STORAGE) {
+        return await this.uploadToCos(file, mime, fileKey, transaction);
+      }
+      return await this.uploadToLocal(file, mime, fileKey, transaction);
+    } catch (error) {
+      throw new ApiException({
+        code: CommonCodes.UPLOAD_FAIL,
+        message: '文件上传失败',
+      });
+    }
+  }
+
+  /**
+   * 上传文件到cos存储
+   * @param file
+   * @param mimetype
+   * @param fileKey
+   * @param transaction
+   * @returns
+   */
+  async uploadToCos(file, mimetype, fileKey, transaction) {
+    const { originalname, size, buffer } = file;
+    try {
+      // 写数据库
+      const attachment = {
+        path: '',
+        fileId: fileKey,
+        size,
+        name: originalname,
+        mimetype,
+      };
+      await this.fileRepository.create(attachment, { transaction });
       const params = {
         Bucket: cosOpt.Bucket,
         Region: cosOpt.Region,
@@ -146,7 +180,69 @@ export class FilesService {
     }
   }
 
-  async getObjectUrl(key): Promise<string> {
+
+  /**
+   * 上传文件到本地存储
+   * @param file
+   * @param mimetype
+   * @param fileKey
+   * @param transaction
+   * @returns
+   */
+  async uploadToLocal(file, mimetype, fileKey, transaction) {
+    const { originalname, size, buffer } = file;
+    const tenantName = 'zhangsanfen';
+    const filePath = `/${UPLOAD_DIR_NAME}/${tenantName}/${fileKey}`;
+    const savePath = `${ROOT_PATH}${filePath}`;
+    try {
+      // 写数据库
+      const attachment = {
+        path: filePath,
+        fileId: fileKey,
+        size,
+        name: originalname,
+        mimetype,
+      };
+      await this.fileRepository.create(attachment, { transaction });
+
+      // 创建租户文件夹，写入文件
+      fs.mkdirSync(`${ROOT_PATH}/${UPLOAD_DIR_NAME}/${tenantName}`, { recursive: true });
+      fs.writeFileSync(savePath, buffer);
+      await transaction.commit();
+      return {
+        fileKey,
+        filePath,
+      };
+    } catch (error) {
+      this.logger.error(error);
+      await transaction.rollback();
+      if (error instanceof ApiException) {
+        throw error;
+      }
+      throw new ApiException({
+        code: CommonCodes.UPLOAD_FAIL,
+        message: '文件上传失败',
+      });
+    }
+  }
+
+  // 根据fileKey获取文件地址
+  async getObjectUrl(fileKey): Promise<string> {
+    // 根据存储位置获取文件地址
+    switch (UPLOAD_STORAGE) {
+      case UploadStorage.COS_STORAGE:
+        return await this.getCosFileUrl(fileKey);
+      default:
+        return await this.getLocalFileUrl(fileKey);
+    }
+  }
+
+  /**
+   * 获取cos文件地址
+   * @param key
+   * @returns
+   */
+  async getCosFileUrl(key) {
     try {
       const data: any = await new Promise((resolve, reject) => {
         this.cos.getObjectUrl({
@@ -165,59 +261,31 @@ export class FilesService {
       this.logger.error(error);
       throw new ApiException({
         code: CommonCodes.NOT_FOUND,
-        message: '获取文件链接失败',
+        message: '获取文件地址失败',
         error: error.message || error,
       });
     }
   }
 
-
-  // 上传到本地
-  async uploadToLocal(file) {
-    // /upload/租户名或者ID/xxx.ext
-    const { originalname, size, buffer } = file;
-    if (size > UPLOAD_MAX_FILE_SIZE) {
-      throw new ApiException({
-        code: CommonCodes.UPLOAD_FAIL,
-        message: '文件大小超过限制',
-      });
-    }
-    const transaction = await this.sequelize.transaction();
+  /**
+   * 获取本地静态服务文件地址
+   * @param key
+   * @returns
+   */
+  async getLocalFileUrl(key) {
     try {
-      const { ext, mime } = (await fromBuffer(buffer)) || {};
-      if (!ext || !UPLOAD_ALLOW_EXTS.includes(ext)) {
-        throw new ApiException({
-          code: CommonCodes.UPLOAD_FAIL,
-          message: '文件类型不支持',
-        });
-      }
-      const md5 = crypto.createHash('md5');
-      const hash = md5.update(buffer).digest('hex');
-      const filePath = `/${UPLOAD_DIR_NAME}/${hash}.${ext}`;
-      const savePath = ROOT_PATH + filePath;
-      // 写数据库
-      const attachment = {
-        path: filePath,
-        hash,
-        size,
-        name: originalname,
-        mimetype: mime,
-      };
-      fs.writeFileSync(savePath, buffer);
-      // await this.repository.create(attachment);
-      await transaction.commit();
-      return {
-        hash,
-        filePath,
-      };
+      const { path } = await this.fileRepository.findOne({
+        where: {
+          fileId: key,
+        },
+      });
+      return `${STATIC_FILE_SERVICE}${path}`;
     } catch (error) {
-      await transaction.rollback();
-      if (error instanceof ApiException) {
-        throw error;
-      }
+      this.logger.error(error);
       throw new ApiException({
-        code: CommonCodes.UPLOAD_FAIL,
-        message: '文件上传失败',
+        code: CommonCodes.NOT_FOUND,
+        message: '获取文件地址失败',
+        error: error.message || error,
       });
     }
   }

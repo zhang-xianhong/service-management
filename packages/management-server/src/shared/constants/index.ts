@@ -1,9 +1,12 @@
 import getConfig from '../../config';
 import * as path from 'path';
-const { TRACE_ID_NAME } = getConfig();;
+const { TRACE_ID_NAME, UPLOAD_FILE_STORAGE } = getConfig();;
 
 // traceId
 export const HEADER_TRACE_NAME: string = TRACE_ID_NAME || 'x-trace-id';
+
+// 文件上传存储
+export const  UPLOAD_STORAGE: string = UPLOAD_FILE_STORAGE || 'local';
 
 // 默认分页显示条数
 export const DEFAULT_PAGE_SIZE = 10;
@@ -45,7 +48,7 @@ export const UPLOAD_ALLOW_EXTS = [
 ];
 
 // 根目录
-export const ROOT_PATH = path.resolve(__dirname, '../../../');
+export const ROOT_PATH = path.resolve(__dirname, '../../');
 
 // 上传目录名称
 export const UPLOAD_DIR_NAME = 'upload';
