@@ -383,9 +383,6 @@ export default {
       });
     };
 
-    watch(componentName, () => {
-      if (componentName.value !== 'ModelBaseInfo') modelInfo.value = null;
-    });
     const logs = (res: any) => {
       console.log(res, 'this is log');
       return res;

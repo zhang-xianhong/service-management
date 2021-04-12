@@ -1,4 +1,4 @@
-import { resolve } from 'path';
+import { resolve, join } from 'path';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from 'nestjs-config';
 import { WinstonModule } from 'nest-winston';
@@ -15,9 +15,13 @@ import { LogsModule } from './modules/logs/logs.module';
 import { TenantModule } from './modules/tenants/tenant.module';
 import { VersionControlModule } from './modules/version-control/version-control.module';
 import { FileModule } from './modules/files/files.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
 
 @Module({
   imports: [
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', '/dist/'),
+    }),
     ConfigModule.load(resolve(__dirname, 'config', '**/!(*.d|index).{ts,js}')),
     SequelizeModule.forRootAsync({
       useFactory: (config: ConfigService) => config.get('database'),
