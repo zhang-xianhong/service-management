@@ -3,7 +3,7 @@
  */
 import { Table, Column, DataType } from 'sequelize-typescript';
 import { BaseModel } from '../base.entity';
-import { MODULE_TYPE } from './config';
+import { VERSION_MODULE_TYPE } from './config';
 
 @Table({
   timestamps: false,
@@ -13,10 +13,10 @@ export class VersionControlModel extends BaseModel {
   // 关联模块类型
   @Column({
     type: DataType.INTEGER,
-    defaultValue: MODULE_TYPE.MODEL_FIELD,
+    defaultValue: VERSION_MODULE_TYPE.MODEL_FIELD,
     comment: '关联模块类型',
   })
-  moduleType: MODULE_TYPE;
+  moduleType: VERSION_MODULE_TYPE;
 
   // 关联模块Id
   @Column({

@@ -1,8 +1,9 @@
 /**
  * 项目实体
  */
-import { Table, Column, DataType } from 'sequelize-typescript';
+import { Table, Column, DataType, HasMany } from 'sequelize-typescript';
 import { BaseModel } from '../base.entity';
+import { OwnersModel } from '../owners/owners.model';
 import { PROJECT_LEVEL, PROJECT_LICENSE, PROJECT_STATUS } from './config';
 
 @Table({
@@ -54,13 +55,6 @@ export class ProjectsModel extends BaseModel {
   })
   status: PROJECT_STATUS;
 
-  // 负责人
-  @Column({
-    type: DataType.STRING,
-    defaultValue: '',
-  })
-  owner: string;
-
   // 项目级别
   @Column({
     type: DataType.TINYINT,
@@ -76,4 +70,7 @@ export class ProjectsModel extends BaseModel {
     comment: `许可类型： ${JSON.stringify(PROJECT_LICENSE)}`,
   })
   license: PROJECT_LICENSE;
+
+  @HasMany(() => OwnersModel, 'moduleId')
+  owners: OwnersModel[];
 }

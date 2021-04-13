@@ -26,8 +26,11 @@ import { PlainObject } from 'src/shared/pipes/query.pipe';
 import { ServicesService } from '../services/services.service';
 import { FIELD_DEFAULT_VERSION } from './config';
 import { ModelsFieldsHistoryModel } from './models-fields-history.model';
-import { MODULE_TYPE } from '../version-control/config';
 import { VersionControlService } from '../version-control/version-control.service';
+import { OwnersService } from '../owners/owners.service';
+import { MODULE_TYPE } from '../owners/config';
+import { VERSION_MODULE_TYPE } from '../version-control/config';
+import { OwnersModel } from '../owners/owners.model';
 
 interface CompareFieldsResult {
   created?: any[];
@@ -64,6 +67,7 @@ export class ModelsService {
     private readonly dataTypesRepository: typeof DataTypesModel,
     @InjectModel(ServicesInfoModel)
     private readonly serviceRepository: typeof ServicesInfoModel,
+    private readonly ownersService: OwnersService,
   ) {}
 
   /**
@@ -100,9 +104,11 @@ export class ModelsService {
     }
     const transaction = await this.sequelize.transaction();
     try {
-      const res: ModelsInfoModel = await this.infoRepository.create(postData, {
+      const { owner, ...saveData } = postData;
+      const res: ModelsInfoModel = await this.infoRepository.create(saveData, {
         transaction,
       });
+      await this.ownersService.updateOwners(MODULE_TYPE.MODEL, res.id, owner, transaction);
       // 生成默认字段
       await this.createModelDefaultFields(res.id, transaction);
       await this.servicesService.addServiceDefaultApis(
@@ -114,7 +120,7 @@ export class ModelsService {
       // 创建字段的版本控制
       await this.versionService.createVersion(
         {
-          moduleType: MODULE_TYPE.MODEL_FIELD,
+          moduleType: VERSION_MODULE_TYPE.MODEL_FIELD,
           moduleId: res.id,
           serviceId,
           ghostVersion: FIELD_DEFAULT_VERSION,
@@ -209,24 +215,39 @@ export class ModelsService {
       });
     }
 
-    await this.infoRepository.update(
-      {
-        ...postData,
-        // 更新版本号和时间
-        version: sequelize.literal('version + 1'),
-        updateTime: new Date(),
-      },
-      {
-        where: {
-          id,
-          isDelete: false,
+    const transaction = await this.sequelize.transaction();
+    try {
+      const { owner, ...saveData } = postData;
+      await this.ownersService.updateOwners(MODULE_TYPE.MODEL, id, owner, transaction);
+      await this.infoRepository.update(
+        {
+          ...saveData,
+          // 更新版本号和时间
+          version: sequelize.literal('version + 1'),
+          updateTime: new Date(),
         },
-      },
-    );
-
-    return {
-      id,
-    };
+        {
+          where: {
+            id,
+            isDelete: false,
+          },
+        },
+      );
+      return {
+        id,
+      };
+    } catch (error) {
+      this.logger.error(error);
+      await transaction.rollback();
+      if (error instanceof ApiException) {
+        throw error;
+      }
+      throw new ApiException({
+        code: CommonCodes.UPDATED_FAIL,
+        message: '模型更新失败',
+        error,
+      });
+    }
   }
 
   /**
@@ -265,6 +286,7 @@ export class ModelsService {
   ): Promise<Deleted> {
     const transaction = transactionArg || (await this.sequelize.transaction());
     try {
+      await this.ownersService.deleteOwners(MODULE_TYPE.MODEL, modelIds, transaction);
       await this.infoRepository.update(
         {
           isDelete: true,
@@ -626,6 +648,43 @@ export class ModelsService {
     }
   }
 
+
+  /**
+   * 获取模型详情
+   * @param id
+   * @returns
+   */
+  async findModelInfoByModelId(id: number) {
+    const model: ModelsInfoModel = await this.infoRepository.findOne({
+      where: {
+        id,
+        isDelete: false,
+      },
+      include: [
+        {
+          model: OwnersModel,
+          where: {
+            moduleType: MODULE_TYPE.MODEL,
+          },
+          attributes: ['userId'],
+          required: false,
+        },
+      ],
+    });
+    if (!model) {
+      throw new ApiException({
+        code: CommonCodes.NOT_FOUND,
+        message: `模型[${id}]不存在`,
+        error: ErrorTypes.NOT_FOUND,
+      });
+    }
+    const ownerUsers = await this.ownersService.getOwnerUsers([model]);
+    return {
+      ...model.toJSON(),
+      ownerUsers,
+    };
+  }
+
   /**
    * 创建模型的默认字段
    * @param modelId
@@ -842,7 +901,7 @@ export class ModelsService {
       const {
         preGhostVersion,
       } = await this.versionService.findAndUpdateGhostVersion(
-        MODULE_TYPE.MODEL_FIELD,
+        VERSION_MODULE_TYPE.MODEL_FIELD,
         modelId,
         transaction,
       );

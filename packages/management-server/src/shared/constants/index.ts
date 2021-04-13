@@ -26,7 +26,7 @@ export const OCR_COMMON_CONFIG = {
 
 
 // 支持的最大上传文件大小，单位是M
-export const UPLOAD_MAX_FILE_SIZE = Math.pow(1024, 2) * 10;
+export const UPLOAD_MAX_FILE_SIZE = (1024 ** 2) * 10;
 
 // 允许上传的文件格式
 export const UPLOAD_ALLOW_EXTS = [

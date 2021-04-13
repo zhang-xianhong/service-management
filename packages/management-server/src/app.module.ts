@@ -16,6 +16,7 @@ import { TenantModule } from './modules/tenants/tenant.module';
 import { VersionControlModule } from './modules/version-control/version-control.module';
 import { FileModule } from './modules/files/files.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
+import { OwnersModule } from './modules/owners/owners.module';
 
 @Module({
   imports: [
@@ -46,6 +47,7 @@ import { ServeStaticModule } from '@nestjs/serve-static';
     LogsModule,
     TenantModule,
     FileModule,
+    OwnersModule,
   ],
 })
 

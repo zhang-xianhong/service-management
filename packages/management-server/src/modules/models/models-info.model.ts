@@ -1,5 +1,6 @@
 import { Table, Column, DataType, HasMany, ForeignKey } from 'sequelize-typescript';
 import { BaseModel } from '../base.entity';
+import { OwnersModel } from '../owners/owners.model';
 import { ServicesInfoModel } from '../services/service-info.model';
 import { ModelsFieldsModel } from './models-fields.model';
 
@@ -27,13 +28,6 @@ export class ModelsInfoModel extends BaseModel {
     defaultValue: 'innoDB',
   })
   engine: string;
-
-  // 负责人
-  @Column({
-    type: DataType.STRING,
-    defaultValue: '',
-  })
-  owner: string;
 
   // 是否纯继承
   @Column({
@@ -115,4 +109,8 @@ export class ModelsInfoModel extends BaseModel {
     comment: '关联服务',
   })
   serviceId: number;
+
+  // owners
+  @HasMany(() => OwnersModel, 'moduleId')
+  owners: OwnersModel[];
 }
