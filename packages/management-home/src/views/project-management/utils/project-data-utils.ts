@@ -19,7 +19,19 @@ export const codeTemplateList = ref([] as any);
 
 export const getProjectListData = () => {
   getProjectList(pageInfo).then((res) => {
-    console.log(res);
+    const ownersMap = {} as any;
+    if (res.data.ownerUsers) {
+      res.data.ownerUsers.forEach((x: any) => {
+        ownersMap[x.id] = x;
+      });
+      res.data.rows.forEach((x: any) => {
+        // eslint-disable-next-line no-param-reassign
+        x.ownerstr = x.owners
+          .map((x: any) => ownersMap[x.userId].displayName)
+          .filter((x: any) => x)
+          .join(',');
+      });
+    }
     projectList.value = res.data.rows;
     pageInfo.total = res.data.count;
   });

@@ -31,7 +31,7 @@
       :total="pageInfo.total"
     >
     </el-pagination>
-    <el-dialog v-model="addDialogVisible" title="新建项目" width="500px" @close="closeDialog">
+    <el-dialog v-model="addDialogVisible" title="新建项目" width="500px" @close="closeDialog" destroy-on-close>
       <div class="add-project-dialog">
         <el-form :model="projectDetail">
           <el-form-item
@@ -65,14 +65,7 @@
             </el-select>
           </el-form-item>
           <el-form-item label="负责人" :label-width="labelWidth">
-            <el-select v-model="projectDetail.owner" placeholder="请选择负责人">
-              <el-option
-                v-for="(item, index) in persons"
-                :key="index"
-                :label="item.label"
-                :value="item.value"
-              ></el-option>
-            </el-select>
+            <fetch-owners-select @get-owners="setOwner"></fetch-owners-select>
           </el-form-item>
           <el-form-item
             label="项目级别"
@@ -123,11 +116,13 @@ import {
   pageInfo,
 } from '@/views/project-management/utils/project-data-utils';
 import Message from 'element-plus/es/el-message';
+import fetchOwnersSelect from '@/components/fetchOwnersSelect/Index.vue';
 
 export default defineComponent({
   name: 'ProjectList',
   components: {
     ProjectItem,
+    fetchOwnersSelect,
   },
   data() {
     return {
@@ -183,6 +178,9 @@ export default defineComponent({
       pageInfo.page = 1;
       getProjectListData();
     };
+    const setOwner = (res: string) => {
+      projectDetail.owner = res;
+    };
     return {
       addDialogVisible,
       projectDetail,
@@ -197,6 +195,7 @@ export default defineComponent({
       pageInfo,
       searchProject,
       getProjectListData,
+      setOwner,
     };
   },
 });

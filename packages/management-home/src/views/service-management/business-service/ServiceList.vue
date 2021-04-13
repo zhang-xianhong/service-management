@@ -5,7 +5,7 @@
         <el-button icon="el-icon-plus" type="primary" @click="toggleServiceDialog">新建</el-button>
         <el-button @click="runService" :disabled="computedDisabled">启动</el-button>
         <el-button @click="stopService" :disabled="computedDisabled">停止</el-button>
-        <el-button @click="deleteHandler" :disabled="computedDisabled">删除</el-button>
+        <el-button @click="deleteHandler" :disabled="computedDisabledForSS">删除</el-button>
       </div>
       <div class="service-list_right">
         <el-input placeholder="请输入服务名称/标签/分类" style="width: 250px" v-model="pageInfo.keyword">
@@ -21,6 +21,7 @@
         style="margin-bottom: 20px"
         ref="serverMuitable"
         @selection-change="handleSelection"
+        v-if="refreshMess"
       >
         <el-table-column type="selection" width="55"> </el-table-column>
         <el-table-column type="index" width="50" label="序号"> </el-table-column>
@@ -32,7 +33,7 @@
           </template>
         </el-table-column>
         <el-table-column property="description" label="服务描述"></el-table-column>
-        <el-table-column property="owner" label="负责人"></el-table-column>
+        <el-table-column property="ownerstr" label="负责人"> </el-table-column>
         <el-table-column property="status" label="服务状态">
           <template #default="scope">
             <span class="service-list-borders" :style="{ background: statusColor[scope.row.status] }"></span>
@@ -110,14 +111,7 @@
             <el-input v-model="serviceDetail.description"></el-input>
           </el-form-item>
           <el-form-item label="负责人" :label-width="labelWidth">
-            <el-select v-model="serviceDetail.owner" placeholder="请选择负责人">
-              <el-option
-                v-for="(item, index) in persons"
-                :key="index"
-                :label="item.label"
-                :value="item.value"
-              ></el-option>
-            </el-select>
+            <fetch-owners-select @get-owners="setOwner"></fetch-owners-select>
           </el-form-item>
           <el-form-item label="服务分类" :label-width="labelWidth">
             <el-cascader
@@ -211,15 +205,19 @@ import {
   getClassifications,
   getAllService,
   allService,
+  ownersMap,
 } from './utils/service-data-utils';
 import { addService } from '@/api/servers';
 import Message from 'element-plus/es/el-message';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { computeStatusLabel, statusColor } from '@/views/service-management/business-service/utils/service-status-map';
+import fetchOwnersSelect from '@/components/fetchOwnersSelect/Index.vue';
 
 export default defineComponent({
   name: 'ServiceList',
-  components: {},
+  components: {
+    fetchOwnersSelect,
+  },
   data() {
     return {
       sortProps: {
@@ -234,15 +232,13 @@ export default defineComponent({
     getClassifications();
     getTagsForService();
 
-    const intervalId = setInterval(() => refreshServiceList(), 5000);
-
     refreshServiceList();
 
-    onBeforeUnmount(() => {
-      clearInterval(intervalId);
-    });
-
-    const mutiArray = ref([]);
+    const mutiArray = ref([] as any);
+    const rememberMutiArray = ref([] as any);
+    const compuMutiArr = ref([] as any);
+    const refreshMess = ref(true);
+    const serverMuitable = ref(null);
 
     const addServiceDialog = ref(false);
     const toggleServiceDialog = () => {
@@ -257,6 +253,32 @@ export default defineComponent({
       classification: '',
       tags: [],
       keyword: '',
+    });
+    const refreshDataAndChange = () => {
+      rememberMutiArray.value = mutiArray.value;
+      (serverMuitable.value as any).clearSelection();
+      refreshServiceList(pageInfo).then(() => {
+        serviceTableList.list
+          .map((x: any) => {
+            if (rememberMutiArray.value.includes(x.id as any)) {
+              return x;
+            }
+            return null;
+          })
+          .filter((x: any) => x)
+          .forEach((x: any) => {
+            (serverMuitable.value as any).toggleRowSelection(x, true);
+          });
+        rememberMutiArray.value = [];
+      });
+    };
+
+    const intervalId = setInterval(() => {
+      refreshDataAndChange();
+    }, 5000);
+
+    onBeforeUnmount(() => {
+      clearInterval(intervalId);
     });
 
     const handleSizeChange = (res: number) => {
@@ -275,7 +297,7 @@ export default defineComponent({
     }
     function addServiceByForm() {
       const senddata = { ...serviceDetail };
-      senddata.tags = serviceDetail.tags.join(',');
+      senddata.tags = serviceDetail.tags.join(',') ? serviceDetail.tags.join(',') : '';
       senddata.dependencies = serviceDetail.dependencies.map((x: any) => ({
         id: x,
       }));
@@ -334,11 +356,11 @@ export default defineComponent({
       blackHoverVisible.value = false;
     }
 
-    const serverMuitable = ref(null);
     function handleSelection(res: any) {
-      console.log(res);
-      mutiArray.value = res;
+      mutiArray.value = res.map((x: any) => x.id);
+      compuMutiArr.value = res;
     }
+
     onBeforeUnmount(() => {
       blackHoverclick();
     });
@@ -404,16 +426,33 @@ export default defineComponent({
 
     const computedDisabled = computed(() => {
       let res = false;
-      if (mutiArray.value.length === 0) {
+      if (compuMutiArr.value.length === 0 || compuMutiArr.value.length > 1) {
         return !res;
       }
-      mutiArray.value.forEach((x: any) => {
-        if (+x.status === 20 || +x.status === 10) {
+      compuMutiArr.value.forEach((x: any) => {
+        if (+x.status === 20 || +x.status === 10 || +x.status === 0) {
           res = true;
         }
       });
       return res;
     });
+
+    const computedDisabledForSS = computed(() => {
+      let res = false;
+      if (compuMutiArr.value.length === 0) {
+        return !res;
+      }
+      compuMutiArr.value.forEach((x: any) => {
+        if (+x.status === 20 || +x.status === 10 || +x.status === 21) {
+          res = true;
+        }
+      });
+      return res;
+    });
+
+    const setOwner = (res: string) => {
+      serviceDetail.owner = res;
+    };
 
     return {
       serviceTableList,
@@ -457,9 +496,13 @@ export default defineComponent({
       getSortClassification,
       mutiArray,
       computedDisabled,
+      computedDisabledForSS,
       clearDialog,
       computeStatusLabel,
       statusColor,
+      ownersMap,
+      setOwner,
+      refreshMess,
     };
   },
 });
