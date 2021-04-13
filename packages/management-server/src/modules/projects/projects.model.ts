@@ -55,13 +55,6 @@ export class ProjectsModel extends BaseModel {
   })
   status: PROJECT_STATUS;
 
-  // 负责人
-  @Column({
-    type: DataType.STRING,
-    defaultValue: '',
-  })
-  owner: string;
-
   // 项目级别
   @Column({
     type: DataType.TINYINT,

@@ -29,13 +29,6 @@ export class ModelsInfoModel extends BaseModel {
   })
   engine: string;
 
-  // 负责人
-  @Column({
-    type: DataType.STRING,
-    defaultValue: '',
-  })
-  owner: string;
-
   // 是否纯继承
   @Column({
     field: 'is_all_by_extend',

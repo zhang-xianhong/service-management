@@ -114,7 +114,6 @@ export class ServicesInfoModel extends BaseModel  {
   })
   tag: string;
 
-
   // 初始化次数
   @Column({
     type: DataType.INTEGER,
