@@ -27,6 +27,9 @@ import { escapeLike } from 'src/shared/utils/sql';
 import { ServiceStartDto } from './dto/service-actions.dto';
 import { getLogName } from './config';
 import { FIELD_UUID_NAME } from 'src/shared/constants/field-types';
+import { OwnersModel } from '../owners/owners.model';
+import { MODULE_TYPE } from '../owners/config';
+import { OwnersService } from '../owners/owners.service';
 @Injectable()
 export class ServicesService {
   constructor(
@@ -42,6 +45,7 @@ export class ServicesService {
     @InjectModel(ServicesDependencyModel) private readonly dependencyRepository: typeof ServicesDependencyModel,
     @InjectModel(ServicesConfigModel) private readonly servicesConfigRepository: typeof ServicesConfigModel,
     @InjectModel(ServicesApiParamModel) private readonly apiParamRepository: typeof ServicesApiParamModel,
+    private ownerService: OwnersService,
   ) { }
 
   /**
@@ -88,7 +92,23 @@ export class ServicesService {
     if (query.all) {
       return await this.infoRepository.findAndCountAll({ where });
     }
-    return await this.infoRepository.findAndCountAll(conditions);
+    conditions.include = [
+      {
+        model: OwnersModel,
+        where: {
+          moduleType: MODULE_TYPE.SERVICE,
+        },
+        attributes: ['userId'],
+        required: false,
+      },
+    ];
+    const { rows, count } = await this.infoRepository.findAndCountAll(conditions);
+    const ownerUsers = await this.ownerService.getOwnerUsers(rows);
+    return {
+      rows,
+      count,
+      ownerUsers,
+    };
   }
 
 
@@ -110,6 +130,14 @@ export class ServicesService {
         model: ServicesConfigModel,
         required: false,
         attributes: { exclude: ['isDelete'] },
+      },
+      {
+        model: OwnersModel,
+        where: {
+          moduleType: MODULE_TYPE.SERVICE,
+        },
+        attributes: ['userId'],
+        required: false,
       }],
     });
     if (!service) {
@@ -119,10 +147,12 @@ export class ServicesService {
       }, HttpStatus.NOT_FOUND);
     }
     const { config, ...restConfig } = (service.toJSON() as PlainObject);
+    const ownerUsers = await this.ownerService.getOwnerUsers([service]);
     return {
       ...restConfig,
       config: config?.config,
       sshHost: SERVICE_SSH_URI,
+      ownerUsers,
     };
   }
 
@@ -180,7 +210,7 @@ export class ServicesService {
    */
   async createService(data: ServiceInfoDto): Promise<Created> {
     const { name } = data;
-    const { dependencies = [], ...serviceData } = data;
+    const { dependencies = [], owner, ...serviceData } = data;
     // 验证是否有同名服务
     const service: ServicesInfoModel = await this.infoRepository.findOne({
       where: {
@@ -207,6 +237,8 @@ export class ServicesService {
     try {
       serviceData.serverPort = Number(maxPortService?.serverPort) + 1 || 8080;
       const service: ServicesInfoModel = await this.infoRepository.create(serviceData, { transaction });
+      // 同步owner
+      await this.ownerService.updateOwners(MODULE_TYPE.SERVICE, service.id, owner, transaction);
       if (dependencies && Array.isArray(dependencies)) {
         const dependenciesEntities = dependencies.map(dependency => ({
           dependencyId: dependency.id,
@@ -495,7 +527,7 @@ export class ServicesService {
    * @param data
    */
   async updateService(id: number, data: any): Promise<Updated> {
-    const { dependencies = [], ...serviceData } = data;
+    const { dependencies = [], owner, ...serviceData } = data;
     const transaction: Transaction = await this.sequelize.transaction();
     try {
       const serviceInfo: ServicesInfoModel = await this.infoRepository.findOne({
@@ -525,6 +557,8 @@ export class ServicesService {
           message: '模型名称已存在',
         });
       }
+      // 同步owner
+      await this.ownerService.updateOwners(MODULE_TYPE.SERVICE, id, owner, transaction);
       await this.infoRepository.update(serviceData, {
         where: { id },
         transaction,
@@ -564,6 +598,8 @@ export class ServicesService {
     const transaction: Transaction = await this.sequelize.transaction();
     try {
       const deleteIds: number[] = ids.filter(id => Number(id));
+      // 同步owner
+      await this.ownerService.deleteOwners(MODULE_TYPE.SERVICE, deleteIds, transaction);
       // 更新info表数据，isDelete置为true
       await this.infoRepository.update({
         isDelete: true,

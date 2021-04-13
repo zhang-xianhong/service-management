@@ -1,4 +1,10 @@
-import {  HttpStatus,  Inject,  Injectable, Logger, LoggerService } from '@nestjs/common';
+import {
+  HttpStatus,
+  Inject,
+  Injectable,
+  Logger,
+  LoggerService,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Op, Sequelize } from 'sequelize';
 import { CommonCodes } from 'src/shared/constants/code';
@@ -6,7 +12,11 @@ import { PlainObject } from 'src/shared/pipes/query.pipe';
 import { Created, Deleted, Updated } from 'src/shared/types/response';
 import { ApiException } from 'src/shared/utils/api.exception';
 import { escapeLike } from 'src/shared/utils/sql';
+import { isUndefined } from 'src/shared/utils/validator';
 import { FilesService } from '../files/files.service';
+import { MODULE_TYPE } from '../owners/config';
+import { OwnersModel } from '../owners/owners.model';
+import { OwnersService } from '../owners/owners.service';
 import { SettingsService } from '../settings/settings.service';
 import { SettingsProjectRolesModel } from '../settings/settings_project_roles.model';
 import { UsersService } from '../users/users.service';
@@ -31,6 +41,7 @@ export class ProjectsService {
     private readonly sequelize: Sequelize,
     private readonly userService: UsersService,
     private readonly fileService: FilesService,
+    private readonly ownerService: OwnersService,
   ) {}
 
   /**
@@ -60,18 +71,28 @@ export class ProjectsService {
 
     const { conditions = {} } = query;
     conditions.where = where;
-    conditions.raw = true;
     if (!getTotal) {
       const rows = await this.repository.findAll({ where });
       return await this.getProjectRowsAfterFileKeyToUrl(rows);
     }
-    const { rows, count } = (await this.repository.findAndCountAll(conditions));
+    conditions.include = [
+      {
+        model: OwnersModel,
+        where: {
+          moduleType: MODULE_TYPE.PROJECT,
+        },
+        attributes: ['userId'],
+        required: false,
+      },
+    ];
+    const { rows, count } = await this.repository.findAndCountAll(conditions);
+    const ownerUsers = await this.ownerService.getOwnerUsers(rows);
     return {
       rows: await this.getProjectRowsAfterFileKeyToUrl(rows),
       count,
+      ownerUsers,
     };
   }
-
 
   /**
    * 通过ID查找
@@ -84,12 +105,25 @@ export class ProjectsService {
         id,
         isDelete: false,
       },
+      include: [
+        {
+          model: OwnersModel,
+          where: {
+            moduleType: MODULE_TYPE.PROJECT,
+          },
+          attributes: ['userId'],
+          required: false,
+        },
+      ],
     });
     if (!project) {
-      throw new ApiException({
-        code: CommonCodes.NOT_FOUND,
-        message: '项目不存在',
-      }, HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        {
+          code: CommonCodes.NOT_FOUND,
+          message: '项目不存在',
+        },
+        HttpStatus.NOT_FOUND,
+      );
     }
     const res: PlainObject = project.toJSON();
     try {
@@ -97,6 +131,7 @@ export class ProjectsService {
     } catch (error) {
       res.template = {};
     }
+    res.ownerUsers = await this.ownerService.getOwnerUsers([res]);
     return res;
   }
 
@@ -119,8 +154,17 @@ export class ProjectsService {
       });
     }
     const transaction = await this.sequelize.transaction();
+    const { owner, ...saveData } = postData;
     try {
-      const res = await this.repository.create(postData);
+      const res = await this.repository.create(saveData);
+      if (!isUndefined(owner)) {
+        await this.ownerService.updateOwners(
+          MODULE_TYPE.PROJECT,
+          res.id,
+          owner,
+          transaction,
+        );
+      }
       const settingsRoles = await this.settingsService.findAllProjectRoles(transaction);
       const projectRolesEntities: Array<PlainObject> = settingsRoles.map(role => ({
         settingsProjectRoleId: role.id,
@@ -150,7 +194,10 @@ export class ProjectsService {
    * @param postData
    * @returns
    */
-  async updateProject(id: number, postData: ProjectUpdateDto): Promise<Updated> {
+  async updateProject(
+    id: number,
+    postData: ProjectUpdateDto,
+  ): Promise<Updated> {
     const { name } = postData;
     if (name) {
       const project = await this.repository.findOne({
@@ -169,19 +216,45 @@ export class ProjectsService {
         });
       }
     }
-    await this.repository.update({
-      ...postData,
-      updateTime: new Date(),
-    }, {
-      where: {
+    const { owner, ...saveData } = postData;
+    const transaction = await this.sequelize.transaction();
+    try {
+      if (!isUndefined(owner)) {
+        await this.ownerService.updateOwners(
+          MODULE_TYPE.PROJECT,
+          id,
+          owner,
+          transaction,
+        );
+      }
+      await this.repository.update(
+        {
+          ...saveData,
+          updateTime: new Date(),
+        },
+        {
+          where: {
+            id,
+          },
+          transaction,
+        },
+      );
+      await transaction.commit();
+      return {
         id,
-      },
-    });
-    return {
-      id,
-    };
+      };
+    } catch (error) {
+      this.logger.error(error);
+      await transaction.rollback();
+      if (error instanceof ApiException) {
+        throw error;
+      }
+      throw new ApiException({
+        code: CommonCodes.UPLOAD_FAIL,
+        message: '更新失败',
+      });
+    }
   }
-
 
   /**
    * 删除项目，支持批量
@@ -189,24 +262,41 @@ export class ProjectsService {
    * @returns
    */
   async deleteProjects(ids: number[]): Promise<Deleted> {
-    const [deleted] = await this.repository.update({
-      isDelete: true,
-    }, {
-      where: {
-        id: {
-          [Op.in]: ids,
+    const transaction = await this.sequelize.transaction();
+    try {
+      await this.repository.update(
+        {
+          isDelete: true,
         },
-      },
-    });
-    if (deleted === ids.length) {
+        {
+          where: {
+            id: {
+              [Op.in]: ids,
+            },
+          },
+          transaction,
+        },
+      );
+      await this.ownerService.deleteOwners(
+        MODULE_TYPE.PROJECT,
+        ids,
+        transaction,
+      );
+      await transaction.commit();
       return {
         ids,
       };
+    } catch (error) {
+      this.logger.error(error);
+      await transaction.rollback();
+      if (error instanceof ApiException) {
+        throw error;
+      }
+      throw new ApiException({
+        code: CommonCodes.DELETED_FAIL,
+        message: '删除失败',
+      });
     }
-    throw new ApiException({
-      code: CommonCodes.DELETED_FAIL,
-      message: '删除失败',
-    });
   }
 
   /**
@@ -214,7 +304,7 @@ export class ProjectsService {
    * @param id
    * @returns
    */
-  async findMembersByProjectId(id: number): Promise<{roles: any[], users: any[]}> {
+  async findMembersByProjectId(id: number): Promise<{ roles: any[]; users: any[] }> {
     const roles = await this.rolesRepository.findAll({
       where: {
         isDelete: false,
@@ -251,7 +341,6 @@ export class ProjectsService {
       users,
     };
   }
-
 
   /**
    * 更新组内成员
@@ -298,7 +387,11 @@ export class ProjectsService {
    * @param projectId
    * @param deleteIds
    */
-  async deleteMembers(projectId: number, roleId: number, deleteIds: number[]): Promise<Deleted> {
+  async deleteMembers(
+    projectId: number,
+    roleId: number,
+    deleteIds: number[],
+  ): Promise<Deleted> {
     await this.membersRepository.destroy({
       where: {
         projectId,
@@ -312,7 +405,6 @@ export class ProjectsService {
       ids: deleteIds,
     };
   }
-
 
   /**
    * 查找项目角色
@@ -329,20 +421,24 @@ export class ProjectsService {
       },
     });
     if (!projectRole) {
-      throw new ApiException({
-        code: CommonCodes.NOT_FOUND,
-        message: '项目角色不存在',
-      }, HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        {
+          code: CommonCodes.NOT_FOUND,
+          message: '项目角色不存在',
+        },
+        HttpStatus.NOT_FOUND,
+      );
     }
     return projectRole;
   }
 
-
-  private async getProjectRowsAfterFileKeyToUrl(rows: any[]) {
-    const promises = rows.map(item => (item.thumbnail ? this.fileService.getObjectUrl(item.thumbnail) : Promise.resolve('')));
+  private async getProjectRowsAfterFileKeyToUrl(rows: any) {
+    const promises = rows.map(item => (item.thumbnail
+      ? this.fileService.getObjectUrl(item.thumbnail)
+      : Promise.resolve('')));
     const urls = await Promise.all(promises);
     return rows.map((item, index) => ({
-      ...item,
+      ...item.get({ plain: true }),
       thumbnail: urls[index],
     }));
   }

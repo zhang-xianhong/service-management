@@ -3,6 +3,7 @@
  */
 import { Table, Column, DataType, HasMany, HasOne } from 'sequelize-typescript';
 import { BaseModel } from '../base.entity';
+import { OwnersModel } from '../owners/owners.model';
 import { ServicesApiModel } from './service-api.model';
 import { ServicesConfigModel } from './service-config.model';
 import { ServicesDependencyModel } from './service-dependency.model';
@@ -75,13 +76,6 @@ export class ServicesInfoModel extends BaseModel  {
     defaultValue: '',
   })
   description: string;
-
-  // 负责人
-  @Column({
-    type: DataType.STRING,
-    defaultValue: '',
-  })
-  owner: string;
 
   // 服务详情
   @Column({
@@ -185,4 +179,7 @@ export class ServicesInfoModel extends BaseModel  {
 
   @HasOne(() => ServicesConfigModel)
   config: ServicesConfigModel;
+
+  @HasMany(() => OwnersModel, 'moduleId')
+  owners: OwnersModel[];
 }

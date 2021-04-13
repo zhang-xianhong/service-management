@@ -10,6 +10,7 @@ import { ModelsRelationModel } from './models-relation.model';
 import { ServicesModule } from '../services/services.module';
 import { ModelsFieldsHistoryModel } from './models-fields-history.model';
 import { VersionControlModule } from '../version-control/version-control.module';
+import { OwnersModule } from '../owners/owners.module';
 @Module({
   imports: [
     SequelizeModule.forFeature([
@@ -22,6 +23,7 @@ import { VersionControlModule } from '../version-control/version-control.module'
     ]),
     forwardRef(() => ServicesModule),
     forwardRef(() => VersionControlModule),
+    OwnersModule,
   ],
   controllers: [ModelsController],
   providers: [ModelsService, Logger],

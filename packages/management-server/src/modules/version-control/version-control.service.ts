@@ -2,7 +2,7 @@ import {  Inject, Injectable, Logger, LoggerService } from '@nestjs/common';
 import {  VersionControlModel } from './version-control.model';
 import { InjectModel } from '@nestjs/sequelize';
 import sequelize, { Sequelize  } from 'sequelize';
-import { MODULE_TYPE } from './config';
+import { VERSION_MODULE_TYPE } from './config';
 import { PlainObject } from 'src/shared/pipes/query.pipe';
 import { ApiException } from 'src/shared/utils/api.exception';
 import { CommonCodes } from 'src/shared/constants/code';
@@ -41,7 +41,7 @@ export class VersionControlService {
    * @returns
    */
   async findAndUpdateGhostVersion(
-    moduleType: MODULE_TYPE,
+    moduleType: VERSION_MODULE_TYPE,
     moduleId: number,
     transaction: sequelize.Transaction,
   ): Promise<GhostVersions> {

@@ -9,6 +9,8 @@ import { SocketGateway } from 'src/shared/gateway/socket.gateway';
 import { ModelsModule } from '../models/models.module';
 import { ServicesConfigModel } from './service-config.model';
 import { ServicesApiParamModel } from './service-api-param.model';
+import { UsersModule } from '../users/users.module';
+import { OwnersModule } from '../owners/owners.module';
 
 @Module({
   imports: [SequelizeModule.forFeature([
@@ -19,6 +21,8 @@ import { ServicesApiParamModel } from './service-api-param.model';
     ServicesApiParamModel,
   ]),
   HttpModule,
+  UsersModule,
+  OwnersModule,
   forwardRef(() => ModelsModule),
   ],
   controllers: [ServicesController],
