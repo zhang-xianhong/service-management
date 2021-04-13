@@ -9,10 +9,8 @@
         <div class="baseinfo-content">{{ formData.description }}</div>
       </el-form-item>
       <el-form-item label="负责人">
-        <div v-if="isShowMode" class="baseinfo-content">{{ formData.owner }}</div>
-        <el-select v-else :value="computedOwner" multiple placeholder="请选择">
-          <el-option v-for="(item, index) in allOwners" :key="index">{{ item.name }}</el-option>
-        </el-select>
+        <div v-if="isShowMode" class="baseinfo-content">{{ ownersName }}</div>
+        <owner-select v-else :value="formData.owners" @change="selectOwners"></owner-select>
       </el-form-item>
       <el-form-item label="分类">
         <div v-if="isShowMode" class="baseinfo-content">{{ classificationName }}</div>
@@ -53,13 +51,17 @@
 </template>
 
 <script lang="ts">
-import { reactive, ref, computed } from 'vue';
+import { reactive, ref } from 'vue';
 import useClassifications from '../utils/service-baseinfo-classification';
 import useTags from '../utils/service-baseinfo-tag';
 import { updateService } from '@/api/servers';
+import OwnerSelect from '@/components/owners-select/Index.vue';
 
 export default {
   name: 'ServerBaseInfo',
+  components: {
+    OwnerSelect,
+  },
   props: {
     data: {
       type: Object,
@@ -79,7 +81,6 @@ export default {
     },
   },
   setup(props: { data: any; id: number; tags: any[]; classifications: any[] }) {
-    console.log(props, 'props');
     // 是否为显示模式标识，默认为true
     const isShowMode = ref(true);
 
@@ -88,18 +89,27 @@ export default {
       name: props.data.name,
       description: props.data.description,
       owner: props.data.owner,
+      owners: props.data.owners,
       classification: props.data.classification,
       tag: props.data.tag,
       detail: props.data.detail,
     });
 
-    console.log(formData, 'formData');
+    // 负责人名称
+    const ownersName = ref('');
 
-    // 负责人数组
-    const computedOwner = computed(() => formData.owner.split(','));
+    // 初始化负责人名称
+    formData.owners.forEach((item: { userId: number }) => {
+      const target = props.data.ownerUsers.filter((user: any) => user.id === item.userId)[0] || {};
+      ownersName.value = ownersName.value === '' ? target.displayName : `${ownersName.value},${target.displayName}`;
+    });
 
-    // 所有负责人
-    const allOwners = reactive([]);
+    // 负责人选择
+    const selectOwners = (value: any) => {
+      formData.owner = value.owner;
+      formData.owners = value.owners;
+      ownersName.value = value.ownersName;
+    };
 
     const { classificationName, classificationValue } = useClassifications(
       formData.classification,
@@ -136,13 +146,13 @@ export default {
     return {
       isShowMode,
       formData,
-      computedOwner,
-      allOwners,
       classificationName,
       classificationValue,
       selectClassification,
+      ownersName,
       tagValue,
       tagNames,
+      selectOwners,
       selectTag,
       modifyFormData,
       saveFormData,
