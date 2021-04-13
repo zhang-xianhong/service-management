@@ -8,6 +8,7 @@ import { ProjectsRolesModel } from './projects-roles.model';
 import { ProjectsMembersModel } from './projects-members.model';
 import { UsersModule } from '../users/users.module';
 import { FileModule } from '../files/files.module';
+import { OwnersModule } from '../owners/owners.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { FileModule } from '../files/files.module';
     SettingsModule,
     UsersModule,
     FileModule,
+    OwnersModule,
   ],
   controllers: [ProjectsController],
   providers: [ProjectsService, Logger],

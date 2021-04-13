@@ -243,6 +243,9 @@ export class FilesService {
    * @returns
    */
   async getCosFileUrl(key) {
+    if (!key) {
+      return '';
+    }
     try {
       const data: any = await new Promise((resolve, reject) => {
         this.cos.getObjectUrl({
@@ -273,6 +276,9 @@ export class FilesService {
    * @returns
    */
   async getLocalFileUrl(key) {
+    if (!key) {
+      return '';
+    }
     try {
       const { path } = await this.fileRepository.findOne({
         where: {

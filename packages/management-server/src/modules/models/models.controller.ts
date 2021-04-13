@@ -1,4 +1,4 @@
-import { Body, Controller,  Param, Post } from '@nestjs/common';
+import { Body, Controller,  Get,  Param, Post } from '@nestjs/common';
 import { ModelsService } from './models.service';
 import { Created, Deleted, Updated } from 'src/shared/types/response';
 import { ApiException } from 'src/shared/utils/api.exception';
@@ -76,5 +76,12 @@ export class ModelsController {
   @Post('/:id')
   async updateModel(@Body() postData: ModelInfoDto, @Param() { id }: ParamIdDto): Promise<Updated> {
     return await this.service.updateModel(postData, id);
+  }
+
+
+  // 获取指定模型详情
+  @Get('/:id')
+  async getModelInfo(@Param() { id }: ParamIdDto): Promise<any> {
+    return await this.service.findModelInfoByModelId(id);
   }
 }

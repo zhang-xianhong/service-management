@@ -1,3 +1,5 @@
+import { PlainObject } from '../pipes/query.pipe';
+
 // 创建成功
 export interface Created {
   id: number
@@ -23,7 +25,7 @@ export type Rows<T> = Array<T>;
 export type Details<T> = T;
 
 // 列表返回(带分页)
-export interface RowsAndCount<T> {
+export interface RowsAndCount<T> extends PlainObject {
   count: number
   rows: Rows<T>
 }

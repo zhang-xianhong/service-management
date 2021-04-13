@@ -4,7 +4,7 @@ import { USER_BATCH_SEARCH_URL, FETCH_DEPARTMENT_TREE_URL, FETCH_SEARCH_DEPARTME
 import { PlainObject } from 'src/shared/pipes/query.pipe';
 import { ApiException } from 'src/shared/utils/api.exception';
 
-interface UserInfo extends PlainObject {
+export interface UserInfo extends PlainObject {
   userName: string
   displayName?: string
   gender?: number
@@ -98,7 +98,6 @@ export class UsersService {
   }
 
   async searchUser(params) {
-    console.log(params);
     try {
       const { data }: any = await this.httpService.get(FETCH_SEARCH_USER, {
         params,
