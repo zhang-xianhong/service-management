@@ -12,13 +12,13 @@ import { PlainObject } from 'src/shared/pipes/query.pipe';
 import { Created, Deleted, Updated } from 'src/shared/types/response';
 import { ApiException } from 'src/shared/utils/api.exception';
 import { escapeLike } from 'src/shared/utils/sql';
-import { isUndefined } from 'src/shared/utils/validator';
+import { isEmpty, isUndefined } from 'src/shared/utils/validator';
 import { FilesService } from '../files/files.service';
 import { MODULE_TYPE } from '../owners/config';
 import { OwnersModel } from '../owners/owners.model';
 import { OwnersService } from '../owners/owners.service';
 import { SettingsService } from '../settings/settings.service';
-import { SettingsProjectRolesModel } from '../settings/settings_project_roles.model';
+import { SettingsRolesModel } from '../settings/settings_roles.model';
 import { UsersService } from '../users/users.service';
 import { MembersDto } from './dto/member.dto';
 import { ProjectDto, ProjectUpdateDto } from './dto/project.dto';
@@ -156,7 +156,9 @@ export class ProjectsService {
     const transaction = await this.sequelize.transaction();
     const { owner, ...saveData } = postData;
     try {
-      const res = await this.repository.create(saveData);
+      const res = await this.repository.create(saveData, {
+        transaction,
+      });
       if (!isUndefined(owner)) {
         await this.ownerService.updateOwners(
           MODULE_TYPE.PROJECT,
@@ -167,11 +169,26 @@ export class ProjectsService {
       }
       const settingsRoles = await this.settingsService.findAllProjectRoles(transaction);
       const projectRolesEntities: Array<PlainObject> = settingsRoles.map(role => ({
-        settingsProjectRoleId: role.id,
+        settingsRoleId: role.id,
         projectId: res.id,
+        isOwnerRole: role.isOwner,
       }));
       // 同步为项目创建初始角色
-      await this.rolesRepository.bulkCreate(projectRolesEntities);
+      const roles = await this.rolesRepository.bulkCreate(projectRolesEntities, {
+        returning: true,
+      });
+      // 同步将负责人塞入负责人角色
+      if (!isEmpty(owner)) {
+        const ownerRole = roles.find(item => item.isOwnerRole);
+        const memberModels = Array.from(new Set(owner.split(','))).map(item => ({
+          userId: item,
+          projectRoleId: ownerRole?.id,
+          projectId: res.id,
+        }));
+        await this.membersRepository.bulkCreate(memberModels, {
+          transaction,
+        });
+      }
       await transaction.commit();
       return {
         id: res.id,
@@ -239,6 +256,32 @@ export class ProjectsService {
           transaction,
         },
       );
+      const ownerRole = await this.rolesRepository.findOne({
+        where: {
+          isOwnerRole: true,
+          projectId: id,
+        },
+        transaction,
+      });
+      // 删除相应owner members
+      await this.membersRepository.destroy({
+        where: {
+          projectId: id,
+          projectRoleId: ownerRole.id,
+        },
+        transaction,
+      });
+      // 添加新的owner member成员
+      if (!isEmpty(owner)) {
+        const memberModels = Array.from(new Set(owner.split(','))).map(item => ({
+          userId: item,
+          projectRoleId: ownerRole?.id,
+          projectId: id,
+        }));
+        await this.membersRepository.bulkCreate(memberModels, {
+          transaction,
+        });
+      }
       await transaction.commit();
       return {
         id,
@@ -313,7 +356,7 @@ export class ProjectsService {
       attributes: { exclude: ['settingsProjectRoleId', 'isDelete', 'version'] },
       include: [
         {
-          model: SettingsProjectRolesModel,
+          model: SettingsRolesModel,
           required: false,
           attributes: ['id', 'name', 'description'],
         },
@@ -432,6 +475,11 @@ export class ProjectsService {
     return projectRole;
   }
 
+  /**
+   * 获取项目缩略图的URL
+   * @param rows
+   * @returns
+   */
   private async getProjectRowsAfterFileKeyToUrl(rows: any) {
     const promises = rows.map(item => (item.thumbnail
       ? this.fileService.getObjectUrl(item.thumbnail)

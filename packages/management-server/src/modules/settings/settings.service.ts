@@ -19,7 +19,7 @@ import { SettingsDictionaryTypeModel } from './settings-dictionary-type.model';
 import { SettingsDictionaryModel } from './settings-dictionary.model';
 import { SettingsRegionModel } from './settings-region.model';
 import { SettingsTemplatesModel } from './settings-templates.model';
-import { SettingsProjectRolesModel } from './settings_project_roles.model';
+import { SettingsRolesModel } from './settings_roles.model';
 
 @Injectable()
 export class SettingsService {
@@ -38,8 +38,8 @@ export class SettingsService {
     private readonly regionRepository: typeof SettingsRegionModel,
     @InjectModel(SettingsTemplatesModel)
     private readonly templateRepository: typeof SettingsTemplatesModel,
-    @InjectModel(SettingsProjectRolesModel)
-    private readonly projectRolesRepository: typeof SettingsProjectRolesModel,
+    @InjectModel(SettingsRolesModel)
+    private readonly projectRolesRepository: typeof SettingsRolesModel,
   ) { }
 
   /**
@@ -641,7 +641,7 @@ export class SettingsService {
    * 获取所有项目角色
    * @returns
    */
-  async findAllProjectRoles(transaction?: sequelize.Transaction): Promise<Rows<SettingsProjectRolesModel>> {
+  async findAllProjectRoles(transaction?: sequelize.Transaction): Promise<Rows<SettingsRolesModel>> {
     const where = {
       isDelete: false,
     };

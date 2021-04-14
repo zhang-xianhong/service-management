@@ -3,7 +3,7 @@
  */
 import { Table, Column, DataType, BelongsTo, HasMany } from 'sequelize-typescript';
 import { BaseModel } from '../base.entity';
-import { SettingsProjectRolesModel } from '../settings/settings_project_roles.model';
+import { SettingsRolesModel } from '../settings/settings_roles.model';
 import { ProjectsMembersModel } from './projects-members.model';
 
 @Table({
@@ -30,19 +30,26 @@ export class ProjectsRolesModel extends BaseModel {
     defaultValue: null,
     comment: '关联配置表角色ID',
     references: {
-      model: SettingsProjectRolesModel,
+      model: SettingsRolesModel,
       key: 'id',
     },
   })
-  settingsProjectRoleId: number;
+  settingsRoleId: number;
 
-  @BelongsTo(() => SettingsProjectRolesModel, {
-    foreignKey: 'settingsProjectRoleId',
+  // 冗余字段，是否是owner类型
+  @Column({
+    type: DataType.BOOLEAN,
+    defaultValue: false,
+    comment: '冗余字段，是否是owner类型',
+  })
+  isOwnerRole: boolean;
+
+  @BelongsTo(() => SettingsRolesModel, {
+    foreignKey: 'settingsRoleId',
     constraints: false,
     foreignKeyConstraint: false,
   })
-  role: SettingsProjectRolesModel;
-
+  role: SettingsRolesModel;
 
   @HasMany(() => ProjectsMembersModel, {
     foreignKey: 'projectRoleId',

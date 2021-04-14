@@ -10,7 +10,7 @@ import { SettingsTagsModel } from './settings-tags.model';
 import { SettingsController } from './settings.controller';
 import { SettingsService } from './settings.service';
 import { SettingsTemplatesModel } from './settings-templates.model';
-import { SettingsProjectRolesModel } from './settings_project_roles.model';
+import { SettingsRolesModel } from './settings_roles.model';
 @Module({
   imports: [SequelizeModule.forFeature([
     DataTypesModel,
@@ -20,7 +20,7 @@ import { SettingsProjectRolesModel } from './settings_project_roles.model';
     SettingsDictionaryModel,
     SettingsRegionModel,
     SettingsTemplatesModel,
-    SettingsProjectRolesModel,
+    SettingsRolesModel,
   ])],
   controllers: [SettingsController],
   providers: [SettingsService],

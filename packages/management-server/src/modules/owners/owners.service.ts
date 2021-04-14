@@ -29,6 +29,7 @@ export class OwnersService {
     ownerIds: number[] | string,
     transaction?: sequelize.Transaction,
   ) {
+    console.log(ownerIds);
     if (isUndefined(ownerIds)) {
       return;
     }
