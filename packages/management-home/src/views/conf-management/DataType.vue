@@ -10,7 +10,7 @@
     </el-col>
     <el-col :offset="12" :span="6" style="text-align: right;">
       <el-button type="primary" @click="addDataType">新增</el-button>
-      <el-button @click="groupDelete()">删除</el-button>
+      <el-button :disabled="!isDeletable" @click="groupDelete()">删除</el-button>
     </el-col>
   </el-row>
   <el-row>
@@ -51,7 +51,7 @@
 </template>
 
 <script lang="ts">
-import { reactive, getCurrentInstance, toRefs } from 'vue';
+import { computed, reactive, getCurrentInstance, toRefs } from 'vue';
 import { useRouter } from 'vue-router';
 import { getDataTypes, deleteDataType } from '@/api/settings/data-types';
 import { debounce } from 'lodash';
@@ -87,6 +87,9 @@ export default {
         sortType: 'ascending',
       },
     });
+
+    // 删除按钮是否可点击
+    const isDeletable = computed(() => tableState.multipleSelection.length > 0);
 
     // 获取路由器信息
     const router = useRouter();
@@ -129,6 +132,13 @@ export default {
 
     // 批量删除数据类型
     const groupDelete = async () => {
+      if (tableState.multipleSelection.every((item: any) => item.isSystem)) {
+        (instance as any).proxy.$message({
+          type: 'warn',
+          message: '系统默认数据类型不可删除',
+        });
+        return;
+      }
       const { code }: any = await deleteDataType({ ids: [tableState.multipleSelection.map((item: any) => item.id)] });
       if (code === 0) {
         (instance as any).proxy.$message({
@@ -168,6 +178,7 @@ export default {
 
     return {
       ...toRefs(tableState),
+      isDeletable,
       addDataType,
       onEdit,
       onDelete,

@@ -9,10 +9,8 @@
         <div class="baseinfo-content">{{ formData.description }}</div>
       </el-form-item>
       <el-form-item label="负责人">
-        <div v-if="isShowMode" class="baseinfo-content">{{ formData.owner }}</div>
-        <el-select v-else :value="computedOwner" multiple placeholder="请选择">
-          <el-option v-for="(item, index) in allOwners" :key="index">{{ item.name }}</el-option>
-        </el-select>
+        <div v-if="isShowMode" class="baseinfo-content">{{ ownersName }}</div>
+        <owner-select v-else :value="formData.owners" @change="selectOwners"></owner-select>
       </el-form-item>
       <el-form-item label="分类">
         <div v-if="isShowMode" class="baseinfo-content">{{ classificationName }}</div>
@@ -53,13 +51,17 @@
 </template>
 
 <script lang="ts">
-import { reactive, ref, computed, watch } from 'vue';
+import { ref, watch } from 'vue';
 import useClassifications from '../utils/service-baseinfo-classification';
 import useTags from '../utils/service-baseinfo-tag';
 import { updateModel } from '@/api/schema/model';
+import OwnerSelect from '@/components/owners-select/Index.vue';
 
 export default {
   name: 'ModelBaseInfo',
+  components: {
+    OwnerSelect,
+  },
   props: {
     data: {
       type: Object,
@@ -89,11 +91,21 @@ export default {
       { immediate: true },
     );
 
-    // 负责人数组
-    const computedOwner = computed(() => formData.value.owner.split(','));
+    // 负责人名称
+    const ownersName = ref('');
 
-    // 所有负责人
-    const allOwners = reactive([]);
+    // 初始化负责人名称
+    formData.value.owners.forEach((item: { userId: number }) => {
+      const target = props.data.ownerUsers.filter((user: any) => user.id === item.userId)[0] || {};
+      ownersName.value = ownersName.value === '' ? target.displayName : `${ownersName.value},${target.displayName}`;
+    });
+
+    // 负责人选择
+    const selectOwners = (value: any) => {
+      formData.value.owner = value.owner;
+      formData.value.owners = value.owners;
+      ownersName.value = value.ownersName;
+    };
 
     const { classificationName, classificationValue } = useClassifications(
       formData.value.classification,
@@ -130,11 +142,11 @@ export default {
     return {
       isShowMode,
       formData,
-      computedOwner,
-      allOwners,
       classificationName,
       classificationValue,
       selectClassification,
+      ownersName,
+      selectOwners,
       tagNames,
       tagValue,
       selectTag,

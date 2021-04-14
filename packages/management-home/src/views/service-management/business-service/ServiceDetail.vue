@@ -124,7 +124,7 @@ import ModelBaseInfo from './components/ModelBaseInfo.vue';
 import { getServiceList, getServiceById } from '@/api/servers';
 import { getAllTags } from '@/api/settings/tags';
 import { getClassificationList } from '@/api/settings/classification';
-import { getServiceModelList } from '@/api/schema/model';
+import { getServiceModelList, getModelDetail } from '@/api/schema/model';
 import { getDataTypesAll } from '@/api/settings/data-types';
 import { useRoute } from 'vue-router';
 import {
@@ -305,7 +305,6 @@ export default {
         label: (statusmaps as any)[status],
         color: (statusColor as any)[status],
       };
-      console.log(buttons.value);
     });
 
     watch(thenRefresh, () => {
@@ -342,7 +341,7 @@ export default {
       initModelList();
     });
 
-    const modelSelected = (model: any) => {
+    const modelSelected = async (model: any) => {
       modelInfo.value = null;
       if (model) {
         if (model.relationInfo) {
@@ -350,8 +349,9 @@ export default {
           modelInfo.value = model.relationInfo;
           isShowDownDrawer.value = false;
         } else {
+          const { data } = await getModelDetail(model.id);
           componentName.value = 'ModelBaseInfo';
-          modelInfo.value = Object.assign(model, { tag: model.tags });
+          modelInfo.value = data;
           isShowDownDrawer.value = true;
           drawerName.value = 'ModelFieldForm';
         }
