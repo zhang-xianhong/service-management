@@ -6,11 +6,11 @@ import { BaseModel } from '../base.entity';
 
 @Table({
   timestamps: false,
-  tableName: 'settings_project_role',
+  tableName: 'settings_role',
 })
 
-// settings/project-role
-export class SettingsProjectRolesModel extends BaseModel {
+// settings/role
+export class SettingsRolesModel extends BaseModel {
   // 角色名称
   @Column({
     type: DataType.STRING,
@@ -22,4 +22,18 @@ export class SettingsProjectRolesModel extends BaseModel {
     type: DataType.STRING,
   })
   description: string;
+
+  // 是否是负责人角色
+  @Column({
+    type: DataType.BOOLEAN,
+    defaultValue: false,
+  })
+  isOwner: boolean;
+
+  // 是否用户定义
+  @Column({
+    type: DataType.BOOLEAN,
+    defaultValue: false,
+  })
+  isUserDefine: boolean;
 }
