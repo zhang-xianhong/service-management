@@ -161,17 +161,20 @@ export default {
           status: userStatus[user.status as 0 | -1],
           gender: genderLabel[user.gender as 0 | 1],
         }));
-        treeData.value[0].children = _.map((role: any) => ({
-          id: role.id,
-          label: role.role.name,
-          children: _.map((member: any) => {
-            const user: any = _.find({ id: member.userId })(data.users);
-            return {
-              label: user.displayName,
-              id: user.id,
-            };
-          })(role.members),
-        }))(data.roles);
+        treeData.value[0].children = _.flow(
+          _.reject({ isOwnerRole: true }),
+          _.map((role: any) => ({
+            id: role.id,
+            label: role.role.name,
+            children: _.map((member: any) => {
+              const user: any = _.find({ id: member.userId })(data.users);
+              return {
+                label: user.displayName,
+                id: user.id,
+              };
+            })(role.members),
+          })),
+        )(data.roles);
         userList.value = [];
       }
     };
