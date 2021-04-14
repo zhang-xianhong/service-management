@@ -3,8 +3,8 @@
     <div class="service-list_header">
       <div class="service-list_left">
         <el-button icon="el-icon-plus" type="primary" @click="toggleServiceDialog">新建</el-button>
-        <el-button @click="runService" :disabled="computedDisabled">启动</el-button>
-        <el-button @click="stopService" :disabled="computedDisabled">停止</el-button>
+        <el-button @click="runService" :disabled="computedDisabled" v-if="false">启动</el-button>
+        <el-button @click="stopService" :disabled="computedDisabled" v-if="false">停止</el-button>
         <el-button @click="deleteHandler" :disabled="computedDisabledForSS">删除</el-button>
       </div>
       <div class="service-list_right">
