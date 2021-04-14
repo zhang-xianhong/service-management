@@ -33,15 +33,14 @@
         </el-select>
       </el-form-item>
       <el-form-item label="负 责 人">
-        <div v-if="!editMode" class="form-content">
-          {{ detailInfo.owner }}
-        </div>
-        <el-input
+        <div v-if="!editMode" class="form-content">{{ ownersName }}</div>
+        <owner-select
+          v-else
           class="form-content"
-          v-if="editMode"
-          v-model="formData.owner"
-          placeholder="请添加单个或多个项目负责人"
-        ></el-input>
+          :value="formData.owners"
+          :options="formData.ownerUsers"
+          @change="selectOwners"
+        ></owner-select>
       </el-form-item>
       <el-form-item label="项目级别" prop="level">
         <div v-if="!editMode" class="form-content">
@@ -84,9 +83,10 @@
 
 <script lang="ts">
 import _ from 'lodash/fp';
-import { reactive, ref, Ref, watchEffect } from 'vue';
+import { reactive, ref, Ref, watchEffect, watch } from 'vue';
 import { updateProject } from '@/api/project/project';
 import { getAllTemplates } from '@/api/settings/templates';
+import OwnerSelect from '@/components/owners-select/Index.vue';
 export default {
   name: 'BasicInfoForm',
   props: {
@@ -97,12 +97,17 @@ export default {
       required: true,
     },
   },
+  components: {
+    OwnerSelect,
+  },
   setup(props: any, context: any) {
     const detailInfo = reactive({
       name: '',
       description: '',
       templateId: '',
       owner: '',
+      owners: [],
+      ownerUsers: [],
       level: 0,
       remark: '',
       status: 0,
@@ -112,6 +117,8 @@ export default {
       description: '',
       templateId: '',
       owner: '',
+      owners: [],
+      ownerUsers: [],
       level: 0,
       remark: '',
       status: 0,
@@ -159,9 +166,29 @@ export default {
     };
     getTemplates();
 
+    // 负责人名称
+    const ownersName = ref('');
+
+    watch(
+      () => formData.owners,
+      (newValue: Array<{ userId: number }>) => {
+        newValue.forEach((item: { userId: number }) => {
+          const target: any = formData.ownerUsers.filter((user: any) => user.id === item.userId)[0] || {};
+          ownersName.value = ownersName.value === '' ? target.displayName : `${ownersName.value},${target.displayName}`;
+        });
+      },
+    );
+
+    // 负责人选择
+    const selectOwners = (value: any) => {
+      formData.owner = value.owner;
+      formData.owners = value.owners;
+      formData.ownerUsers = value.ownerUsers;
+    };
+
     // 表单操作
     const save = async () => {
-      const { code } = await updateProject(props.id, formData);
+      const { code } = await updateProject((projectDetail as any).id, formData);
       if (code === 0) {
         Object.assign(detailInfo, formData);
         context.emit('submit');
@@ -183,6 +210,8 @@ export default {
     return {
       detailInfo,
       formData,
+      ownersName,
+      selectOwners,
       getLabel,
       projectLevels,
       statusOptions,

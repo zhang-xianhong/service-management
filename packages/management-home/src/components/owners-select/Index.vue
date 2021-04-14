@@ -26,15 +26,19 @@ export default {
       type: Array,
       default: () => [],
     },
+    options: {
+      type: Array,
+      default: () => [],
+    },
   },
   emits: ['update:modelValue', 'change'],
-  setup(props: { value: any }, ctx: SetupContext) {
+  setup(props: { value: Array<any>; options: Array<any> }, ctx: SetupContext) {
     const ownerIds: Ref<number[]> = ref(props.value.map((item: { userId: number }) => item.userId));
-    const owners: Ref<any[]> = ref([]);
+    const owners: Ref<any[]> = ref(props.options);
     const loading: Ref<boolean> = ref(false);
 
     async function getOwners(keyword = '') {
-      owners.value = await getOwnerList(keyword);
+      owners.value = await getOwnerList(keyword, owners.value);
     }
 
     getOwners();
@@ -42,7 +46,7 @@ export default {
     function onChange(value: number[]) {
       const owners = value.map((id: number) => getOwnerById(id));
       ctx.emit('change', {
-        ownerList: owners,
+        ownerUsers: owners,
         owner: value.join(','),
         owners: owners.map((item: any) => ({ userId: item.id })),
         ownersName: owners.map((item: any) => item.displayName).join(','),
