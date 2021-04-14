@@ -7,10 +7,19 @@ const ownerMap: Map<number, any> = new Map();
  * @param keyword 关键字查询
  * @param field 内容筛选
  */
-async function getOwnerList(keyword = '', field: 'user' | 'department' | 'all' = 'user') {
-  const {
+async function getOwnerList(keyword = '', owners: Array<any> = [], field: 'user' | 'department' | 'all' = 'user') {
+  let {
     data: { users },
   } = await queryInTenant({ keyword, field });
+  Object.assign(users, owners);
+  const userIds = Array.from(new Set(users.map((item: any) => item.id)));
+  users = users.filter((item: any, index: number) => {
+    if (userIds.indexOf(item.id) > -1) {
+      userIds.splice(index, 1);
+      return true;
+    }
+    return false;
+  });
   users.forEach((user: any) => {
     ownerMap.set(user.id, user);
   });

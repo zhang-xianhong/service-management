@@ -10,7 +10,12 @@
       </el-form-item>
       <el-form-item label="负责人">
         <div v-if="isShowMode" class="baseinfo-content">{{ ownersName }}</div>
-        <owner-select v-else :value="formData.owners" @change="selectOwners"></owner-select>
+        <owner-select
+          v-else
+          :value="formData.owners"
+          :options="formData.ownerUsers"
+          @change="selectOwners"
+        ></owner-select>
       </el-form-item>
       <el-form-item label="分类">
         <div v-if="isShowMode" class="baseinfo-content">{{ classificationName }}</div>
@@ -104,6 +109,7 @@ export default {
     const selectOwners = (value: any) => {
       formData.value.owner = value.owner;
       formData.value.owners = value.owners;
+      formData.value.ownerUsers = value.ownerUsers;
       ownersName.value = value.ownersName;
     };
 
