@@ -5,7 +5,7 @@
         <div class="pic-plus"><i class="el-icon-plus"></i></div>
         <div>点击添加图片</div>
       </div>
-      <img :src="dataObj.thumbnail || src" alt="替换图片" v-else title="点击更换图片" />
+      <img :src="dataObj.thumbnail || src" alt="图片暂时无法显示" v-else title="点击更换图片" />
     </div>
     <input
       type="file"
@@ -23,7 +23,7 @@
       </div>
       <div class="project-item_mess">
         <label>负责人</label>
-        {{ dataObj.owner }}
+        <el-button type="text">{{ dataObj.ownerstr }}</el-button>
       </div>
       <div class="project-item_mess">
         <label>项目描述</label>
@@ -33,10 +33,6 @@
         <label>项目级别</label>
         {{ levelArr[dataObj.level] }}
       </div>
-      <!--      <div class="project-item_mess">-->
-      <!--        <label>许可类型</label>-->
-      <!--        {{ dataObj.license ? '租用' : '永久' }}-->
-      <!--      </div>-->
     </div>
   </div>
 </template>
@@ -176,6 +172,9 @@ export default defineComponent({
       margin-top: 8px;
       padding-left: 5px;
       padding-right: 5px;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
       label {
         opacity: 0.7;
         display: inline-block;

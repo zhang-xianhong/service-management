@@ -18,6 +18,7 @@ export const sorts = ref([] as any);
 export const tags = ref([] as any);
 export const tagMap = ref({} as any);
 export const sortMap = ref({} as any);
+export const ownersMap = ref({} as any);
 
 export function refreshServiceList(payload = {} as any) {
   let data = {} as any;
@@ -31,6 +32,10 @@ export function refreshServiceList(payload = {} as any) {
     }
   });
   return getServiceList(data).then((res) => {
+    ownersMap.value = {};
+    res.data.ownerUsers.forEach((x: any) => {
+      ownersMap.value[x.id] = x;
+    });
     if (res.data.rows) {
       res.data.rows.forEach((x: any) => {
         x.name = x.name.replace(/^srv-/g, '');
@@ -47,11 +52,14 @@ export function refreshServiceList(payload = {} as any) {
         // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
         // @ts-ignore
         x.statusStr = statusMap[x.status];
+        x.ownerstr = x.owners
+          .map((x: any) => ownersMap.value[x.userId].displayName)
+          .filter((x: any) => x)
+          .join(',');
       });
     }
     serviceTableList.list = res.data.rows;
     serviceTableList.total = res.data.count;
-    console.log(serviceTableList.list, 11111111);
   });
 }
 
@@ -89,12 +97,10 @@ export const getClassifications = () => {
   });
 };
 
-export const deleteServiceForList = (arr: Array<any>) => {
-  const data = arr.map((x) => x.id);
-  return deleteService(data as any).then((res) => {
+export const deleteServiceForList = (arr: Array<any>) =>
+  deleteService(arr as any).then((res) => {
     console.log(res);
   });
-};
 
 export function getAllService() {
   return getServiceList({ all: true }).then((res) => {

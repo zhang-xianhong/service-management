@@ -53,6 +53,7 @@ import {
   ElStep,
   ElSteps,
   ElUpload,
+  ElTooltip,
 } from 'element-plus';
 
 const components = [
@@ -101,6 +102,7 @@ const components = [
   ElStep,
   ElSteps,
   ElUpload,
+  ElTooltip,
 ];
 const plugins = [ElInfiniteScroll, ElLoading, ElMessage, ElMessageBox, ElNotification];
 
