@@ -94,3 +94,9 @@ export enum StatusCodes {
   STATUS_AVAILABLE = 0,
   STATUS_UNAVAILABLE = 1,
 }
+
+// 存储
+export enum UploadStorage {
+  COS_STORAGE = 'cos',
+  LOCAL_STORAGE = 'local',
+}

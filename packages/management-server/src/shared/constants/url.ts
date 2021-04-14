@@ -38,3 +38,5 @@ export const FETCH_DEPARTMENT_TREE_URL = `${USER_SERVICE_BASE_URL}/dept/:deptId/
 export const FETCH_SEARCH_DEPARTMENT = `${USER_SERVICE_BASE_URL}/dept/search`;
 // 查询用户
 export const FETCH_SEARCH_USER = `${USER_SERVICE_BASE_URL}/user/search`;
+
+export const STATIC_FILE_SERVICE = `http://${config.UPLOAD_SERVICE_HOST}`;

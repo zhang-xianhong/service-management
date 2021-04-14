@@ -12,7 +12,7 @@ export class FilesController {
   @Post('/upload')
   @UseInterceptors(FileInterceptor('file'))
   async uploadFile(@UploadedFile() file) {
-    return this.projectService.uploadFile(file);
+    return await this.projectService.uploadFile(file);
   }
 
   /**

@@ -207,7 +207,11 @@ export default {
       }
     });
     const clearAndSearch = () => {
-      if (searchStr.value.length) searchDone.value = false;
+      if (searchStr.value.length) {
+        searchDone.value = false;
+      } else {
+        searchDone.value = true;
+      }
       searchResult.value = [];
       search();
     };
