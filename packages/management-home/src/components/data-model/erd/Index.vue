@@ -23,7 +23,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, watchEffect, inject, provide, computed } from 'vue';
+import { defineComponent, onMounted, watchEffect, inject, provide, computed, onBeforeUnmount } from 'vue';
 import _ from 'lodash/fp';
 import {
   tables,
@@ -271,6 +271,13 @@ export default defineComponent({
       const closestScroll = svgElem.closest('.el-scrollbar__wrap');
       if (closestScroll) {
         closestScroll.addEventListener('scroll', calcSvgPosition);
+      }
+    });
+    onBeforeUnmount(() => {
+      const svgElem = document.querySelector('.erd-container-wrapper svg') as HTMLElement;
+      const closestScroll = svgElem.closest('.el-scrollbar__wrap');
+      if (closestScroll) {
+        closestScroll.removeEventListener('scroll', calcSvgPosition);
       }
     });
     return {
