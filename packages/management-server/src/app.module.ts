@@ -17,6 +17,7 @@ import { VersionControlModule } from './modules/version-control/version-control.
 import { FileModule } from './modules/files/files.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { OwnersModule } from './modules/owners/owners.module';
+import { MenusModule } from './modules/menus/menus.module';
 
 @Module({
   imports: [
@@ -48,6 +49,7 @@ import { OwnersModule } from './modules/owners/owners.module';
     TenantModule,
     FileModule,
     OwnersModule,
+    MenusModule,
   ],
   controllers: [AppController],
 })

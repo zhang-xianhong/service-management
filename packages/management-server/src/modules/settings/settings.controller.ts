@@ -197,4 +197,9 @@ export class SettingsController {
   async getAllTemplates(@Query(new QueryPipe()) query: SearchQuery) {
     return await this.service.findAllTemplates(query, false);
   }
+
+  @Post('role')
+  async addProjectRole(@Body()body) {
+    await this.service.addProjectRoles(body);
+  }
 }

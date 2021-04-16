@@ -545,7 +545,6 @@ export class SettingsService {
       typeId: id,
       key: getDictionaryKey(lastTypeKey, index),
     }));
-    console.log(dictionaries);
     await this.dictionaryRepository.bulkCreate(dictionaries);
     return {
       ids: dictionaries.map(i => i.key),
@@ -636,6 +635,24 @@ export class SettingsService {
     return row;
   }
 
+
+  /**
+   * 添加角色
+   * @returns
+   */
+  async addProjectRoles(data) {
+    try {
+      const res = await this.projectRolesRepository.create(data);
+      return {
+        id: res.id,
+      };
+    } catch (error) {
+      throw new ApiException({
+        code: CommonCodes.CREATED_FAIL,
+        message: '添加角色失败',
+      });
+    }
+  }
 
   /**
    * 获取所有项目角色

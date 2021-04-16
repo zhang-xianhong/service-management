@@ -62,4 +62,12 @@ export const getDictionaryKey = (lastTypeKey: string, index: number): string => 
   return `${typePrefix}${typeIndex}`;
 };
 
+export const assemblyRoleTree = (menus = []) => {
+  const menuPermissions = menus.map(({ menu, ...data }) => ({
+    ...menu,
+    ...data,
+  }));
+  return menuPermissions;
+};
+
 

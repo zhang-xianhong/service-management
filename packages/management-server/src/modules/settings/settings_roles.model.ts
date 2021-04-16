@@ -1,8 +1,9 @@
 /**
  * 项目角色配置表
  */
-import { Table, Column, DataType  } from 'sequelize-typescript';
+import { Table, Column, DataType, HasMany  } from 'sequelize-typescript';
 import { BaseModel } from '../base.entity';
+import { MenuPermissionModel } from '../menus/menu-permission.model';
 
 @Table({
   timestamps: false,
@@ -36,4 +37,7 @@ export class SettingsRolesModel extends BaseModel {
     defaultValue: false,
   })
   isUserDefine: boolean;
+
+  @HasMany(() => MenuPermissionModel, 'roleId')
+  menus: MenuPermissionModel[];
 }
