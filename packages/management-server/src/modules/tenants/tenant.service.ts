@@ -3,11 +3,11 @@ import { InjectModel } from '@nestjs/sequelize';
 import { Op, Sequelize, Transaction } from 'sequelize';
 import { CommonCodes, StatusCodes } from 'src/shared/constants/code';
 import { CREATE_IDAAS_TENANT } from 'src/shared/constants/url';
-import { SearchQuery } from 'src/shared/pipes/query.pipe';
+import { PlainObject, SearchQuery } from 'src/shared/pipes/query.pipe';
 import { Deleted, Updated } from 'src/shared/types/response';
 import { ApiException } from 'src/shared/utils/api.exception';
 import { escapeLike } from 'src/shared/utils/sql';
-import { isEmpty } from 'src/shared/utils/validator';
+import { isEmpty, isNumeric } from 'src/shared/utils/validator';
 import { UsersService } from '../users/users.service';
 import { TenantUpdateInfoDto } from './dto/tenant-update-info.dto';
 import { TenantContactModel } from './tenant-contact.model';
@@ -80,18 +80,7 @@ export class TenantService {
   async createTenant(data): Promise<any> {
     const { contact, manager, ...infoData } = data;
     // 验证是否有同名租户
-    const tenant: TenantInfoModel = await this.tenantRepository.findOne({
-      where: {
-        name: infoData.name,
-        isDelete: false,
-      },
-    });
-    if (tenant) {
-      throw new ApiException({
-        code: CommonCodes.DATA_EXISTED,
-        message: '租户名称已存在',
-      });
-    }
+    await this.checkNameUsable(infoData.name);
     const managerInfo: TenantManagerModel = await this.managerRepository.findOne({
       where: {
         account: manager.account,
@@ -377,5 +366,35 @@ export class TenantService {
     } catch (error) {
       throw error;
     }
+  }
+
+  /**
+   * 校验名称唯一性
+   * @param name
+   * @param id
+   * @returns
+   */
+  async checkNameUsable(name: string, id?: number) {
+    const where: PlainObject = {
+      name,
+      isDelete: false,
+    };
+    if (isNumeric(id) && id > 0) {
+      where.id = {
+        [Op.not]: id,
+      };
+    }
+    const project = await this.tenantRepository.findOne({
+      where,
+    });
+    if (project) {
+      throw new ApiException({
+        code: CommonCodes.DATA_EXISTED,
+        message: `租户名称[${name}]已存在`,
+      });
+    }
+    return {
+      usable: true,
+    };
   }
 }

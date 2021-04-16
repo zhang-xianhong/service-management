@@ -12,7 +12,7 @@ import { PlainObject } from 'src/shared/pipes/query.pipe';
 import { Created, Deleted, Updated } from 'src/shared/types/response';
 import { ApiException } from 'src/shared/utils/api.exception';
 import { escapeLike } from 'src/shared/utils/sql';
-import { isEmpty, isUndefined } from 'src/shared/utils/validator';
+import { isEmpty, isNumeric, isUndefined } from 'src/shared/utils/validator';
 import { FilesService } from '../files/files.service';
 import { MODULE_TYPE } from '../owners/config';
 import { OwnersModel } from '../owners/owners.model';
@@ -141,18 +141,7 @@ export class ProjectsService {
    * @returns
    */
   async createProject(postData: ProjectDto): Promise<Created> {
-    const project = await this.repository.findOne({
-      where: {
-        name: postData.name,
-        isDelete: false,
-      },
-    });
-    if (project) {
-      throw new ApiException({
-        code: CommonCodes.DATA_EXISTED,
-        message: `项目名称${postData.name}已存在`,
-      });
-    }
+    await this.checkNameUsable(postData.name);
     const transaction = await this.sequelize.transaction();
     const { owner, ...saveData } = postData;
     try {
@@ -201,6 +190,7 @@ export class ProjectsService {
       }
       throw new ApiException({
         code: CommonCodes.CREATED_FAIL,
+        error,
         message: '创建失败',
       });
     }
@@ -217,21 +207,7 @@ export class ProjectsService {
   ): Promise<Updated> {
     const { name } = postData;
     if (name) {
-      const project = await this.repository.findOne({
-        where: {
-          name,
-          isDelete: false,
-          id: {
-            [Op.not]: id,
-          },
-        },
-      });
-      if (project) {
-        throw new ApiException({
-          code: CommonCodes.DATA_EXISTED,
-          message: `项目名称${postData.name}已存在`,
-        });
-      }
+      await this.checkNameUsable(name, id);
     }
     const { owner, ...saveData } = postData;
     const transaction = await this.sequelize.transaction();
@@ -446,6 +422,36 @@ export class ProjectsService {
     });
     return {
       ids: deleteIds,
+    };
+  }
+
+  /**
+   * 校验名称唯一性
+   * @param name
+   * @param id
+   * @returns
+   */
+  async checkNameUsable(name: string, id?: number) {
+    const where: PlainObject = {
+      name,
+      isDelete: false,
+    };
+    if (isNumeric(id) && id > 0) {
+      where.id = {
+        [Op.not]: id,
+      };
+    }
+    const project = await this.repository.findOne({
+      where,
+    });
+    if (project) {
+      throw new ApiException({
+        code: CommonCodes.DATA_EXISTED,
+        message: `项目名称[${name}]已存在`,
+      });
+    }
+    return {
+      usable: true,
     };
   }
 

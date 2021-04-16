@@ -3,7 +3,7 @@ import { CommonCodes } from 'src/shared/constants/code';
 import { QueryPipe, SearchQuery } from 'src/shared/pipes/query.pipe';
 import { ApiException } from 'src/shared/utils/api.exception';
 import { isEmpty } from 'src/shared/utils/validator';
-import { DeletedIdsDto, ParamIdDto } from '../base.dto';
+import { DeletedIdsDto, NameUsableDto, ParamIdDto } from '../base.dto';
 import { ServiceIdDto, ServiceStartDto } from './dto/service-actions.dto';
 import { ServiceApisDto } from './dto/service-apis.dto';
 import { ServiceConfigDto } from './dto/service-config.dto';
@@ -47,6 +47,12 @@ export class ServicesController {
   @Post('/delete')
   async deleteData(@Body() { ids }: DeletedIdsDto) {
     return await this.service.deleteServices(ids);
+  }
+
+  // 校验名称是否可用
+  @Post('name/usable')
+  async checkServiceNameUsable(@Body() { name, id }: NameUsableDto) {
+    return await this.service.checkServiceNameUsable(name, id);
   }
 
   // 新增服务

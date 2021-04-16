@@ -30,6 +30,7 @@ import { FIELD_UUID_NAME } from 'src/shared/constants/field-types';
 import { OwnersModel } from '../owners/owners.model';
 import { MODULE_TYPE } from '../owners/config';
 import { OwnersService } from '../owners/owners.service';
+import { isNumeric } from 'src/shared/utils/validator';
 @Injectable()
 export class ServicesService {
   constructor(
@@ -209,21 +210,9 @@ export class ServicesService {
    * @returns
    */
   async createService(data: ServiceInfoDto): Promise<Created> {
-    const { name } = data;
-    const { dependencies = [], owner, ...serviceData } = data;
+    const { name, dependencies = [], owner, ...serviceData } = data;
     // 验证是否有同名服务
-    const service: ServicesInfoModel = await this.infoRepository.findOne({
-      where: {
-        name,
-        isDelete: false,
-      },
-    });
-    if (service) {
-      throw new ApiException({
-        code: CommonCodes.DATA_EXISTED,
-        message: '服务名称已存在',
-      });
-    }
+    await this.checkServiceNameUsable(name);
 
     // 获取最大端口号服务
     const [maxPortService]: ServicesInfoModel[] = await this.infoRepository.findAll({
@@ -232,7 +221,6 @@ export class ServicesService {
       },
       order: [['serverPort', 'DESC']],
     });
-
     const transaction: Transaction = await this.sequelize.transaction();
     try {
       serviceData.serverPort = Number(maxPortService?.serverPort) + 1 || 8080;
@@ -527,7 +515,7 @@ export class ServicesService {
    * @param data
    */
   async updateService(id: number, data: any): Promise<Updated> {
-    const { dependencies = [], owner, ...serviceData } = data;
+    const { name, dependencies = [], owner, ...serviceData } = data;
     const transaction: Transaction = await this.sequelize.transaction();
     try {
       const serviceInfo: ServicesInfoModel = await this.infoRepository.findOne({
@@ -544,19 +532,7 @@ export class ServicesService {
         });
       }
       // 验证是否有同名模块
-      const service: ServicesInfoModel = await this.infoRepository.findOne<ServicesInfoModel>({
-        where: {
-          name: data.name,
-          isDelete: false,
-          id: [Op.notIn[id]],
-        },
-      });
-      if (service) {
-        throw new ApiException({
-          code: CommonCodes.DATA_EXISTED,
-          message: '模型名称已存在',
-        });
-      }
+      await this.checkServiceNameUsable(name, id);
       // 同步owner
       await this.ownerService.updateOwners(MODULE_TYPE.SERVICE, id, owner, transaction);
       await this.infoRepository.update(serviceData, {
@@ -699,7 +675,6 @@ export class ServicesService {
           name: service.name,
         },
       }).toPromise();
-      console.log(data);
       if (!data?.error) {
         return {
           traceId: data.data,
@@ -857,6 +832,35 @@ export class ServicesService {
     };
   }
 
+  /**
+   * 校验名称唯一性
+   * @param name
+   * @param id
+   * @returns
+   */
+  async checkServiceNameUsable(name: string, id?: number) {
+    const where: PlainObject = {
+      name,
+      isDelete: false,
+    };
+    if (isNumeric(id) && id > 0) {
+      where.id = {
+        [Op.not]: id,
+      };
+    }
+    const project = await this.infoRepository.findOne({
+      where,
+    });
+    if (project) {
+      throw new ApiException({
+        code: CommonCodes.DATA_EXISTED,
+        message: `服务名称[${name}]已存在`,
+      });
+    }
+    return {
+      usable: true,
+    };
+  }
 
   /**
    * 根据服务ID获取服务

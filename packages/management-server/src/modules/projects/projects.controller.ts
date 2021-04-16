@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
 import { QueryPipe, SearchQuery } from 'src/shared/pipes/query.pipe';
-import { DeletedIdsDto, ParamIdDto } from '../base.dto';
+import { DeletedIdsDto, NameUsableDto, ParamIdDto } from '../base.dto';
 import { MembersDto } from './dto/member.dto';
 import { MemberDeleteDto } from './dto/member-delete.dto';
 import { ProjectDto, ProjectUpdateDto } from './dto/project.dto';
@@ -18,6 +18,12 @@ export class ProjectsController {
   @Post()
   async createProject(@Body() postData: ProjectDto) {
     return await this.service.createProject(postData);
+  }
+
+  // 校验名称是否可用
+  @Post('name/usable')
+  async checkNameUsable(@Body() { name, id }: NameUsableDto) {
+    return await this.service.checkNameUsable(name, id);
   }
 
   @Get(':id')

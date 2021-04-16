@@ -42,7 +42,7 @@ export class UsersService {
       this.logger.error(error);
       throw new ApiException({
         code: CommonCodes.FETCH_FAIL,
-        message: error?.message || '查询用户信息失败',
+        message: '查询用户信息失败',
         error,
       }, HttpStatus.BAD_REQUEST);
     }

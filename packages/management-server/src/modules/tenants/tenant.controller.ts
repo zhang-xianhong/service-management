@@ -1,5 +1,6 @@
 import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
 import { QueryPipe, SearchQuery } from 'src/shared/pipes/query.pipe';
+import { NameUsableDto } from '../base.dto';
 import { TenantInfoDto } from './dto/tenant-info.dto';
 import { TenantUpdateInfoDto } from './dto/tenant-update-info.dto';
 import { TenantService } from './tenant.service';
@@ -7,6 +8,12 @@ import { TenantService } from './tenant.service';
 @Controller('tenants')
 export class TenantController {
   constructor(private readonly tenantService: TenantService) {}
+
+  // 校验名称是否可用
+  @Post('name/usable')
+  async checkServiceNameUsable(@Body() { name, id }: NameUsableDto) {
+    return await this.tenantService.checkNameUsable(name, id);
+  }
 
   // 获取租户列表
   @Get('')

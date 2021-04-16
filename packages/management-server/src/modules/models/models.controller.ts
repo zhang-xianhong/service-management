@@ -6,10 +6,16 @@ import { CommonCodes } from 'src/shared/constants/code';
 import { ModelInfoDto } from './dto/model-info.dto';
 import { ModelFieldsDto } from './dto/model-field.dto';
 import { ModelRelationDto } from './dto/model-relation.dto';
-import { DeletedIdsDto, ParamIdDto } from '../base.dto';
+import { DeletedIdsDto, NameUsableDto, ParamIdDto } from '../base.dto';
 @Controller('models')
 export class ModelsController {
   constructor(private readonly service: ModelsService) {}
+
+  // 校验名称是否可用
+  @Post('name/usable')
+  async checkServiceNameUsable(@Body() { name, id }: NameUsableDto) {
+    return await this.service.checkModelNameUsable(name, id);
+  }
 
   // 创建模型
   @Post()

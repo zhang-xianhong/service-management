@@ -3,7 +3,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from 'nestjs-config';
 import { WinstonModule } from 'nest-winston';
 import { RedisModule } from 'nestjs-redis';
-
+import { AppController } from './app.controller';
 import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { ModelsModule } from './modules/models/models.module';
@@ -49,6 +49,7 @@ import { OwnersModule } from './modules/owners/owners.module';
     FileModule,
     OwnersModule,
   ],
+  controllers: [AppController],
 })
 
 export class AppModule {}

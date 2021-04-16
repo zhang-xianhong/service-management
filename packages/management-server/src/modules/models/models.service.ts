@@ -31,6 +31,7 @@ import { OwnersService } from '../owners/owners.service';
 import { MODULE_TYPE } from '../owners/config';
 import { VERSION_MODULE_TYPE } from '../version-control/config';
 import { OwnersModel } from '../owners/owners.model';
+import { isNumeric } from 'src/shared/utils/validator';
 
 interface CompareFieldsResult {
   created?: any[];
@@ -77,18 +78,7 @@ export class ModelsService {
    */
   async createdModel(postData: ModelInfoDto): Promise<Created> {
     const { name, serviceId } = postData;
-    const existModel: ModelsInfoModel = await this.infoRepository.findOne({
-      where: {
-        name,
-        isDelete: false,
-      },
-    });
-    if (existModel) {
-      throw new ApiException({
-        code: CommonCodes.DATA_EXISTED,
-        message: `名称[${name}]已存在`,
-      });
-    }
+    await this.checkModelNameUsable(name);
     const service: ServicesInfoModel = await this.serviceRepository.findOne({
       where: {
         id: serviceId,
@@ -198,23 +188,7 @@ export class ModelsService {
     { serviceId, ...postData }: ModelInfoDto,
     id: number,
   ): Promise<Updated> {
-    const existModel: ModelsInfoModel = await this.infoRepository.findOne({
-      where: {
-        name: postData.name,
-        isDelete: false,
-        id: {
-          [Op.not]: id,
-        },
-      },
-    });
-
-    if (existModel) {
-      throw new ApiException({
-        code: CommonCodes.DATA_EXISTED,
-        message: `名称[${postData.name}]已存在`,
-      });
-    }
-
+    await this.checkModelNameUsable(postData.name, id);
     const transaction = await this.sequelize.transaction();
     try {
       const { owner, ...saveData } = postData;
@@ -648,7 +622,6 @@ export class ModelsService {
     }
   }
 
-
   /**
    * 获取模型详情
    * @param id
@@ -684,6 +657,38 @@ export class ModelsService {
       ownerUsers,
     };
   }
+
+
+  /**
+   * 校验名称唯一性
+   * @param name
+   * @param id
+   * @returns
+   */
+  async checkModelNameUsable(name: string, id?: number) {
+    const where: PlainObject = {
+      name,
+      isDelete: false,
+    };
+    if (isNumeric(id) && id > 0) {
+      where.id = {
+        [Op.not]: id,
+      };
+    }
+    const project = await this.infoRepository.findOne({
+      where,
+    });
+    if (project) {
+      throw new ApiException({
+        code: CommonCodes.DATA_EXISTED,
+        message: `模型名称[${name}]已存在`,
+      });
+    }
+    return {
+      usable: true,
+    };
+  }
+
 
   /**
    * 创建模型的默认字段
