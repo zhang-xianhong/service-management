@@ -189,8 +189,6 @@ export default {
 
     // 校验规则
     const rules = {
-      name: [{ required: true, message: '请输入项目名称', trigger: 'blur' }],
-      description: [{ required: true, message: '请输入项目描述', trigger: 'blur' }],
       templateId: [{ required: true, message: '请选择代码模板', trigger: 'blur' }],
       level: [{ required: true, message: '请选择项目级别', trigger: 'blur' }],
       status: [{ required: true, message: '请选择项目状态', trigger: 'blur' }],
