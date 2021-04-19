@@ -53,7 +53,7 @@ export function refreshServiceList(payload = {} as any) {
         // @ts-ignore
         x.statusStr = statusMap[x.status];
         x.ownerstr = x.owners
-          .map((x: any) => ownersMap.value[x.userId].displayName)
+          .map((x: any) => ownersMap.value[x.userId]?.displayName)
           .filter((x: any) => x)
           .join(',');
       });

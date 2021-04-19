@@ -2,26 +2,14 @@
   <div>
     <el-form inline label-width="80px" :model="formData" :rules="rules">
       <el-form-item label="项目名称" prop="name">
-        <div v-if="!editMode" class="form-content">
+        <div class="form-content">
           {{ detailInfo.name }}
         </div>
-        <el-input
-          class="form-content"
-          v-if="editMode"
-          v-model="formData.name"
-          placeholder="请输入项目英文名称"
-        ></el-input>
       </el-form-item>
       <el-form-item label="项目描述" prop="description">
-        <div v-if="!editMode" class="form-content">
+        <div class="form-content">
           {{ detailInfo.description }}
         </div>
-        <el-input
-          class="form-content"
-          v-if="editMode"
-          v-model="formData.description"
-          placeholder="请输入中文项目描述，最多支持40个字符"
-        ></el-input>
       </el-form-item>
       <el-form-item label="代码模板" prop="templateId">
         <div v-if="!editMode" class="form-content">
@@ -131,15 +119,15 @@ export default {
     });
     const projectLevels = [
       {
-        value: 0,
+        value: 1,
         label: '通用级',
       },
       {
-        value: 1,
+        value: 2,
         label: '行业级',
       },
       {
-        value: 2,
+        value: 3,
         label: '租户级',
       },
     ];

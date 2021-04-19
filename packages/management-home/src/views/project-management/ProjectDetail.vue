@@ -46,12 +46,7 @@
       <div class="user-table">
         <el-table :data="userList" height="calc(100% - 50px)">
           <el-table-column type="index" width="55"></el-table-column>
-          <el-table-column
-            v-for="column in columns"
-            :key="column.prop"
-            :label="column.label"
-            :prop="column.prop"
-          ></el-table-column>
+          <el-table-column v-for="column in columns" :key="column.prop" v-bind="column"></el-table-column>
           <el-table-column prop="operator" width="55">
             <template #default="{ row, $index }">
               <i class="el-icon-error remove-user-icon" @click="removeUser(row, $index)"></i>
@@ -82,8 +77,8 @@ import { ElMessageBox } from 'element-plus';
 import { getMemberList, getProjectDetail, deleteMember } from '@/api/project/project';
 import { getTenentDepartment } from '@/api/tenant';
 const userStatus = {
-  '-1': '阵亡',
-  0: '存活',
+  '-1': '冻结',
+  0: '启用',
 };
 const genderLabel = {
   0: '男',
@@ -131,6 +126,7 @@ export default {
       {
         prop: 'gender',
         label: '性别',
+        width: '60',
       },
       {
         prop: 'phoneNumber',
@@ -143,6 +139,7 @@ export default {
       {
         prop: 'status',
         label: '状态',
+        width: '60',
       },
       {
         prop: 'deptName',
@@ -279,11 +276,15 @@ export default {
 
 <style lang="scss">
 .project-detail {
+  .el-form-item__content,
+  .el-form-item__label {
+    font-size: 12px;
+  }
   margin: -20px;
   height: calc(100vh - 130px);
   background: #f2f2f2;
   .basic-info {
-    height: 310px;
+    height: 300px;
     margin-bottom: 20px;
     background: white;
     padding: 20px;
@@ -298,10 +299,9 @@ export default {
       }
     }
     & > div {
-      font-size: 14px;
+      font-size: 12px;
       height: 100%;
       .title {
-        font-size: 16px;
         font-weight: 700;
         height: 38px;
         line-height: 18px;
@@ -309,7 +309,7 @@ export default {
       .edit-btn {
         float: right;
         font-weight: normal;
-        font-size: 13px;
+        font-size: 12px;
         color: #006eff;
         cursor: pointer;
       }
@@ -324,6 +324,7 @@ export default {
     background: white;
     padding: 20px;
     .customNode {
+      font-size: 12px;
       width: 100%;
       .el-icon-circle-plus {
         font-size: 18px;

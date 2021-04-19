@@ -243,7 +243,7 @@ export default {
     const getServerInfo = async () => {
       const { data } = await getServiceById({ id: currentServiceId.value });
       serverInfo.value = data;
-      initModelList();
+      !modelList.value.tables.length && initModelList();
     };
 
     const intervalId = setInterval(() => getServerInfo(), 5000);
