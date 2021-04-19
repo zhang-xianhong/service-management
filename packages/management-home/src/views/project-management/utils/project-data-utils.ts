@@ -27,7 +27,7 @@ export const getProjectListData = () => {
       res.data.rows.forEach((x: any) => {
         // eslint-disable-next-line no-param-reassign
         x.ownerstr = x.owners
-          .map((x: any) => ownersMap[x.userId].displayName)
+          .map((x: any) => ownersMap[x.userId]?.displayName)
           .filter((x: any) => x)
           .join(',');
       });

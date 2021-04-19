@@ -12,8 +12,8 @@
         </el-form-item>
       </el-form>
       <template #footer>
-        <el-button @click="dialogVisible = false">取 消</el-button>
         <el-button type="primary" @click="addModel">确 定</el-button>
+        <el-button @click="dialogVisible = false">取 消</el-button>
       </template>
     </el-dialog>
   </div>
@@ -99,6 +99,10 @@ export default defineComponent({
   }
   &:deep(.el-dialog__header) {
     text-align: left;
+  }
+  &:deep(.el-dialog__footer) {
+    padding: 0 0 30px 0;
+    text-align: center;
   }
 }
 </style>

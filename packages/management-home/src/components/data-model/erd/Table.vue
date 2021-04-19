@@ -23,7 +23,7 @@
       @mousedown.stop="drawRelationStart($event, index)"
     ></div>
     <div class="operations">
-      <i class="el-icon-circle-close" @click="removeModel(table.id)"></i>
+      <i class="el-icon-circle-close" @click.stop="removeModel(table)"></i>
       <i class="el-icon-link"></i>
     </div>
   </div>
@@ -33,6 +33,7 @@
 import { defineComponent, computed, inject } from 'vue';
 import { drawRelationStart, drawTempRleation, removeTempRleation } from './store';
 import { deleteModel } from '@/api/schema/model';
+import { ElMessageBox } from 'element-plus';
 export default defineComponent({
   name: 'ErdTable',
   props: {
@@ -56,11 +57,17 @@ export default defineComponent({
   setup(props) {
     const erdEmit = inject('erdEmit') as Function;
     const markers = ['top', 'right', 'bottom', 'left'];
-    const removeModel = async (id: any) => {
-      const { code } = await deleteModel({ ids: [id] });
-      if (code === 0) {
-        erdEmit('model-change');
-      }
+    const removeModel = async (table: any) => {
+      ElMessageBox.confirm(`确认删除对象${table.name}？`, '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+      }).then(async () => {
+        const { code } = await deleteModel({ ids: [table.id] });
+        if (code === 0) {
+          erdEmit('model-change');
+        }
+      });
     };
     const table = computed(() => props.tableAttr);
     return {
@@ -79,14 +86,13 @@ export default defineComponent({
 .erd-table-container {
   position: absolute;
   width: 200px;
-  border: 2px solid #a8daf2;
-  border-radius: 9px;
-  background: #daeffa;
+  border: 2px solid #ddd;
+  background: white;
   cursor: move;
   user-select: none;
   .header {
     padding: 0 10px;
-    border-bottom: 2px solid #a8daf2;
+    border-bottom: 2px solid #ddd;
     height: 36px;
     line-height: 36px;
     font-size: 12px;
@@ -146,13 +152,16 @@ export default defineComponent({
       right: -5px;
     }
   }
-  &.selected .operations {
+  &:hover .operations {
     display: block;
   }
   .operations {
     display: none;
     z-index: 2;
-    width: 20px;
+    width: 30px;
+    height: 100px;
+    text-align: right;
+    margin-left: -10px;
     position: absolute;
     left: 200px;
     top: 0;
