@@ -5,10 +5,13 @@
         <el-button icon="el-icon-plus" type="primary" @click="addDialogVisible = true">新建</el-button>
       </div>
       <div class="project-list_right">
-        <el-input placeholder="请输入名称" style="width: 260px" v-model="pageInfo.keyword">
-          <template #append>
-            <el-button icon="el-icon-search" @click="searchProject"></el-button>
-          </template>
+        <el-input
+          placeholder="请输入名称"
+          style="width: 500px"
+          v-model="pageInfo.keyword"
+          suffix-icon="el-icon-search"
+          @input="searchProject"
+        >
         </el-input>
       </div>
     </div>
@@ -167,7 +170,6 @@ export default defineComponent({
     const handleSizeChange = (res: number) => {
       pageInfo.pageSize = res;
       pageInfo.page = 1;
-      console.log(pageInfo);
       getProjectListData();
     };
     const handleCurrentChange = (res: number) => {
@@ -206,6 +208,7 @@ export default defineComponent({
   width: 100%;
   &_title {
     width: 100%;
+    margin-bottom: 10px;
     display: flex;
   }
   &_left {

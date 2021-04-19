@@ -118,7 +118,7 @@ export default defineComponent({
   width: 280px;
   height: 310px;
   border-radius: 5px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
   margin: 10px;
   &:hover {
     box-shadow: 0 0 8px #409eff;
