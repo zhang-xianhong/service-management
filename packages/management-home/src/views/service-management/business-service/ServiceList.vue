@@ -8,10 +8,13 @@
         <el-button @click="deleteHandler" :disabled="computedDisabledForSS">删除</el-button>
       </div>
       <div class="service-list_right">
-        <el-input placeholder="请输入服务名称/标签/分类" style="width: 250px" v-model="pageInfo.keyword">
-          <template #append>
-            <el-button icon="el-icon-search" @click="searchForList"></el-button>
-          </template>
+        <el-input
+          placeholder="请输入服务名称/标签/分类"
+          style="width: 500px"
+          v-model="pageInfo.keyword"
+          suffix-icon="el-icon-search"
+          @input="searchForList"
+        >
         </el-input>
       </div>
     </div>
@@ -77,16 +80,15 @@
         <el-table-column property="source" label="服务来源"></el-table-column>
         <el-table-column property="version" label="服务版本"></el-table-column>
       </el-table>
-      <el-pagination
+      <packaged-pagination
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
         :current-page="pageInfo.page"
         :page-sizes="[1, 10, 15, 20, 50]"
         :page-size="pageInfo.pageSize"
-        layout="total, sizes, prev, pager, next, jumper"
+        layout="sizes, prev, pager, next, jumper"
         :total="serviceTableList.total"
-      >
-      </el-pagination>
+      ></packaged-pagination>
     </div>
 
     <el-dialog title="新增服务" v-model="addServiceDialog" width="600px">
@@ -193,6 +195,7 @@
 
 <script lang="ts">
 import { defineComponent, reactive, ref, onBeforeUnmount, computed } from 'vue';
+import PackagedPagination from '@/components/pagination/Index.vue';
 import {
   refreshServiceList,
   serviceTableList,
@@ -217,6 +220,7 @@ export default defineComponent({
   name: 'ServiceList',
   components: {
     fetchOwnersSelect,
+    PackagedPagination,
   },
   data() {
     return {
@@ -533,6 +537,7 @@ export default defineComponent({
     text-align: right;
   }
   &_content {
+    background: #fff;
   }
 }
 .add-service-set {

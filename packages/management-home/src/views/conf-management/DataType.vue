@@ -1,6 +1,10 @@
 <template>
   <el-row>
-    <el-col :span="6">
+    <el-col :span="6" style="text-align: left;">
+      <el-button type="primary" @click="addDataType">新增</el-button>
+      <el-button :disabled="!isDeletable" @click="groupDelete()">删除</el-button>
+    </el-col>
+    <el-col :offset="8" :span="10" style="text-align: right;">
       <el-input
         placeholder="请输入数据类型名称"
         suffix-icon="el-icon-search"
@@ -8,12 +12,8 @@
         v-model="searchProps.keyword"
       ></el-input>
     </el-col>
-    <el-col :offset="12" :span="6" style="text-align: right;">
-      <el-button type="primary" @click="addDataType">新增</el-button>
-      <el-button :disabled="!isDeletable" @click="groupDelete()">删除</el-button>
-    </el-col>
   </el-row>
-  <el-row>
+  <el-row style="background: #fff">
     <el-table
       :data="tableData"
       v-loading="loading"
@@ -35,18 +35,15 @@
         </template>
       </el-table-column>
     </el-table>
-  </el-row>
-  <el-row style="justify-content:flex-end">
-    <el-pagination
+    <packaged-pagination
       :current-page="searchProps.page"
       :page-size="searchProps.pageSize"
       :page-sizes="[10, 20, 50]"
-      layout="total, sizes, prev, pager, next, jumper"
+      layout="sizes, prev, pager, next, jumper"
       :total="total"
       @size-change="handlePageSizeChange"
       @current-change="handlePageChange"
-    >
-    </el-pagination>
+    ></packaged-pagination>
   </el-row>
 </template>
 
@@ -54,6 +51,7 @@
 import { computed, reactive, getCurrentInstance, toRefs } from 'vue';
 import { useRouter } from 'vue-router';
 import { getDataTypes, deleteDataType } from '@/api/settings/data-types';
+import PackagedPagination from '@/components/pagination/Index.vue';
 import { debounce } from 'lodash';
 
 interface TableState {
@@ -72,6 +70,9 @@ interface TableState {
 
 export default {
   name: 'DataType',
+  components: {
+    PackagedPagination,
+  },
   setup() {
     // 表单相关状态
     const tableState: TableState = reactive({

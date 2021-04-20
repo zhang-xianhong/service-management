@@ -145,16 +145,16 @@ const routes: Array<RouteRecordRaw> = [
           activeMenu: '/service-management/service-list',
         },
       },
-      {
-        path: 'other-service',
-        component: () => import('@/views/service-management/other-service/Index.vue'),
-        name: 'OtherService',
-        meta: {
-          title: '其他服务',
-          icon: 'el-icon-eleme',
-          isRootLevel: false,
-        },
-      },
+      // {
+      //   path: 'other-service',
+      //   component: () => import('@/views/service-management/other-service/Index.vue'),
+      //   name: 'OtherService',
+      //   meta: {
+      //     title: '其他服务',
+      //     icon: 'el-icon-eleme',
+      //     isRootLevel: false,
+      //   },
+      // },
     ],
   },
   {
