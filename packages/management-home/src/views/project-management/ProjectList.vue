@@ -75,9 +75,9 @@
             :label-width="labelWidth"
             :rules="[{ required: true, message: '请输入项目级别', trigger: 'blur' }]"
           >
-            <el-radio v-model="projectDetail.level" :label="1">统一</el-radio>
-            <el-radio v-model="projectDetail.level" :label="2">行业</el-radio>
-            <el-radio v-model="projectDetail.level" :label="3">租户</el-radio>
+            <el-radio v-model="projectDetail.level" :label="1">通用级</el-radio>
+            <el-radio v-model="projectDetail.level" :label="2">行业级</el-radio>
+            <el-radio v-model="projectDetail.level" :label="3">租户级</el-radio>
           </el-form-item>
           <el-form-item
             label="许可类型"

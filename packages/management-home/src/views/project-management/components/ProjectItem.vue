@@ -21,10 +21,7 @@
           <span @click.stop="deleteProject"><i class="el-icon-close"></i></span>
         </span>
       </div>
-      <div class="project-item_mess">
-        <label>负责人</label>
-        <el-button type="text">{{ dataObj.ownerstr }}</el-button>
-      </div>
+      <div class="project-item_mess"><label>负责人</label>{{ dataObj.ownerstr }}</div>
       <div class="project-item_mess">
         <label>项目描述</label>
         {{ dataObj.description }}
@@ -117,7 +114,6 @@ export default defineComponent({
 .project-item {
   width: 280px;
   height: 310px;
-  border-radius: 5px;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
   margin: 10px;
   &:hover {
