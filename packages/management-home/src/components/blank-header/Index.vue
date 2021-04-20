@@ -68,9 +68,9 @@ export default defineComponent({
 <style lang="scss">
 .blank-header {
   width: 100%;
-  height: 40px;
-  line-height: 40px;
-  margin-bottom: 10px;
+  height: 50px;
+  line-height: 50px;
+  margin-bottom: 20px;
   background-color: white;
   &-back {
     display: inline-block;

@@ -86,7 +86,7 @@ export default defineComponent({
       selectPic.value.click();
     };
 
-    const levelArr = ['统一级', '行业级', '租户级'];
+    const levelArr = ['', '统一级', '行业级', '租户级'];
     const deleteProject = () => {
       console.log(props.dataObj.id);
       ctx.emit('deleteProject', props.dataObj.id);
@@ -117,8 +117,7 @@ export default defineComponent({
 .project-item {
   width: 280px;
   height: 310px;
-  border-radius: 5px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
   margin: 10px;
   &:hover {
     box-shadow: 0 0 8px #409eff;

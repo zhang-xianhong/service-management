@@ -5,23 +5,27 @@
         <el-button icon="el-icon-plus" type="primary" @click="addDialogVisible = true">新建</el-button>
       </div>
       <div class="project-list_right">
-        <el-input placeholder="请输入名称" style="width: 260px" v-model="pageInfo.keyword">
-          <template #append>
-            <el-button icon="el-icon-search" @click="searchProject"></el-button>
-          </template>
+        <el-input
+          placeholder="请输入名称"
+          style="width: 500px"
+          v-model="pageInfo.keyword"
+          suffix-icon="el-icon-search"
+          @input="searchProject"
+        >
         </el-input>
       </div>
     </div>
-    <div class="project-list_content">
-      <project-item
-        v-for="item in projectList"
-        :data-obj="item"
-        :key="item.id"
-        @delete-project="deleteProject"
-        @reload-projects="getProjectListData"
-      ></project-item>
-    </div>
-    <el-pagination
+    <div style="background: #fff;">
+      <div class="project-list_content">
+        <project-item
+          v-for="item in projectList"
+          :data-obj="item"
+          :key="item.id"
+          @delete-project="deleteProject"
+          @reload-projects="getProjectListData"
+        ></project-item>
+      </div>
+      <!-- <el-pagination
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
       :current-page="pageInfo.page"
@@ -30,7 +34,17 @@
       layout="total, sizes, prev, pager, next, jumper"
       :total="pageInfo.total"
     >
-    </el-pagination>
+    </el-pagination> -->
+      <packaged-pagination
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+        :current-page="pageInfo.page"
+        :page-sizes="[1, 5, 10, 20, 50]"
+        :page-size="pageInfo.pageSize"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="pageInfo.total"
+      ></packaged-pagination>
+    </div>
     <el-dialog v-model="addDialogVisible" title="新建项目" width="500px" @close="closeDialog" destroy-on-close>
       <div class="add-project-dialog">
         <el-form :model="projectDetail">
@@ -104,7 +118,7 @@
 <script lang="ts">
 import { defineComponent, ref } from 'vue';
 import ProjectItem from '@/views/project-management/components/ProjectItem.vue';
-
+import PackagedPagination from '@/components/pagination/Index.vue';
 import {
   getProjectListData,
   projectDetail,
@@ -123,6 +137,7 @@ export default defineComponent({
   components: {
     ProjectItem,
     fetchOwnersSelect,
+    PackagedPagination,
   },
   data() {
     return {
@@ -167,7 +182,6 @@ export default defineComponent({
     const handleSizeChange = (res: number) => {
       pageInfo.pageSize = res;
       pageInfo.page = 1;
-      console.log(pageInfo);
       getProjectListData();
     };
     const handleCurrentChange = (res: number) => {
@@ -206,6 +220,7 @@ export default defineComponent({
   width: 100%;
   &_title {
     width: 100%;
+    margin-bottom: 10px;
     display: flex;
   }
   &_left {
@@ -217,9 +232,10 @@ export default defineComponent({
     text-align: right;
   }
   &_content {
+    background: #fff;
     width: 100%;
     padding: 10px;
-    margin-top: 15px;
+    margin-top: 10px;
   }
   .add-project-dialog {
     width: 80%;

@@ -1,113 +1,116 @@
 <template>
-  <div class="detail">
-    <el-row>
-      <el-col :span="16">
-        <el-button
-          v-for="(button, index) in buttons"
-          :key="index"
-          :type="button.type || undefined"
-          v-on="button.eventOption"
-          :disabled="button.disabled"
-        >
-          {{ button.label }}
-        </el-button>
-      </el-col>
-      <el-col :span="8" style="text-align:right;">
-        <div class="detail-status">
-          <span :style="{ background: serverStatusInfo.color }" class="detail-status__icon"></span>
-          <span :style="{ color: serverStatusInfo.color }">{{ serverStatusInfo.label }}</span>
-        </div>
-        <el-button class="detail-icon" icon="el-icon-s-data" @click="openBaseInfo"></el-button>
-        <el-button class="detail-icon" icon="el-icon-notebook-2" @click="openPropertyInfo"></el-button>
-        <el-button class="detail-icon" icon="el-icon-document"></el-button>
-        <el-button class="detail-icon" icon="el-icon-download"></el-button>
-      </el-col>
-    </el-row>
-    <el-row :style="{ height: computedHeight }">
-      <el-col :span="componentName ? 16 : 24" style="height:100%">
-        <el-row>
-          <!-- 服务下拉选择框 -->
-          <el-select v-model="currentServiceId" placeholder="请选择" @change="selectService">
-            <el-option
-              v-for="server in serverList"
-              :key="server.id"
-              :value="server.id"
-              :label="server.name"
-            ></el-option>
-          </el-select>
-        </el-row>
-        <div class="data-model__container">
-          <erd
-            v-loading="erdLoading"
-            width="100%"
-            height="100%"
-            v-model="modelList"
-            :serviceStatus="serverInfo.status"
-            @model-change="initModelList"
-            @select-change="modelSelected"
-          ></erd>
-        </div>
-        <div v-if="!isShowDownDrawer">
-          <div>服务代码：</div>
-          <div>
-            服务地址：
-            <a :href="serverInfo.sshHost + (serverInfo.deposit ? serverInfo.deposit : '')" target="_blank">
-              {{ serverInfo.sshHost + (serverInfo.deposit ? serverInfo.deposit : '') }}
-            </a>
+  <div>
+    <div class="mask" v-if="maskText">{{ maskText }}</div>
+    <div class="detail" :class="{ 'cannot-operate': !!maskText }">
+      <el-row>
+        <el-col :span="16">
+          <el-button
+            v-for="(button, index) in buttons"
+            :key="index"
+            :type="button.type || undefined"
+            v-on="button.eventOption"
+            :disabled="button.disabled"
+          >
+            {{ button.label }}
+          </el-button>
+        </el-col>
+        <el-col :span="8" style="text-align:right;">
+          <div class="detail-status">
+            <span :style="{ background: serverStatusInfo.color }" class="detail-status__icon"></span>
+            <span :style="{ color: serverStatusInfo.color }">{{ serverStatusInfo.label }}</span>
           </div>
-        </div>
-      </el-col>
-      <el-col v-if="componentName" :span="8" style="border-left: 1px solid #bbbbbb">
-        <template v-if="componentName">
+          <el-button class="detail-icon" icon="el-icon-s-data" @click="openBaseInfo"></el-button>
+          <el-button class="detail-icon" icon="el-icon-notebook-2" @click="openPropertyInfo"></el-button>
+          <el-button class="detail-icon" icon="el-icon-document"></el-button>
+          <el-button class="detail-icon" icon="el-icon-download"></el-button>
+        </el-col>
+      </el-row>
+      <el-row :style="{ height: computedHeight }">
+        <el-col :span="componentName ? 16 : 24" style="height:100%">
+          <el-row>
+            <!-- 服务下拉选择框 -->
+            <el-select v-model="currentServiceId" placeholder="请选择" @change="selectService">
+              <el-option
+                v-for="server in serverList"
+                :key="server.id"
+                :value="server.id"
+                :label="server.name"
+              ></el-option>
+            </el-select>
+          </el-row>
+          <div class="data-model__container">
+            <erd
+              v-loading="erdLoading"
+              width="100%"
+              height="100%"
+              v-model="modelList"
+              :serviceStatus="serverInfo.status"
+              @model-change="initModelList"
+              @select-change="modelSelected"
+            ></erd>
+          </div>
+          <div v-if="!isShowDownDrawer">
+            <div>服务代码：</div>
+            <div>
+              服务地址：
+              <a :href="serverInfo.sshHost + (serverInfo.deposit ? serverInfo.deposit : '')" target="_blank">
+                {{ serverInfo.sshHost + (serverInfo.deposit ? serverInfo.deposit : '') }}
+              </a>
+            </div>
+          </div>
+        </el-col>
+        <el-col v-if="componentName" :span="8" style="border-left: 1px solid #bbbbbb">
+          <template v-if="componentName">
+            <keep-alive>
+              <component
+                :is="componentName"
+                :data="computedComponentData"
+                :tags="tags"
+                :classifications="classifications"
+                :id="currentServiceId"
+              ></component>
+            </keep-alive>
+          </template>
+        </el-col>
+      </el-row>
+      <transition name="slide-fade">
+        <div v-if="isShowDownDrawer" class="detail-drawer__container">
           <keep-alive>
             <component
-              :is="componentName"
-              :data="computedComponentData"
-              :tags="tags"
-              :classifications="classifications"
+              :is="drawerName"
               :id="currentServiceId"
+              :modelList="modelList.tables"
+              @back="isShowDownDrawer = false"
             ></component>
           </keep-alive>
-        </template>
-      </el-col>
-    </el-row>
-    <transition name="slide-fade">
-      <div v-if="isShowDownDrawer" class="detail-drawer__container">
-        <keep-alive>
-          <component
-            :is="drawerName"
-            :id="currentServiceId"
-            :modelList="modelList.tables"
-            @back="isShowDownDrawer = false"
-          ></component>
-        </keep-alive>
-      </div>
-    </transition>
+        </div>
+      </transition>
 
-    <el-dialog title="日志" v-model="logDialogVisible" width="80%" @close="clearLogInterVal">
-      <!--      <el-input type="textarea" :rows="25" :autosize="{ maxRows: 25, minRows: 25 }" v-model="logData"></el-input>-->
-      <div class="log-content" id="log_content">
-        <div style="color: red" v-if="logData.length === 0">日志加载中......</div>
-        <div class="log-item" v-for="item in logData" :key="item.instanceId">
-          <div class="log-item-content" v-html="formatLogData(item.content)"></div>
+      <el-dialog title="日志" v-model="logDialogVisible" width="80%" @close="clearLogInterVal">
+        <!--      <el-input type="textarea" :rows="25" :autosize="{ maxRows: 25, minRows: 25 }" v-model="logData"></el-input>-->
+        <div class="log-content" id="log_content">
+          <div style="color: red" v-if="logData.length === 0">日志加载中......</div>
+          <div class="log-item" v-for="item in logData" :key="item.instanceId">
+            <div class="log-item-content" v-html="formatLogData(item.content)"></div>
+          </div>
         </div>
-      </div>
-      <div class="dialog-footer">
-        <el-button type="primary" style="margin-top: 20px" @click="clearLogInterVal">关闭</el-button>
-      </div>
-    </el-dialog>
-    <el-dialog title="变更记录" v-model="sqlDialogVisiable" width="60%" @close="clearSql">
-      <div class="log-content sql-content" id="sql_content">
-        <div style="color: blue" v-if="sqlData.length === 0">变更记录加载中......</div>
-        <div class="log-item" v-for="(item, index) in Object.values(sqlData)" :key="index">
-          <div class="log-item-content">{{ logs(item) }}</div>
+        <div class="dialog-footer">
+          <el-button type="primary" style="margin-top: 20px" @click="clearLogInterVal">关闭</el-button>
         </div>
-      </div>
-      <div class="dialog-footer">
-        <el-button type="primary" style="margin-top: 20px" @click="enterLogs">确定</el-button>
-        <el-button style="margin-top: 20px" @click="clearSql">关闭</el-button>
-      </div>
-    </el-dialog>
+      </el-dialog>
+      <el-dialog title="变更记录" v-model="sqlDialogVisiable" width="60%" @close="clearSql">
+        <div class="log-content sql-content" id="sql_content">
+          <div style="color: blue" v-if="sqlData.length === 0">变更记录加载中......</div>
+          <div class="log-item" v-for="(item, index) in Object.values(sqlData)" :key="index">
+            <div class="log-item-content">{{ logs(item) }}</div>
+          </div>
+        </div>
+        <div class="dialog-footer">
+          <el-button type="primary" style="margin-top: 20px" @click="enterLogs">确定</el-button>
+          <el-button style="margin-top: 20px" @click="clearSql">关闭</el-button>
+        </div>
+      </el-dialog>
+    </div>
   </div>
 </template>
 
@@ -243,7 +246,7 @@ export default {
     const getServerInfo = async () => {
       const { data } = await getServiceById({ id: currentServiceId.value });
       serverInfo.value = data;
-      initModelList();
+      !modelList.value.tables.length && initModelList();
     };
 
     const intervalId = setInterval(() => getServerInfo(), 5000);
@@ -351,7 +354,7 @@ export default {
         } else {
           const { data } = await getModelDetail(model.id);
           componentName.value = 'ModelBaseInfo';
-          modelInfo.value = data;
+          modelInfo.value = { ...data, fields: model.fields };
           isShowDownDrawer.value = true;
           drawerName.value = 'ModelFieldForm';
         }
@@ -393,6 +396,18 @@ export default {
         console.log(res, '2e323');
       });
     };
+
+    const maskText = computed(() => {
+      switch (serverInfo.value.status) {
+        case 10:
+          return '应用变更中, 请稍后...';
+        case 20:
+          return '应用启动中, 请稍后...';
+        default:
+          return '';
+      }
+    });
+
     return {
       isShowDownDrawer,
       computedHeight,
@@ -425,6 +440,7 @@ export default {
       clearSql,
       enterLogs,
       statusMap,
+      maskText,
     };
   },
 };
@@ -496,5 +512,19 @@ export default {
 }
 .log-item-title {
   color: red;
+}
+
+.cannot-operate {
+  pointer-events: none;
+  filter: blur(5px);
+}
+.mask {
+  width: 100%;
+  height: 30px;
+  margin-top: 30vh;
+  text-align: center;
+  position: absolute;
+  z-index: 1;
+  font-size: 22px;
 }
 </style>

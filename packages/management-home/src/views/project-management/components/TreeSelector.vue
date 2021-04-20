@@ -15,10 +15,10 @@
           </div>
           <div class="tree-wrapper" v-loading="!searchDone">
             <el-tree v-if="!searchStr" :default-expand-all="false" :load="loadNode" lazy :props="treeProps">
-              <template #default="{ data }">
+              <template #default="{ data, node }">
                 <el-checkbox
                   v-model="checkedUser[data.id]"
-                  @change="checkUser(data)"
+                  @change="checkUser(data, node)"
                   v-if="data.isLeaf"
                   style="margin-left: -1em;"
                 ></el-checkbox>
@@ -32,10 +32,10 @@
               lazy
               :props="treeProps"
             >
-              <template #default="{ data }">
+              <template #default="{ data, node }">
                 <el-checkbox
                   v-model="checkedUser[data.id]"
-                  @change="checkUser(data)"
+                  @change="checkUser(data, node)"
                   v-if="data.isLeaf"
                   style="margin-left: -1em;"
                 ></el-checkbox>
@@ -60,10 +60,10 @@
       </el-col>
     </el-row>
     <template #footer>
-      <span class="dialog-footer">
-        <el-button @click="cancel">取 消</el-button>
+      <div class="dialog-footer">
         <el-button type="primary" @click="submit">确 定</el-button>
-      </span>
+        <el-button @click="cancel">取 消</el-button>
+      </div>
     </template>
   </el-dialog>
 </template>
@@ -110,7 +110,7 @@ export default {
       children: 'children',
       isLeaf: 'isLeaf',
     };
-    const valueLabel = computed(() => `${props.option[0].name} - ${props.role.label}`);
+    const valueLabel = computed(() => `${props.option[0]?.name} - ${props.role?.label}`);
     const loadNode = async (node: any, resolve: Function) => {
       if (node.level === 0) {
         resolve(props.option);
@@ -142,10 +142,16 @@ export default {
       });
       return checked;
     });
-    const checkUser = (user: any) => {
+    const checkUser = (user: any, node: any) => {
       const checked = _.find({ id: user.id })(props.modelValue);
       if (!checked) {
-        context.emit('update:modelValue', _.concat(props.modelValue, user));
+        context.emit(
+          'update:modelValue',
+          _.concat(props.modelValue, {
+            ...user,
+            deptName: node.parent.data.name,
+          }),
+        );
       } else {
         context.emit('update:modelValue', _.reject({ id: user.id })(props.modelValue));
       }
@@ -299,5 +305,8 @@ export default {
       color: #888;
     }
   }
+}
+.dialog-footer {
+  text-align: center;
 }
 </style>

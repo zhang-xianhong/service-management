@@ -1,20 +1,21 @@
 <template>
   <div>
     <el-row>
-      <el-col :span="6">
+      <el-col :span="6" style="text-align: left;">
+        <el-button type="primary" @click="add">新增</el-button>
+        <el-button @click="groupRemove()">删除</el-button>
+      </el-col>
+      <el-col :offset="8" :span="10" style="text-align: right;">
         <el-input
+          style="width: 500px"
           placeholder="请输入标签名称"
           suffix-icon="el-icon-search"
           @input="filterTag"
           v-model="filterText"
         ></el-input>
       </el-col>
-      <el-col :offset="12" :span="6" style="text-align: right;">
-        <el-button type="primary" @click="add">新增</el-button>
-        <el-button @click="groupRemove()">删除</el-button>
-      </el-col>
     </el-row>
-    <el-row>
+    <el-row style="background: #fff">
       <el-table :data="tagList" @selection-change="handleSelectionChange" @sort-change="sortChange" v-loading="loading">
         <el-table-column type="selection" width="45" />
         <el-table-column type="index" label="序号" width="50" />
@@ -35,18 +36,15 @@
           </template>
         </el-table-column>
       </el-table>
-    </el-row>
-    <el-row style="justify-content:flex-end">
-      <el-pagination
+      <packaged-pagination
         :current-page="page"
         :page-size="pageSize"
         :page-sizes="[10, 20, 50]"
-        layout="total, sizes, prev, pager, next, jumper"
+        layout="sizes, prev, pager, next, jumper"
         :total="total"
         @size-change="handlePageSizeChange"
         @current-change="handlePageChange"
-      >
-      </el-pagination>
+      ></packaged-pagination>
     </el-row>
     <el-dialog :title="dialogTitle" v-model="dialogVisible">
       <el-form :model="form" :rules="rules" ref="formRef">
@@ -65,9 +63,13 @@
 <script lang="ts">
 import { defineComponent, ref, onMounted } from 'vue';
 import { listTags, addTag, updateTag, deleteTags } from '@/api/settings/tags';
+import PackagedPagination from '@/components/pagination/Index.vue';
 import _ from 'lodash/fp';
 export default defineComponent({
   name: 'Tag',
+  components: {
+    PackagedPagination,
+  },
   setup() {
     // 分页功能
     const page = ref(1);

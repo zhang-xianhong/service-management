@@ -90,8 +90,6 @@ export default defineComponent({
   }
   &-viewport {
     margin: 20px;
-    padding: 20px;
-    background-color: white;
   }
 
   .el-menu {
