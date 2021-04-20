@@ -15,10 +15,10 @@
           </div>
           <div class="tree-wrapper" v-loading="!searchDone">
             <el-tree v-if="!searchStr" :default-expand-all="false" :load="loadNode" lazy :props="treeProps">
-              <template #default="{ data }">
+              <template #default="{ data, node }">
                 <el-checkbox
                   v-model="checkedUser[data.id]"
-                  @change="checkUser(data)"
+                  @change="checkUser(data, node)"
                   v-if="data.isLeaf"
                   style="margin-left: -1em;"
                 ></el-checkbox>
@@ -32,10 +32,10 @@
               lazy
               :props="treeProps"
             >
-              <template #default="{ data }">
+              <template #default="{ data, node }">
                 <el-checkbox
                   v-model="checkedUser[data.id]"
-                  @change="checkUser(data)"
+                  @change="checkUser(data, node)"
                   v-if="data.isLeaf"
                   style="margin-left: -1em;"
                 ></el-checkbox>
@@ -142,10 +142,16 @@ export default {
       });
       return checked;
     });
-    const checkUser = (user: any) => {
+    const checkUser = (user: any, node: any) => {
       const checked = _.find({ id: user.id })(props.modelValue);
       if (!checked) {
-        context.emit('update:modelValue', _.concat(props.modelValue, user));
+        context.emit(
+          'update:modelValue',
+          _.concat(props.modelValue, {
+            ...user,
+            deptName: node.parent.data.name,
+          }),
+        );
       } else {
         context.emit('update:modelValue', _.reject({ id: user.id })(props.modelValue));
       }
