@@ -243,7 +243,7 @@ export default {
     const getServerInfo = async () => {
       const { data } = await getServiceById({ id: currentServiceId.value });
       serverInfo.value = data;
-      initModelList();
+      !modelList.value.tables.length && initModelList();
     };
 
     const intervalId = setInterval(() => getServerInfo(), 5000);
@@ -351,7 +351,7 @@ export default {
         } else {
           const { data } = await getModelDetail(model.id);
           componentName.value = 'ModelBaseInfo';
-          modelInfo.value = data;
+          modelInfo.value = { ...data, fields: model.fields };
           isShowDownDrawer.value = true;
           drawerName.value = 'ModelFieldForm';
         }

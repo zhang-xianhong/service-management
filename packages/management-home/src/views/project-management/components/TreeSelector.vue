@@ -60,10 +60,10 @@
       </el-col>
     </el-row>
     <template #footer>
-      <span class="dialog-footer">
-        <el-button @click="cancel">取 消</el-button>
+      <div class="dialog-footer">
         <el-button type="primary" @click="submit">确 定</el-button>
-      </span>
+        <el-button @click="cancel">取 消</el-button>
+      </div>
     </template>
   </el-dialog>
 </template>
@@ -110,7 +110,7 @@ export default {
       children: 'children',
       isLeaf: 'isLeaf',
     };
-    const valueLabel = computed(() => `${props.option[0].name} - ${props.role.label}`);
+    const valueLabel = computed(() => `${props.option[0]?.name} - ${props.role?.label}`);
     const loadNode = async (node: any, resolve: Function) => {
       if (node.level === 0) {
         resolve(props.option);
@@ -299,5 +299,8 @@ export default {
       color: #888;
     }
   }
+}
+.dialog-footer {
+  text-align: center;
 }
 </style>

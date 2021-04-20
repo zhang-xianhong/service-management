@@ -48,7 +48,7 @@
       ></line>
       <path :d="line.path" stroke-width="1" fill="none"></path>
       <circle :cx="line.startMarker.x" :cy="line.startMarker.y" r="10" fill="#fff"></circle>
-      <text v-if="line.type === 1" v-bind="line.startMarker" text-anchor="middle" dy="8" font-size="16">*</text>
+      <text v-if="line.type === 1" v-bind="line.startMarker" text-anchor="middle" dy="4" font-size="10">N</text>
       <text v-if="line.type !== 1" v-bind="line.startMarker" text-anchor="middle" dy="4" font-size="10">1</text>
       <circle :cx="line.endMarker.x" :cy="line.endMarker.y" r="10" fill="#fff"></circle>
       <text v-bind="line.endMarker" text-anchor="middle" dy="4" font-size="10">1</text>
