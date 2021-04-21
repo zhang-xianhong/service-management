@@ -36,26 +36,10 @@ export const baseRoutes: Array<RouteRecordRaw> = [
 const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
-    redirect: '/dashboard',
-    component: Layout,
-    meta: {
-      isRootLevel: true,
-    },
-    children: [
-      {
-        path: 'dashboard',
-        component: () => import('@/views/dashboard/Index.vue'),
-        name: 'Dashboard',
-        meta: {
-          title: '首页',
-          icon: 'el-icon-eleme',
-          isRootLevel: false,
-        },
-      },
-    ],
+    redirect: '/tenant-management',
   },
   {
-    path: '/tenant-menagement',
+    path: '/tenant-management',
     redirect: '/tenant-list',
     component: Layout,
     meta: {

@@ -16,9 +16,10 @@ body {
   overflow-y: auto;
   margin: 0;
   padding: 0;
+  font-size: 12px;
 }
 #app {
-  font-family: 'Microsoft YaHei', 'PingFang SC', 'Avenir', Helvetica, Arial, sans-serif;
+  font-family: Roboto, 'PingFang SC', 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: #2c3e50;
@@ -39,6 +40,20 @@ body {
   .el-dialog,
   .el-input-group__prepend {
     border-radius: 0;
+  }
+  .el-form-item__label {
+    font-size: 12px;
+  }
+
+  .el-form-item.is-required:not(.is-no-asterisk) > .el-form-item__label {
+    &::before {
+      content: '';
+    }
+    &::after {
+      content: '*';
+      color: #f56c6c;
+      margin-left: 4px;
+    }
   }
 }
 .apps {
