@@ -1,5 +1,5 @@
 <template>
-  <el-row>企业联系人信息</el-row>
+  <el-row style="font-weight:bolder">企业联系人信息</el-row>
   <el-row style="padding:0px 20px;">
     <el-form
       ref="formRef"

@@ -15,7 +15,7 @@
         </el-input>
       </div>
     </div>
-    <div class="project-list_content" ref="projectParentDiv" :style="{ paddingLeft: paddings }">
+    <div class="project-list_content">
       <project-item
         v-for="item in projectList"
         :data-obj="item"
@@ -33,7 +33,17 @@
       layout="total, sizes, prev, pager, next, jumper"
       :total="pageInfo.total"
     >
-    </el-pagination>
+    </el-pagination> -->
+      <packaged-pagination
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+        :current-page="pageInfo.page"
+        :page-sizes="[1, 5, 10, 20, 50]"
+        :page-size="pageInfo.pageSize"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="pageInfo.total"
+      ></packaged-pagination>
+    </div>
     <el-dialog v-model="addDialogVisible" title="新建项目" width="500px" @close="closeDialog" destroy-on-close>
       <div class="add-project-dialog">
         <el-form :model="projectDetail">
@@ -107,7 +117,7 @@
 <script lang="ts">
 import { defineComponent, onMounted, ref, watch } from 'vue';
 import ProjectItem from '@/views/project-management/components/ProjectItem.vue';
-
+import PackagedPagination from '@/components/pagination/Index.vue';
 import {
   getProjectListData,
   projectDetail,
@@ -127,6 +137,7 @@ export default defineComponent({
   components: {
     ProjectItem,
     fetchOwnersSelect,
+    PackagedPagination,
   },
   data() {
     return {
@@ -250,9 +261,10 @@ export default defineComponent({
     text-align: right;
   }
   &_content {
+    background: #fff;
     width: 100%;
     padding: 10px;
-    margin-top: 15px;
+    margin-top: 10px;
   }
   .add-project-dialog {
     width: 80%;

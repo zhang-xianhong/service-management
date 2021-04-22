@@ -64,7 +64,7 @@ export default defineComponent({
   &-sidebar {
     width: 210px;
     flex-shrink: 0;
-    background-color: #1e222d;
+    background-color: #101216;
     .el-menu-item:focus,
     .el-menu-item:hover {
       background-color: $routerHoverBgcolor !important;
@@ -89,9 +89,7 @@ export default defineComponent({
     overflow: hidden;
   }
   &-viewport {
-    margin: 20px;
-    padding: 20px;
-    background-color: white;
+    padding: 0px 20px;
   }
 
   .el-menu {

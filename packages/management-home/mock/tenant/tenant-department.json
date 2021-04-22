@@ -1,44 +1,218 @@
 {
   "code": 0,
   "data": {
-      "tenant": {
-          "id": 1,
-          "createTime": "2021-04-04T07:55:02.000Z",
-          "updateTime": "2021-04-04T07:55:02.000Z",
-          "createUser": null,
-          "updateUser": null,
-          "isDelete": false,
-          "version": 0,
-          "name": "西腾子云",
-          "nameShort": "西腾",
-          "industryId": null,
-          "natureId": null,
-          "scaleId": null,
-          "license": "",
-          "addr": "",
-          "addrDetail": "",
-          "intro": "",
-          "licenseUrl": "",
-          "logoUrl": "",
-          "status": 0
+    "tenant": {
+      "id": 1,
+      "createTime": "2021-04-21T09:18:07.000Z",
+      "updateTime": "2021-04-07T07:53:49.000Z",
+      "createUser": null,
+      "updateUser": null,
+      "isDelete": false,
+      "version": 0,
+      "name": "腾讯云西安退休中心",
+      "nameShort": "西腾子云",
+      "industryId": "IT服务",
+      "natureId": "CB100201",
+      "scaleId": "CB100305",
+      "license": "110000012345678",
+      "addr": "610000",
+      "addrDetail": "新长安广场",
+      "intro": "养猪",
+      "licenseUrl": "448d5ae8-15c4-4bd5-ba91-99fb394450d8",
+      "logoUrl": "7beee2a4-678c-4dd9-9dd7-5890ca01d580",
+      "status": 1
+    },
+    "users": [
+      {
+        "deptId": 40,
+        "userName": "test1111",
+        "displayName": "test2222",
+        "status": 0,
+        "id": 83
       },
-      "users": [],
-      "depts": [
-          {
-              "deptId": 19,
-              "parentId": 0,
-              "deptName": "welink",
-              "status": 0
-          },
-          {
-              "deptId": 20,
-              "parentId": 0,
-              "deptName": "Default Department",
-              "status": 0
-          }
-      ]
+      {
+        "deptId": 41,
+        "userName": "admin@yufuid.com",
+        "displayName": "admin",
+        "status": 0,
+        "id": 75
+      },
+      {
+        "deptId": 41,
+        "userName": "test@yufuid.com",
+        "displayName": "test@yufuid.com",
+        "status": 0,
+        "id": 76
+      },
+      {
+        "deptId": 41,
+        "userName": "test1",
+        "displayName": "test1",
+        "status": -1,
+        "id": 77
+      },
+      {
+        "deptId": 41,
+        "userName": "test111",
+        "displayName": "test111",
+        "status": 0,
+        "id": 78
+      },
+      {
+        "deptId": 41,
+        "userName": "兼职名1",
+        "displayName": "兼职1",
+        "status": -1,
+        "id": 79
+      },
+      {
+        "deptId": 42,
+        "userName": "名字3",
+        "displayName": "人员3",
+        "status": -1,
+        "id": 81
+      },
+      {
+        "deptId": 42,
+        "userName": "realaccounttest1",
+        "displayName": "真实名字1",
+        "status": -1,
+        "id": 82
+      },
+      {
+        "deptId": 42,
+        "userName": "schellingTest",
+        "displayName": "马林",
+        "status": -1,
+        "id": 84
+      },
+      {
+        "deptId": 45,
+        "userName": "wxpengwang",
+        "displayName": "wxpengwang111",
+        "status": 0,
+        "id": 85
+      },
+      {
+        "deptId": 46,
+        "userName": "3333",
+        "displayName": "33333",
+        "status": -1,
+        "id": 88
+      },
+      {
+        "deptId": 46,
+        "userName": "tttt1",
+        "displayName": "tttt",
+        "status": -1,
+        "id": 89
+      },
+      {
+        "deptId": 43,
+        "userName": "name2",
+        "displayName": "人员2",
+        "status": -1,
+        "id": 80
+      },
+      {
+        "deptId": 43,
+        "userName": "name1dfdsaf",
+        "displayName": "人员1dafsafd",
+        "status": -1,
+        "id": 86
+      },
+      {
+        "deptId": 43,
+        "userName": "mag1",
+        "displayName": "mag1",
+        "status": -1,
+        "id": 90
+      },
+      {
+        "deptId": 47,
+        "userName": "2222",
+        "displayName": "22222",
+        "status": -1,
+        "id": 87
+      },
+      {
+        "deptId": 50,
+        "userName": "mag2",
+        "displayName": "mag2",
+        "status": -1,
+        "id": 91
+      }
+    ],
+    "depts": [
+      {
+        "deptId": 40,
+        "parentId": 0,
+        "deptName": "welink",
+        "status": 0
+      },
+      {
+        "deptId": 41,
+        "parentId": 0,
+        "deptName": "Default Department",
+        "status": 0
+      },
+      {
+        "deptId": 42,
+        "parentId": 40,
+        "deptName": "部门2",
+        "status": 0
+      },
+      {
+        "deptId": 45,
+        "parentId": 40,
+        "deptName": "部门2.1",
+        "status": 0
+      },
+      {
+        "deptId": 46,
+        "parentId": 40,
+        "deptName": "部门2.2",
+        "status": 0
+      },
+      {
+        "deptId": 43,
+        "parentId": 42,
+        "deptName": "部门1",
+        "status": 0
+      },
+      {
+        "deptId": 44,
+        "parentId": 42,
+        "deptName": "部门3",
+        "status": 0
+      },
+      {
+        "deptId": 47,
+        "parentId": 45,
+        "deptName": "部门2.1.1",
+        "status": 0
+      },
+      {
+        "deptId": 49,
+        "parentId": 46,
+        "deptName": "部门2.2.1",
+        "status": 0
+      },
+      {
+        "deptId": 50,
+        "parentId": 44,
+        "deptName": "部门3.1",
+        "status": 0
+      },
+      {
+        "deptId": 48,
+        "parentId": 47,
+        "deptName": "部门2.1.1.2",
+        "status": 0
+      }
+    ]
   },
   "message": "successful",
   "httpStatus": 200,
-  "timestamp": 1617523978352
+  "timestamp": 1619072662339
 }
