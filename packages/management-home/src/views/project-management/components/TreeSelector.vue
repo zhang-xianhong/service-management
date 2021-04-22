@@ -117,14 +117,15 @@ export default {
     const syncStatus = (node: any, needDisable = false) => {
       if (node.parent) {
         node.parent.checked = false;
+        node.parent.isIndeterminate = false;
         if (
           _.some((item: any) => item.isIndeterminate || item.checked)(node.parent._children || node.parent.children)
         ) {
           node.parent.isIndeterminate = true;
         }
         if (_.every({ checked: true })(node.parent._children || node.parent.children)) {
-          node.parent.isIndeterminate = false;
           node.parent.checked = true;
+          node.parent.isIndeterminate = false;
           node.parent.disabled = needDisable;
         }
         syncStatus(node.parent);
@@ -147,7 +148,6 @@ export default {
     watchEffect(() => {
       dataDone.value = false;
       const selectedUserId = _.map('id')(props.checked);
-      selectedUser.value = props.checked;
       copyOption = _.cloneDeep(props.option);
       setChecked(copyOption, selectedUserId);
       nextTick(() => {
@@ -257,6 +257,8 @@ export default {
     };
 
     const remove = (user: any) => {
+      user.checked = false;
+      syncStatus(user);
       selectedUser.value = _.reject({ id: user.id })(selectedUser.value);
     };
 
@@ -314,6 +316,7 @@ export default {
   color: #444;
   border: 1px solid #ccc;
   height: calc(35vh + 34px);
+  overflow: auto;
   & > div {
     padding: 5px 10px;
     height: 32px;
