@@ -73,7 +73,13 @@
       </el-form-item>
       <el-form-item prop="license" label="营业执照号" required style="display:block;">
         <template v-if="isEdit">{{ companyInfo.license }}</template>
-        <el-input v-else v-model="companyInfo.license" style="width: 400px" placeholder="请输入营业执照号"></el-input>
+        <el-input
+          v-else
+          v-model="companyInfo.license"
+          style="width: 400px"
+          placeholder="请输入营业执照号"
+          @blur="validateLicenseId"
+        ></el-input>
       </el-form-item>
       <el-form-item prop="licenseUrl" class="form-item" label="营业执照" required>
         <template v-slot:label>营业执照<i class="el-icon-question info-icon"></i></template>
@@ -119,7 +125,7 @@ import useCompanyInfo from '../utils/tenant-config';
 import { IMAGE_UPLOAD } from '@/shared/constant/file';
 import { SuccessResponse } from '@/types/response';
 import { getImageUrl } from '@/api/files';
-import { validateCompanyName } from '@/api/tenant';
+import { validateCompanyName, validateLicense } from '@/api/tenant';
 
 interface CompanyInfoInterface {
   name: string; // 企业名称
@@ -316,6 +322,18 @@ export default {
       }
     };
 
+    // 营业执照号校验
+    const validateLicenseId = async (el: any) => {
+      console.log('hhhhhhh');
+      const { data } = await validateLicense(el.target.value);
+      if (!data.usable) {
+        (instance as any).proxy.$message({
+          type: 'error',
+          message: '营业执照号已存在，请重新输入！',
+        });
+      }
+    };
+
     return {
       IMAGE_UPLOAD,
       formRef,
@@ -336,6 +354,7 @@ export default {
       logoUploadSuccess,
       uploadFailed,
       validateName,
+      validateLicenseId,
     };
   },
 };

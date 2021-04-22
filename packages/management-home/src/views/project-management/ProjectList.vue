@@ -11,8 +11,7 @@
           v-model="pageInfo.keyword"
           suffix-icon="el-icon-search"
           @input="searchProject"
-        >
-        </el-input>
+        ></el-input>
       </div>
     </div>
     <div class="project-list_content" ref="projectParentDiv" :style="{ paddingLeft: paddings }">
@@ -42,7 +41,7 @@
             prop="name"
             :rules="[{ required: true, message: '请输入英文名称', trigger: 'blur' }]"
           >
-            <el-input v-model="projectDetail.name" @blur="checkEnglishName"> </el-input>
+            <el-input v-model="projectDetail.name" @blur="checkEnglishName"></el-input>
           </el-form-item>
           <el-form-item
             label="项目描述"
@@ -50,7 +49,7 @@
             prop="name"
             :rules="[{ required: true, message: '请输入项目描述', trigger: 'blur' }]"
           >
-            <el-input v-model="projectDetail.description"> </el-input>
+            <el-input v-model="projectDetail.description"></el-input>
           </el-form-item>
           <el-form-item
             label="代码模板"

@@ -10,9 +10,8 @@
             :type="button.type || undefined"
             v-on="button.eventOption"
             :disabled="button.disabled"
+            >{{ button.label }}</el-button
           >
-            {{ button.label }}
-          </el-button>
         </el-col>
         <el-col :span="8" style="text-align:right;">
           <div class="detail-status">
@@ -53,9 +52,9 @@
             <div>服务代码：</div>
             <div>
               服务地址：
-              <a :href="serverInfo.sshHost + (serverInfo.deposit ? serverInfo.deposit : '')" target="_blank">
-                {{ serverInfo.sshHost + (serverInfo.deposit ? serverInfo.deposit : '') }}
-              </a>
+              <a :href="serverInfo.sshHost + (serverInfo.deposit ? serverInfo.deposit : '')" target="_blank">{{
+                serverInfo.sshHost + (serverInfo.deposit ? serverInfo.deposit : '')
+              }}</a>
             </div>
           </div>
         </el-col>
@@ -186,7 +185,7 @@ export default {
       const { data } = await getServiceList({});
       data.rows.forEach((x: any) => {
         // eslint-disable-next-line no-param-reassign
-        x.name = x.name.replace(/^srv-/g, '');
+        x.name = x.name ? x.name.replace(/^srv-/g, '') : 'service name not found';
       });
       serverList.push(...(data.rows || []));
     };

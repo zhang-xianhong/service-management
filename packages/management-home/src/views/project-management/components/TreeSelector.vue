@@ -38,8 +38,7 @@
                   :disabled="data.disabled"
                   :indeterminate="data.isIndeterminate"
                   @change="checkUser(data, node)"
-                >
-                </el-checkbox>
+                ></el-checkbox>
                 {{ data.name }}
               </template>
             </el-tree>
