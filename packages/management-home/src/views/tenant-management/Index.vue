@@ -1,11 +1,13 @@
 <template>
-  <company-info :isEdit="isEdit" v-model="tenantDetail"></company-info>
-  <user-info :isEdit="isEdit" v-model="tenantDetail"></user-info>
-  <manager-info :isEdit="isEdit" v-model="tenantDetail"></manager-info>
-  <el-row>
-    <el-button v-if="!isEdit" type="primary" @click="isEdit = true">修改</el-button>
-    <el-button v-else type="primary" @click="onSave">保存</el-button>
-  </el-row>
+  <div style="background:#fff; padding:30px">
+    <company-info :isEdit="isEdit" v-model="tenantDetail"></company-info>
+    <user-info :isEdit="isEdit" v-model="tenantDetail"></user-info>
+    <manager-info :isEdit="isEdit" v-model="tenantDetail"></manager-info>
+    <el-row>
+      <el-button v-if="!isEdit" type="primary" @click="isEdit = true">修改</el-button>
+      <el-button v-else type="primary" @click="onSave">保存</el-button>
+    </el-row>
+  </div>
 </template>
 
 <script lang="ts">

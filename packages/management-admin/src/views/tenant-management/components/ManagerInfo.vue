@@ -90,7 +90,7 @@ export default {
     const validatePass = (rule: any, value: string, callback: Function) => {
       if (value !== '') {
         // 密码输入不能与帐号或手机号相同
-        if (value === managerInfo.value.name || value === managerInfo.value.phone) {
+        if (value === managerInfo.value.account || value === managerInfo.value.phone) {
           callback(new Error('密码不能与帐号或手机号相同'));
         }
         formRef.value.validateField('confirmPassword');

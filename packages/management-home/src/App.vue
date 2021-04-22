@@ -30,7 +30,6 @@ body {
   .el-button--primary {
     background-color: #006eff;
     border-color: #006eff;
-    width: 90px;
   }
   .el-input__inner,
   .el-input-group__append,
@@ -40,6 +39,19 @@ body {
   .el-dialog,
   .el-input-group__prepend {
     border-radius: 0;
+  }
+  .el-form-item__label {
+    font-size: 12px;
+  }
+  .el-form-item.is-required:not(.is-no-asterisk) > .el-form-item__label {
+    &::before {
+      content: '';
+    }
+    &::after {
+      content: '*';
+      color: #f56c6c;
+      margin-left: 4px;
+    }
   }
 }
 .apps {
