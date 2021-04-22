@@ -48,10 +48,12 @@
       <el-form-item prop="license" label="营业执照号" required style="display:block;">
         {{ companyInfo.license }}
       </el-form-item>
-      <el-form-item prop="licenseUrl" class="form-item" label="营业执照" required>
+      <el-form-item prop="licenseUrl" class="form-item" required>
+        <template v-slot:label>营业执照<i class="el-icon-question info-icon"></i></template>
         <img :src="licenseUrl" class="avatar" />
       </el-form-item>
-      <el-form-item prop="logoUrl" class="form-item" label="企业logo">
+      <el-form-item prop="logoUrl" class="form-item">
+        <template v-slot:label>企业logo<i class="el-icon-question info-icon"></i></template>
         <img v-if="logoUrl" :src="logoUrl" class="avatar" />
         <el-upload
           v-else
@@ -230,4 +232,15 @@ export default {
 };
 </script>
 
-<style lang="scss"></style>
+<style lang="scss" scoped>
+.info-icon {
+  &:hover {
+    &::after {
+      content: '建议尺寸115x85';
+      position: absolute;
+      margin-top: -20px;
+      margin-left: -40px;
+    }
+  }
+}
+</style>
