@@ -224,7 +224,7 @@ export default {
     };
 
     const initDepartments = async () => {
-      const { code, data } = await getTenentDepartment({ deptId: 0, level: -1 });
+      const { code, data } = await getTenentDepartment({ deptId: 0, level: 9 });
       if (code === 0) {
         const deptTree = [
           {
