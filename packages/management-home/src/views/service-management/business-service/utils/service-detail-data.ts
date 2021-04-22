@@ -41,7 +41,11 @@ export const startServiceData = (branch = 'master', userId = '123456') =>
   });
 
 export const stopServiceData = () => {
-  stopService({ serviceId: currentServiceIdForData.value }).then(() => {
-    Message.success('停止成功');
-  });
+  stopService({ serviceId: currentServiceIdForData.value })
+    .then(() => {
+      Message.success('停止成功');
+    })
+    .catch((e) => {
+      console.log(e);
+    });
 };

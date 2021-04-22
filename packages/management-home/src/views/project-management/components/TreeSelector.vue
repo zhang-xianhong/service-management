@@ -14,13 +14,7 @@
             ></el-input>
           </div>
           <div class="tree-wrapper" v-loading="!searchDone">
-            <el-tree
-              v-if="!searchStr && dataDone"
-              :default-expand-all="false"
-              :load="loadNode"
-              lazy
-              :props="treeProps"
-            >
+            <el-tree v-if="!searchStr && dataDone" :default-expand-all="false" :load="loadNode" lazy :props="treeProps">
               <template #default="{ data, node }">
                 <el-checkbox
                   v-model="data.checked"
@@ -76,47 +70,47 @@
 
 <script lang="ts">
 /* eslint-disable no-param-reassign */
-import _ from "lodash/fp";
-import { computed, inject, ref, Ref, watchEffect, nextTick } from "vue";
-import { updateMembers } from "@/api/project/project";
+import _ from 'lodash/fp';
+import { computed, inject, ref, Ref, watchEffect, nextTick } from 'vue';
+import { updateMembers } from '@/api/project/project';
 export default {
-  name: "TreeSelector",
+  name: 'TreeSelector',
   props: {
     option: {
       required: true,
-      type: Array
+      type: Array,
     },
     optionLabel: {
       required: true,
-      type: String
+      type: String,
     },
     optionPlaceholder: {
       required: true,
-      type: String
+      type: String,
     },
     role: {
       required: true,
-      type: Object
+      type: Object,
     },
     checked: {
       required: false,
       type: Array,
-      default: () => []
-    }
+      default: () => [],
+    },
   },
-  emits: ["userChanged"],
+  emits: ['userChanged'],
   setup(props: any, context: any) {
     const dialogVisible = ref(false);
-    const projectId = inject("projectId") as string;
-    const searchStr = ref("");
+    const projectId = inject('projectId') as string;
+    const searchStr = ref('');
     const selectedUser: Ref<Array<any>> = ref([]);
     const show = () => {
       dialogVisible.value = true;
     };
     const treeProps = {
-      label: "name",
-      children: "children",
-      isLeaf: "isLeaf"
+      label: 'name',
+      children: 'children',
+      isLeaf: 'isLeaf',
     };
     const dataDone = ref(true);
     const syncStatus = (node: any, needDisable = false) => {
@@ -124,17 +118,11 @@ export default {
         node.parent.checked = false;
         node.parent.isIndeterminate = false;
         if (
-          _.some((item: any) => item.isIndeterminate || item.checked)(
-            node.parent._children || node.parent.children
-          )
+          _.some((item: any) => item.isIndeterminate || item.checked)(node.parent._children || node.parent.children)
         ) {
           node.parent.isIndeterminate = true;
         }
-        if (
-          _.every({ checked: true })(
-            node.parent._children || node.parent.children
-          )
-        ) {
+        if (_.every({ checked: true })(node.parent._children || node.parent.children)) {
           node.parent.checked = true;
           node.parent.isIndeterminate = false;
           node.parent.disabled = needDisable;
@@ -142,9 +130,7 @@ export default {
         syncStatus(node.parent);
       }
     };
-    const valueLabel = computed(
-      () => `${props.option[0]?.name} - ${props.role?.label}`
-    );
+    const valueLabel = computed(() => `${props.option[0]?.name} - ${props.role?.label}`);
     const setChecked = (treeOption: Array<any>, ids: Array<number>) => {
       treeOption.forEach((treeNode: any) => {
         if (treeNode.isLeaf) {
@@ -160,7 +146,8 @@ export default {
     let copyOption: any;
     watchEffect(() => {
       dataDone.value = false;
-      const selectedUserId = _.map("id")(props.checked);
+      const selectedUserId = _.map('id')(props.checked);
+      selectedUser.value = props.checked;
       copyOption = _.cloneDeep(props.option);
       setChecked(copyOption, selectedUserId);
       nextTick(() => {
@@ -202,12 +189,10 @@ export default {
       const groupMembers: any[] = [];
       getEditableMember(group.children || group._children, groupMembers);
       if (!group.checked) {
-        selectedUser.value = _.differenceBy("id")(selectedUser.value)(
-          groupMembers
-        );
+        selectedUser.value = _.differenceBy('id')(selectedUser.value)(groupMembers);
         group.isIndeterminate = hasDisabled;
       } else {
-        selectedUser.value = _.unionBy("id")(selectedUser.value)(groupMembers);
+        selectedUser.value = _.unionBy('id')(selectedUser.value)(groupMembers);
         group.isIndeterminate = false;
       }
       syncStatus(group);
@@ -223,16 +208,16 @@ export default {
       const { code } = await updateMembers({
         projectId,
         projectRoleId: props.role.id,
-        members: _.map("id")(selectedUser.value)
+        members: _.map('id')(selectedUser.value),
       });
       if (code === 0) {
         dialogVisible.value = false;
-        context.emit("userChanged", props.role);
+        context.emit('userChanged', props.role);
       }
     };
     const cancel = () => {
       dialogVisible.value = false;
-      context.emit("userChanged", props.role);
+      context.emit('userChanged', props.role);
     };
 
     const searchResult: Ref<any> = ref([]);
@@ -242,12 +227,7 @@ export default {
       if (!searchStr.value) return;
       const userArr: any[] = [];
       const deptArr: any[] = [];
-      const getSearchRes = (
-        searchStr: string,
-        users: any[],
-        depts: any[],
-        nodeList: any[]
-      ) => {
+      const getSearchRes = (searchStr: string, users: any[], depts: any[], nodeList: any[]) => {
         nodeList.forEach((node: any) => {
           if (RegExp(searchStr).test(node.name)) {
             if (node.isLeaf) {
@@ -256,13 +236,7 @@ export default {
               depts.push(node);
             }
           }
-          node.isLeaf ||
-            getSearchRes(
-              searchStr,
-              users,
-              depts,
-              node.children || node._children
-            );
+          node.isLeaf || getSearchRes(searchStr, users, depts, node.children || node._children);
         });
       };
       getSearchRes(searchStr.value, userArr, deptArr, copyOption);
@@ -303,9 +277,9 @@ export default {
       remove,
       dataDone,
       loadSearchNode,
-      searchDone
+      searchDone,
     };
-  }
+  },
 };
 </script>
 

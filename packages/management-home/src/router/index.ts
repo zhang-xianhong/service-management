@@ -58,26 +58,6 @@ const routes: Array<RouteRecordRaw> = [
       },
     ],
   },
-  // {
-  //   path: '/',
-  //   component: Layout,
-  //   redirect: '/project-management',
-  // meta: {
-  //   isRootLevel: true,
-  // },
-  // children: [
-  //   {
-  //     path: 'dashboard',
-  //     component: () => import('@/views/dashboard/Index.vue'),
-  //     name: 'Dashboard',
-  //     meta: {
-  //       title: '首页',
-  //       icon: 'el-icon-eleme',
-  //       isRootLevel: false,
-  //     },
-  //   },
-  // ],
-  // },
   {
     path: '/project-management',
     redirect: '/project-list',
@@ -110,26 +90,6 @@ const routes: Array<RouteRecordRaw> = [
           activeMenu: '/project-management/project-list',
         },
         props: true,
-      },
-    ],
-  },
-  {
-    path: '/tenant-menagement',
-    redirect: '/tenant-list',
-    component: Layout,
-    meta: {
-      isRootLevel: true,
-    },
-    children: [
-      {
-        path: 'tenant-detail',
-        component: () => import(/* webpackChunkName: "tenant" */ '@/views/tenant-management/Index.vue'),
-        name: 'TenantList',
-        meta: {
-          title: '租户管理',
-          icon: 'el-icon-eleme',
-          isRootLevel: false,
-        },
       },
     ],
   },

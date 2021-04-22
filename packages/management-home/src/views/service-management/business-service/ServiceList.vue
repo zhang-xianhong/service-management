@@ -302,9 +302,11 @@ export default defineComponent({
     function addServiceByForm() {
       const senddata = { ...serviceDetail };
       senddata.tags = serviceDetail.tags.join(',') ? serviceDetail.tags.join(',') : '';
-      senddata.dependencies = serviceDetail.dependencies.map((x: any) => ({
-        id: x,
-      }));
+      senddata.dependencies = serviceDetail.dependencies
+        ? serviceDetail.dependencies.map((x: any) => ({
+            id: x,
+          }))
+        : [];
       senddata.classification = serviceDetail.classification ? serviceDetail.classification.join(',') : '';
       if (!senddata.name) {
         return ElMessage({

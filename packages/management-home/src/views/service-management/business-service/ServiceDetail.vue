@@ -10,7 +10,8 @@
             :type="button.type || undefined"
             v-on="button.eventOption"
             :disabled="button.disabled"
-          >{{ button.label }}</el-button>
+            >{{ button.label }}</el-button
+          >
         </el-col>
         <el-col :span="8" style="text-align:right;">
           <div class="detail-status">
@@ -51,10 +52,9 @@
             <div>服务代码：</div>
             <div>
               服务地址：
-              <a
-                :href="serverInfo.sshHost + (serverInfo.deposit ? serverInfo.deposit : '')"
-                target="_blank"
-              >{{ serverInfo.sshHost + (serverInfo.deposit ? serverInfo.deposit : '') }}</a>
+              <a :href="serverInfo.sshHost + (serverInfo.deposit ? serverInfo.deposit : '')" target="_blank">{{
+                serverInfo.sshHost + (serverInfo.deposit ? serverInfo.deposit : '')
+              }}</a>
             </div>
           </div>
         </el-col>
@@ -114,60 +114,51 @@
 </template>
 
 <script lang="ts">
-import useButtonUtils from "./utils/service-detail-utils";
-import useStatusUtils from "./utils/service-detail-status";
-import ServerBaseInfo from "./components/ServerBaseInfo.vue";
-import Erd from "@/components/data-model/erd/Index.vue";
-import ServerPortsInfo from "./components/ServerPortsInfo.vue";
-import {
-  ref,
-  Ref,
-  reactive,
-  watch,
-  provide,
-  computed,
-  onBeforeUnmount,
-  getCurrentInstance
-} from "vue";
-import RelationInfo from "./components/RelationInfo.vue";
-import ModelFieldForm from "./components/FieldForm.vue";
-import ModelBaseInfo from "./components/ModelBaseInfo.vue";
-import { getServiceList, getServiceById } from "@/api/servers";
-import { getAllTags } from "@/api/settings/tags";
-import { getClassificationList } from "@/api/settings/classification";
-import { getServiceModelList, getModelDetail } from "@/api/schema/model";
-import { getDataTypesAll } from "@/api/settings/data-types";
-import { useRoute } from "vue-router";
+import useButtonUtils from './utils/service-detail-utils';
+import useStatusUtils from './utils/service-detail-status';
+import ServerBaseInfo from './components/ServerBaseInfo.vue';
+import Erd from '@/components/data-model/erd/Index.vue';
+import ServerPortsInfo from './components/ServerPortsInfo.vue';
+import { ref, Ref, reactive, watch, provide, computed, onBeforeUnmount, getCurrentInstance } from 'vue';
+import RelationInfo from './components/RelationInfo.vue';
+import ModelFieldForm from './components/FieldForm.vue';
+import ModelBaseInfo from './components/ModelBaseInfo.vue';
+import { getServiceList, getServiceById } from '@/api/servers';
+import { getAllTags } from '@/api/settings/tags';
+import { getClassificationList } from '@/api/settings/classification';
+import { getServiceModelList, getModelDetail } from '@/api/schema/model';
+import { getDataTypesAll } from '@/api/settings/data-types';
+import { useRoute } from 'vue-router';
 import {
   statusMap,
   computeStatusLabel,
-  statusColor
-} from "@/views/service-management/business-service/utils/service-status-map";
+  statusColor,
+} from '@/views/service-management/business-service/utils/service-status-map';
 import {
   currentServiceIdForData,
   sqlDialogVisiable,
   sqlData,
   clearSql,
   getTreaceId,
-  thenRefresh
-} from "./utils/service-detail-data";
-import _ from "lodash/fp";
+  thenRefresh,
+} from './utils/service-detail-data';
+import _ from 'lodash/fp';
 import {
   logDialogVisible,
   logData,
   clearLogInterVal,
-  formatLogData
-} from "@/views/service-management/business-service/utils/service-log-data-utils";
+  formatLogData,
+} from '@/views/service-management/business-service/utils/service-log-data-utils';
 
 export default {
-  name: "ServiceDetail",
+  name: 'ServiceDetail',
   components: {
     ServerBaseInfo,
     Erd,
     ModelFieldForm,
     ServerPortsInfo,
     RelationInfo,
-    ModelBaseInfo
+    ModelBaseInfo,
   },
   setup() {
     const { buttons } = useButtonUtils();
@@ -175,9 +166,7 @@ export default {
     // 是否显示底部抽屉
     const isShowDownDrawer = ref(false);
 
-    const computedHeight = computed(() =>
-      isShowDownDrawer.value ? "calc(95% - 400px)" : "95%"
-    );
+    const computedHeight = computed(() => (isShowDownDrawer.value ? 'calc(95% - 400px)' : '95%'));
 
     // 获取路由信息
     const route = useRoute();
@@ -196,7 +185,7 @@ export default {
       const { data } = await getServiceList({});
       data.rows.forEach((x: any) => {
         // eslint-disable-next-line no-param-reassign
-        x.name = x.name.replace(/^srv-/g, "");
+        x.name = x.name ? x.name.replace(/^srv-/g, '') : 'service name not found';
       });
       serverList.push(...(data.rows || []));
     };
@@ -207,18 +196,18 @@ export default {
     const serverInfo = ref({} as any);
 
     // erd图组件参数构造
-    provide("serviceId", currentServiceId.value);
-    provide("serverInfo", serverInfo);
+    provide('serviceId', currentServiceId.value);
+    provide('serverInfo', serverInfo);
     const erdLoading = ref(false);
     const modelList: Ref<any> = ref({
       tables: [],
-      relations: []
+      relations: [],
     });
     // 获取模型列表
     const initModelList = async () => {
       // erdLoading.value = true;
       const { code, data } = await getServiceModelList({
-        serviceId: currentServiceId.value
+        serviceId: currentServiceId.value,
       });
       // erdLoading.value = false;
       let tables: any[] = [];
@@ -229,7 +218,7 @@ export default {
           _.findIndex({ id: relation.fromModelId })(tables),
           _.findIndex({ id: relation.toModelId })(tables),
           relation.relationType,
-          relation.id
+          relation.id,
         ])(data.relations);
       }
       let offset = 0;
@@ -244,14 +233,14 @@ export default {
           // eslint-disable-next-line no-param-reassign
           table.position = {
             x: 200 + offset * 10,
-            y: 20 + offset * 10
+            y: 20 + offset * 10,
           };
           offset += 1;
         }
       });
       modelList.value = {
         tables,
-        relations
+        relations,
       };
     };
     // 获取服务详情
@@ -314,11 +303,11 @@ export default {
         buttons.value[2].disabled = true;
       }
       buttons.value[buttons.value.length - 1].disabled = false;
-      buttons.value[0].label = +status === 0 ? "初始化" : "同步配置";
+      buttons.value[0].label = +status === 0 || +status === 12 ? '初始化' : '同步配置';
       const statusmaps = computeStatusLabel(serverInfo.value.initTimes);
       serverStatusInfo.value = {
         label: (statusmaps as any)[status],
-        color: (statusColor as any)[status]
+        color: (statusColor as any)[status],
       };
     });
 
@@ -327,32 +316,32 @@ export default {
     });
 
     // 右侧组件名称
-    const componentName = ref("");
+    const componentName = ref('');
 
     // 打开基本信息
     const openBaseInfo = () => {
-      componentName.value = "ServerBaseInfo";
+      componentName.value = 'ServerBaseInfo';
     };
 
     // 下侧组件名称
-    const drawerName = ref("");
+    const drawerName = ref('');
 
     // 打开接口配置
     const openPropertyInfo = () => {
       isShowDownDrawer.value = true;
-      drawerName.value = "ServerPortsInfo";
+      drawerName.value = 'ServerPortsInfo';
     };
 
     // 模型、关联详情数据
     const modelInfo = ref(null);
-    provide("currentModel", modelInfo);
-    provide("configs", { allTypes, tags, classifications });
-    provide("afterRemove", () => {
+    provide('currentModel', modelInfo);
+    provide('configs', { allTypes, tags, classifications });
+    provide('afterRemove', () => {
       isShowDownDrawer.value = false;
-      componentName.value = "";
+      componentName.value = '';
       initModelList();
     });
-    provide("afterUpdate", () => {
+    provide('afterUpdate', () => {
       initModelList();
     });
 
@@ -360,65 +349,63 @@ export default {
       modelInfo.value = null;
       if (model) {
         if (model.relationInfo) {
-          componentName.value = "RelationInfo";
+          componentName.value = 'RelationInfo';
           modelInfo.value = model.relationInfo;
           isShowDownDrawer.value = false;
         } else {
           const { data } = await getModelDetail(model.id);
-          componentName.value = "ModelBaseInfo";
+          componentName.value = 'ModelBaseInfo';
           modelInfo.value = { ...data, fields: model.fields };
           isShowDownDrawer.value = true;
-          drawerName.value = "ModelFieldForm";
+          drawerName.value = 'ModelFieldForm';
         }
       } else {
         isShowDownDrawer.value = false;
-        componentName.value = "";
+        componentName.value = '';
       }
     };
 
     const computedComponentData = computed(() =>
-      componentName.value === "ServerBaseInfo"
-        ? serverInfo.value
-        : modelInfo.value
+      componentName.value === 'ServerBaseInfo' ? serverInfo.value : modelInfo.value,
     );
 
     const { proxy } = getCurrentInstance() as any;
     // 切换服务
     const selectService = (value: number) => {
       currentServiceId.value = value;
-      let name = "";
+      let name = '';
       serverList.forEach((x: any) => {
         if (x.id === value) {
           name = x.name;
         }
       });
-      componentName.value = "";
+      componentName.value = '';
       isShowDownDrawer.value = false;
       proxy.$router.replace({
         path: `/service-management/service-list/detail/${value}`,
-        query: { detailName: name }
+        query: { detailName: name },
       });
     };
 
     const logs = (res: any) => {
-      console.log(res, "this is log");
+      console.log(res, 'this is log');
       return res;
     };
 
     const enterLogs = () => {
-      getTreaceId().then(res => {
-        console.log(res, "2e323");
+      getTreaceId().then((res) => {
+        console.log(res, '2e323');
       });
     };
 
     const maskText = computed(() => {
       switch (serverInfo.value.status) {
         case 10:
-          return "应用变更中, 请稍后...";
+          return '应用变更中, 请稍后...';
         case 20:
-          return "应用启动中, 请稍后...";
+          return '应用启动中, 请稍后...';
         default:
-          return "";
+          return '';
       }
     });
 
@@ -454,9 +441,9 @@ export default {
       clearSql,
       enterLogs,
       statusMap,
-      maskText
+      maskText,
     };
-  }
+  },
 };
 </script>
 
