@@ -42,12 +42,12 @@ export function refreshServiceList(payload = {} as any) {
     if (res.data.rows) {
       res.data.rows.forEach((x: any) => {
         x.name = x.name ? x.name.replace(/^srv-/g, '') : 'service name not found';
-        const arr = x.classification.split(',');
+        const arr = x.classification ? x.classification.split(',') : [];
         x.classification = arr
           .map((x: any) => sortMap.value[x])
           .filter((x: any) => x)
           .join(',');
-        const tagarr = x.tag.split(',');
+        const tagarr = x.tag ? x.tag.split(',') : [];
         x.tag = tagarr
           .map((x: any) => tagMap.value[x])
           .filter((x: any) => x)
@@ -55,10 +55,12 @@ export function refreshServiceList(payload = {} as any) {
         // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
         // @ts-ignore
         x.statusStr = statusMap[x.status];
-        x.ownerstr = x.owners
-          .map((x: any) => ownersMap.value[x.userId]?.displayName)
-          .filter((x: any) => x)
-          .join(',');
+        if (x.owners) {
+          x.ownerstr = x.owners
+            .map((x: any) => ownersMap.value[x.userId]?.displayName)
+            .filter((x: any) => x)
+            .join(',');
+        }
         x.source = x.source || '新建';
       });
     }
