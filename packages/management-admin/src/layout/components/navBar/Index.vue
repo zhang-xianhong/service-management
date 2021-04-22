@@ -1,6 +1,6 @@
 <template>
   <div class="nav-bar">
-    <a class="app-logo"><img src="./citybase.png" /> </a>
+    <a class="app-logo"><img src="./tencent.png" /> <span>|</span> <img src="./citybase.png" /> </a>
     <div class="bread-bar">
       <!--      <bread-curmb></bread-curmb>-->
     </div>
@@ -97,6 +97,12 @@ export default defineComponent({
     justify-content: center;
     > img {
       max-width: 100%;
+      height: 45px;
+    }
+    > span {
+      color: #fff;
+      font-weight: bolder;
+      margin: 0px 20px;
     }
   }
   .bread-bar {
