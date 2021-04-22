@@ -1,10 +1,6 @@
 <template>
   <div class="erd-container-wrapper" :style="{ width, height }" v-on="handlers">
-    <div class="mask" v-if="maskText">{{ maskText }}</div>
-    <div
-      :style="`width: ${viewWidth}px; height: ${viewHeight}px; position: relative;`"
-      :class="{ 'cannot-operate': !!maskText }"
-    >
+    <div :style="`width: ${viewWidth}px; height: ${viewHeight}px; position: relative;`">
       <add-model></add-model>
       <erd-relation></erd-relation>
       <template v-if="allTypes.length">
@@ -23,7 +19,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, watchEffect, inject, provide, computed, onBeforeUnmount } from 'vue';
+import { defineComponent, onMounted, watchEffect, inject, provide, onBeforeUnmount } from 'vue';
 import _ from 'lodash/fp';
 import {
   tables,
@@ -254,16 +250,6 @@ export default defineComponent({
       mouseleave: leaveErd,
       mousemove: drag,
     };
-    const maskText = computed(() => {
-      switch (props.serviceStatus) {
-        case 10:
-          return '应用变更中, 请稍后...';
-        case 20:
-          return '应用启动中, 请稍后...';
-        default:
-          return '';
-      }
-    });
 
     onMounted(() => {
       calcSvgPosition();
@@ -291,7 +277,6 @@ export default defineComponent({
       allTypes,
       leaveErd,
       handlers,
-      maskText,
     };
   },
 });
@@ -301,18 +286,5 @@ export default defineComponent({
 .erd-container-wrapper {
   position: relative;
   overflow: auto;
-  .cannot-operate {
-    pointer-events: none;
-    filter: blur(5px);
-  }
-  .mask {
-    width: 100%;
-    height: 30px;
-    margin-top: 30vh;
-    text-align: center;
-    position: absolute;
-    z-index: 1;
-    font-size: 22px;
-  }
 }
 </style>

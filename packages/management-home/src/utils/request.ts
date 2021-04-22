@@ -32,6 +32,10 @@ service.interceptors.response.use(
       });
       return Promise.reject(error);
     }
+    if (error.response.status === 401) {
+      const redirectUrl = error.response.headers['x-sa-redirect-url'];
+      redirectUrl && location.replace(redirectUrl);
+    }
     const { data } = error.response; // status
     const { httpStatus, message } = data;
     // 错误状态处理
