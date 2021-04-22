@@ -96,7 +96,7 @@
         </el-form-item>
       </el-form>
     </div>
-    <div class="dialog-footer">
+    <div class="project-list-dialog-footer">
       <el-button type="primary" @click="submitProjectDetail">确定</el-button>
       <el-button @click="closeDialog">取消</el-button>
     </div>
@@ -264,12 +264,12 @@ export default defineComponent({
       width: 288px;
     }
   }
-  .dialog-footer {
-    text-align: center;
-  }
   .project-list_content {
     display: flex;
     flex-wrap: wrap;
   }
+}
+.project-list-dialog-footer {
+  text-align: center;
 }
 </style>
