@@ -1,5 +1,5 @@
 <template>
-  <el-row>管理员信息</el-row>
+  <el-row style="font-weight:bolder">管理员信息</el-row>
   <el-row style="padding:0 20px;">
     <el-form
       class="managerinfo-form"
@@ -89,6 +89,10 @@ export default {
     // 初始密码校验
     const validatePass = (rule: any, value: string, callback: Function) => {
       if (value !== '') {
+        // 密码输入不能与帐号或手机号相同
+        if (value === managerInfo.value.name || value === managerInfo.value.phone) {
+          callback(new Error('密码不能与帐号或手机号相同'));
+        }
         formRef.value.validateField('confirmPassword');
       }
       callback();

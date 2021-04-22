@@ -1,14 +1,16 @@
 <template>
-  <el-row>
-    <el-steps class="tenant-steps" :active="activeStep" simple>
-      <el-step :icon="activeStep > 1 ? 'el-icon-success' : 'el-icon-edit'" title="填写公司信息"></el-step>
-      <el-step :icon="activeStep > 2 ? 'el-icon-success' : 'el-icon-edit'" title="填写联系人信息"></el-step>
-      <el-step icon="el-icon-edit" title="注册系统管理员"></el-step>
-    </el-steps>
-  </el-row>
-  <keep-alive>
-    <component :is="componentName" :isEdit="isEdit" v-model="tenantDetail" @go="goStep" @submit="onSubmit"></component>
-  </keep-alive>
+  <div style="background: #fff; padding: 10px 30px">
+    <el-row><packaged-steps :data="steps" :active="activeStep"></packaged-steps></el-row>
+    <keep-alive>
+      <component
+        :is="componentName"
+        :isEdit="isEdit"
+        v-model="tenantDetail"
+        @go="goStep"
+        @submit="onSubmit"
+      ></component>
+    </keep-alive>
+  </div>
 </template>
 
 <script lang="ts">
@@ -18,6 +20,7 @@ import UserInfo from './components/UserInfo.vue';
 import ManagerInfo from './components/ManagerInfo.vue';
 import { useRoute, useRouter } from 'vue-router';
 import { getTenantDetail, createTenant, updateTenant } from '@/api/tenant';
+import PackagedSteps from '@/components/packaged-steps/Index.vue';
 
 export default {
   name: 'TenantEdit',
@@ -25,6 +28,7 @@ export default {
     CompanyInfo,
     UserInfo,
     ManagerInfo,
+    PackagedSteps,
   },
   setup() {
     const instance = getCurrentInstance();
@@ -36,6 +40,18 @@ export default {
     const tenantId = route.params.id as string;
 
     const isEdit = parseInt(tenantId, 10) > 0;
+
+    const steps = [
+      {
+        title: '填写企业信息',
+      },
+      {
+        title: '填写联系人信息',
+      },
+      {
+        title: '注册系统管理员',
+      },
+    ];
 
     const tenantDetail = ref({
       contact: {},
@@ -97,6 +113,7 @@ export default {
 
     return {
       ...toRefs(state),
+      steps,
       isEdit,
       tenantDetail,
       goStep,
@@ -115,6 +132,7 @@ export default {
 <style lang="scss">
 .form-item {
   width: 40%;
+  font-size: 12px;
 }
 .avatar-uploader .el-upload {
   border: 1px dashed #d9d9d9;

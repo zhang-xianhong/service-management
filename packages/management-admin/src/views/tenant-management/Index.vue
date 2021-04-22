@@ -1,6 +1,14 @@
 <template>
   <el-row>
-    <el-col :span="6">
+    <el-col :span="4" style="text-align:left">
+      <el-button style="width:90px" type="primary" @click="onAdd">
+        <i class="el-icon-plus" style="font-weight:bloder;margin-right:2px;"></i>新建
+      </el-button>
+      <!-- TODO：待确定 -->
+      <!-- <el-button @click="freezeInBatches">冻结</el-button>
+      <el-button @click="deleteInBatches">删除</el-button> -->
+    </el-col>
+    <el-col :offset="14" :span="6" style="text-align: right">
       <el-input
         placeholder="请输入公司名称"
         suffix-icon="el-icon-search"
@@ -8,16 +16,8 @@
         v-model="searchProps.keyword"
       ></el-input>
     </el-col>
-    <el-col :offset="14" :span="4" style="text-align:right">
-      <el-button type="primary" @click="onAdd">
-        <i class="el-icon-plus" style="font-weight:bloder;margin-right:2px;"></i>新建
-      </el-button>
-      <!-- TODO：待确定 -->
-      <!-- <el-button @click="freezeInBatches">冻结</el-button>
-      <el-button @click="deleteInBatches">删除</el-button> -->
-    </el-col>
   </el-row>
-  <el-row>
+  <el-row style="background: #fff">
     <el-table :data="tableData">
       <el-table-column type="selection" width="45" />
       <el-table-column type="index" label="序号" width="50" />
@@ -40,19 +40,17 @@
       </el-table-column>
       <el-table-column label="操作" width="200">
         <template #default="scope">
-          <el-button type="primary" v-if="scope.row.status === statusEnum.START" @click="onFreeze(scope.row.id)"
-            >冻结</el-button
-          >
-          <el-button type="primary" v-if="scope.row.status === statusEnum.FREEZE" @click="onStart(scope.row.id)"
-            >启动</el-button
-          >
-          <el-button @click="onDelete(scope.row.id)">删除</el-button>
+          <el-button type="primary" v-if="scope.row.status === statusEnum.START" @click="onFreeze(scope.row.id)">
+            冻结
+          </el-button>
+          <el-button type="primary" v-if="scope.row.status === statusEnum.FREEZE" @click="onStart(scope.row.id)">
+            启动
+          </el-button>
+          <el-button :disabled="scope.row.status === statusEnum.START" @click="onDelete(scope.row)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
-  </el-row>
-  <el-row style="justify-content:flex-end">
-    <el-pagination
+    <packaged-pagination
       :current-page="searchProps.page"
       :page-size="searchProps.pageSize"
       :page-sizes="[10, 20, 50]"
@@ -60,8 +58,7 @@
       :total="total"
       @size-change="handlePageSizeChange"
       @current-change="handlePageChange"
-    >
-    </el-pagination>
+    ></packaged-pagination>
   </el-row>
 </template>
 
@@ -70,6 +67,7 @@ import { reactive, toRefs, getCurrentInstance } from 'vue';
 import { getTenantList, deleteTenant, freezeTenant, enableTenant } from '@/api/tenant';
 import { debounce } from 'lodash';
 import { useRouter } from 'vue-router';
+import PackagedPagination from '@/components/packaged-pagination/Index.vue';
 
 // 租户数据接口
 interface TenantItemInterface {
@@ -105,6 +103,9 @@ enum statusEnum {
 
 export default {
   name: 'Tenant',
+  components: {
+    PackagedPagination,
+  },
   setup() {
     const router = useRouter();
 
@@ -178,15 +179,20 @@ export default {
       }
     };
 
-    const onDelete = async (id: string) => {
-      const { code } = await deleteTenant(id);
-      if (code === 0) {
-        (instance as any).proxy.$message({
-          type: 'success',
-          message: '删除成功',
-        });
-        getTableData();
-      }
+    const onDelete = async (rowData: any) => {
+      (instance as any).proxy.$alert(`是否删除${rowData.contactName}租户`, '提示', {
+        confirmButtonText: '确定',
+        callback: async () => {
+          const { code } = await deleteTenant(rowData.id);
+          if (code === 0) {
+            (instance as any).proxy.$message({
+              type: 'success',
+              message: '删除成功',
+            });
+            getTableData();
+          }
+        },
+      });
     };
 
     const onFreeze = async (id: string) => {
