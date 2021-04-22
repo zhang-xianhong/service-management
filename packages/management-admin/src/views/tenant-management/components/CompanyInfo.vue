@@ -77,7 +77,7 @@
       </el-form-item>
       <el-form-item prop="licenseUrl" class="form-item" label="营业执照" required>
         <template v-slot:label>营业执照<i class="el-icon-question info-icon"></i></template>
-        <img v-if="licenseUrl" :src="licenseUrl" class="avatar" width="115px" height="85px" />
+        <img v-if="licenseUrl" :src="licenseUrl" class="avatar" />
         <el-upload
           v-else
           class="avatar-uploader"
@@ -102,7 +102,7 @@
           @error="uploadFailed"
           @success="logoUploadSuccess"
         >
-          <img v-if="logoUrl" :src="logoUrl" class="avatar" width="115px" height="85px" />
+          <img v-if="logoUrl" :src="logoUrl" class="avatar" />
           <i v-else class="el-icon-plus avatar-uploader-icon"></i>
         </el-upload>
       </el-form-item>

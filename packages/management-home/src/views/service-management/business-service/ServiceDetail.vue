@@ -1,6 +1,6 @@
 <template>
   <div class="detail">
-    <el-row>
+    <el-row style="margin-bottom: 10px;">
       <el-col :span="16">
         <el-button
           v-for="(button, index) in buttons"
@@ -23,9 +23,9 @@
         <el-button class="detail-icon" icon="el-icon-download"></el-button>
       </el-col>
     </el-row>
-    <el-row :style="{ height: computedHeight }">
-      <el-col :span="componentName ? 16 : 24" style="height:100%">
-        <el-row>
+    <el-row :style="{ height: computedHeight, background: '#fff', marginBottom: '10px' }">
+      <el-col :span="componentName ? 20 : 24" style="height:100%">
+        <el-row style="padding: 14px; margin-bottom: 0px;">
           <!-- 服务下拉选择框 -->
           <el-select v-model="currentServiceId" placeholder="请选择" @change="selectService">
             <el-option
@@ -47,7 +47,7 @@
             @select-change="modelSelected"
           ></erd>
         </div>
-        <div v-if="!isShowDownDrawer">
+        <div v-if="!isShowDownDrawer" style="margin-left: 12px;">
           <div>服务代码：</div>
           <div>
             服务地址：
@@ -57,7 +57,7 @@
           </div>
         </div>
       </el-col>
-      <el-col v-if="componentName" :span="8" style="border-left: 1px solid #bbbbbb">
+      <el-col v-if="componentName" :span="4" style="border-left: 1px solid #bbbbbb; height: 100%;">
         <template v-if="componentName">
           <keep-alive>
             <component
@@ -450,7 +450,7 @@ export default {
 }
 .data-model__container {
   width: 100%;
-  height: 90%;
+  height: calc(100% - 120px);
 }
 .slide-fade-enter-active {
   transition: all 0.3s ease-in;
@@ -468,7 +468,6 @@ export default {
 .detail-drawer__container {
   height: 400px;
   overflow: auto;
-  padding: 12px;
 }
 .dialog-footer {
   width: 100%;

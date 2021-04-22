@@ -1,7 +1,7 @@
 <template>
   <div class="baseinfo-container">
     <div class="baseinfo-title">基本信息</div>
-    <el-form :model="formData" label-width="80px">
+    <el-form :model="formData" label-width="60px" style="height: 87%; overflow: auto;">
       <el-form-item label="服务名称">
         <div class="baseinfo-content">{{ formData.name }}</div>
       </el-form-item>
@@ -171,13 +171,14 @@ export default {
 <style lang="scss" scoped>
 .baseinfo-container {
   padding: 12px;
+  height: 100%;
 }
 .baseinfo-title {
   margin-bottom: 20px;
 }
 .baseinfo-content {
   display: inline-block;
-  width: 400px;
+  width: 240px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
