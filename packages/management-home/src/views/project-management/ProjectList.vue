@@ -11,8 +11,7 @@
           v-model="pageInfo.keyword"
           suffix-icon="el-icon-search"
           @input="searchProject"
-        >
-        </el-input>
+        ></el-input>
       </div>
     </div>
     <div class="project-list_content" ref="projectParentDiv" :style="{ paddingLeft: paddings }">
@@ -33,7 +32,13 @@
       layout="total, sizes, prev, pager, next, jumper"
       :total="pageInfo.total"
     ></packaged-pagination>
-    <el-dialog v-model="addDialogVisible" title="新建项目" width="500px" @close="closeDialog" destroy-on-close>
+    <el-dialog
+      v-model="addDialogVisible"
+      title="新建项目"
+      width="500px"
+      @close="closeDialog"
+      destroy-on-close
+    >
       <div class="add-project-dialog">
         <el-form :model="projectDetail">
           <el-form-item
@@ -42,7 +47,7 @@
             prop="name"
             :rules="[{ required: true, message: '请输入英文名称', trigger: 'blur' }]"
           >
-            <el-input v-model="projectDetail.name" @blur="checkEnglishName"> </el-input>
+            <el-input v-model="projectDetail.name" @blur="checkEnglishName"></el-input>
           </el-form-item>
           <el-form-item
             label="项目描述"
@@ -50,14 +55,18 @@
             prop="name"
             :rules="[{ required: true, message: '请输入项目描述', trigger: 'blur' }]"
           >
-            <el-input v-model="projectDetail.description"> </el-input>
+            <el-input v-model="projectDetail.description"></el-input>
           </el-form-item>
           <el-form-item
             label="代码模板"
             :label-width="labelWidth"
             :rules="[{ required: true, message: '请选择代码模板', trigger: 'blur' }]"
           >
-            <el-select v-model="projectDetail.templateId" placeholder="请选择代码模板" default-first-option>
+            <el-select
+              v-model="projectDetail.templateId"
+              placeholder="请选择代码模板"
+              default-first-option
+            >
               <el-option
                 v-for="(item, index) in codeTemplateList"
                 :key="index"
@@ -104,9 +113,9 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref, watch } from 'vue';
-import ProjectItem from '@/views/project-management/components/ProjectItem.vue';
-import PackagedPagination from '@/components/pagination/Index.vue';
+import { defineComponent, onMounted, ref, watch } from "vue";
+import ProjectItem from "@/views/project-management/components/ProjectItem.vue";
+import PackagedPagination from "@/components/pagination/Index.vue";
 import {
   getProjectListData,
   projectDetail,
@@ -115,22 +124,22 @@ import {
   getAllTems,
   codeTemplateList,
   deleteProject,
-  pageInfo,
-} from '@/views/project-management/utils/project-data-utils';
-import Message from 'element-plus/es/el-message';
-import fetchOwnersSelect from '@/components/fetchOwnersSelect/Index.vue';
-import { projectNameTest } from '@/api/project/project';
+  pageInfo
+} from "@/views/project-management/utils/project-data-utils";
+import Message from "element-plus/es/el-message";
+import fetchOwnersSelect from "@/components/fetchOwnersSelect/Index.vue";
+import { projectNameTest } from "@/api/project/project";
 
 export default defineComponent({
-  name: 'ProjectList',
+  name: "ProjectList",
   components: {
     ProjectItem,
     fetchOwnersSelect,
-    PackagedPagination,
+    PackagedPagination
   },
   data() {
     return {
-      labelWidth: '80px',
+      labelWidth: "80px"
     };
   },
   setup() {
@@ -141,8 +150,8 @@ export default defineComponent({
     const closeDialog = () => {
       addDialogVisible.value = false;
       const keys = Object.keys(projectDetail);
-      keys.forEach((x) => {
-        projectDetail[x] = '';
+      keys.forEach(x => {
+        projectDetail[x] = "";
       });
       projectDetail.license = 1;
       projectDetail.level = 3;
@@ -154,13 +163,13 @@ export default defineComponent({
 
     const submitProjectDetail = () => {
       if (!projectDetail.name) {
-        return Message.error('项目名称不得为空');
+        return Message.error("项目名称不得为空");
       }
       if (!projectDetail.description) {
-        return Message.error('项目描述不得为空');
+        return Message.error("项目描述不得为空");
       }
       if (!projectDetail.templateId) {
-        return Message.error('代码模板不得为空');
+        return Message.error("代码模板不得为空");
       }
       addProjectData().then(() => {
         pageInfo.page = 1;
@@ -189,10 +198,10 @@ export default defineComponent({
     watch(
       () => projectParentDiv,
       (nn: any) => {
-        console.log(nn, 'div变化了');
-      },
+        console.log(nn, "div变化了");
+      }
     );
-    const paddings = ref('0px');
+    const paddings = ref("0px");
     const getPaddings = () => {
       const width = projectParentDiv.value.clientWidth - 20;
       paddings.value = `${Math.abs((width % 290) / 2) - 10}px`;
@@ -227,9 +236,9 @@ export default defineComponent({
       setOwner,
       projectParentDiv,
       paddings,
-      checkEnglishName,
+      checkEnglishName
     };
-  },
+  }
 });
 </script>
 

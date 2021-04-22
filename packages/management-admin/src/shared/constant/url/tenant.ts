@@ -8,4 +8,5 @@ export default {
   CREATE_TENANT: ['/tenants', '/mock/services/delete.json'],
   UPDATE_TENT: ['/tenants/_', 'mock/services/delete.json'],
   VALIDATE_NAME: ['/tenants/name/usable', 'mock/services/validate.json'],
+  VALIDATE_LICENSE: ['/tenants/license/usable', 'mock/services/validate.json'],
 };

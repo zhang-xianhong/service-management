@@ -7,6 +7,8 @@
       :current-page="page"
       :page-sizes="[1, 5, 10, 20, 50]"
       :page-size="pageSize"
+      :total="total"
+      :pager-count="5"
       layout="sizes, prev, pager, next, jumper"
       v-bind="$attrs"
     >

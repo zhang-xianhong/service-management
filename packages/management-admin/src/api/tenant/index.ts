@@ -26,3 +26,6 @@ export const updateTenant: (id: string, payload: any) => Promise<SuccessResponse
 
 export const validateCompanyName: (name: string) => Promise<SuccessResponse<any>> = (name: string) =>
   request.post(getUrl(URL.tenant.VALIDATE_NAME), { name });
+
+export const validateLicense: (license: string) => Promise<SuccessResponse<any>> = (license: string) =>
+  request.post(getUrl(URL.tenant.VALIDATE_LICENSE), { license });
