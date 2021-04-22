@@ -93,7 +93,6 @@ export default defineComponent({
     const jump2detail = () => {
       proxy.$router.push({
         path: `/project-management/project-detail/${props.dataObj.id}`,
-        query: { detailName: props.dataObj.name },
       });
     };
 

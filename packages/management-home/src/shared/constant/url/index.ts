@@ -4,6 +4,7 @@ import project from './project';
 import service from './service';
 import tenant from './tenant';
 import file from './file';
+import auth from './auth';
 
 export default {
   schema,
@@ -12,4 +13,5 @@ export default {
   service,
   tenant,
   file,
+  auth,
 };

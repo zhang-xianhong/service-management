@@ -29,7 +29,7 @@ export default function() {
   // 启动
   const start = () => {
     console.log('启动');
-    ElMessageBox.confirm(`确定启动此服务, 是否继续?`, '提示', {
+    ElMessageBox.confirm(`请确认此服务已初始化, 是否继续?`, '提示', {
       confirmButtonText: '确定',
       cancelButtonText: '取消',
       type: 'warning',

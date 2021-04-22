@@ -25,14 +25,14 @@
       >
         <el-table-column type="selection" width="55"> </el-table-column>
         <el-table-column type="index" width="50" label="序号"> </el-table-column>
-        <el-table-column property="name" label="服务名称">
+        <el-table-column property="name" label="服务英文名">
           <template #default="scope">
             <router-link :to="{ path: `service-list/detail/${scope.row.id}`, query: { detailName: scope.row.name } }">{{
               scope.row.name
             }}</router-link>
           </template>
         </el-table-column>
-        <el-table-column property="description" label="服务描述"></el-table-column>
+        <el-table-column property="description" label="服务中文名"></el-table-column>
         <el-table-column property="ownerstr" label="负责人"> </el-table-column>
         <el-table-column property="status" label="服务状态">
           <template #default="scope">
@@ -93,17 +93,17 @@
       <div class="add-service-set">
         <el-form :model="serviceDetail">
           <el-form-item
-            label="服务名称"
+            label="服务英文名"
             :label-width="labelWidth"
             prop="name"
             :rules="[{ required: true, message: '请输入服务名称', trigger: 'blur' }]"
           >
-            <el-input v-model="serviceDetail.name">
+            <el-input v-model="serviceDetail.name" @blur="checkEnglishName">
               <template #prepend>srv-</template>
             </el-input>
           </el-form-item>
           <el-form-item
-            label="服务描述"
+            label="服务中文名"
             prop="description"
             :label-width="labelWidth"
             :rules="[{ required: true, message: '请输入服务描述', trigger: 'blur' }]"
@@ -141,14 +141,14 @@
       </div>
       <template #footer>
         <span class="dialog-footer">
+          <el-button type="primary" @click="addServiceByForm">提 交</el-button>
           <el-button
             @click="
               addServiceDialog = false;
               clearDialog();
             "
-            >取 消</el-button
+            >关 闭</el-button
           >
-          <el-button type="primary" @click="addServiceByForm">确 定</el-button>
         </span>
       </template>
     </el-dialog>
@@ -207,7 +207,7 @@ import {
   allService,
   ownersMap,
 } from './utils/service-data-utils';
-import { addService } from '@/api/servers';
+import { addService, serviceNameTest } from '@/api/servers';
 import Message from 'element-plus/es/el-message';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { computeStatusLabel, statusColor } from '@/views/service-management/business-service/utils/service-status-map';
@@ -454,6 +454,13 @@ export default defineComponent({
       serviceDetail.owner = res;
     };
 
+    const checkEnglishName = () => {
+      if (!serviceDetail.name) {
+        return;
+      }
+      serviceNameTest({ name: `srv-${serviceDetail.name}` });
+    };
+
     return {
       serviceTableList,
       serviceDetail,
@@ -503,6 +510,7 @@ export default defineComponent({
       ownersMap,
       setOwner,
       refreshMess,
+      checkEnglishName,
     };
   },
 });
@@ -555,6 +563,7 @@ export default defineComponent({
   width: 100%;
   display: block;
   text-align: center;
+  margin-bottom: 20px;
 }
 .black-hovers {
   width: 100vw;

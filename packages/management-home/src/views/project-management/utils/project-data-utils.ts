@@ -41,7 +41,6 @@ export const addProjectData = () => addProject(projectDetail);
 
 export const getAllTems = () =>
   getAllTemplates().then((res) => {
-    console.log(res);
     codeTemplateList.value = res.data;
   });
 

@@ -15,7 +15,7 @@
         </el-input>
       </div>
     </div>
-    <div class="project-list_content">
+    <div class="project-list_content" ref="projectParentDiv" :style="{ paddingLeft: paddings }">
       <project-item
         v-for="item in projectList"
         :data-obj="item"
@@ -43,7 +43,7 @@
             prop="name"
             :rules="[{ required: true, message: '请输入英文名称', trigger: 'blur' }]"
           >
-            <el-input v-model="projectDetail.name"> </el-input>
+            <el-input v-model="projectDetail.name" @blur="checkEnglishName"> </el-input>
           </el-form-item>
           <el-form-item
             label="项目描述"
@@ -105,7 +105,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue';
+import { defineComponent, onMounted, ref, watch } from 'vue';
 import ProjectItem from '@/views/project-management/components/ProjectItem.vue';
 
 import {
@@ -120,6 +120,7 @@ import {
 } from '@/views/project-management/utils/project-data-utils';
 import Message from 'element-plus/es/el-message';
 import fetchOwnersSelect from '@/components/fetchOwnersSelect/Index.vue';
+import { projectNameTest } from '@/api/project/project';
 
 export default defineComponent({
   name: 'ProjectList',
@@ -135,6 +136,7 @@ export default defineComponent({
   setup() {
     const addDialogVisible = ref(false);
     const persons = ref([] as any);
+    const projectParentDiv = ref(null as any);
 
     const closeDialog = () => {
       addDialogVisible.value = false;
@@ -183,6 +185,31 @@ export default defineComponent({
     const setOwner = (res: string) => {
       projectDetail.owner = res;
     };
+
+    watch(
+      () => projectParentDiv,
+      (nn: any) => {
+        console.log(nn, 'div变化了');
+      },
+    );
+    const paddings = ref('0px');
+    const getPaddings = () => {
+      const width = projectParentDiv.value.clientWidth - 20;
+      paddings.value = `${Math.abs((width % 290) / 2) - 10}px`;
+    };
+    onMounted(() => {
+      getPaddings();
+      window.onresize = () => {
+        getPaddings();
+      };
+    });
+    const checkEnglishName = () => {
+      console.log(projectDetail.name);
+      if (!projectDetail.name) {
+        return;
+      }
+      projectNameTest({ name: projectDetail.name });
+    };
     return {
       addDialogVisible,
       projectDetail,
@@ -198,6 +225,9 @@ export default defineComponent({
       searchProject,
       getProjectListData,
       setOwner,
+      projectParentDiv,
+      paddings,
+      checkEnglishName,
     };
   },
 });

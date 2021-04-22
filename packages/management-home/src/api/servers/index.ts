@@ -52,3 +52,6 @@ export const startService: (payload: object) => Promise<SuccessResponse<any>> = 
 
 export const stopService: (payload: object) => Promise<SuccessResponse<any>> = (payload: any) =>
   request.post(getUrl(URL.service.STOP_SERVICE), payload, { timeout: 60000 });
+
+export const serviceNameTest = (payload: any): Promise<SuccessResponse<any>> =>
+  request.post(getUrl(URL.service.SERVICE_NAME_TEST), payload);

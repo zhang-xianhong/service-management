@@ -25,6 +25,7 @@ export function refreshServiceList(payload = {} as any) {
   if (payload) {
     data = { ...payload };
     data.tags = payload.tags ? payload.tags.join(',') : '';
+    data.classification = payload.classification ? payload.classification.join(',') : '';
   }
   Object.keys(data).forEach((x) => {
     if (!data[x]) {
@@ -33,12 +34,14 @@ export function refreshServiceList(payload = {} as any) {
   });
   return getServiceList(data).then((res) => {
     ownersMap.value = {};
-    res.data.ownerUsers.forEach((x: any) => {
-      ownersMap.value[x.id] = x;
-    });
+    if (res.data.ownerUsers) {
+      res.data.ownerUsers.forEach((x: any) => {
+        ownersMap.value[x.id] = x;
+      });
+    }
     if (res.data.rows) {
       res.data.rows.forEach((x: any) => {
-        x.name = x.name.replace(/^srv-/g, '');
+        x.name = x.name ? x.name.replace(/^srv-/g, '') : 'service name not found';
         const arr = x.classification.split(',');
         x.classification = arr
           .map((x: any) => sortMap.value[x])
@@ -56,6 +59,7 @@ export function refreshServiceList(payload = {} as any) {
           .map((x: any) => ownersMap.value[x.userId]?.displayName)
           .filter((x: any) => x)
           .join(',');
+        x.source = x.source || '新建';
       });
     }
     serviceTableList.list = res.data.rows;
