@@ -52,8 +52,18 @@ export default function() {
 
   // 停止
   const stop = () => {
-    console.log('停止');
-    stopServiceData();
+    ElMessageBox.confirm(`请确认停止此服务, 是否继续?`, '提示', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning',
+    })
+      .then(() => stopServiceData())
+      .catch(() => {
+        Message({
+          type: 'info',
+          message: '已取消操作',
+        });
+      });
   };
 
   // 发布
