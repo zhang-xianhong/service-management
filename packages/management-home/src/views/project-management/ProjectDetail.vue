@@ -44,7 +44,7 @@
         </el-scrollbar>
       </div>
       <div class="user-table">
-        <el-table :data="userList" height="calc(100% - 50px)">
+        <el-table :data="userList" height="100%">
           <el-table-column type="index" width="55"></el-table-column>
           <el-table-column v-for="column in columns" :key="column.prop" v-bind="column"></el-table-column>
           <el-table-column prop="operator" width="55">
@@ -53,7 +53,6 @@
             </template>
           </el-table-column>
         </el-table>
-        <packaged-pagination :hide-on-single-page="false" :total="userList.length"></packaged-pagination>
       </div>
     </el-row>
     <tree-selector
@@ -76,7 +75,6 @@ import BasicInfoForm from './components/BasicInfoForm.vue';
 import { ElMessageBox } from 'element-plus';
 import { getMemberList, getProjectDetail, deleteMember } from '@/api/project/project';
 import { getTenentDepartment } from '@/api/tenant';
-import PackagedPagination from '@/components/pagination/Index.vue';
 const userStatus = {
   '-1': '冻结',
   0: '启用',
@@ -92,7 +90,7 @@ export default {
       required: true,
     },
   },
-  components: { TreeSelector, BasicInfoForm, PackagedPagination },
+  components: { TreeSelector, BasicInfoForm },
   setup(props: any) {
     provide('projectId', props.id);
     const treeSelectorRef: any = ref(null);
