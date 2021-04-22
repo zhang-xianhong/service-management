@@ -186,7 +186,7 @@ export default {
       const { data } = await getServiceList({});
       data.rows.forEach((x: any) => {
         // eslint-disable-next-line no-param-reassign
-        x.name = x.name.replace(/^srv-/g, '');
+        x.name = x.name ? x.name.replace(/^srv-/g, '') : 'service name not found';
       });
       serverList.push(...(data.rows || []));
     };
