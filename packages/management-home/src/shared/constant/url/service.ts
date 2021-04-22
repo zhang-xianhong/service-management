@@ -14,4 +14,5 @@ export default {
   POST_CHANGES_APPLY: ['/services/changes/apply'],
   START_SERVICE: ['/services/start'],
   STOP_SERVICE: ['/services/stop'],
+  SERVICE_NAME_TEST: ['/services/name/usable'],
 };

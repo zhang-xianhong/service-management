@@ -36,7 +36,27 @@ export const baseRoutes: Array<RouteRecordRaw> = [
 const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
-    redirect: '/project-management',
+    redirect: '/tenant-management',
+  },
+  {
+    path: '/tenant-management',
+    redirect: '/tenant-list',
+    component: Layout,
+    meta: {
+      isRootLevel: true,
+    },
+    children: [
+      {
+        path: 'tenant-detail',
+        component: () => import(/* webpackChunkName: "tenant" */ '@/views/tenant-management/Index.vue'),
+        name: 'TenantList',
+        meta: {
+          title: '租户管理',
+          icon: 'el-icon-eleme',
+          isRootLevel: false,
+        },
+      },
+    ],
   },
   // {
   //   path: '/',

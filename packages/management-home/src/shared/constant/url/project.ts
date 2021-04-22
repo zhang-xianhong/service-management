@@ -9,4 +9,5 @@ export default {
   POST_ADD_PROJECT: ['/projects'],
   DELETE_PROJECT: ['/projects/delete'],
   IMAGE_UPLOAD: ['/files/upload'],
+  PROJECT_NAME_TEST: ['/projects/name/usable'],
 };

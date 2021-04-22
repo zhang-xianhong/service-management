@@ -7,32 +7,33 @@
       :current-page="page"
       :page-sizes="[1, 5, 10, 20, 50]"
       :page-size="pageSize"
-      :pager-count="5"
       :total="total"
+      :pager-count="5"
       layout="sizes, prev, pager, next, jumper"
       v-bind="$attrs"
-    ></el-pagination>
+    >
+    </el-pagination>
   </div>
 </template>
 
 <script lang="ts">
 export default {
-  name: "PackagedPagination",
-  emits: ["size-change", "current-change"],
+  name: 'PackagedPagination',
+  emits: ['size-change', 'current-change'],
   props: {
     page: {
       type: Number,
-      default: 1
+      default: 1,
     },
     pageSize: {
       type: Number,
-      default: 10
+      default: 10,
     },
     total: {
       type: Number,
-      default: 0
-    }
-  }
+      default: 0,
+    },
+  },
 };
 </script>
 
@@ -53,7 +54,7 @@ export default {
 <style lang="scss" scoped>
 .packaged-pagination {
   &::after {
-    content: "";
+    content: '';
     clear: both;
   }
   &__total {

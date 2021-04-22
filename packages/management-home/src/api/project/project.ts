@@ -23,5 +23,9 @@ export const updateMembers = (payload: any): Promise<SuccessResponse<any>> =>
 
 export const deleteMember = (payload: any): Promise<SuccessResponse<any>> =>
   axios.post(getUrl(project.DELETE_MEMBER, payload.projectId), payload);
+
 export const imgUpload = (payload: any): Promise<SuccessResponse<any>> =>
   axios.post(getUrl(project.IMAGE_UPLOAD), payload);
+
+export const projectNameTest = (payload: any): Promise<SuccessResponse<any>> =>
+  axios.post(getUrl(project.PROJECT_NAME_TEST), payload);

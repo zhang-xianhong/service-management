@@ -7,7 +7,7 @@
       <!--      <bread-curmb></bread-curmb>-->
     </div>
     <div class="position-right-bar">
-      <el-dropdown trigger="click" class="header-title">
+      <el-dropdown v-if="false" trigger="click" class="header-title">
         <el-badge :value="5" :max="99" class="item">
           <i class="el-icon-message-solid header-title-message-icon"></i>
         </el-badge>
@@ -27,7 +27,7 @@
         </template>
       </el-dropdown>
       <el-dropdown trigger="click" class="header-title">
-        <span class="el-dropdown-link"> <i class="el-icon-s-unfold header-title-object-icon3"></i>项目 </span>
+        <span class="el-dropdown-link"> <i class="el-icon-s-unfold header-title-object-icon3"></i> XXX项目 </span>
         <template #dropdown>
           <el-dropdown-menu>
             <el-dropdown-item v-for="(project, index) in projectList" :key="index">{{ project.name }}</el-dropdown-item>
@@ -42,9 +42,9 @@
         </span>
         <template #dropdown>
           <el-dropdown-menu>
-            <el-dropdown-item icon="el-icon-edit">用户设置</el-dropdown-item>
-            <el-dropdown-item icon="el-icon-map-location">登录地点</el-dropdown-item>
-            <el-dropdown-item icon="el-icon-s-custom">我的资产</el-dropdown-item>
+            <el-dropdown-item icon="el-icon-edit">用户管理</el-dropdown-item>
+            <!--            <el-dropdown-item icon="el-icon-map-location">登录地点</el-dropdown-item>-->
+            <!--            <el-dropdown-item icon="el-icon-s-custom">我的资产</el-dropdown-item>-->
             <el-dropdown-item icon="el-icon-info">关于</el-dropdown-item>
             <el-dropdown-item icon="el-icon-switch-button">登出</el-dropdown-item>
           </el-dropdown-menu>

@@ -1,58 +1,65 @@
 <template>
-  <el-table :data="tableData" style="width: 100%;" height="330" border>
-    <el-table-column label="序号" type="index" width="50"></el-table-column>
-    <el-table-column label="接口名称" prop="name">
-      <template #default="scope">
-        <el-input v-if="!scope.row.isSystem" v-model="scope.row.name" placeholder="请输入英文名称"></el-input>
-        <template v-else>{{ scope.row.name }}</template>
-      </template>
-    </el-table-column>
-    <el-table-column label="请求方式" prop="method">
-      <template #default="scope">
-        <el-select v-if="!scope.row.isSystem" v-model="scope.row.method" placeholder="请选择请求方式">
-          <el-option
-            v-for="(option, index) in requestMethodOptions"
-            :key="index"
-            :label="option.label"
-            :value="option.value"
-          ></el-option>
-        </el-select>
-        <template v-else>{{ getMethodName(scope.row.method) }}</template>
-      </template>
-    </el-table-column>
-    <el-table-column label="数据模型" prop="modelId">
-      <template #default="scope">
-        <el-select v-if="!scope.row.isSystem" v-model="scope.row.modelId" placeholder="请选择数据模型">
-          <el-option v-for="(model, index) in modelList" :key="index" :label="model.name" :value="model.id"></el-option>
-        </el-select>
-        <template v-else>{{ scope.row.modelName }}</template>
-      </template>
-    </el-table-column>
-    <el-table-column label="URL" prop="url">
-      <template #default="scope">
-        <el-input v-if="!scope.row.isSystem" v-model="scope.row.url" placeholder="请输入URL"></el-input>
-        <template v-else>{{ scope.row.url }}</template>
-      </template>
-    </el-table-column>
-    <el-table-column label="接口描述" prop="description">
-      <template #default="scope">
-        <el-input v-if="!scope.row.isSystem" v-model="scope.row.description" placeholder="请填写接口描述"></el-input>
-        <template v-else>{{ scope.row.description }}</template>
-      </template>
-    </el-table-column>
-    <el-table-column label="操作" width="120">
-      <template #default="scope">
-        <template v-if="!scope.row.isSystem">
-          <a class="operation-link" @click="openParamsModel(scope.$index, scope.row)">参数</a>
-          <a class="operation-link" @click="addItem(scope.$index)">添加</a>
-          <a class="operation-link" @click="deleteItem(scope.$index, scope.row)">删除</a>
+  <div style="background: #fff;">
+    <el-table :data="tableData" style="width: 100%;" height="330" :row-class-name="tableRowClassName">
+      <el-table-column label="序号" type="index" width="50"></el-table-column>
+      <el-table-column label="接口名称" prop="name">
+        <template #default="scope">
+          <el-input v-if="!scope.row.isSystem" v-model="scope.row.name" placeholder="请输入英文名称"></el-input>
+          <template v-else>{{ scope.row.name }}</template>
         </template>
-      </template>
-    </el-table-column>
-  </el-table>
-  <div class="ports-configuration__operations">
-    <el-button type="primary" @click="updateApis">保存</el-button>
-    <el-button @click="cancelChange">取消</el-button>
+      </el-table-column>
+      <el-table-column label="请求方式" prop="method">
+        <template #default="scope">
+          <el-select v-if="!scope.row.isSystem" v-model="scope.row.method" placeholder="请选择请求方式">
+            <el-option
+              v-for="(option, index) in requestMethodOptions"
+              :key="index"
+              :label="option.label"
+              :value="option.value"
+            ></el-option>
+          </el-select>
+          <template v-else>{{ getMethodName(scope.row.method) }}</template>
+        </template>
+      </el-table-column>
+      <el-table-column label="数据模型" prop="modelId">
+        <template #default="scope">
+          <el-select v-if="!scope.row.isSystem" v-model="scope.row.modelId" placeholder="请选择数据模型">
+            <el-option
+              v-for="(model, index) in modelList"
+              :key="index"
+              :label="model.name"
+              :value="model.id"
+            ></el-option>
+          </el-select>
+          <template v-else>{{ scope.row.modelName === 'all' ? '通用' : scope.row.modelName }}</template>
+        </template>
+      </el-table-column>
+      <el-table-column label="URL" prop="url">
+        <template #default="scope">
+          <el-input v-if="!scope.row.isSystem" v-model="scope.row.url" placeholder="请输入URL"></el-input>
+          <template v-else>{{ scope.row.url }}</template>
+        </template>
+      </el-table-column>
+      <el-table-column label="接口描述" prop="description">
+        <template #default="scope">
+          <el-input v-if="!scope.row.isSystem" v-model="scope.row.description" placeholder="请填写接口描述"></el-input>
+          <template v-else>{{ scope.row.description }}</template>
+        </template>
+      </el-table-column>
+      <el-table-column label="操作" width="120">
+        <template #default="scope">
+          <template v-if="!scope.row.isSystem">
+            <a class="operation-link" @click="openParamsModel(scope.$index, scope.row)">参数</a>
+            <a class="operation-link" @click="addItem(scope.$index)">添加</a>
+            <a class="operation-link" @click="deleteItem(scope.$index, scope.row)">删除</a>
+          </template>
+        </template>
+      </el-table-column>
+    </el-table>
+    <div class="ports-configuration__operations">
+      <el-button type="primary" @click="updateApis">保存</el-button>
+      <el-button @click="cancelChange">取消</el-button>
+    </div>
   </div>
   <!-- 参数配置弹窗 -->
   <el-dialog title="参数配置" v-model="dialogVisible" width="50%">
@@ -179,14 +186,18 @@ export default defineComponent({
     // 初始化表格数据
     const initializeTableData = async () => {
       const { data } = await getServiceApis(props.id);
-      tableData.value = [...data, { name: '', method: '', url: '', description: '', isSystem: 0 }];
+      tableData.value = [
+        { name: '', method: '', url: '', description: '', isSystem: 0 },
+        ...data.filter((item: any) => item.isSystem === 0),
+        ...data.filter((item: any) => item.isSystem === 1),
+      ];
     };
 
     initializeTableData();
 
     // 添加属性
     const addItem = (index: number) => {
-      tableData.value.splice(index + 1, 0, {
+      tableData.value.splice(index, 0, {
         name: '',
         method: '',
         url: '',
@@ -294,6 +305,13 @@ export default defineComponent({
       }
     };
 
+    // 表单列类名生成
+    const tableRowClassName = ({ row }: { row: any }) => {
+      if (row.isSystem === 1) {
+        return 'system-row';
+      }
+    };
+
     return {
       ParamTypeEnum,
       tableData,
@@ -311,10 +329,17 @@ export default defineComponent({
       updateApis,
       cancelChange,
       dataTypeOptions,
+      tableRowClassName,
     };
   },
 });
 </script>
+
+<style lang="scss">
+.system-row {
+  background: #f5f7fa !important;
+}
+</style>
 
 <style scoped lang="scss">
 .operation-link {
@@ -322,7 +347,7 @@ export default defineComponent({
 }
 .ports-configuration__operations {
   display: flex;
-  margin-top: 8px;
+  padding: 12px;
   justify-content: flex-end;
 }
 </style>

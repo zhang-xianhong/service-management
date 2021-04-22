@@ -1,10 +1,16 @@
 <template>
-  <el-row>企业信息</el-row>
-  <el-row style="padding:0px 20px;">
+  <el-row style="font-weight:bolder">企业信息</el-row>
+  <el-row style="padding:0px 20px;font-size: 12px">
     <el-form ref="formRef" :model="companyInfo" :rules="rules" inline label-width="140px" label-position="left">
       <el-form-item prop="name" class="form-item" label="企业名称" required>
         <template v-if="isEdit">{{ companyInfo.name }}</template>
-        <el-input v-else v-model="companyInfo.name" style="width: 400px" placeholder="请输入企业名称"></el-input>
+        <el-input
+          v-else
+          v-model="companyInfo.name"
+          style="width: 400px"
+          placeholder="请输入企业名称"
+          @blur="validateName"
+        ></el-input>
       </el-form-item>
       <el-form-item prop="nameShort" class="form-item" label="企业简称">
         <el-input v-model="companyInfo.nameShort" style="width: 400px" placeholder="请输入企业简称"></el-input>
@@ -67,9 +73,16 @@
       </el-form-item>
       <el-form-item prop="license" label="营业执照号" required style="display:block;">
         <template v-if="isEdit">{{ companyInfo.license }}</template>
-        <el-input v-else v-model="companyInfo.license" style="width: 400px" placeholder="请输入营业执照号"></el-input>
+        <el-input
+          v-else
+          v-model="companyInfo.license"
+          style="width: 400px"
+          placeholder="请输入营业执照号"
+          @blur="validateLicenseId"
+        ></el-input>
       </el-form-item>
       <el-form-item prop="licenseUrl" class="form-item" label="营业执照" required>
+        <template v-slot:label>营业执照<i class="el-icon-question info-icon"></i></template>
         <img v-if="licenseUrl" :src="licenseUrl" class="avatar" />
         <el-upload
           v-else
@@ -78,18 +91,21 @@
           accept=".jpg,.bmp,.png,jpeg"
           :show-file-list="false"
           :before-upload="beforeUpload"
+          @error="uploadFailed"
           @success="licenseUploadSuccess"
         >
           <i class="el-icon-plus avatar-uploader-icon"></i>
         </el-upload>
       </el-form-item>
-      <el-form-item prop="logoUrl" class="form-item" label="企业logo">
+      <el-form-item prop="logoUrl" class="form-item">
+        <template v-slot:label>企业logo<i class="el-icon-question info-icon"></i></template>
         <el-upload
           class="avatar-uploader"
           :action="IMAGE_UPLOAD"
           accept=".jpg,.bmp,.png,jpeg"
           :show-file-list="false"
           :before-upload="beforeUpload"
+          @error="uploadFailed"
           @success="logoUploadSuccess"
         >
           <img v-if="logoUrl" :src="logoUrl" class="avatar" />
@@ -109,6 +125,7 @@ import useCompanyInfo from '../utils/tenant-config';
 import { IMAGE_UPLOAD } from '@/shared/constant/file';
 import { SuccessResponse } from '@/types/response';
 import { getImageUrl } from '@/api/files';
+import { validateCompanyName, validateLicense } from '@/api/tenant';
 
 interface CompanyInfoInterface {
   name: string; // 企业名称
@@ -264,6 +281,14 @@ export default {
       }
     };
 
+    // 上传失败，请重新上传
+    const uploadFailed = () => {
+      (instance as any).proxy.$message({
+        type: 'error',
+        message: '上传失败，请重新上传！',
+      });
+    };
+
     // 企业logo上传成功回调
     const logoUploadSuccess = (res: SuccessResponse<any>, file: { raw: unknown }) => {
       if (res.code === 0 && res.data?.fileKey) {
@@ -286,6 +311,29 @@ export default {
       });
     };
 
+    // 企业名称校验
+    const validateName = async (el: any) => {
+      const { data } = await validateCompanyName(el.target.value);
+      if (!data.usable) {
+        (instance as any).proxy.$message({
+          type: 'error',
+          message: '企业名称已存在，请重新输入！',
+        });
+      }
+    };
+
+    // 营业执照号校验
+    const validateLicenseId = async (el: any) => {
+      console.log('hhhhhhh');
+      const { data } = await validateLicense(el.target.value);
+      if (!data.usable) {
+        (instance as any).proxy.$message({
+          type: 'error',
+          message: '营业执照号已存在，请重新输入！',
+        });
+      }
+    };
+
     return {
       IMAGE_UPLOAD,
       formRef,
@@ -304,9 +352,23 @@ export default {
       beforeUpload,
       licenseUploadSuccess,
       logoUploadSuccess,
+      uploadFailed,
+      validateName,
+      validateLicenseId,
     };
   },
 };
 </script>
 
-<style lang="scss"></style>
+<style lang="scss" scoped>
+.info-icon {
+  &:hover {
+    &::after {
+      content: '建议尺寸115x85';
+      position: absolute;
+      margin-top: -20px;
+      margin-left: -40px;
+    }
+  }
+}
+</style>

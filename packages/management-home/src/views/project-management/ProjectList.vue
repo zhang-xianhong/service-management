@@ -11,21 +11,19 @@
           v-model="pageInfo.keyword"
           suffix-icon="el-icon-search"
           @input="searchProject"
-        >
-        </el-input>
+        ></el-input>
       </div>
     </div>
-    <div style="background: #fff;">
-      <div class="project-list_content">
-        <project-item
-          v-for="item in projectList"
-          :data-obj="item"
-          :key="item.id"
-          @delete-project="deleteProject"
-          @reload-projects="getProjectListData"
-        ></project-item>
-      </div>
-      <!-- <el-pagination
+    <div class="project-list_content" ref="projectParentDiv" :style="{ paddingLeft: paddings }">
+      <project-item
+        v-for="item in projectList"
+        :data-obj="item"
+        :key="item.id"
+        @delete-project="deleteProject"
+        @reload-projects="getProjectListData"
+      ></project-item>
+    </div>
+    <packaged-pagination
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
       :current-page="pageInfo.page"
@@ -33,19 +31,14 @@
       :page-size="pageInfo.pageSize"
       layout="total, sizes, prev, pager, next, jumper"
       :total="pageInfo.total"
+    ></packaged-pagination>
+    <el-dialog
+      v-model="addDialogVisible"
+      title="新建项目"
+      width="500px"
+      @close="closeDialog"
+      destroy-on-close
     >
-    </el-pagination> -->
-      <packaged-pagination
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
-        :current-page="pageInfo.page"
-        :page-sizes="[1, 5, 10, 20, 50]"
-        :page-size="pageInfo.pageSize"
-        layout="total, sizes, prev, pager, next, jumper"
-        :total="pageInfo.total"
-      ></packaged-pagination>
-    </div>
-    <el-dialog v-model="addDialogVisible" title="新建项目" width="500px" @close="closeDialog" destroy-on-close>
       <div class="add-project-dialog">
         <el-form :model="projectDetail">
           <el-form-item
@@ -54,7 +47,7 @@
             prop="name"
             :rules="[{ required: true, message: '请输入英文名称', trigger: 'blur' }]"
           >
-            <el-input v-model="projectDetail.name"> </el-input>
+            <el-input v-model="projectDetail.name" @blur="checkEnglishName"></el-input>
           </el-form-item>
           <el-form-item
             label="项目描述"
@@ -62,14 +55,18 @@
             prop="name"
             :rules="[{ required: true, message: '请输入项目描述', trigger: 'blur' }]"
           >
-            <el-input v-model="projectDetail.description"> </el-input>
+            <el-input v-model="projectDetail.description"></el-input>
           </el-form-item>
           <el-form-item
             label="代码模板"
             :label-width="labelWidth"
             :rules="[{ required: true, message: '请选择代码模板', trigger: 'blur' }]"
           >
-            <el-select v-model="projectDetail.templateId" placeholder="请选择代码模板" default-first-option>
+            <el-select
+              v-model="projectDetail.templateId"
+              placeholder="请选择代码模板"
+              default-first-option
+            >
               <el-option
                 v-for="(item, index) in codeTemplateList"
                 :key="index"
@@ -86,9 +83,9 @@
             :label-width="labelWidth"
             :rules="[{ required: true, message: '请输入项目级别', trigger: 'blur' }]"
           >
-            <el-radio v-model="projectDetail.level" :label="1">统一</el-radio>
-            <el-radio v-model="projectDetail.level" :label="2">行业</el-radio>
-            <el-radio v-model="projectDetail.level" :label="3">租户</el-radio>
+            <el-radio v-model="projectDetail.level" :label="1">通用级</el-radio>
+            <el-radio v-model="projectDetail.level" :label="2">行业级</el-radio>
+            <el-radio v-model="projectDetail.level" :label="3">租户级</el-radio>
           </el-form-item>
           <el-form-item
             label="许可类型"
@@ -107,7 +104,7 @@
           </el-form-item>
         </el-form>
       </div>
-      <div class="dialog-footer">
+      <div class="project-list-dialog-footer">
         <el-button type="primary" @click="submitProjectDetail">确定</el-button>
         <el-button @click="closeDialog">取消</el-button>
       </div>
@@ -116,9 +113,9 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue';
-import ProjectItem from '@/views/project-management/components/ProjectItem.vue';
-import PackagedPagination from '@/components/pagination/Index.vue';
+import { defineComponent, onMounted, ref, watch } from "vue";
+import ProjectItem from "@/views/project-management/components/ProjectItem.vue";
+import PackagedPagination from "@/components/pagination/Index.vue";
 import {
   getProjectListData,
   projectDetail,
@@ -127,32 +124,34 @@ import {
   getAllTems,
   codeTemplateList,
   deleteProject,
-  pageInfo,
-} from '@/views/project-management/utils/project-data-utils';
-import Message from 'element-plus/es/el-message';
-import fetchOwnersSelect from '@/components/fetchOwnersSelect/Index.vue';
+  pageInfo
+} from "@/views/project-management/utils/project-data-utils";
+import Message from "element-plus/es/el-message";
+import fetchOwnersSelect from "@/components/fetchOwnersSelect/Index.vue";
+import { projectNameTest } from "@/api/project/project";
 
 export default defineComponent({
-  name: 'ProjectList',
+  name: "ProjectList",
   components: {
     ProjectItem,
     fetchOwnersSelect,
-    PackagedPagination,
+    PackagedPagination
   },
   data() {
     return {
-      labelWidth: '80px',
+      labelWidth: "80px"
     };
   },
   setup() {
     const addDialogVisible = ref(false);
     const persons = ref([] as any);
+    const projectParentDiv = ref(null as any);
 
     const closeDialog = () => {
       addDialogVisible.value = false;
       const keys = Object.keys(projectDetail);
-      keys.forEach((x) => {
-        projectDetail[x] = '';
+      keys.forEach(x => {
+        projectDetail[x] = "";
       });
       projectDetail.license = 1;
       projectDetail.level = 3;
@@ -164,13 +163,13 @@ export default defineComponent({
 
     const submitProjectDetail = () => {
       if (!projectDetail.name) {
-        return Message.error('项目名称不得为空');
+        return Message.error("项目名称不得为空");
       }
       if (!projectDetail.description) {
-        return Message.error('项目描述不得为空');
+        return Message.error("项目描述不得为空");
       }
       if (!projectDetail.templateId) {
-        return Message.error('代码模板不得为空');
+        return Message.error("代码模板不得为空");
       }
       addProjectData().then(() => {
         pageInfo.page = 1;
@@ -195,6 +194,31 @@ export default defineComponent({
     const setOwner = (res: string) => {
       projectDetail.owner = res;
     };
+
+    watch(
+      () => projectParentDiv,
+      (nn: any) => {
+        console.log(nn, "div变化了");
+      }
+    );
+    const paddings = ref("0px");
+    const getPaddings = () => {
+      const width = projectParentDiv.value.clientWidth - 20;
+      paddings.value = `${Math.abs((width % 290) / 2) - 10}px`;
+    };
+    onMounted(() => {
+      getPaddings();
+      window.onresize = () => {
+        getPaddings();
+      };
+    });
+    const checkEnglishName = () => {
+      console.log(projectDetail.name);
+      if (!projectDetail.name) {
+        return;
+      }
+      projectNameTest({ name: projectDetail.name });
+    };
     return {
       addDialogVisible,
       projectDetail,
@@ -210,8 +234,11 @@ export default defineComponent({
       searchProject,
       getProjectListData,
       setOwner,
+      projectParentDiv,
+      paddings,
+      checkEnglishName
     };
-  },
+  }
 });
 </script>
 
@@ -246,12 +273,12 @@ export default defineComponent({
       width: 288px;
     }
   }
-  .dialog-footer {
-    text-align: center;
-  }
   .project-list_content {
     display: flex;
     flex-wrap: wrap;
   }
+}
+.project-list-dialog-footer {
+  text-align: center;
 }
 </style>
