@@ -22,7 +22,17 @@
           "logoUrl": "",
           "status": 0
       },
-      "users": [],
+      "users": [{
+        "deptId": 19,
+        "displayName": "test user",
+        "id": 32,
+        "userName": "test user"
+      }, {
+        "deptId": 20,
+        "displayName": "test user yo",
+        "id": 82,
+        "userName": "test user yo"
+      }],
       "depts": [
           {
               "deptId": 19,

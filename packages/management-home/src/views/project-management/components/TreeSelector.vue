@@ -14,13 +14,13 @@
             ></el-input>
           </div>
           <div class="tree-wrapper" v-loading="!searchDone">
-            <el-tree v-if="!searchStr" :default-expand-all="false" :load="loadNode" lazy :props="treeProps">
+            <el-tree v-if="!searchStr && dataDone" :default-expand-all="false" :load="loadNode" lazy :props="treeProps">
               <template #default="{ data, node }">
                 <el-checkbox
-                  v-model="checkedUser[data.id]"
+                  v-model="data.checked"
+                  :disabled="data.disabled"
+                  :indeterminate="data.isIndeterminate"
                   @change="checkUser(data, node)"
-                  v-if="data.isLeaf"
-                  style="margin-left: -1em;"
                 ></el-checkbox>
                 {{ data.name }}
               </template>
@@ -34,11 +34,12 @@
             >
               <template #default="{ data, node }">
                 <el-checkbox
-                  v-model="checkedUser[data.id]"
+                  v-model="data.checked"
+                  :disabled="data.disabled"
+                  :indeterminate="data.isIndeterminate"
                   @change="checkUser(data, node)"
-                  v-if="data.isLeaf"
-                  style="margin-left: -1em;"
-                ></el-checkbox>
+                >
+                </el-checkbox>
                 {{ data.name }}
               </template>
             </el-tree>
@@ -46,12 +47,12 @@
         </div>
       </el-col>
       <el-col :span="10" :offset="2">
-        <div class="title">已选择({{ modelValue.length }})</div>
+        <div class="title">已选择({{ selectedUser.length }})</div>
         <div>
           <div class="field-label">{{ valueLabel }}</div>
           <div class="list-wrapper">
-            <div v-for="(user, $index) in modelValue" :key="$index">
-              <span>{{ user.displayName }}</span>
+            <div v-for="(user, $index) in selectedUser" :key="$index">
+              <span>{{ user.displayName || user.name }}</span>
               <span>{{ user.deptName }}</span>
               <i class="el-icon-error" style="float: right;" @click="remove(user)"></i>
             </div>
@@ -69,9 +70,9 @@
 </template>
 
 <script lang="ts">
+/* eslint-disable no-param-reassign */
 import _ from 'lodash/fp';
-import { computed, inject, ref, Ref } from 'vue';
-import { getTenentDepartment, queryInTenant } from '@/api/tenant';
+import { computed, inject, ref, Ref, watchEffect, nextTick } from 'vue';
 import { updateMembers } from '@/api/project/project';
 export default {
   name: 'TreeSelector',
@@ -88,20 +89,22 @@ export default {
       required: true,
       type: String,
     },
-    modelValue: {
-      required: true,
-      type: Array,
-    },
     role: {
       required: true,
       type: Object,
     },
+    checked: {
+      required: false,
+      type: Array,
+      default: () => [],
+    },
   },
-  emits: ['userChanged', 'update:modelValue'],
+  emits: ['userChanged'],
   setup(props: any, context: any) {
     const dialogVisible = ref(false);
     const projectId = inject('projectId') as string;
     const searchStr = ref('');
+    const selectedUser: Ref<Array<any>> = ref([]);
     const show = () => {
       dialogVisible.value = true;
     };
@@ -110,57 +113,102 @@ export default {
       children: 'children',
       isLeaf: 'isLeaf',
     };
-    const valueLabel = computed(() => `${props.option[0]?.name} - ${props.role?.label}`);
-    const loadNode = async (node: any, resolve: Function) => {
-      if (node.level === 0) {
-        resolve(props.option);
-      }
-      if (node.level === 1) {
-        resolve(node.data._children);
-      }
-      if (node.level > 1) {
-        const { code, data } = await getTenentDepartment({ deptId: node.data.value });
-        if (code === 0) {
-          const children = _.concat(
-            data.users.map((user: any) => ({ ...user, name: user.displayName, isLeaf: true })),
-            _.map((dept: any) => ({
-              value: dept.deptId,
-              name: dept.deptName,
-              isLeaf: false,
-            }))(data.depts),
-          );
-          resolve(children);
-        } else {
-          resolve([]);
+    const dataDone = ref(true);
+    const syncStatus = (node: any, needDisable = false) => {
+      if (node.parent) {
+        node.parent.checked = false;
+        if (
+          _.some((item: any) => item.isIndeterminate || item.checked)(node.parent._children || node.parent.children)
+        ) {
+          node.parent.isIndeterminate = true;
         }
+        if (_.every({ checked: true })(node.parent._children || node.parent.children)) {
+          node.parent.isIndeterminate = false;
+          node.parent.checked = true;
+          node.parent.disabled = needDisable;
+        }
+        syncStatus(node.parent);
       }
     };
-    const checkedUser = computed(() => {
-      const checked: Record<string, boolean> = {};
-      props.modelValue.forEach((user: any) => {
-        checked[user.id] = true;
+    const valueLabel = computed(() => `${props.option[0]?.name} - ${props.role?.label}`);
+    const setChecked = (treeOption: Array<any>, ids: Array<number>) => {
+      treeOption.forEach((treeNode: any) => {
+        if (treeNode.isLeaf) {
+          treeNode.isIndeterminate = false;
+          treeNode.checked = ids.includes(treeNode.id);
+          treeNode.disabled = treeNode.checked;
+        } else {
+          setChecked(treeNode._children, ids);
+        }
+        syncStatus(treeNode, true);
       });
-      return checked;
+    };
+    let copyOption: any;
+    watchEffect(() => {
+      dataDone.value = false;
+      const selectedUserId = _.map('id')(props.checked);
+      selectedUser.value = props.checked;
+      copyOption = _.cloneDeep(props.option);
+      setChecked(copyOption, selectedUserId);
+      nextTick(() => {
+        dataDone.value = true;
+      });
     });
-    const checkUser = (user: any, node: any) => {
-      const checked = _.find({ id: user.id })(props.modelValue);
-      if (!checked) {
-        context.emit(
-          'update:modelValue',
-          _.concat(props.modelValue, {
-            ...user,
-            deptName: node.parent.data.name,
-          }),
-        );
+    const loadNode = (node: any, resolve: Function) => {
+      if (node.level === 0) {
+        resolve(copyOption);
       } else {
-        context.emit('update:modelValue', _.reject({ id: user.id })(props.modelValue));
+        resolve(node.data._children);
+      }
+    };
+    const checkSingle = (user: any) => {
+      const { checked } = user;
+      if (checked) {
+        selectedUser.value = _.concat(selectedUser.value, user);
+      } else {
+        selectedUser.value = _.reject({ id: user.id })(selectedUser.value);
+      }
+      syncStatus(user);
+    };
+    const checkGroup = async (group: any) => {
+      let hasDisabled = false;
+      const getEditableMember = (nodeGroup: any, members: Array<any>) => {
+        nodeGroup.forEach((treeNode: any) => {
+          if (treeNode.disabled) {
+            hasDisabled = true;
+            return;
+          }
+          treeNode.checked = group.checked;
+          if (treeNode.isLeaf) {
+            members.push(treeNode);
+          } else {
+            getEditableMember(treeNode.children || treeNode._children, members);
+          }
+        });
+      };
+      const groupMembers: any[] = [];
+      getEditableMember(group.children || group._children, groupMembers);
+      if (!group.checked) {
+        selectedUser.value = _.differenceBy('id')(selectedUser.value)(groupMembers);
+        group.isIndeterminate = hasDisabled;
+      } else {
+        selectedUser.value = _.unionBy('id')(selectedUser.value)(groupMembers);
+        group.isIndeterminate = false;
+      }
+      syncStatus(group);
+    };
+    const checkUser = (user: any) => {
+      if (!user.isLeaf) {
+        checkGroup(user);
+      } else {
+        checkSingle(user);
       }
     };
     const submit = async () => {
       const { code } = await updateMembers({
         projectId,
         projectRoleId: props.role.id,
-        members: _.map('id')(props.modelValue),
+        members: _.map('id')(selectedUser.value),
       });
       if (code === 0) {
         dialogVisible.value = false;
@@ -175,55 +223,41 @@ export default {
     const searchResult: Ref<any> = ref([]);
     const searchDone = ref(true);
 
-    const loadSearchNode = async (node: any, resolve: Function) => {
-      if (node.level === 0) {
-        const searchTreeRes = _.concat(
-          searchResult.value.users.map((user: any) => ({ ...user, name: user.displayName, isLeaf: true })),
-          _.map((dept: any) => ({
-            value: dept.deptId,
-            name: dept.deptName,
-            isLeaf: false,
-          }))(searchResult.value.departments),
-        );
-        resolve(searchTreeRes);
-      }
-      if (node.level > 0) {
-        const { code, data } = await getTenentDepartment({ deptId: node.data.value });
-        if (code === 0) {
-          const children = _.concat(
-            data.users.map((user: any) => ({ ...user, name: user.displayName, isLeaf: true })),
-            _.map((dept: any) => ({
-              value: dept.deptId,
-              name: dept.deptName,
-              isLeaf: false,
-            }))(data.depts),
-          );
-          resolve(children);
-        } else {
-          resolve([]);
-        }
-      }
-    };
     const search = _.debounce(500)(async () => {
       if (!searchStr.value) return;
-      const { code, data } = await queryInTenant({ keyword: searchStr.value });
-      if (code === 0) {
-        searchResult.value = data;
-        searchDone.value = true;
-      }
+      const userArr: any[] = [];
+      const deptArr: any[] = [];
+      const getSearchRes = (searchStr: string, users: any[], depts: any[], nodeList: any[]) => {
+        nodeList.forEach((node: any) => {
+          if (RegExp(searchStr).test(node.name)) {
+            if (node.isLeaf) {
+              users.push(node);
+            } else {
+              depts.push(node);
+            }
+          }
+          node.isLeaf || getSearchRes(searchStr, users, depts, node.children || node._children);
+        });
+      };
+      getSearchRes(searchStr.value, userArr, deptArr, copyOption);
+      searchResult.value = [...userArr, ...deptArr];
+      searchDone.value = true;
     });
     const clearAndSearch = () => {
-      if (searchStr.value.length) {
-        searchDone.value = false;
-      } else {
-        searchDone.value = true;
-      }
+      searchDone.value = !searchStr.value;
       searchResult.value = [];
       search();
     };
+    const loadSearchNode = (node: any, resolve: Function) => {
+      if (node.level === 0) {
+        resolve(searchResult.value);
+      } else {
+        resolve(node.data._children);
+      }
+    };
 
     const remove = (user: any) => {
-      context.emit('update:modelValue', _.reject({ id: user.id })(props.modelValue));
+      selectedUser.value = _.reject({ id: user.id })(selectedUser.value);
     };
 
     return {
@@ -231,16 +265,17 @@ export default {
       show,
       loadNode,
       treeProps,
-      checkedUser,
       checkUser,
+      selectedUser,
       submit,
       cancel,
       valueLabel,
       searchStr,
       clearAndSearch,
-      searchDone,
-      loadSearchNode,
       remove,
+      dataDone,
+      loadSearchNode,
+      searchDone,
     };
   },
 };

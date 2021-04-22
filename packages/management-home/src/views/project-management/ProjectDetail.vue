@@ -58,7 +58,7 @@
     </el-row>
     <tree-selector
       :option="allDeptUser"
-      v-model="selectedUser"
+      :checked="selectedUser"
       optionPlaceholder="请输入部门/人员名称"
       optionLabel="选择人员"
       :role="treeSelectorRole"
@@ -225,21 +225,44 @@ export default {
     };
 
     const initDepartments = async () => {
-      const { code, data } = await getTenentDepartment({ deptId: 0 });
+      const { code, data } = await getTenentDepartment({ deptId: 0, level: -1 });
       if (code === 0) {
-        allDeptUser.value = [
+        const deptTree = [
           {
             name: data.tenant.name,
-            _children: _.concat(
-              data.users.map((user: any) => ({ ...user, name: user.name, isLeaf: true })),
-              _.map((dept: any) => ({
-                value: dept.deptId,
-                name: dept.deptName,
-                isLeaf: false,
-              }))(data.depts),
-            ),
+            _children: [],
+            id: 0,
+            isLeaf: false,
           },
         ];
+        const setChildren = (parentNode: any, allData: any) => {
+          const childrenUser = _.flow(
+            _.filter({ deptId: parentNode.id }),
+            _.map((user: any) => ({
+              id: user.id,
+              name: user.displayName,
+              deptName: parentNode.name,
+              parent: parentNode,
+              isLeaf: true,
+            })),
+          )(allData.users);
+          const childrenDept = _.flow(
+            _.filter({ parentId: parentNode.id }),
+            _.map((dept: any) => ({
+              id: dept.deptId,
+              name: dept.deptName,
+              parent: parentNode,
+              isLeaf: false,
+            })),
+          )(allData.depts);
+          childrenDept.forEach((dept: any) => {
+            setChildren(dept, allData);
+          });
+          // eslint-disable-next-line no-param-reassign
+          parentNode._children = [...childrenUser, ...childrenDept];
+        };
+        setChildren(deptTree[0], data);
+        allDeptUser.value = deptTree;
       }
     };
     initDepartments();

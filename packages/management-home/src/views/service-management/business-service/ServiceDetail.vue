@@ -222,6 +222,7 @@ export default {
           relation.id,
         ])(data.relations);
       }
+      let offset = 0;
       // 模型无定位时增加默认定位
       tables.forEach((table: any, index: number) => {
         const tablePosition = serverInfo.value?.config?.coordinate[table.id];
@@ -232,9 +233,10 @@ export default {
         } else {
           // eslint-disable-next-line no-param-reassign
           table.position = {
-            x: 100,
-            y: 100,
+            x: 200 + offset * 10,
+            y: 20 + offset * 10,
           };
+          offset += 1;
         }
       });
       modelList.value = {

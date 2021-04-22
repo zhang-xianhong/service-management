@@ -33,7 +33,8 @@ service.interceptors.response.use(
       return Promise.reject(error);
     }
     if (error.response.status === 401) {
-      location.replace(error.response.headers['x-sa-redirect-url']);
+      const redirectUrl = error.response.headers['x-sa-redirect-url'];
+      redirectUrl && location.replace(redirectUrl);
     }
     const { data } = error.response; // status
     const { httpStatus, message } = data;
