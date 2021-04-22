@@ -148,6 +148,7 @@ export default {
     watchEffect(() => {
       dataDone.value = false;
       const selectedUserId = _.map('id')(props.checked);
+      selectedUser.value = props.checked;
       copyOption = _.cloneDeep(props.option);
       setChecked(copyOption, selectedUserId);
       nextTick(() => {
