@@ -62,7 +62,6 @@ body {
   .el-button--primary {
     background-color: #006eff;
     border-color: #006eff;
-    width: 90px;
   }
   .el-input__inner,
   .el-input-group__append,

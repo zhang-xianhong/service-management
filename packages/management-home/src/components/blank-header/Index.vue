@@ -2,8 +2,8 @@
   <div class="blank-header">
     <span class="blank-header-back" @click="jumpBack" v-if="back"><i class="el-icon-back"></i></span>
     <span class="blank-header-title" :style="{ marginLeft: back ? '0' : '20px' }">{{ title }}</span>
-    <span v-if="detailName" class="blank-header-detail">|</span>
-    <span class="blank-header-detail">{{ detailName }}</span>
+    <!-- <span v-if="detailName" class="blank-header-detail">|</span>
+    <span class="blank-header-detail">{{ detailName }}</span> -->
   </div>
 </template>
 

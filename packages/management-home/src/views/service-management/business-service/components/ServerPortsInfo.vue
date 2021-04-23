@@ -62,9 +62,9 @@
     </div>
   </div>
   <!-- 参数配置弹窗 -->
-  <el-dialog title="参数配置" v-model="dialogVisible" width="50%">
+  <el-dialog title="参数配置" v-model="dialogVisible" width="780px">
     <el-row>
-      <el-col :span="4" style="text-align: center;vertical-align: middle;line-height: 32px;">
+      <el-col :span="4" style="text-align: left;vertical-align: middle;line-height: 32px;font-weight: bolder">
         {{ getMethodName(dialogState.method) }}
       </el-col>
       <el-col :span="20">
