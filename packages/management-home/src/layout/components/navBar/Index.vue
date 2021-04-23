@@ -27,10 +27,18 @@
         </template>
       </el-dropdown>
       <el-dropdown trigger="click" class="header-title">
-        <span class="el-dropdown-link"> <i class="el-icon-s-unfold header-title-object-icon3"></i> XXX项目 </span>
+        <span class="el-dropdown-link">
+          <i class="el-icon-s-unfold header-title-object-icon3"></i> {{ userCurrentProject.name }}
+        </span>
         <template #dropdown>
           <el-dropdown-menu>
-            <el-dropdown-item v-for="(project, index) in projectList" :key="index">{{ project.name }}</el-dropdown-item>
+            <el-dropdown-item
+              v-for="(project, index) in userProjectList"
+              :key="index"
+              @click="handleDropClick(project)"
+              :icon="project.id === userCurrentProject.id ? 'el-icon-check' : ''"
+              >{{ project.name }}</el-dropdown-item
+            >
           </el-dropdown-menu>
         </template>
       </el-dropdown>
@@ -57,6 +65,8 @@
 <script lang="ts">
 import { defineComponent, reactive } from 'vue';
 // import breadCurmb from '@/components/bread-curmb/Index.vue';
+import { userCurrentProject, userProjectList } from '@/layout/messageCenter/user-info';
+import { postCurrentProject } from '@/api/auth';
 
 export default defineComponent({
   name: 'navBar',
@@ -74,8 +84,18 @@ export default defineComponent({
         name: '测试项目2',
       },
     ]);
+    const handleDropClick = (project: any) => {
+      if (project.id !== userCurrentProject.value.id) {
+        postCurrentProject({ id: project.id }).then(() => {
+          userCurrentProject.value = project;
+        });
+      }
+    };
     return {
       projectList,
+      userCurrentProject,
+      userProjectList,
+      handleDropClick,
     };
   },
 });
