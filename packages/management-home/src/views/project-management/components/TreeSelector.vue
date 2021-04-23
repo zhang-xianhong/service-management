@@ -14,21 +14,30 @@
             ></el-input>
           </div>
           <div class="tree-wrapper" v-loading="!searchDone">
-            <el-tree v-if="!searchStr && dataDone" :default-expand-all="false" :load="loadNode" lazy :props="treeProps">
+            <el-tree
+              v-if="!searchStr && dataDone"
+              :default-expand-all="false"
+              :load="loadNode"
+              lazy
+              :expand-on-click-node="false"
+              :props="treeProps"
+            >
               <template #default="{ data, node }">
+                <div class="node-bg" :class="{ 'checked-node': data.checked }"></div>
                 <el-checkbox
                   v-model="data.checked"
                   :disabled="data.disabled"
                   :indeterminate="data.isIndeterminate"
                   @change="checkUser(data, node)"
                 ></el-checkbox>
-                {{ data.name }}
+                <span style="z-index: 1; background: transparent;">{{ data.name }}</span>
               </template>
             </el-tree>
             <el-tree
               v-if="searchStr && searchDone"
               :default-expand-all="false"
               :load="loadSearchNode"
+              :expand-on-click-node="false"
               lazy
               :props="treeProps"
             >
@@ -346,5 +355,19 @@ export default {
 }
 .dialog-footer {
   text-align: center;
+}
+.node-bg {
+  display: none;
+}
+.checked-node {
+  display: block;
+  position: absolute;
+  height: 26px;
+  background: #f5f7fa;
+  left: 0;
+  right: 0;
+}
+.tree-wrapper:deep(.el-tree-node__expand-icon) {
+  z-index: 1;
 }
 </style>
