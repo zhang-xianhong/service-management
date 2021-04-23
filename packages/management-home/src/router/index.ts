@@ -37,6 +37,11 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
     redirect: '/tenant-management',
+    meta: {
+      isRootLevel: true,
+      id: 2,
+      hidden: true,
+    },
   },
   {
     path: '/tenant-management',
@@ -44,6 +49,7 @@ const routes: Array<RouteRecordRaw> = [
     component: Layout,
     meta: {
       isRootLevel: true,
+      id: 2,
     },
     children: [
       {
@@ -54,6 +60,7 @@ const routes: Array<RouteRecordRaw> = [
           title: '租户管理',
           icon: 'el-icon-eleme',
           isRootLevel: false,
+          id: 2,
         },
       },
     ],
@@ -66,6 +73,7 @@ const routes: Array<RouteRecordRaw> = [
       isRootLevel: true,
       title: '项目管理',
       icon: 'el-icon-eleme',
+      id: 4,
     },
     children: [
       {
@@ -76,6 +84,7 @@ const routes: Array<RouteRecordRaw> = [
           title: '项目列表',
           icon: 'el-icon-eleme',
           isRootLevel: false,
+          id: 4,
         },
       },
       {
@@ -88,6 +97,7 @@ const routes: Array<RouteRecordRaw> = [
           isRootLevel: false,
           hidden: true,
           activeMenu: '/project-management/project-list',
+          id: 4,
         },
         props: true,
       },
@@ -101,6 +111,7 @@ const routes: Array<RouteRecordRaw> = [
       title: '服务管理',
       icon: 'el-icon-eleme',
       isRootLevel: true,
+      id: 7,
     },
     children: [
       {
@@ -111,6 +122,7 @@ const routes: Array<RouteRecordRaw> = [
           title: '业务服务',
           icon: 'el-icon-eleme',
           isRootLevel: false,
+          id: 7,
         },
       },
       {
@@ -123,6 +135,7 @@ const routes: Array<RouteRecordRaw> = [
           isRootLevel: false,
           hidden: true,
           activeMenu: '/service-management/service-list',
+          id: 7,
         },
       },
       // {
@@ -145,6 +158,7 @@ const routes: Array<RouteRecordRaw> = [
       title: '配置管理',
       icon: 'el-icon-eleme',
       isRootLevel: true,
+      id: 8,
     },
     children: [
       {
@@ -155,6 +169,7 @@ const routes: Array<RouteRecordRaw> = [
           title: '分类信息',
           icon: 'el-icon-eleme',
           isRootLevel: false,
+          id: 8,
         },
       },
       {
@@ -165,6 +180,7 @@ const routes: Array<RouteRecordRaw> = [
           title: '标签信息',
           icon: 'el-icon-eleme',
           isRootLevel: false,
+          id: 8,
         },
       },
       {
@@ -175,6 +191,7 @@ const routes: Array<RouteRecordRaw> = [
           title: '数据类型',
           icon: 'el-icon-eleme',
           isRootLevel: false,
+          id: 8,
         },
       },
       {
@@ -186,6 +203,7 @@ const routes: Array<RouteRecordRaw> = [
           icon: 'el-icon-eleme',
           hidden: true,
           isRootLevel: false,
+          id: 8,
         },
       },
     ],
@@ -205,8 +223,13 @@ let router = reCreateRouter([...baseRoutes]);
 
 localStorage.setItem('permissionArr', JSON.stringify(['Dashboard']));
 
-if (localStorage.permissionArr) {
+export const resetPremissionRouter = () => {
   router = reCreateRouter(getPermissionRoutes([...routes, ...baseRoutes]));
+  setRouterRef(router);
+};
+
+if (localStorage.permissionArr) {
+  resetPremissionRouter();
 }
 
 export const resetRouter = (routes: Array<RouteRecordRaw>): void => {
