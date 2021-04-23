@@ -58,6 +58,7 @@
     <tree-selector
       :option="allDeptUser"
       :checked="selectedUser"
+      :not-allow="otherRoleUser"
       optionPlaceholder="请输入部门/人员名称"
       optionLabel="选择人员"
       :role="treeSelectorRole"
@@ -265,12 +266,11 @@ export default {
       }
     };
     initDepartments();
-
+    const otherRoleUser: Ref<Array<any>> = ref([]);
     const addMember = (node: any, data: any) => {
       treeSelectorRole.value = data;
-      selectedUser.value = _.intersectionWith((user: any, node: any) => user.id === node.id)(allUsers.value)(
-        data.children,
-      );
+      selectedUser.value = _.intersectionBy('id')(allUsers.value)(data.children);
+      otherRoleUser.value = _.differenceBy('id')(allUsers.value)(data.children);
       treeSelectorRef.value.show();
     };
 
@@ -291,6 +291,7 @@ export default {
       initUserList,
       currentKey,
       reloadUserList,
+      otherRoleUser,
     };
   },
 };
