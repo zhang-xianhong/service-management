@@ -14,21 +14,30 @@
             ></el-input>
           </div>
           <div class="tree-wrapper" v-loading="!searchDone">
-            <el-tree v-if="!searchStr && dataDone" :default-expand-all="false" :load="loadNode" lazy :props="treeProps">
+            <el-tree
+              v-if="!searchStr && dataDone"
+              :default-expand-all="false"
+              :load="loadNode"
+              lazy
+              :expand-on-click-node="false"
+              :props="treeProps"
+            >
               <template #default="{ data, node }">
+                <div class="node-bg" :class="{ 'checked-node': data.checked }"></div>
                 <el-checkbox
                   v-model="data.checked"
                   :disabled="data.disabled"
                   :indeterminate="data.isIndeterminate"
                   @change="checkUser(data, node)"
                 ></el-checkbox>
-                {{ data.name }}
+                <span style="z-index: 1; background: transparent;">{{ data.name }}</span>
               </template>
             </el-tree>
             <el-tree
               v-if="searchStr && searchDone"
               :default-expand-all="false"
               :load="loadSearchNode"
+              :expand-on-click-node="false"
               lazy
               :props="treeProps"
             >
@@ -97,6 +106,11 @@ export default {
       type: Array,
       default: () => [],
     },
+    notAllow: {
+      required: false,
+      type: Array,
+      default: () => [],
+    },
   },
   emits: ['userChanged'],
   setup(props: any, context: any) {
@@ -113,7 +127,7 @@ export default {
       isLeaf: 'isLeaf',
     };
     const dataDone = ref(true);
-    const syncStatus = (node: any, needDisable = false) => {
+    const syncStatus = (node: any) => {
       if (node.parent) {
         node.parent.checked = false;
         node.parent.isIndeterminate = false;
@@ -125,31 +139,34 @@ export default {
         if (_.every({ checked: true })(node.parent._children || node.parent.children)) {
           node.parent.checked = true;
           node.parent.isIndeterminate = false;
-          node.parent.disabled = needDisable;
+        }
+        if (_.some({ disabled: true, checked: false })(node.parent._children || node.parent.children)) {
+          node.parent.disabled = true;
         }
         syncStatus(node.parent);
       }
     };
     const valueLabel = computed(() => `${props.option[0]?.name} - ${props.role?.label}`);
-    const setChecked = (treeOption: Array<any>, ids: Array<number>) => {
+    const setChecked = (treeOption: Array<any>, ids: Array<number>, notAllowIds: Array<number>) => {
       treeOption.forEach((treeNode: any) => {
         if (treeNode.isLeaf) {
           treeNode.isIndeterminate = false;
           treeNode.checked = ids.includes(treeNode.id);
-          treeNode.disabled = treeNode.checked;
+          treeNode.disabled = treeNode.checked || notAllowIds.includes(treeNode.id);
         } else {
-          setChecked(treeNode._children, ids);
+          setChecked(treeNode._children, ids, notAllowIds);
         }
-        syncStatus(treeNode, true);
+        syncStatus(treeNode);
       });
     };
     let copyOption: any;
     watchEffect(() => {
       dataDone.value = false;
       const selectedUserId = _.map('id')(props.checked);
-      selectedUser.value = props.checked;
+      const notAllowUserId = _.map('id')(props.notAllow);
+      selectedUser.value = [];
       copyOption = _.cloneDeep(props.option);
-      setChecked(copyOption, selectedUserId);
+      setChecked(copyOption, selectedUserId, notAllowUserId);
       nextTick(() => {
         dataDone.value = true;
       });
@@ -171,11 +188,18 @@ export default {
       syncStatus(user);
     };
     const checkGroup = async (group: any) => {
-      let hasDisabled = false;
+      let hasCheckedDisabled = false;
+      let hasUncheckedDisabled = false;
+      const disabledNodes: any[] = [];
       const getEditableMember = (nodeGroup: any, members: Array<any>) => {
         nodeGroup.forEach((treeNode: any) => {
           if (treeNode.disabled) {
-            hasDisabled = true;
+            if (treeNode.checked) {
+              hasCheckedDisabled = true;
+            } else {
+              hasUncheckedDisabled = true;
+            }
+            disabledNodes.push(treeNode);
             return;
           }
           treeNode.checked = group.checked;
@@ -190,12 +214,14 @@ export default {
       getEditableMember(group.children || group._children, groupMembers);
       if (!group.checked) {
         selectedUser.value = _.differenceBy('id')(selectedUser.value)(groupMembers);
-        group.isIndeterminate = hasDisabled;
+        group.isIndeterminate = hasCheckedDisabled;
       } else {
         selectedUser.value = _.unionBy('id')(selectedUser.value)(groupMembers);
-        group.isIndeterminate = false;
+        group.isIndeterminate = hasUncheckedDisabled;
+        group.checked = !hasUncheckedDisabled;
       }
       syncStatus(group);
+      disabledNodes.forEach(syncStatus);
     };
     const checkUser = (user: any) => {
       if (!user.isLeaf) {
@@ -208,7 +234,7 @@ export default {
       const { code } = await updateMembers({
         projectId,
         projectRoleId: props.role.id,
-        members: _.map('id')(selectedUser.value),
+        members: _.map('id')(selectedUser.value.concat(props.checked)),
       });
       if (code === 0) {
         dialogVisible.value = false;
@@ -346,5 +372,19 @@ export default {
 }
 .dialog-footer {
   text-align: center;
+}
+.node-bg {
+  display: none;
+}
+.checked-node {
+  display: block;
+  position: absolute;
+  height: 26px;
+  background: #f5f7fa;
+  left: 0;
+  right: 0;
+}
+.tree-wrapper:deep(.el-tree-node__expand-icon) {
+  z-index: 1;
 }
 </style>

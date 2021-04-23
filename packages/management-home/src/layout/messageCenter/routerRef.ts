@@ -1,6 +1,7 @@
 import router from '@/router';
 import { reactive } from 'vue';
 import { RouteRecordNormalized, RouteRecordRaw } from 'vue-router';
+import { userMenus } from '@/layout/messageCenter/user-info';
 
 const routerRef = reactive({ value: router });
 
@@ -26,14 +27,16 @@ export const getComputedRoutes = () =>
 
 export const getPermissionRoutes = function(config = getComputedRoutes() as any) {
   const route: Array<RouteRecordRaw> = [];
-  const permissionArr = localStorage.permissionArr ? JSON.parse(localStorage.permissionArr) : []; // 权限
+  const arr = Object.keys(userMenus.value);
+  // const permissionArr = localStorage.permissionArr ? JSON.parse(localStorage.permissionArr) : []; // 权限
   config.forEach((item: any) => {
     let obj = Object.assign({}, item);
     // 存在meta和permission属性
-    if (item.meta && item.meta.permission) {
+    if (item.meta && item.meta.id) {
       // 有权限
       // TODO 权限校验规则待定
-      if (permissionArr.includes(item.meta.permission)) {
+      // eslint-disable-next-line no-constant-condition
+      if (true || arr.includes(`${item.meta.id}`)) {
         obj = Object.assign({}, item);
         if (item.children && item.children.length > 0) {
           obj.children = Object.assign([], getPermissionRoutes(item.children));
@@ -66,5 +69,6 @@ export const getPermissionRoutes = function(config = getComputedRoutes() as any)
       route.push(obj);
     }
   });
+  console.log(route);
   return route;
 };

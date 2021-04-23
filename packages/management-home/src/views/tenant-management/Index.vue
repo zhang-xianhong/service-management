@@ -95,8 +95,8 @@ export default {
   text-align: center;
 }
 .avatar {
-  width: 178px;
-  height: 178px;
+  width: 115px;
+  height: 85px;
   display: block;
 }
 </style>

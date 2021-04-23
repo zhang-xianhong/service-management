@@ -1,0 +1,177 @@
+{
+  "code": 0,
+  "data": {
+    "info": {
+      "userId": 75,
+      "tenantId": 1,
+      "userName": "admin@yufuid.com",
+      "displayName": "admin",
+      "redirectUrl": "http://9.134.45.3/api/login",
+      "roleIds": []
+    },
+    "menus": [
+      {
+        "id": 1,
+        "parentId": null,
+        "name": "首页",
+        "description": "",
+        "menuId": 1,
+        "authorization": 1
+      },
+      {
+        "id": 2,
+        "parentId": null,
+        "name": "租户管理",
+        "description": "",
+        "menuId": 2,
+        "authorization": 1
+      },
+      {
+        "id": 3,
+        "parentId": null,
+        "name": "公司管理",
+        "description": "",
+        "menuId": 3,
+        "authorization": 1
+      },
+      {
+        "id": 4,
+        "parentId": null,
+        "name": "项目管理",
+        "description": "",
+        "menuId": 4,
+        "authorization": 1
+      },
+      {
+        "id": 5,
+        "parentId": null,
+        "name": "需求管理",
+        "description": "",
+        "menuId": 5,
+        "authorization": 1
+      },
+      {
+        "id": 6,
+        "parentId": null,
+        "name": "发布管理",
+        "description": "",
+        "menuId": 6,
+        "authorization": 1
+      },
+      {
+        "id": 7,
+        "parentId": null,
+        "name": "服务管理",
+        "description": "",
+        "menuId": 7,
+        "authorization": 1
+      },
+      {
+        "id": 8,
+        "parentId": null,
+        "name": "配置管理",
+        "description": "",
+        "menuId": 8,
+        "authorization": 1
+      },
+      {
+        "id": 9,
+        "parentId": 2,
+        "name": "租户列表",
+        "description": "",
+        "menuId": 9,
+        "authorization": 0
+      },
+      {
+        "id": 10,
+        "parentId": 2,
+        "name": "租户详情",
+        "description": "",
+        "menuId": 10,
+        "authorization": 2
+      },
+      {
+        "id": 11,
+        "parentId": 3,
+        "name": "人员管理",
+        "description": "",
+        "menuId": 11,
+        "authorization": 1
+      },
+      {
+        "id": 12,
+        "parentId": 3,
+        "name": "部门管理",
+        "description": "",
+        "menuId": 12,
+        "authorization": 1
+      },
+      {
+        "id": 13,
+        "parentId": 4,
+        "name": "项目列表",
+        "description": "",
+        "menuId": 13,
+        "authorization": 2
+      },
+      {
+        "id": 14,
+        "parentId": 6,
+        "name": "发布申请",
+        "description": "",
+        "menuId": 14,
+        "authorization": 2
+      },
+      {
+        "id": 15,
+        "parentId": 6,
+        "name": "发布审核",
+        "description": "",
+        "menuId": 15,
+        "authorization": 2
+      },
+      {
+        "id": 16,
+        "parentId": 7,
+        "name": "业务服务",
+        "description": "",
+        "menuId": 16,
+        "authorization": 1
+      },
+      {
+        "id": 17,
+        "parentId": 8,
+        "name": "分类信息",
+        "description": "",
+        "menuId": 17,
+        "authorization": 2
+      },
+      {
+        "id": 18,
+        "parentId": 8,
+        "name": "标签信息",
+        "description": "",
+        "menuId": 18,
+        "authorization": 2
+      },
+      {
+        "id": 19,
+        "parentId": 8,
+        "name": "数据类型",
+        "description": "",
+        "menuId": 19,
+        "authorization": 2
+      }
+    ],
+    "projects": [
+      {
+        "id": 36,
+        "name": "proj1",
+        "description": "项目1"
+      }
+    ]
+  },
+  "message": "successful",
+  "httpStatus": 200,
+  "timestamp": 1619159714026
+}

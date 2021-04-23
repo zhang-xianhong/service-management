@@ -13,18 +13,26 @@
             >{{ button.label }}</el-button
           >
         </el-col>
-        <el-col :span="8" style="text-align:right;">
+        <el-col :span="8" class="detail-operation">
           <div class="detail-status">
             <span :style="{ background: serverStatusInfo.color }" class="detail-status__icon"></span>
             <span :style="{ color: serverStatusInfo.color }">{{ serverStatusInfo.label }}</span>
           </div>
-          <el-button class="detail-icon" icon="el-icon-s-data" @click="openBaseInfo"></el-button>
-          <el-button class="detail-icon" icon="el-icon-notebook-2" @click="openPropertyInfo"></el-button>
-          <el-button class="detail-icon" icon="el-icon-document"></el-button>
-          <el-button class="detail-icon" icon="el-icon-download"></el-button>
+          <div class="detail-icons">
+            <!-- 服务详情 -->
+            <svg-icon icon-name="overview" icon-class="detail-icons__item" @click="openBaseInfo"></svg-icon>
+            <!-- 接口列表 -->
+            <svg-icon icon-name="list" icon-class="detail-icons__item" @click="openPropertyInfo"></svg-icon>
+            <!-- 代码下载 -->
+            <svg-icon icon-name="icon-download-manage" icon-class="detail-icons__item"></svg-icon>
+            <!-- 文档下载 -->
+            <svg-icon icon-name="daily" icon-class="detail-icons__item"></svg-icon>
+            <!-- 服务配置 -->
+            <svg-icon icon-name="setting" icon-class="detail-icons__item" @click="openConfigInfo"></svg-icon>
+          </div>
         </el-col>
       </el-row>
-      <el-row :style="{ height: computedHeight }">
+      <el-row :style="{ height: computedHeight, background: '#fff', padding: '12px', marginBottom: '10px' }">
         <el-col :span="componentName ? 20 : 24" style="height:100%">
           <el-row>
             <!-- 服务下拉选择框 -->
@@ -58,7 +66,7 @@
             </div>
           </div>
         </el-col>
-        <el-col v-if="componentName" :span="4" style="border-left: 1px solid #bbbbbb">
+        <el-col v-if="componentName" :span="4" style="border-left: 1px solid #bbbbbb; height: 100%;">
           <template v-if="componentName">
             <keep-alive>
               <component
@@ -123,6 +131,7 @@ import { ref, Ref, reactive, watch, provide, computed, onBeforeUnmount, getCurre
 import RelationInfo from './components/RelationInfo.vue';
 import ModelFieldForm from './components/FieldForm.vue';
 import ModelBaseInfo from './components/ModelBaseInfo.vue';
+import ServerConfigInfo from './components/ServerConfigInfo.vue';
 import { getServiceList, getServiceById } from '@/api/servers';
 import { getAllTags } from '@/api/settings/tags';
 import { getClassificationList } from '@/api/settings/classification';
@@ -159,6 +168,7 @@ export default {
     ServerPortsInfo,
     RelationInfo,
     ModelBaseInfo,
+    ServerConfigInfo,
   },
   setup() {
     const { buttons } = useButtonUtils();
@@ -332,6 +342,12 @@ export default {
       drawerName.value = 'ServerPortsInfo';
     };
 
+    // 打开服务配置
+    const openConfigInfo = () => {
+      isShowDownDrawer.value = true;
+      drawerName.value = 'ServerConfigInfo';
+    };
+
     // 模型、关联详情数据
     const modelInfo = ref(null);
     provide('currentModel', modelInfo);
@@ -425,6 +441,7 @@ export default {
       drawerName,
       openBaseInfo,
       openPropertyInfo,
+      openConfigInfo,
       modelList,
       initModelList,
       erdLoading,
@@ -450,11 +467,28 @@ export default {
 <style lang="scss" scoped>
 .detail {
   height: calc(100vh - 170px);
-  &-icon {
-    padding: 9px;
+  &-operation {
+    text-align: right;
+    height: 32px;
+    line-height: 32px;
+    vertical-align: middle;
+  }
+  &-icons {
+    display: inline-flex;
+    align-items: center;
+    margin-left: 24px;
+    &__item {
+      width: 24px;
+      height: 24px;
+      background: #fff;
+      padding: 4px;
+      margin-right: 9px;
+      &:hover {
+        border: 1px solid #66bbff;
+      }
+    }
   }
   &-status {
-    margin-right: 8px;
     display: inline-block;
     &__icon {
       display: inline-block;

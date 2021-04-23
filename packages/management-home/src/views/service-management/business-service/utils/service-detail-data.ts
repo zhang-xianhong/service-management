@@ -27,9 +27,11 @@ export const getTreaceId = () => {
   clearSql();
   const id = currentServiceIdForData.value;
   return getChangesApply(id).then((res) => {
-    const { logName, traceId } = res.data;
-    logSetTimeOut(logName, traceId);
-    thenRefresh.value = !thenRefresh.value;
+    if (res?.data) {
+      const { logName, traceId } = res.data;
+      logSetTimeOut(logName, traceId);
+      thenRefresh.value = !thenRefresh.value;
+    }
   });
 };
 
@@ -42,8 +44,10 @@ export const startServiceData = (branch = 'master', userId = '123456') =>
 
 export const stopServiceData = () => {
   stopService({ serviceId: currentServiceIdForData.value })
-    .then(() => {
-      Message.success('停止成功');
+    .then((res) => {
+      if (res.code === 200) {
+        Message.success('停止成功');
+      }
     })
     .catch((e) => {
       console.log(e);

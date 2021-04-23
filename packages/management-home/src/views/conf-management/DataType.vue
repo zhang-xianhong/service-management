@@ -1,7 +1,7 @@
 <template>
   <el-row>
     <el-col :span="6" style="text-align: left;">
-      <el-button type="primary" @click="addDataType">新增</el-button>
+      <el-button type="primary" @click="addDataType" style="width: 90px">新增</el-button>
       <el-button :disabled="!isDeletable" @click="groupDelete()">删除</el-button>
     </el-col>
     <el-col :offset="8" :span="10" style="text-align: right;">
