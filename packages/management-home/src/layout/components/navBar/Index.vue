@@ -88,6 +88,8 @@ export default defineComponent({
       if (project.id !== userCurrentProject.value.id) {
         postCurrentProject({ id: project.id }).then(() => {
           userCurrentProject.value = project;
+          localStorage.setItem('projectId', project.id);
+          window.location.reload();
         });
       }
     };

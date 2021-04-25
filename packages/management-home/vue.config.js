@@ -25,9 +25,9 @@ module.exports = {
       // 代理所有请求
       '/api': {
         // 后端rest服务
-        // target: 'http://10.95.22.55:3000', // 鹏鹏的机器
+        target: 'http://10.95.22.12:3000', // 鹏鹏的机器
         // target: 'http://10.91.21.72:3000', // 雯雯的机器
-        target: 'http://9.134.45.3', // 开发集成环境
+        // target: 'http://9.134.45.3', // 开发集成环境
         ws: true,
         changeOrigin: true
         // 添加所有请求路径前缀/api/

@@ -24,14 +24,20 @@ export function refreshServiceList(payload = {} as any) {
   let data = {} as any;
   if (payload) {
     data = { ...payload };
-    data.tags = payload.tags ? payload.tags.join(',') : '';
-    data.classification = payload.classification ? payload.classification.join(',') : '';
+    if (Object.prototype.toString.call(payload.tags) === '[object String]') {
+      data.tags = payload.tags;
+    } else if (Object.prototype.toString.call(payload.tags) === '[object Array]') {
+      data.tags = payload.tags.join(',');
+    } else {
+      data.tags = '';
+    }
   }
   Object.keys(data).forEach((x) => {
     if (!data[x]) {
       delete data[x];
     }
   });
+  console.log(data, 'this is data');
   return getServiceList(data).then((res) => {
     ownersMap.value = {};
     if (res.data.ownerUsers) {

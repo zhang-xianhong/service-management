@@ -1,5 +1,11 @@
 <template>
-  <div class="project-detail">
+  <div
+    class="project-detail"
+    v-loading="!userProjectList.length"
+    element-loading-text="暂无项目，请联系管理员添加项目"
+    element-loading-spinner="el-icon-loading"
+    element-loading-background="rgba(0, 0, 0, 0.7)"
+  >
     <el-row class="basic-info">
       <div>
         <div class="title">
@@ -76,6 +82,8 @@ import BasicInfoForm from './components/BasicInfoForm.vue';
 import { ElMessageBox } from 'element-plus';
 import { getMemberList, getProjectDetail, deleteMember } from '@/api/project/project';
 import { getTenentDepartment } from '@/api/tenant';
+import { userProjectList } from '@/layout/messageCenter/user-info';
+
 const userStatus = {
   '-1': '冻结',
   0: '启用',
@@ -292,6 +300,7 @@ export default {
       currentKey,
       reloadUserList,
       otherRoleUser,
+      userProjectList,
     };
   },
 };

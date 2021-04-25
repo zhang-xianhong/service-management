@@ -8,12 +8,14 @@ const service = axios.create({
 });
 
 const TOKEN = 'token';
+const PROJECT_ID = 'x-sa-project-id';
 
 service.interceptors.request.use(
   (config: AxiosRequestConfig): AxiosRequestConfig => {
     const newConfig = { ...config };
     if (getToken()) {
       newConfig.headers[TOKEN] = getToken();
+      newConfig.headers[PROJECT_ID] = localStorage.getItem('projectId') || '';
     }
     return newConfig;
   },
