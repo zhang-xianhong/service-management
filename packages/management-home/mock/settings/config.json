@@ -1,0 +1,62 @@
+{
+  "code": 0,
+  "data": {
+    "count": 3,
+    "rows": [
+      {
+        "id": 4,
+        "createTime": "2021-04-23T09:57:07.000Z",
+        "updateTime": "2021-04-23T09:52:43.000Z",
+        "createUser": null,
+        "updateUser": null,
+        "version": 0,
+        "name": "database host",
+        "value": "127.0.0.1",
+        "defaultValue": "3306",
+        "description": "",
+        "type": 0,
+        "scope": 1,
+        "enable": 0,
+        "serviceId": null,
+        "tenantId": 1
+      },
+      {
+        "id": 5,
+        "createTime": "2021-04-23T09:57:07.000Z",
+        "updateTime": "2021-04-23T09:53:55.000Z",
+        "createUser": null,
+        "updateUser": null,
+        "version": 0,
+        "name": "database name",
+        "value": "test",
+        "defaultValue": "root",
+        "description": "",
+        "type": 0,
+        "scope": 1,
+        "enable": 0,
+        "serviceId": null,
+        "tenantId": 1
+      },
+      {
+        "id": 6,
+        "createTime": "2021-04-23T09:57:07.000Z",
+        "updateTime": "2021-04-23T09:54:11.000Z",
+        "createUser": null,
+        "updateUser": null,
+        "version": 0,
+        "name": "database password",
+        "value": "test",
+        "defaultValue": "123456",
+        "description": "",
+        "type": 0,
+        "scope": 1,
+        "enable": 0,
+        "serviceId": null,
+        "tenantId": 1
+      }
+    ]
+  },
+  "message": "successful",
+  "httpStatus": 200,
+  "timestamp": 1619334334244
+}

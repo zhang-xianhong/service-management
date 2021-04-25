@@ -4,6 +4,10 @@ import { getUrl } from '../utils';
 import { SuccessResponse } from '@/types/response';
 const { settings } = URL;
 
+export const getConfig = (payload: any): Promise<SuccessResponse<any>> =>
+  axios.get(getUrl(settings.GET_CONFIG), { params: payload });
+export const deliveryConfig = (): Promise<SuccessResponse<any>> =>
+  axios.post(getUrl(settings.DELIVERY_CONFIG));
 export const getServiceConfig = (serviceId: string): Promise<SuccessResponse<any>> =>
   axios.get(getUrl(settings.GET_SERVICECONFIG, serviceId));
 export const addConfig = (payload: any): Promise<SuccessResponse<any>> =>
@@ -14,4 +18,3 @@ export const deleteConfig = (id: string): Promise<SuccessResponse<any>> =>
   axios.post(getUrl(settings.DELETE_CONFIG, id));
 export const getHistory = (id: string): Promise<SuccessResponse<any>> =>
   axios.get(getUrl(settings.GET_CONFIG_HISTORY, id));
-export const deliveryConfig = (): Promise<SuccessResponse<any>> => axios.get(getUrl(settings.DELIVERY_CONFIG));
