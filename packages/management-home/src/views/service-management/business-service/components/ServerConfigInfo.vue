@@ -1,6 +1,6 @@
 <template>
   <div style="background: #fff">
-    <el-table :data="tableData" style="width: 100%;" height="330">
+    <el-table :data="tableData" style="width: 100%" height="330">
       <el-table-column label="序号" type="index" width="50"></el-table-column>
       <el-table-column label="键" prop="key" width="500">
         <template #default="scope">

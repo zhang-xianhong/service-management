@@ -10,7 +10,7 @@
     <input
       type="file"
       ref="selectPic"
-      style="visibility: hidden;width: 0;height: 0; display: none"
+      style="visibility: hidden; width: 0; height: 0; display: none"
       @change="changeSelectPic"
     />
     <div class="project-item_content" @click.stop="jump2detail">

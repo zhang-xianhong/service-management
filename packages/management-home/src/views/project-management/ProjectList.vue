@@ -2,7 +2,7 @@
   <div class="project-list">
     <div class="project-list_title">
       <div class="project-list_left">
-        <el-button icon="el-icon-plus" type="primary" @click="addDialogVisible = true" style="width: 90px;">
+        <el-button icon="el-icon-plus" type="primary" @click="addDialogVisible = true" style="width: 90px">
           新建
         </el-button>
       </div>
