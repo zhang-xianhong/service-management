@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div style="background: #fff;">
     <div style="width: 100%; height=330px; position: relative;">
       <el-table :data="fields" :height="330">
         <el-table-column type="index" width="50"></el-table-column>

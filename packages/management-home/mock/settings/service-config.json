@@ -1,0 +1,59 @@
+{
+    "code": 0,
+    "data": [
+        {
+            "id": 8,
+            "createTime": "2021-04-23T09:57:07.000Z",
+            "updateTime": "2021-04-23T09:55:20.000Z",
+            "createUser": null,
+            "updateUser": null,
+            "version": 0,
+            "name": "port",
+            "value": "80",
+            "defaultValue": "8080",
+            "description": "",
+            "type": 0,
+            "scope": 0,
+            "enable": 0,
+            "serviceId": 81,
+            "tenantId": 1
+        },
+        {
+            "id": 9,
+            "createTime": "2021-04-23T09:56:47.000Z",
+            "updateTime": "2021-04-23T09:56:47.000Z",
+            "createUser": null,
+            "updateUser": null,
+            "version": 0,
+            "name": "ts",
+            "value": "22",
+            "defaultValue": "12",
+            "description": "",
+            "type": 0,
+            "scope": 0,
+            "enable": 0,
+            "serviceId": 81,
+            "tenantId": 1
+        },
+        {
+            "id": 10,
+            "createTime": "2021-04-23T09:56:55.000Z",
+            "updateTime": "2021-04-23T09:56:54.000Z",
+            "createUser": null,
+            "updateUser": null,
+            "version": 0,
+            "name": "tsf",
+            "value": "22",
+            "defaultValue": "12",
+            "description": "",
+            "type": 0,
+            "scope": 0,
+            "enable": 0,
+            "serviceId": 81,
+            "tenantId": 1
+        }
+    ],
+    "message": "successful",
+    "httpStatus": 200,
+    "timestamp": 1619332939496
+}
