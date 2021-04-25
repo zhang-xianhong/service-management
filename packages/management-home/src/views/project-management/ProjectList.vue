@@ -1,5 +1,11 @@
 <template>
-  <div class="project-list">
+  <div
+    class="project-list"
+    v-loading="!userProjectList.length"
+    element-loading-text="暂无项目，请联系管理员添加项目"
+    element-loading-spinner="el-icon-loading"
+    element-loading-background="rgba(0, 0, 0, 0.7)"
+  >
     <div class="project-list_title">
       <div class="project-list_left">
         <el-button icon="el-icon-plus" type="primary" @click="addDialogVisible = true" style="width: 90px;">
@@ -123,6 +129,7 @@ import {
 import Message from 'element-plus/es/el-message';
 import fetchOwnersSelect from '@/components/fetchOwnersSelect/Index.vue';
 import { projectNameTest } from '@/api/project/project';
+import { userProjectList } from '@/layout/messageCenter/user-info';
 
 export default defineComponent({
   name: 'ProjectList',
@@ -231,6 +238,7 @@ export default defineComponent({
       projectParentDiv,
       paddings,
       checkEnglishName,
+      userProjectList,
     };
   },
 });
