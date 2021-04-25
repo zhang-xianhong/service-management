@@ -1,5 +1,10 @@
 <template>
-  <div>
+  <div
+    v-loading="!userProjectList.length"
+    element-loading-text="暂无项目，请联系管理员添加项目"
+    element-loading-spinner="el-icon-loading"
+    element-loading-background="rgba(0, 0, 0, 0.7)"
+  >
     <div class="mask" v-if="maskText">{{ maskText }}</div>
     <div class="detail" :class="{ 'cannot-operate': !!maskText }">
       <el-row>
@@ -57,13 +62,13 @@
             ></erd>
           </div>
           <div v-if="!isShowDownDrawer">
-            <div>服务代码：</div>
             <div>
-              服务地址：
+              服务代码：
               <a :href="serverInfo.sshHost + (serverInfo.deposit ? serverInfo.deposit : '')" target="_blank">{{
                 serverInfo.sshHost + (serverInfo.deposit ? serverInfo.deposit : '')
               }}</a>
             </div>
+            <!--            <div>服务地址：</div>-->
           </div>
         </el-col>
         <el-col v-if="componentName" :span="4" style="border-left: 1px solid #bbbbbb; height: 100%">
@@ -158,6 +163,8 @@ import {
   clearLogInterVal,
   formatLogData,
 } from '@/views/service-management/business-service/utils/service-log-data-utils';
+
+import { userProjectList } from '@/layout/messageCenter/user-info';
 
 export default {
   name: 'ServiceDetail',
@@ -303,7 +310,7 @@ export default {
 
     watch(serverInfo, () => {
       serverStatusInfo.value = useStatusUtils(serverInfo.value.status);
-      const { status } = serverInfo.value;
+      const { status, initTimes } = serverInfo.value;
       buttons.value.forEach((x: any) => {
         // eslint-disable-next-line no-param-reassign
         x.disabled = +status === 10 || +status === 20;
@@ -312,8 +319,11 @@ export default {
         buttons.value[1].disabled = true;
         buttons.value[2].disabled = true;
       }
+      if (+status !== 21) {
+        buttons.value[2].disabled = true;
+      }
       buttons.value[buttons.value.length - 1].disabled = false;
-      buttons.value[0].label = +status === 0 || +status === 12 ? '初始化' : '同步配置';
+      buttons.value[0].label = +initTimes === 0 ? '初始化' : '同步配置';
       const statusmaps = computeStatusLabel(serverInfo.value.initTimes);
       serverStatusInfo.value = {
         label: (statusmaps as any)[status],
@@ -459,6 +469,7 @@ export default {
       enterLogs,
       statusMap,
       maskText,
+      userProjectList,
     };
   },
 };

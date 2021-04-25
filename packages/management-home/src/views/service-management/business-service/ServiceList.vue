@@ -1,5 +1,11 @@
 <template>
-  <div class="service-list">
+  <div
+    class="service-list"
+    v-loading="!userProjectList.length"
+    element-loading-text="暂无项目，请联系管理员添加项目"
+    element-loading-spinner="el-icon-loading"
+    element-loading-background="rgba(0, 0, 0, 0.7)"
+  >
     <div class="service-list_header">
       <div class="service-list_left">
         <el-button icon="el-icon-plus" type="primary" @click="toggleServiceDialog" style="width: 90px">新建</el-button>
@@ -14,6 +20,7 @@
           v-model="pageInfo.keyword"
           suffix-icon="el-icon-search"
           @input="searchForList"
+          @keyup.enter="searchForList"
         >
         </el-input>
       </div>
@@ -189,13 +196,15 @@
         <el-button @click="stopDialogVisible = false">取消</el-button>
       </div>
     </el-dialog>
-    <div class="black-hovers" @click="blackHoverclick" v-if="blackHoverVisible"></div>
+    <div class="black-hovers" @click="blackHoverclick()" v-if="blackHoverVisible"></div>
   </div>
 </template>
 
 <script lang="ts">
+/*eslint-disable*/
 import { defineComponent, reactive, ref, onBeforeUnmount, computed } from 'vue';
 import PackagedPagination from '@/components/pagination/Index.vue';
+import { userProjectList } from '@/layout/messageCenter/user-info';
 import {
   refreshServiceList,
   serviceTableList,
@@ -278,7 +287,8 @@ export default defineComponent({
     };
 
     const intervalId = setInterval(() => {
-      refreshDataAndChange();
+      // refreshDataAndChange();
+      console.log(111);
     }, 5000);
 
     onBeforeUnmount(() => {
@@ -301,13 +311,12 @@ export default defineComponent({
     }
     function addServiceByForm() {
       const senddata = { ...serviceDetail };
-      senddata.tags = serviceDetail.tags.join(',') ? serviceDetail.tags.join(',') : '';
+      senddata.tags = serviceDetail.tags ? serviceDetail.tags.join(',') : '';
       senddata.dependencies = serviceDetail.dependencies
         ? serviceDetail.dependencies.map((x: any) => ({
             id: x,
           }))
         : [];
-      senddata.classification = serviceDetail.classification ? serviceDetail.classification.join(',') : '';
       if (!senddata.name) {
         return ElMessage({
           showClose: true,
@@ -356,20 +365,11 @@ export default defineComponent({
       blackHoverVisible.value = true;
     }
     const searchData = ref({} as any);
-    function blackHoverclick() {
-      sortTitleVisiable.value = false;
-      tagTitleVisiable.value = false;
-      blackHoverVisible.value = false;
-    }
 
     function handleSelection(res: any) {
       mutiArray.value = res.map((x: any) => x.id);
       compuMutiArr.value = res;
     }
-
-    onBeforeUnmount(() => {
-      blackHoverclick();
-    });
 
     function deleteHandler() {
       ElMessageBox.confirm('删除动作不可撤销, 是否继续?', '提示', {
@@ -467,6 +467,17 @@ export default defineComponent({
       serviceNameTest({ name: `srv-${serviceDetail.name}` });
     };
 
+    function blackHoverclick() {
+      sortTitleVisiable.value = false;
+      tagTitleVisiable.value = false;
+      blackHoverVisible.value = false;
+      searchForList();
+      console.log('111111');
+    }
+    onBeforeUnmount(() => {
+      blackHoverclick();
+    });
+
     return {
       serviceTableList,
       serviceDetail,
@@ -517,6 +528,7 @@ export default defineComponent({
       setOwner,
       refreshMess,
       checkEnglishName,
+      userProjectList,
     };
   },
 });

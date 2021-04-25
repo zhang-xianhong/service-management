@@ -1,37 +1,56 @@
 <template>
-  <div class="apps">
-    <router-view />
+  <div
+    class="apps"
+    v-loading="loadings"
+    element-loading-text="拼命加载中"
+    element-loading-spinner="el-icon-loading"
+    element-loading-background="rgba(0, 0, 0, 0.7)"
+  >
+    <router-view v-if="userInfo" />
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
-import { getUserInfo, postCurrentProject } from '@/api/auth';
+import { defineComponent, ref } from 'vue';
+import { getUserInfo } from '@/api/auth';
 import { userCurrentProject, userInfo, userMenus, userProjectList } from '@/layout/messageCenter/user-info';
 import { resetPremissionRouter } from '@/router';
 
 export default defineComponent({
   setup() {
-    getUserInfo()
-      .then((res) => {
-        console.log(res, 'this is usermessage');
-        const { info, menus, projects } = res.data;
-        userInfo.value = info;
-        const menuObj = {} as any;
-        menus.forEach((x: any) => {
-          menuObj[x.id] = x.authorization;
-        });
-        userMenus.value = menuObj;
-        userProjectList.value = projects;
+    const loadings = ref(true);
+    let localsid = localStorage.getItem('projectId') as any;
+    localsid = Number.isNaN(Number(localsid)) ? 0 : Number(localsid);
+    getUserInfo({ projectId: localsid }).then((res) => {
+      const { info, menus, projects } = res.data;
+      userInfo.value = info;
+      const menuObj = {} as any;
+      menus.forEach((x: any) => {
+        menuObj[x.id] = x.authorization;
+      });
+      userMenus.value = menuObj;
+      userProjectList.value = projects;
+      resetPremissionRouter();
+      loadings.value = false;
+      const includes = localsid && projects.map((x: any) => x.id).includes(localsid);
+      if (!includes) {
         // eslint-disable-next-line prefer-destructuring
         userCurrentProject.value = projects[0];
-        resetPremissionRouter();
-      })
-      .then(() => {
-        if (userCurrentProject.value) {
-          postCurrentProject({ id: userCurrentProject.value.id });
-        }
-      });
+        localStorage.setItem('projectId', projects[0].id);
+        window.location.reload();
+      } else {
+        projects.forEach((x: any) => {
+          if (localsid === x.id) {
+            userCurrentProject.value = x;
+          }
+        });
+      }
+    });
+
+    return {
+      userInfo,
+      loadings,
+    };
   },
 });
 </script>

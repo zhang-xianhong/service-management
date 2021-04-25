@@ -56,7 +56,7 @@
 import { SetupContext, computed, watchEffect, ref, reactive } from 'vue';
 import ButtonOptionInterface from './types/table-button-interface';
 import TableColumnsInterface from './types/table-columns-interface';
-import dateFormat from './date-format';
+import dateFormat from '@/utils/date-format';
 
 export default {
   name: 'PackagedTable',

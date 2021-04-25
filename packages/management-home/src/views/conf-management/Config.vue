@@ -89,11 +89,15 @@
       </template>
     </el-dialog>
 
-    <el-dialog title="变更历史" v-model="changeHistoryDialog" width="600px" :show-close="false">
+    <el-dialog title="变更历史" v-model="changeHistoryDialog" width="900px" :show-close="false">
       <div class="change-list">
         <el-table :data="historyData" v-loading="loading" style="width: 100%">
           <el-table-column type="index" label="序号" width="50" />
-          <el-table-column label="创建时间" prop="name"></el-table-column>
+          <el-table-column label="创建时间" prop="createTime">
+            <template #default="scope">
+              <span>{{ dateFormat(scope.row.createTime) }}</span>
+            </template>
+          </el-table-column>
           <el-table-column label="键" prop="name"></el-table-column>
           <el-table-column label="值" prop="value"></el-table-column>
           <el-table-column label="默认值" prop="defaultValue"></el-table-column>
@@ -121,12 +125,14 @@ import {
   addConfig,
   updateConfig,
   deleteConfig,
-  getConfigHistory,
+  getHistory,
   deliveryConfig,
 } from '@/api/settings/config';
 import PackagedPagination from '@/components/pagination/Index.vue';
 import { debounce } from 'lodash';
 import { ElMessageBox, ElMessage } from 'element-plus';
+import dateFormat from '@/utils/date-format';
+
 interface TableState {
   tableData: Array<object>;
   loading: boolean;
@@ -144,7 +150,7 @@ interface TableState {
 interface ConfigFormState {
   disabled: boolean;
   isEdit: boolean;
-  id: number;
+  id: string;
   formData: {
     name: string;
     value: string;
@@ -178,7 +184,7 @@ export default {
     const configForm: ConfigFormState = reactive({
       disabled: false,
       isEdit: false,
-      id: 0,
+      id: '',
       formData: {
         name: '',
         value: '',
@@ -201,7 +207,7 @@ export default {
     function initConfigForm() {
       configForm.isEdit = false;
       configForm.disabled = false;
-      configForm.id = 0;
+      configForm.id = '';
       configForm.formData = {
         name: '',
         value: '',
@@ -284,7 +290,7 @@ export default {
 
     // 配置下发
     const issueConfig = async () => {
-      const { code } = await deliveryConfig({});
+      const { code } = await deliveryConfig();
       if (code === 0) {
         (instance as any).proxy.$message({
           type: 'success',
@@ -313,9 +319,10 @@ export default {
 
     // 变更历史
     const changeHistory = async (rowData: any) => {
-      const { code, data } = await getConfigHistory(rowData.id);
+      const { code, data } = await getHistory(rowData.id);
       if (code === 0) {
         tableState.historyData = data.rows || [];
+        console.log('data.rows', data.rows)
         changeHistoryDialog.value = true;
       } else {
         (instance as any).proxy.$message({
@@ -401,6 +408,7 @@ export default {
       handleSelectionChange,
       handlePageSizeChange,
       handlePageChange,
+      dateFormat
     };
   },
 };
