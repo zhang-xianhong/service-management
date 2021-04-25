@@ -15,8 +15,8 @@ service.interceptors.request.use(
     const newConfig = { ...config };
     if (getToken()) {
       newConfig.headers[TOKEN] = getToken();
-      newConfig.headers[PROJECT_ID] = localStorage.getItem('projectId') || '';
     }
+    newConfig.headers[PROJECT_ID] = localStorage.getItem('projectId') || '';
     return newConfig;
   },
   (error) => Promise.reject(error),
