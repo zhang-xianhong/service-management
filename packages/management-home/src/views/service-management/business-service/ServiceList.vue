@@ -332,8 +332,6 @@ export default defineComponent({
         });
       }
       senddata.name = `srv-${senddata.name}`;
-      console.log(senddata, 2222222222222)
-      return false
       addService(senddata)
         .then(() => {
           refreshServiceList(pageInfo);
