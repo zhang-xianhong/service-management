@@ -15,12 +15,7 @@
       </el-col>
     </el-row>
     <el-row style="background: #fff">
-      <el-table
-        :data="tableData"
-        v-loading="loading"
-        style="width: 100%"
-        @selection-change="handleSelectionChange"
-      >
+      <el-table :data="tableData" v-loading="loading" style="width: 100%" @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="45" />
         <el-table-column type="index" label="序号" width="50" />
         <el-table-column label="键" prop="name"></el-table-column>
@@ -120,14 +115,7 @@
 
 <script lang="ts">
 import { reactive, getCurrentInstance, toRefs, ref } from 'vue';
-import {
-  getConfig,
-  addConfig,
-  updateConfig,
-  deleteConfig,
-  getHistory,
-  deliveryConfig,
-} from '@/api/settings/config';
+import { getConfig, addConfig, updateConfig, deleteConfig, getHistory, deliveryConfig } from '@/api/settings/config';
 import PackagedPagination from '@/components/pagination/Index.vue';
 import { debounce } from 'lodash';
 import { ElMessageBox, ElMessage } from 'element-plus';
@@ -322,7 +310,7 @@ export default {
       const { code, data } = await getHistory(rowData.id);
       if (code === 0) {
         tableState.historyData = data.rows || [];
-        console.log('data.rows', data.rows)
+        console.log('data.rows', data.rows);
         changeHistoryDialog.value = true;
       } else {
         (instance as any).proxy.$message({
@@ -408,7 +396,7 @@ export default {
       handleSelectionChange,
       handlePageSizeChange,
       handlePageChange,
-      dateFormat
+      dateFormat,
     };
   },
 };
