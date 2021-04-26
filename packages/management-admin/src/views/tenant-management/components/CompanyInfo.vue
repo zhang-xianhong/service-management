@@ -12,8 +12,21 @@
           @blur="validateName"
         ></el-input>
       </el-form-item>
-      <el-form-item prop="nameShort" class="form-item" label="企业简称">
+      <el-form-item prop="nameShort" class="form-item" label="企业别称">
         <el-input v-model="companyInfo.nameShort" style="width: 400px" placeholder="请输入企业简称"></el-input>
+      </el-form-item>
+      <el-form-item prop="tenantEngAbbr" class="form-item" label="企业英文简称">
+        <el-input v-model="companyInfo.tenantEngAbbr" style="width: 400px" placeholder="请输入企业英文简称"></el-input>
+      </el-form-item>
+      <el-form-item prop="addr" class="form-item" label="企业地址">
+        <el-select v-model="companyInfo.addr" style="width: 400px" placeholder="请选择省份">
+          <el-option
+            v-for="(item, index) in provinceOptions"
+            :key="index"
+            :label="item.name"
+            :value="item.code"
+          ></el-option>
+        </el-select>
       </el-form-item>
       <el-form-item prop="industryId" class="form-item" label="所属行业" required>
         <template v-if="isEdit">{{ computedIndustryName || companyInfo.industryId }}</template>
@@ -26,35 +39,14 @@
           ></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item prop="addr" class="form-item" label="企业地址">
-        <el-select v-model="companyInfo.addr" style="width: 400px" placeholder="请选择省份">
-          <el-option
-            v-for="(item, index) in provinceOptions"
-            :key="index"
-            :label="item.name"
-            :value="item.code"
-          ></el-option>
-        </el-select>
+      <el-form-item prop="addrDetail" class="form-item" label="详细地址">
+        <el-input v-model="companyInfo.addrDetail" style="width: 400px" placeholder="请输入详细地址"></el-input>
       </el-form-item>
       <el-form-item prop="natureId" class="form-item" label="企业性质" required>
         <template v-if="isEdit">{{ computedNature || companyInfo.natureId }}</template>
         <el-select v-else v-model="companyInfo.natureId" style="width: 400px" placeholder="请选择企业性质">
           <el-option
             v-for="(item, index) in natureOptions"
-            :key="index"
-            :label="item.value"
-            :value="item.key"
-          ></el-option>
-        </el-select>
-      </el-form-item>
-      <el-form-item prop="addrDetail" class="form-item" label="详细地址">
-        <el-input v-model="companyInfo.addrDetail" style="width: 400px" placeholder="请输入详细地址"></el-input>
-      </el-form-item>
-      <el-form-item prop="scaleId" class="form-item" label="企业规模" required>
-        <template v-if="isEdit">{{ computedScale || companyInfo.scaleId }}</template>
-        <el-select v-else v-model="companyInfo.scaleId" style="width: 400px" placeholder="请选择企业规模">
-          <el-option
-            v-for="(item, index) in scaleOptions"
             :key="index"
             :label="item.value"
             :value="item.key"
@@ -70,6 +62,17 @@
           maxlength="225"
           show-word-limit
         ></el-input>
+      </el-form-item>
+      <el-form-item prop="scaleId" class="form-item" label="企业规模" required>
+        <template v-if="isEdit">{{ computedScale || companyInfo.scaleId }}</template>
+        <el-select v-else v-model="companyInfo.scaleId" style="width: 400px" placeholder="请选择企业规模">
+          <el-option
+            v-for="(item, index) in scaleOptions"
+            :key="index"
+            :label="item.value"
+            :value="item.key"
+          ></el-option>
+        </el-select>
       </el-form-item>
       <el-form-item prop="license" label="营业执照号" required style="display:block;">
         <template v-if="isEdit">{{ companyInfo.license }}</template>
@@ -129,7 +132,8 @@ import { validateCompanyName, validateLicense } from '@/api/tenant';
 
 interface CompanyInfoInterface {
   name: string; // 企业名称
-  nameShort: string; // 企业简称
+  nameShort: string; // 企业别称
+  tenantEngAbbr: string; // 企业英文简称
   industryId: string; // 行业
   addr: string; // 省份
   natureId: string; // 企业性质
@@ -206,8 +210,18 @@ export default {
         { pattern: /^[\u4e00-\u9fa5|a-zA-Z|()]+$/g, message: '该企业名称包含非法字符，请重新输入', trigger: 'blur' },
       ],
       nameShort: [
-        { min: 2, max: 40, message: '企业简称长度在2到40个字符之间', trigger: 'blur' },
+        { min: 2, max: 40, message: '企业别称长度在2到40个字符之间', trigger: 'blur' },
         { pattern: /^[\u4e00-\u9fa5|a-zA-Z|()]+$/g, message: '该企业简称包含非法字符，请重新输入', trigger: 'blur' },
+      ],
+      tenantEngAbbr: [
+        { required: true, message: '请输入企业英文简称', trigger: 'blur' },
+        {
+          min: 6,
+          max: 16,
+          message: '企业英文简称长度在6到16个字符之间',
+          trigger: 'blur',
+        },
+        { pattern: /^[a-zA-Z]+$/g, message: '该企业英文简称包含非法字符，请重新输入', trigger: 'blur' },
       ],
       industryId: [{ required: true, message: '请选择所属行业', trigger: 'blur' }],
       natureId: [{ required: true, message: '请选择企业性质', trigger: 'blur' }],
