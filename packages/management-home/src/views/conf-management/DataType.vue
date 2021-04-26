@@ -1,10 +1,10 @@
 <template>
   <el-row>
-    <el-col :span="6" style="text-align: left;">
+    <el-col :span="6" style="text-align: left">
       <el-button type="primary" @click="addDataType" style="width: 90px">新增</el-button>
       <el-button :disabled="!isDeletable" @click="groupDelete()">删除</el-button>
     </el-col>
-    <el-col :offset="8" :span="10" style="text-align: right;">
+    <el-col :offset="8" :span="10" style="text-align: right">
       <el-input
         placeholder="请输入数据类型名称"
         suffix-icon="el-icon-search"

@@ -1,6 +1,6 @@
 <template>
-  <el-row style="font-size: 12px; font-weight: bolder;">企业信息</el-row>
-  <el-row style="padding:0px 20px;">
+  <el-row style="font-size: 12px; font-weight: bolder">企业信息</el-row>
+  <el-row style="padding: 0px 20px">
     <el-form ref="formRef" class="tenant-form" :model="companyInfo" inline label-width="140px" label-position="left">
       <el-form-item prop="name" class="form-item" label="企业名称" required>
         {{ companyInfo.name }}
@@ -45,7 +45,7 @@
           show-word-limit
         ></el-input>
       </el-form-item>
-      <el-form-item prop="license" label="营业执照号" required style="display:block;">
+      <el-form-item prop="license" label="营业执照号" required style="display: block">
         {{ companyInfo.license }}
       </el-form-item>
       <el-form-item prop="licenseUrl" class="form-item" required>

@@ -1,6 +1,6 @@
 <template>
-  <el-row style="font-size: 12px; font-weight: bolder;">企业联系人信息</el-row>
-  <el-row style="padding:0px 20px;">
+  <el-row style="font-size: 12px; font-weight: bolder">企业联系人信息</el-row>
+  <el-row style="padding: 0px 20px">
     <el-form ref="formRef" class="tenant-form" :model="userInfo" inline label-width="140px" label-position="left">
       <el-form-item prop="name" class="form-item" label="联系人姓名" required>
         {{ userInfo.name }}

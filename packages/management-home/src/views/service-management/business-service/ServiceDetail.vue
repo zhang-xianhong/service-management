@@ -38,7 +38,7 @@
         </el-col>
       </el-row>
       <el-row :style="{ height: computedHeight, background: '#fff', padding: '12px', marginBottom: '10px' }">
-        <el-col :span="componentName ? 20 : 24" style="height:100%">
+        <el-col :span="componentName ? 20 : 24" style="height: 100%">
           <el-row>
             <!-- 服务下拉选择框 -->
             <el-select v-model="currentServiceId" placeholder="请选择" @change="selectService">
@@ -71,7 +71,7 @@
             <!--            <div>服务地址：</div>-->
           </div>
         </el-col>
-        <el-col v-if="componentName" :span="4" style="border-left: 1px solid #bbbbbb; height: 100%;">
+        <el-col v-if="componentName" :span="4" style="border-left: 1px solid #bbbbbb; height: 100%">
           <template v-if="componentName">
             <keep-alive>
               <component
