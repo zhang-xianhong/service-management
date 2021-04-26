@@ -16,7 +16,12 @@
       </el-col>
     </el-row>
     <el-row style="background: #fff">
-      <el-table :data="tagList" @selection-change="handleSelectionChange" @sort-change="sortChange" v-loading="loading">
+      <el-table
+        :data="tagList"
+        @selection-change="handleSelectionChange"
+        @sort-change="sortChange"
+        v-loading="loading"
+      >
         <el-table-column type="selection" width="45" />
         <el-table-column type="index" label="序号" width="50" />
         <el-table-column
@@ -61,10 +66,11 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, onMounted } from 'vue';
+import { defineComponent, ref, onMounted, getCurrentInstance } from 'vue';
 import { listTags, addTag, updateTag, deleteTags } from '@/api/settings/tags';
 import PackagedPagination from '@/components/pagination/Index.vue';
 import _ from 'lodash/fp';
+import { ElMessageBox, ElMessage } from 'element-plus';
 export default defineComponent({
   name: 'Tag',
   components: {
@@ -81,7 +87,8 @@ export default defineComponent({
     const handlePageChange = (curPage: number) => {
       page.value = curPage;
     };
-
+    // 获取组件实例
+    const instance = getCurrentInstance();
     // 表格数据
     let sortType: string;
     let sortField: string;
@@ -157,10 +164,34 @@ export default defineComponent({
       selection = _.map('id')(val);
     };
     const groupRemove = async (ids = selection) => {
-      loading.value = true;
-      const { code } = await deleteTags({ ids });
-      loading.value = false;
-      if (code === 0) getTagList();
+      ElMessageBox.confirm(`是否删除选中标签?`, '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+      })
+        .then(async () => {
+          loading.value = true;
+          const { code } = await deleteTags({ ids });
+          loading.value = false;
+          if (code === 0) {
+            (instance as any).proxy.$message({
+              type: 'success',
+              message: '删除成功',
+            });
+            getTagList();
+          } else {
+            (instance as any).proxy.$message({
+              type: 'error',
+              message: '删除失败',
+            });
+          }
+        })
+        .catch(() => {
+          ElMessage({
+            type: 'info',
+            message: '已取消操作',
+          });
+        });
     };
 
     // 编辑弹窗

@@ -44,12 +44,11 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, Ref, onMounted } from 'vue';
+import { defineComponent, ref, Ref, onMounted, getCurrentInstance } from 'vue';
 import { TreeData } from 'element-plus/packages/tree/src/tree.type';
 import * as confApi from '@/api/settings/classification';
 import _ from 'lodash/fp';
-import { ElMessage } from 'element-plus';
-
+import { ElMessageBox, ElMessage } from 'element-plus';
 interface ClassicificNode {
   id: number;
   name: string;
@@ -66,7 +65,8 @@ export default defineComponent({
     const tree: any = ref(null);
     const treeData: Ref<TreeData> = ref([]);
     const allExpanded = ref(false);
-
+    // 获取组件实例
+    const instance = getCurrentInstance();
     const currentNode: Ref<ClassicificNode> = ref({
       id: -1,
       name: '',
@@ -184,11 +184,32 @@ export default defineComponent({
     };
 
     const remove = async () => {
-      const { code } = await confApi.deleteClassification(currentNode.value.id);
-      if (code === 0) {
-        ElMessage.success('删除分类成功！');
-      }
-      loadTreeData();
+      ElMessageBox.confirm(`是否删除选中分类?`, '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+      })
+        .then(async () => {
+          const { code } = await confApi.deleteClassification(currentNode.value.id);
+          if (code === 0) {
+            (instance as any).proxy.$message({
+              type: 'success',
+              message: '删除成功',
+            });
+            loadTreeData();
+          } else {
+            (instance as any).proxy.$message({
+              type: 'error',
+              message: '删除失败',
+            });
+          }
+        })
+        .catch(() => {
+          ElMessage({
+            type: 'info',
+            message: '已取消操作',
+          });
+        });
     };
 
     onMounted(loadTreeData);
