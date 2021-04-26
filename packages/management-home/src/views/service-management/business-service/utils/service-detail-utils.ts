@@ -8,7 +8,7 @@ import {
 import { ElMessageBox } from 'element-plus';
 import Message from 'element-plus/es/el-message';
 
-export default function () {
+export default function() {
   const buttons = ref([] as any);
   // 初始化
   const initialize = () => {
@@ -106,6 +106,7 @@ export default function () {
         click: () => stop(),
       },
       disabled: false,
+      style: 'margin-left: 5px',
     },
     // {
     //   label: '发布',
@@ -120,6 +121,7 @@ export default function () {
         click: () => log(),
       },
       disabled: false,
+      style: 'margin-left: 5px',
     },
   ];
 

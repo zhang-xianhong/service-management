@@ -15,8 +15,10 @@
             :type="button.type || undefined"
             v-on="button.eventOption"
             :disabled="button.disabled"
-            >{{ button.label }}</el-button
+            :style="button.style"
           >
+            {{ button.label }}
+          </el-button>
         </el-col>
         <el-col :span="8" class="detail-operation">
           <div class="detail-status">
@@ -25,15 +27,30 @@
           </div>
           <div class="detail-icons">
             <!-- 服务详情 -->
-            <svg-icon icon-name="overview" icon-class="detail-icons__item" @click="openBaseInfo"></svg-icon>
+            <svg-icon
+              icon-name="overview"
+              icon-class="detail-icons__item detail-icons__item--overview"
+              @click="openBaseInfo"
+            ></svg-icon>
             <!-- 接口列表 -->
-            <svg-icon icon-name="list" icon-class="detail-icons__item" @click="openPropertyInfo"></svg-icon>
+            <svg-icon
+              icon-name="list"
+              icon-class="detail-icons__item detail-icons__item--list"
+              @click="openPropertyInfo"
+            ></svg-icon>
             <!-- 代码下载 -->
-            <svg-icon icon-name="icon-download-manage" icon-class="detail-icons__item"></svg-icon>
+            <!-- <svg-icon icon-name="icon-download-manage" icon-class="detail-icons__item"></svg-icon> -->
             <!-- 文档下载 -->
-            <svg-icon icon-name="daily" icon-class="detail-icons__item"></svg-icon>
+            <svg-icon
+              icon-name="daily"
+              icon-class="detail-icons__item detail-icons__item--document detail-icons__item--disabled"
+            ></svg-icon>
             <!-- 服务配置 -->
-            <svg-icon icon-name="setting" icon-class="detail-icons__item" @click="openConfigInfo"></svg-icon>
+            <svg-icon
+              icon-name="setting"
+              icon-class="detail-icons__item detail-icons__item--config"
+              @click="openConfigInfo"
+            ></svg-icon>
           </div>
         </el-col>
       </el-row>
@@ -494,8 +511,20 @@ export default {
       background: #fff;
       padding: 4px;
       margin-right: 9px;
+      border: 1px solid #fff;
+      &--overview {
+        &:hover {
+          content: '详情';
+          position: 'absolute';
+        }
+      }
+      &--disabled {
+        background: #bbb;
+        cursor: not-allowed;
+        border: none;
+      }
       &:hover {
-        border: 1px solid #66bbff;
+        border-color: #66bbff;
       }
     }
   }

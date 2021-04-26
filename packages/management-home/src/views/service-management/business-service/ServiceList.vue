@@ -386,6 +386,7 @@ export default defineComponent({
         });
       }
       senddata.name = `srv-${senddata.name}`;
+      senddata.classification = serviceDetail.classification ? serviceDetail.classification.join(',') : '';
       addService(senddata)
         .then(() => {
           refreshServiceList(pageInfo);

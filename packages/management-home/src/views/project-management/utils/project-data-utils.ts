@@ -17,7 +17,7 @@ export const pageInfo = reactive({
 } as any);
 export const codeTemplateList = ref([] as any);
 
-export const getProjectListData = () => {
+export const getProjectListData = () =>
   getProjectList(pageInfo).then((res) => {
     const ownersMap = {} as any;
     if (res.data.ownerUsers) {
@@ -35,7 +35,6 @@ export const getProjectListData = () => {
     projectList.value = res.data.rows;
     pageInfo.total = res.data.count;
   });
-};
 
 export const addProjectData = () => addProject(projectDetail);
 
