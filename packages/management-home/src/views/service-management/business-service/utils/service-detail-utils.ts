@@ -8,7 +8,7 @@ import {
 import { ElMessageBox } from 'element-plus';
 import Message from 'element-plus/es/el-message';
 
-export default function() {
+export default function () {
   const buttons = ref([] as any);
   // 初始化
   const initialize = () => {

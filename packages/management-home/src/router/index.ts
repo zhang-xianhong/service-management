@@ -206,6 +206,17 @@ const routes: Array<RouteRecordRaw> = [
           id: 8,
         },
       },
+      {
+        path: 'config',
+        component: () => import(/* webpackChunkName: "general" */ '@/views/conf-management/Config.vue'),
+        name: 'Config',
+        meta: {
+          title: '通用配置',
+          icon: 'el-icon-eleme',
+          isRootLevel: false,
+          id: 8,
+        },
+      },
     ],
   },
 ];

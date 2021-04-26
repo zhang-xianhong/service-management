@@ -30,7 +30,7 @@
                   :indeterminate="data.isIndeterminate"
                   @change="checkUser(data, node)"
                 ></el-checkbox>
-                <span style="z-index: 1; background: transparent;">{{ data.name }}</span>
+                <span style="z-index: 1; background: transparent">{{ data.name }}</span>
               </template>
             </el-tree>
             <el-tree
@@ -62,7 +62,7 @@
             <div v-for="(user, $index) in selectedUser" :key="$index">
               <span>{{ user.displayName || user.name }}</span>
               <span>{{ user.deptName }}</span>
-              <i class="el-icon-error" style="float: right;" @click="remove(user)"></i>
+              <i class="el-icon-error" style="float: right" @click="remove(user)"></i>
             </div>
           </div>
         </div>

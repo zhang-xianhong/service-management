@@ -1,5 +1,5 @@
 <template>
-  <div style="background:#fff; padding:30px">
+  <div style="background: #fff; padding: 30px">
     <company-info :isEdit="isEdit" v-model="tenantDetail"></company-info>
     <user-info :isEdit="isEdit" v-model="tenantDetail"></user-info>
     <manager-info :isEdit="isEdit" v-model="tenantDetail"></manager-info>

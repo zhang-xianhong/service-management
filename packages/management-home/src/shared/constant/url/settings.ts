@@ -21,4 +21,11 @@ export default {
   GET_DICTIONARY_TYPES: ['/settings/dictionaries/type', 'mock/settings/dictionary-types.json'],
   GET_DICTIONARY_DETAIL: ['/settings/dictionaries/_', 'mock/settings/dictionary-detail.json'],
   GET_REGIONS: ['/settings/regions', 'mock/settings/regions.json'],
+  GET_CONFIG: ['/settings/config', 'mock/settings/config.json'],
+  GET_SERVICECONFIG: ['/settings/config/_', 'mock/settings/service-config.json'],
+  ADD_CONFIG: ['/settings/config', 'mock/settings/config-add.json'],
+  UPDATE_CONFIG: ['/settings/config/_', 'mock/settings/config-update.json'],
+  DELETE_CONFIG: ['/settings/config/delete/_', 'mock/settings/config-delete.json'],
+  GET_CONFIG_HISTORY: ['/settings/config/history/_', 'mock/settings/config-history.json'],
+  DELIVERY_CONFIG: ['/settings/config/delivery', 'mock/settings/config-delete.json'],
 };

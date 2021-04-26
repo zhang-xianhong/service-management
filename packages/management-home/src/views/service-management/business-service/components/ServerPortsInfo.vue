@@ -1,6 +1,6 @@
 <template>
-  <div style="background: #fff;">
-    <el-table :data="tableData" style="width: 100%;" height="330" :row-class-name="tableRowClassName">
+  <div style="background: #fff">
+    <el-table :data="tableData" style="width: 100%" height="330" :row-class-name="tableRowClassName">
       <el-table-column label="序号" type="index" width="50"></el-table-column>
       <el-table-column label="接口名称" prop="name">
         <template #default="scope">
@@ -64,7 +64,7 @@
   <!-- 参数配置弹窗 -->
   <el-dialog title="参数配置" v-model="dialogVisible" width="780px">
     <el-row>
-      <el-col :span="4" style="text-align: left;vertical-align: middle;line-height: 32px;font-weight: bolder">
+      <el-col :span="4" style="text-align: left; vertical-align: middle; line-height: 32px; font-weight: bolder">
         {{ getMethodName(dialogState.method) }}
       </el-col>
       <el-col :span="20">
