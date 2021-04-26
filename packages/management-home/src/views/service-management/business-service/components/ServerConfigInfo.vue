@@ -114,7 +114,7 @@ import {
   updateConfig,
   deleteConfig,
   getHistory,
-  deliveryConfig,
+  deliveryServiceConfig,
 } from '@/api/settings/config';
 import dateFormat from '@/utils/date-format';
 
@@ -234,7 +234,7 @@ export default {
     };
 
     const deliveryList = async () => {
-      const { code } = await deliveryConfig();
+      const { code } = await deliveryServiceConfig(props.id);
       if (code === 0) {
         proxy.$message({
           type: 'success',

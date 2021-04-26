@@ -45,7 +45,7 @@ const routes: Array<RouteRecordRaw> = [
   },
   {
     path: '/tenant-management',
-    redirect: '/tenant-list',
+    redirect: '/tenant-detail',
     component: Layout,
     meta: {
       isRootLevel: true,

@@ -47,6 +47,12 @@
         >
         </el-input>
       </el-form-item>
+      <el-form-item label="服务依赖">
+        <div v-if="isShowMode" class="baseinfo-content">{{ formData.dependencies.join(',') }}</div>
+        <el-select v-model="formData.dependencies" clearable multiple>
+          <el-option v-for="item in computedServices" :key="item.id" :label="item.name" :value="item.id"></el-option>
+        </el-select>
+      </el-form-item>
       <el-form-item>
         <el-button v-if="isShowMode" type="primary" @click="modifyFormData">修改</el-button>
         <el-button v-else type="primary" @click="saveFormData">保存</el-button>
@@ -56,10 +62,11 @@
 </template>
 
 <script lang="ts">
-import { reactive, ref } from 'vue';
+import { reactive, ref, computed } from 'vue';
 import useClassifications from '../utils/service-baseinfo-classification';
 import useTags from '../utils/service-baseinfo-tag';
 import { updateService } from '@/api/servers';
+import { allService } from '../utils/service-data-utils';
 import OwnerSelect from '@/components/owners-select/Index.vue';
 
 export default {
@@ -88,6 +95,8 @@ export default {
   setup(props: { data: any; id: number; tags: any[]; classifications: any[] }) {
     // 是否为显示模式标识，默认为true
     const isShowMode = ref(true);
+
+    const computedServices = computed(() => allService.filter((service: any) => service.id !== props.id));
 
     // 表单数据
     const formData = reactive({
@@ -152,6 +161,7 @@ export default {
 
     return {
       isShowMode,
+      computedServices,
       formData,
       classificationName,
       classificationValue,
