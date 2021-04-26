@@ -53,7 +53,7 @@ import { useRouter } from 'vue-router';
 import { getDataTypes, deleteDataType } from '@/api/settings/data-types';
 import PackagedPagination from '@/components/pagination/Index.vue';
 import { debounce } from 'lodash';
-
+import { ElMessageBox, ElMessage } from 'element-plus';
 interface TableState {
   tableData: Array<object>;
   loading: boolean;
@@ -121,33 +121,71 @@ export default {
 
     // 删除数据类型
     const onDelete = async (rowData: any) => {
-      const { code }: any = await deleteDataType({ ids: [rowData.id] });
-      if (code === 0) {
-        (instance as any).proxy.$message({
-          type: 'success',
-          message: '删除成功',
+      ElMessageBox.confirm(`是否删除选中?`, '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+      })
+        .then(async () => {
+          const { code }: any = await deleteDataType({ ids: [rowData.id] });
+          if (code === 0) {
+            (instance as any).proxy.$message({
+              type: 'success',
+              message: '删除成功',
+            });
+            getTableData();
+          } else {
+            (instance as any).proxy.$message({
+              type: 'error',
+              message: '删除失败',
+            });
+          }
+        })
+        .catch(() => {
+          ElMessage({
+            type: 'info',
+            message: '已取消操作',
+          });
         });
-        getTableData();
-      }
     };
 
     // 批量删除数据类型
     const groupDelete = async () => {
-      if (tableState.multipleSelection.every((item: any) => item.isSystem)) {
-        (instance as any).proxy.$message({
-          type: 'warn',
-          message: '系统默认数据类型不可删除',
+      ElMessageBox.confirm(`是否删除选中?`, '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+      })
+        .then(async () => {
+          if (tableState.multipleSelection.every((item: any) => item.isSystem)) {
+            (instance as any).proxy.$message({
+              type: 'warn',
+              message: '系统默认数据类型不可删除',
+            });
+            return;
+          }
+          const { code }: any = await deleteDataType({
+            ids: [tableState.multipleSelection.map((item: any) => item.id)],
+          });
+          if (code === 0) {
+            (instance as any).proxy.$message({
+              type: 'success',
+              message: '删除成功',
+            });
+            getTableData();
+          } else {
+            (instance as any).proxy.$message({
+              type: 'error',
+              message: '删除失败',
+            });
+          }
+        })
+        .catch(() => {
+          ElMessage({
+            type: 'info',
+            message: '已取消操作',
+          });
         });
-        return;
-      }
-      const { code }: any = await deleteDataType({ ids: [tableState.multipleSelection.map((item: any) => item.id)] });
-      if (code === 0) {
-        (instance as any).proxy.$message({
-          type: 'success',
-          message: '删除成功',
-        });
-        getTableData();
-      }
     };
 
     // 数据类型筛选
