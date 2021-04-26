@@ -31,7 +31,7 @@
           @delete-project="deleteProject"
           @reload-projects="getProjectListData"
         ></project-item>
-        <div v-if="!projectList.length">暂无数据</div>
+        <div v-if="!projectList.length && !loadings" class="placeholders">暂无数据</div>
       </div>
       <packaged-pagination
         v-if="projectList.length"
@@ -283,7 +283,12 @@ export default defineComponent({
   .project-list_content {
     display: flex;
     flex-wrap: wrap;
-    min-height: 200px;
+    min-height: 60px;
+    .placeholders {
+      width: 100%;
+      text-align: center;
+      line-height: 60px;
+    }
   }
 }
 .project-list-dialog-footer {

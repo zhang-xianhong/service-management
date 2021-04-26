@@ -117,6 +117,7 @@ export default defineComponent({
   margin: 10px;
   &:hover {
     box-shadow: 0 0 8px #409eff;
+    cursor: pointer;
   }
   &_pic {
     width: 100%;
