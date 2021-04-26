@@ -22,7 +22,7 @@
         ></el-input>
       </div>
     </div>
-    <div style="background: #fff">
+    <div style="background: #fff" v-loading="loadings" element-loading-text="数据加载中...">
       <div class="project-list_content" ref="projectParentDiv" :style="{ paddingLeft: paddings }">
         <project-item
           v-for="item in projectList"
@@ -31,8 +31,10 @@
           @delete-project="deleteProject"
           @reload-projects="getProjectListData"
         ></project-item>
+        <div v-if="!projectList.length">暂无数据</div>
       </div>
       <packaged-pagination
+        v-if="projectList.length"
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
         :current-page="pageInfo.page"
@@ -147,6 +149,7 @@ export default defineComponent({
     const addDialogVisible = ref(false);
     const persons = ref([] as any);
     const projectParentDiv = ref(null as any);
+    const loadings = ref(true);
 
     const closeDialog = () => {
       addDialogVisible.value = false;
@@ -159,7 +162,9 @@ export default defineComponent({
       projectDetail.status = 1;
     };
 
-    getProjectListData();
+    getProjectListData().then(() => {
+      loadings.value = false;
+    });
     getAllTems();
 
     const submitProjectDetail = () => {
@@ -239,6 +244,7 @@ export default defineComponent({
       paddings,
       checkEnglishName,
       userProjectList,
+      loadings,
     };
   },
 });
@@ -277,6 +283,7 @@ export default defineComponent({
   .project-list_content {
     display: flex;
     flex-wrap: wrap;
+    min-height: 200px;
   }
 }
 .project-list-dialog-footer {
