@@ -6,6 +6,8 @@ const { settings } = URL;
 
 export const getConfig = (payload: any): Promise<SuccessResponse<any>> =>
   axios.get(getUrl(settings.GET_CONFIG), { params: payload });
+export const deliveryServiceConfig = (serviceId: string): Promise<SuccessResponse<any>> =>
+  axios.post(getUrl(settings.DELIVERY_CONFIG, serviceId));
 export const deliveryConfig = (): Promise<SuccessResponse<any>> => axios.post(getUrl(settings.DELIVERY_CONFIG));
 export const getServiceConfig = (serviceId: string): Promise<SuccessResponse<any>> =>
   axios.get(getUrl(settings.GET_SERVICECONFIG, serviceId));

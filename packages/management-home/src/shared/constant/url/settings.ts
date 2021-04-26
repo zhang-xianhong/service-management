@@ -27,5 +27,5 @@ export default {
   UPDATE_CONFIG: ['/settings/config/_', 'mock/settings/config-update.json'],
   DELETE_CONFIG: ['/settings/config/delete/_', 'mock/settings/config-delete.json'],
   GET_CONFIG_HISTORY: ['/settings/config/history/_', 'mock/settings/config-history.json'],
-  DELIVERY_CONFIG: ['/settings/config/delivery', 'mock/settings/config-delete.json'],
+  DELIVERY_CONFIG: ['/settings/config/publish/_', 'mock/settings/config-delete.json'],
 };

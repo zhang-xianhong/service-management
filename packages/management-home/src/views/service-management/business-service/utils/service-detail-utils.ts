@@ -106,6 +106,7 @@ export default function() {
         click: () => stop(),
       },
       disabled: false,
+      style: 'margin-left: 5px',
     },
     // {
     //   label: '发布',
@@ -120,6 +121,7 @@ export default function() {
         click: () => log(),
       },
       disabled: false,
+      style: 'margin-left: 5px',
     },
   ];
 

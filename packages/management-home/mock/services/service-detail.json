@@ -1,92 +1,58 @@
 {
-  "code": 0,
-  "data": {
-      "id": 3,
-      "createTime": "2021-03-22T08:25:07.000Z",
-      "updateTime": "2021-03-22T08:25:07.000Z",
-      "createUser": null,
-      "updateUser": null,
-      "isDelete": false,
-      "name": "srv-3",
-      "url": "",
-      "serverPort": 8082,
-      "depolyId": null,
-      "moduleDependencyId": null,
-      "deposit": null,
-      "status": 0,
-      "description": "测试数据",
-      "version": null,
-      "owner": "wxp",
-      "detail": "测试服务详情",
-      "isAllByExtend": null,
-      "extendVersion": null,
-      "classification": "2",
-      "tag": "业务",
-      "initTimes": 0,
-      "builtTimes": 0,
-      "codeQuality": "",
-      "serviceRank": "",
-      "serviceApiUrl": "",
-      "druidUrl": "",
-      "startTime": null,
-      "cloneBy": "",
-      "apis": [
-          {
-              "id": 1,
-              "createTime": "2021-03-22T10:06:03.000Z",
-              "updateTime": "2021-03-22T10:06:03.000Z",
-              "createUser": 111,
-              "updateUser": null,
-              "url": "www.test.com",
-              "method": "GET",
-              "paramType": "REQUEST_BODY",
-              "name": "测试接口",
-              "description": "测试接口",
-              "serviceId": 3,
-              "version": 1
-          },
-          {
-              "id": 2,
-              "createTime": "2021-03-22T10:06:03.000Z",
-              "updateTime": "2021-03-22T10:06:03.000Z",
-              "createUser": 111222,
-              "updateUser": null,
-              "url": "www.test222.com",
-              "method": "POST",
-              "paramType": "REQUEST_BODY",
-              "name": "测试接口111",
-              "description": "测试接口111",
-              "serviceId": 3,
-              "version": 1
-          }
-      ],
-      "dependencies": [
-          {
-              "id": 1,
-              "createTime": "2021-03-22T08:25:07.000Z",
-              "updateTime": "2021-03-22T08:25:07.000Z",
-              "createUser": null,
-              "updateUser": null,
-              "dependencyId": 1,
-              "remark": "",
-              "version": 0,
-              "serviceId": 3
-          }
-      ],
-      "config": {
-        "coordinate": {
-            "1": {
-                "x": 520,
-                "y": 220
-            },
-            "2": {
-                "x": 110,
-                "y": 310
+    "code": 0,
+    "data": {
+        "id": 1,
+        "createTime": "2021-03-23T08:12:52.000Z",
+        "updateTime": "2021-03-23T08:12:51.000Z",
+        "createUser": null,
+        "updateUser": null,
+        "isDelete": false,
+        "name": "srv-1",
+        "url": "",
+        "serverPort": 8080,
+        "depolyId": null,
+        "moduleDependencyId": null,
+        "deposit": null,
+        "status": 0,
+        "description": "测试数据",
+        "version": null,
+        "owner": "wxp",
+        "detail": "测试服务详情",
+        "isAllByExtend": null,
+        "extendVersion": null,
+        "classification": "2",
+        "tag": "业务",
+        "initTimes": 0,
+        "builtTimes": 0,
+        "codeQuality": "",
+        "serviceRank": "",
+        "serviceApiUrl": "",
+        "druidUrl": "",
+        "startTime": null,
+        "cloneBy": "",
+        "dependencies": [],
+        "config": {
+            "id": 1,
+            "createTime": "2021-03-23T08:29:05.000Z",
+            "updateTime": "2021-03-23T08:29:05.000Z",
+            "createUser": null,
+            "updateUser": null,
+            "serviceId": 1,
+            "config": {
+                "coordinate": {
+                    "1": {
+                        "x": 22,
+                        "y": 22
+                    },
+                    "2": {
+                        "x": 11,
+                        "y": 11
+                    }
+                }
             }
         }
-    }
-  },
-  "message": "successful",
-  "httpStatus": 200,
-  "timestamp": 1616465453501
+    },
+    "message": "successful",
+    "httpStatus": 200,
+    "timestamp": 1616488378492
 }
