@@ -28,27 +28,24 @@
           <div class="detail-icons">
             <!-- 服务详情 -->
             <svg-icon
-              icon-name="overview"
-              icon-class="detail-icons__item detail-icons__item--overview"
+              :icon-name="componentName === 'ServerBaseInfo' ? 'overview-hover' : 'overview'"
+              icon-class="detail-icons__item"
               @click="openBaseInfo"
             ></svg-icon>
             <!-- 接口列表 -->
             <svg-icon
-              icon-name="list"
-              icon-class="detail-icons__item detail-icons__item--list"
+              :icon-name="drawerName === 'ServerPortsInfo' ? 'list-hover' : 'list'"
+              icon-class="detail-icons__item"
               @click="openPropertyInfo"
             ></svg-icon>
-            <!-- 代码下载 -->
-            <!-- <svg-icon icon-name="icon-download-manage" icon-class="detail-icons__item"></svg-icon> -->
+            <!-- 代码预览 -->
+            <svg-icon icon-name="gitlab" icon-class="detail-icons__item" @click="openGitlab"></svg-icon>
             <!-- 文档下载 -->
-            <svg-icon
-              icon-name="daily"
-              icon-class="detail-icons__item detail-icons__item--document detail-icons__item--disabled"
-            ></svg-icon>
+            <svg-icon icon-name="daily" icon-class="detail-icons__item detail-icons__item--disabled"></svg-icon>
             <!-- 服务配置 -->
             <svg-icon
-              icon-name="setting"
-              icon-class="detail-icons__item detail-icons__item--config"
+              :icon-name="drawerName === 'ServerConfigInfo' ? 'setting-hover' : 'setting'"
+              icon-class="detail-icons__item"
               @click="openConfigInfo"
             ></svg-icon>
           </div>
@@ -78,15 +75,14 @@
               @select-change="modelSelected"
             ></erd>
           </div>
-          <div v-if="!isShowDownDrawer">
+          <!-- <div v-if="!isShowDownDrawer">
             <div>
               服务代码：
               <a :href="serverInfo.sshHost + (serverInfo.deposit ? serverInfo.deposit : '')" target="_blank">{{
                 serverInfo.sshHost + (serverInfo.deposit ? serverInfo.deposit : '')
               }}</a>
             </div>
-            <!--            <div>服务地址：</div>-->
-          </div>
+          </div> -->
         </el-col>
         <el-col v-if="componentName" :span="4" style="border-left: 1px solid #bbbbbb; height: 100%">
           <template v-if="componentName">
@@ -375,6 +371,11 @@ export default {
       drawerName.value = 'ServerConfigInfo';
     };
 
+    // 打开gitlab页面
+    const openGitlab = () => {
+      window.open(serverInfo.value.sshHost + (serverInfo.value.deposit ? serverInfo.value.deposit : ''));
+    };
+
     // 模型、关联详情数据
     const modelInfo = ref(null);
     provide('currentModel', modelInfo);
@@ -469,6 +470,7 @@ export default {
       openBaseInfo,
       openPropertyInfo,
       openConfigInfo,
+      openGitlab,
       modelList,
       initModelList,
       erdLoading,
@@ -512,12 +514,6 @@ export default {
       padding: 4px;
       margin-right: 9px;
       border: 1px solid #fff;
-      &--overview {
-        &:hover {
-          content: '详情';
-          position: 'absolute';
-        }
-      }
       &--disabled {
         background: #bbb;
         cursor: not-allowed;

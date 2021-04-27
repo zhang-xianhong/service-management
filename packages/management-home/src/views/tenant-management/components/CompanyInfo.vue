@@ -5,12 +5,12 @@
       <el-form-item prop="name" class="form-item" label="企业名称" required>
         {{ companyInfo.name }}
       </el-form-item>
-      <el-form-item prop="nameShort" class="form-item" label="企业简称">
+      <el-form-item prop="nameShort" class="form-item" label="企业别称">
         <template v-if="!isEdit">{{ companyInfo.nameShort }}</template>
         <el-input v-else v-model="companyInfo.nameShort" style="width: 400px" placeholder="请输入企业简称"></el-input>
       </el-form-item>
-      <el-form-item prop="industryId" class="form-item" label="所属行业" required>
-        {{ computedIndustryName }}
+      <el-form-item prop="tenantEngAbbr" class="form-item" label="企业英文简称" required>
+        {{ companyInfo.tenantEngAbbr }}
       </el-form-item>
       <el-form-item prop="addr" class="form-item" label="企业地址">
         <template v-if="!isEdit">{{ computedAddrName }}</template>
@@ -23,15 +23,15 @@
           ></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item prop="natureId" class="form-item" label="企业性质" required>
-        {{ computedNatureName }}
+      <el-form-item prop="industryId" class="form-item" label="所属行业" required>
+        {{ computedIndustryName }}
       </el-form-item>
       <el-form-item prop="addrDetail" class="form-item" label="详细地址">
         <template v-if="!isEdit">{{ companyInfo.addrDetail }}</template>
         <el-input v-else v-model="companyInfo.addrDetail" style="width: 400px" placeholder="请输入详细地址"></el-input>
       </el-form-item>
-      <el-form-item prop="scaleId" class="form-item" label="企业规模" required>
-        {{ computedScaleName }}
+      <el-form-item prop="natureId" class="form-item" label="企业性质" required>
+        {{ computedNatureName }}
       </el-form-item>
       <el-form-item prop="intro" class="form-item" label="公司简介">
         <template v-if="!isEdit">{{ companyInfo.intro }}</template>
@@ -45,16 +45,19 @@
           show-word-limit
         ></el-input>
       </el-form-item>
+      <el-form-item prop="scaleId" class="form-item" label="企业规模" required>
+        {{ computedScaleName }}
+      </el-form-item>
       <el-form-item prop="license" label="营业执照号" required style="display: block">
         {{ companyInfo.license }}
       </el-form-item>
       <el-form-item prop="licenseUrl" class="form-item" required>
         <template v-slot:label>营业执照<i class="el-icon-question info-icon"></i></template>
-        <img :src="licenseUrl" class="avatar" />
+        <img :src="companyInfo.sourceUrl?.licenseUrl" class="avatar" />
       </el-form-item>
       <el-form-item prop="logoUrl" class="form-item">
         <template v-slot:label>企业logo<i class="el-icon-question info-icon"></i></template>
-        <img v-if="logoUrl" :src="logoUrl" class="avatar" />
+        <img v-if="companyInfo.sourceUrl?.logoUrl" :src="companyInfo.sourceUrl.logoUrl" class="avatar" />
         <el-upload
           v-else
           class="avatar-uploader"
@@ -72,9 +75,8 @@
 </template>
 
 <script lang="ts">
-import { computed, ref, WritableComputedRef, Ref, watch, getCurrentInstance } from 'vue';
+import { computed, ref, WritableComputedRef, getCurrentInstance } from 'vue';
 import useCompanyInfo from '../utils/tenant-config';
-import { getImageUrl } from '@/api/files';
 import { SuccessResponse } from '@/types/response';
 import { IMAGE_UPLOAD } from '@/shared/constant/file';
 
@@ -91,6 +93,7 @@ interface CompanyInfoInterface {
   license: string; // 企业执照号
   licenseUrl: string; // 营业执照
   logoUrl: string; // 企业logo
+  sourceUrl: any;
 }
 
 export default {
@@ -156,38 +159,6 @@ export default {
       provinceOptions.value = res.provinceOptions;
     });
 
-    const licenseUrl: Ref<string> = ref('');
-
-    const logoUrl: Ref<string> = ref('');
-
-    // 根据fileKey获取文件url
-    const getFileUrl = async (type: 'licenseUrl' | 'logoUrl') => {
-      if (companyInfo.value[type]) {
-        const { data } = await getImageUrl({ fileKey: companyInfo.value[type] });
-        return data;
-      }
-    };
-
-    watch(
-      () => companyInfo.value.licenseUrl,
-      async () => {
-        if (!licenseUrl.value) {
-          const url = await getFileUrl('licenseUrl');
-          licenseUrl.value = url;
-        }
-      },
-    );
-
-    watch(
-      () => companyInfo.value.logoUrl,
-      async () => {
-        if (!logoUrl.value) {
-          const url = await getFileUrl('logoUrl');
-          logoUrl.value = url;
-        }
-      },
-    );
-
     // 图片上传大小校验
     const beforeUpload = (file: { size: number }) => {
       if (file.size > 1024 * 1024 * 3) {
@@ -203,7 +174,7 @@ export default {
     const logoUploadSuccess = (res: SuccessResponse<any>, file: { raw: unknown }) => {
       if (res.code === 0 && res.data?.fileKey) {
         companyInfo.value.logoUrl = res.data.fileKey;
-        logoUrl.value = URL.createObjectURL(file.raw);
+        companyInfo.value.sourceUrl.logoUrl = URL.createObjectURL(file.raw);
       } else {
         (instance as any).proxy.$message({
           type: 'error',
@@ -223,8 +194,6 @@ export default {
       computedNatureName,
       scaleOptions,
       computedScaleName,
-      licenseUrl,
-      logoUrl,
       beforeUpload,
       logoUploadSuccess,
     };

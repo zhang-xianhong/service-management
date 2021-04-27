@@ -20,12 +20,12 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent, onBeforeUnmount } from 'vue';
 import SideBar from './components/sideBar/Index.vue';
 import NavBar from './components/navBar/Index.vue';
 import publicStyle from '@/styles/layout.scss';
 import BlankHeader from '@/components/blank-header/Index.vue';
-// import { checkHealth } from '@/api/auth';
+import { checkHealth } from '@/api/auth';
 
 export default defineComponent({
   name: 'Layout',
@@ -35,13 +35,13 @@ export default defineComponent({
     BlankHeader,
   },
   setup() {
-    // checkHealth();
-    // const checkInterval = setInterval(() => {
-    //   checkHealth();
-    // }, 10000);
-    // onBeforeUnmount(() => {
-    //   clearInterval(checkInterval);
-    // });
+    checkHealth();
+    const checkInterval = setInterval(() => {
+      checkHealth();
+    }, 10000);
+    onBeforeUnmount(() => {
+      clearInterval(checkInterval);
+    });
     return {
       publicStyle,
     };

@@ -15,19 +15,18 @@
         {{ userInfo.email }}
       </el-form-item>
       <el-form-item prop="frontPhoto" class="form-item" label="身份证正面" required>
-        <img v-if="frontPhoto" :src="frontPhoto" class="avatar" />
+        <img :src="userInfo.sourceUrl?.frontPhoto" class="avatar" />
       </el-form-item>
       <el-form-item prop="reversePhoto" class="form-item" label="身份证反面" required>
-        <img v-if="reversePhoto" :src="reversePhoto" class="avatar" />
+        <img :src="userInfo.sourceUrl?.reversePhoto" class="avatar" />
       </el-form-item>
     </el-form>
   </el-row>
 </template>
 
 <script lang="ts">
-import { computed, WritableComputedRef, watch, Ref, ref } from 'vue';
+import { computed, WritableComputedRef } from 'vue';
 import { IMAGE_UPLOAD } from '@/shared/constant/file';
-import { getImageUrl } from '@/api/files';
 
 interface UserInfoInterface {
   name: string;
@@ -55,45 +54,14 @@ export default {
   },
   setup(props: { isEdit: boolean; modelValue: any }) {
     // 联系人信息
-    const userInfo: WritableComputedRef<UserInfoInterface> = computed(() => props.modelValue.contact);
-
-    const frontPhoto: Ref<string> = ref('');
-
-    const reversePhoto: Ref<string> = ref('');
-
-    // 根据fileKey获取文件url
-    const getFileUrl = async (type: 'frontPhoto' | 'reversePhoto') => {
-      if (userInfo.value[type]) {
-        const { data } = await getImageUrl({ fileKey: userInfo.value[type] });
-        return data;
-      }
-    };
-
-    watch(
-      () => userInfo.value,
-      async () => {
-        if (!frontPhoto.value) {
-          const url = await getFileUrl('frontPhoto');
-          frontPhoto.value = url;
-        }
-      },
-    );
-
-    watch(
-      () => userInfo.value,
-      async () => {
-        if (!reversePhoto.value) {
-          const url = await getFileUrl('reversePhoto');
-          reversePhoto.value = url;
-        }
-      },
-    );
+    const userInfo: WritableComputedRef<UserInfoInterface> = computed(() => ({
+      ...props.modelValue.contact,
+      ...{ sourceUrl: props.modelValue.sourceUrl },
+    }));
 
     return {
       IMAGE_UPLOAD,
       userInfo,
-      frontPhoto,
-      reversePhoto,
     };
   },
 };
