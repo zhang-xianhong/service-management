@@ -50,10 +50,10 @@
             "password": "02d42b69c1e21f0531e0c7ffe0e2f36f"
         },
         "sourceUrl": {
-            "licenseUrl": "https://configuration-studio-1258344699.cos.ap-guangzhou.myqcloud.com/448d5ae8-15c4-4bd5-ba91-99fb394450d8?q-sign-algorithm=sha1&q-ak=AKIDSvBUu5bjGaVDrb9NQFsEtqxqWyCDucp8&q-sign-time=1619429914;1619430814&q-key-time=1619429914;1619430814&q-header-list=&q-url-param-list=&q-signature=e879cc68c7b4b68d0db08a75428c02ad14ee53d5",
-            "logoUrl": "https://configuration-studio-1258344699.cos.ap-guangzhou.myqcloud.com/7beee2a4-678c-4dd9-9dd7-5890ca01d580?q-sign-algorithm=sha1&q-ak=AKIDSvBUu5bjGaVDrb9NQFsEtqxqWyCDucp8&q-sign-time=1619429914;1619430814&q-key-time=1619429914;1619430814&q-header-list=&q-url-param-list=&q-signature=c3aafad22edc44422c67408048f6079872d6e28f",
-            "frontPhoto": "https://configuration-studio-1258344699.cos.ap-guangzhou.myqcloud.com/56616f92-8e52-4c0e-956f-54bba26ca585?q-sign-algorithm=sha1&q-ak=AKIDSvBUu5bjGaVDrb9NQFsEtqxqWyCDucp8&q-sign-time=1619429914;1619430814&q-key-time=1619429914;1619430814&q-header-list=&q-url-param-list=&q-signature=44ed2fc24458b825a789cebe701a5b530868e36a",
-            "reversePhoto": "https://configuration-studio-1258344699.cos.ap-guangzhou.myqcloud.com/94973cc3-d023-4d4e-9e46-2bc42ca2cfa5?q-sign-algorithm=sha1&q-ak=AKIDSvBUu5bjGaVDrb9NQFsEtqxqWyCDucp8&q-sign-time=1619429914;1619430814&q-key-time=1619429914;1619430814&q-header-list=&q-url-param-list=&q-signature=1b1790dc269b25b8ae2ff547e6f50cf9bca88ddb"
+            "licenseUrl": "****",
+            "logoUrl": "*****",
+            "frontPhoto": "*******",
+            "reversePhoto": "*****"
         }
     },
     "message": "successful",
