@@ -159,4 +159,9 @@ export default defineComponent({
     cursor: pointer;
   }
 }
+.el-dropdown-link {
+  &:hover {
+    cursor: pointer;
+  }
+}
 </style>

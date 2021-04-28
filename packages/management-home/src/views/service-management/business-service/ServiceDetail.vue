@@ -27,27 +27,37 @@
           </div>
           <div class="detail-icons">
             <!-- 服务详情 -->
-            <svg-icon
-              :icon-name="componentName === 'ServerBaseInfo' ? 'overview-hover' : 'overview'"
-              icon-class="detail-icons__item"
-              @click="openBaseInfo"
-            ></svg-icon>
+            <el-tooltip effect="light" content="服务详情" placement="bottom">
+              <svg-icon
+                :icon-name="componentName === 'ServerBaseInfo' ? 'overview-hover' : 'overview'"
+                icon-class="detail-icons__item"
+                @click="openBaseInfo"
+              ></svg-icon>
+            </el-tooltip>
             <!-- 接口列表 -->
-            <svg-icon
-              :icon-name="drawerName === 'ServerPortsInfo' ? 'list-hover' : 'list'"
-              icon-class="detail-icons__item"
-              @click="openPropertyInfo"
-            ></svg-icon>
+            <el-tooltip effect="light" content="接口列表" placement="bottom">
+              <svg-icon
+                :icon-name="drawerName === 'ServerPortsInfo' ? 'list-hover' : 'list'"
+                icon-class="detail-icons__item"
+                @click="openPropertyInfo"
+              ></svg-icon>
+            </el-tooltip>
             <!-- 代码预览 -->
-            <svg-icon icon-name="gitlab" icon-class="detail-icons__item" @click="openGitlab"></svg-icon>
+            <el-tooltip effect="light" content="代码预览" placement="bottom">
+              <svg-icon icon-name="gitlab" icon-class="detail-icons__item" @click="openGitlab"></svg-icon>
+            </el-tooltip>
             <!-- 文档下载 -->
-            <svg-icon icon-name="daily" icon-class="detail-icons__item detail-icons__item--disabled"></svg-icon>
+            <el-tooltip effect="light" content="文档下载" placement="bottom">
+              <svg-icon icon-name="daily" icon-class="detail-icons__item detail-icons__item--disabled"></svg-icon>
+            </el-tooltip>
             <!-- 服务配置 -->
-            <svg-icon
-              :icon-name="drawerName === 'ServerConfigInfo' ? 'setting-hover' : 'setting'"
-              icon-class="detail-icons__item"
-              @click="openConfigInfo"
-            ></svg-icon>
+            <el-tooltip effect="light" content="服务配置" placement="bottom">
+              <svg-icon
+                :icon-name="drawerName === 'ServerConfigInfo' ? 'setting-hover' : 'setting'"
+                icon-class="detail-icons__item"
+                @click="openConfigInfo"
+              ></svg-icon>
+            </el-tooltip>
           </div>
         </el-col>
       </el-row>
@@ -507,6 +517,8 @@ export default {
     display: inline-flex;
     align-items: center;
     margin-left: 24px;
+    vertical-align: bottom;
+    margin-bottom: 3px;
     &__item {
       width: 24px;
       height: 24px;

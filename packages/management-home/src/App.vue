@@ -37,7 +37,7 @@ export default defineComponent({
         // eslint-disable-next-line prefer-destructuring
         userCurrentProject.value = projects[0];
         localStorage.setItem('projectId', projects[0].id);
-        window.location.reload();
+        window.location.href = '/';
       } else {
         projects.forEach((x: any) => {
           if (localsid === x.id) {

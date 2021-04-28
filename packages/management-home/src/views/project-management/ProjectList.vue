@@ -22,7 +22,7 @@
         ></el-input>
       </div>
     </div>
-    <div style="background: #fff" v-loading="loadings" element-loading-text="数据加载中...">
+    <div style="background: #fff" v-loading="loadings">
       <div class="project-list_content" ref="projectParentDiv" :style="{ paddingLeft: paddings }">
         <project-item
           v-for="item in projectList"
@@ -260,7 +260,6 @@ export default defineComponent({
   }
   &_left {
     flex: 1;
-    padding-left: 10px;
   }
   &_right {
     flex: 1;
