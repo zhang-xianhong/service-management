@@ -109,6 +109,9 @@ export default defineComponent({
       float: left;
       line-height: 30px;
       height: 34px;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
       &:deep(.el-input--small) {
         width: 100%;
         input {

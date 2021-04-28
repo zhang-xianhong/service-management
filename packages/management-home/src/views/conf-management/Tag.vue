@@ -16,12 +16,7 @@
       </el-col>
     </el-row>
     <el-row style="background: #fff">
-      <el-table
-        :data="tagList"
-        @selection-change="handleSelectionChange"
-        @sort-change="sortChange"
-        v-loading="loading"
-      >
+      <el-table :data="tagList" @selection-change="handleSelectionChange" @sort-change="sortChange" v-loading="loading">
         <el-table-column type="selection" width="45" />
         <el-table-column type="index" label="序号" width="50" />
         <el-table-column
@@ -131,20 +126,24 @@ export default defineComponent({
     };
     const getTagList = async () => {
       loading.value = true;
-      const { code, data } = await listTags({
-        page: page.value,
-        pageSize: pageSize.value,
-        keyword: filterText.value,
-        sortType,
-        sortField,
-      });
-      loading.value = false;
-      if (code === 0) {
-        total.value = data.count;
-        tagList.value = data.rows.map((row: any) => ({
-          ...row,
-          createTime: dateFormat(row.createTime),
-        }));
+      try {
+        const { code, data } = await listTags({
+          page: page.value,
+          pageSize: pageSize.value,
+          keyword: filterText.value,
+          sortType,
+          sortField,
+        });
+        loading.value = false;
+        if (code === 0) {
+          total.value = data.count;
+          tagList.value = data.rows.map((row: any) => ({
+            ...row,
+            createTime: dateFormat(row.createTime),
+          }));
+        }
+      } catch (err) {
+        loading.value = false;
       }
     };
 
