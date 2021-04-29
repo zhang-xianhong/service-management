@@ -1,5 +1,5 @@
 import hljs from 'highlight.js';
-import 'highlight.js/scss/tomorrow-night-eighties.scss';
+import 'highlight.js/scss/vs.scss';
 
 export const addHighLight = (app: any) => {
   app.directive('highlight', (el: any) => {

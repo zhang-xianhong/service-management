@@ -80,6 +80,7 @@ export default defineComponent({
     color: #006eff;
     &:hover {
       transform: scale(1.5);
+      cursor: pointer;
     }
   }
   &-detail {
