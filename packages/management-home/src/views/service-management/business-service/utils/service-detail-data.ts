@@ -16,7 +16,9 @@ export const getSqlData = () => {
   return getChanges(id)
     .then((res) => {
       sqlDialogVisiable.value = true;
-      sqlData.value = Object.values(res.data);
+      if (res.data) {
+        sqlData.value = Object.values(res.data).map((x: any) => x.replace(/\n\t?/gm, '<br/>'));
+      }
       thenRefresh.value = !thenRefresh.value;
       sqlLoadings.value = false;
     })

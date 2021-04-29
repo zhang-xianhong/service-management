@@ -344,6 +344,9 @@ export default defineComponent({
 <style scoped lang="scss">
 .operation-link {
   margin-right: 4px;
+  &:hover {
+    cursor: pointer;
+  }
 }
 .ports-configuration__operations {
   display: flex;

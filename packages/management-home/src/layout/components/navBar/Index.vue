@@ -50,11 +50,11 @@
         </span>
         <template #dropdown>
           <el-dropdown-menu>
-            <el-dropdown-item icon="el-icon-edit">用户管理</el-dropdown-item>
+            <el-dropdown-item icon="el-icon-edit" v-if="userInfo.admin">用户管理</el-dropdown-item>
             <!--            <el-dropdown-item icon="el-icon-map-location">登录地点</el-dropdown-item>-->
             <!--            <el-dropdown-item icon="el-icon-s-custom">我的资产</el-dropdown-item>-->
             <el-dropdown-item icon="el-icon-info">关于</el-dropdown-item>
-            <el-dropdown-item icon="el-icon-switch-button" @click="logout">登出</el-dropdown-item>
+            <el-dropdown-item icon="el-icon-switch-button" @click="handleLogout">登出</el-dropdown-item>
           </el-dropdown-menu>
         </template>
       </el-dropdown>
@@ -66,7 +66,8 @@
 import { defineComponent, reactive } from 'vue';
 // import breadCurmb from '@/components/bread-curmb/Index.vue';
 import { userCurrentProject, userProjectList, userInfo } from '@/layout/messageCenter/user-info';
-import { postCurrentProject } from '@/api/auth';
+import { postCurrentProject, logout } from '@/api/auth';
+import Message from 'element-plus/es/el-message';
 
 export default defineComponent({
   name: 'navBar',
@@ -94,8 +95,15 @@ export default defineComponent({
       }
     };
 
-    const logout = () => {
-      window.location.href = '/api/logout';
+    const handleLogout = () => {
+      logout().then((res: any) => {
+        const urls = res.data.logoutUrl;
+        if (urls) {
+          window.location.href = urls;
+        } else {
+          Message.error('登出失败');
+        }
+      });
     };
     return {
       projectList,
@@ -103,7 +111,7 @@ export default defineComponent({
       userProjectList,
       handleDropClick,
       userInfo,
-      logout,
+      handleLogout,
     };
   },
 });

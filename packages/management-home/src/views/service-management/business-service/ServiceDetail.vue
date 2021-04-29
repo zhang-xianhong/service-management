@@ -533,6 +533,9 @@ export default {
       padding: 4px;
       margin-right: 9px;
       border: 1px solid #fff;
+      &:hover {
+        cursor: pointer;
+      }
       &--disabled {
         background: #bbb;
         cursor: not-allowed;
@@ -593,7 +596,11 @@ export default {
   border: solid 1px rgba(0, 0, 0, 0.4);
   color: black;
   font-weight: 400;
-  padding: 10px;
+  padding: 0;
+  pre {
+    margin: 0;
+    padding: 0 10px;
+  }
 }
 .log-item {
   width: 100%;
