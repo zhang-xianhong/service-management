@@ -134,8 +134,9 @@
         </div>
       </el-dialog>
       <el-dialog title="变更记录" v-model="sqlDialogVisiable" width="60%" @close="clearSql">
-        <div class="log-content sql-content" id="sql_content">
-          <div style="color: blue" v-if="sqlData.length === 0">变更记录加载中......</div>
+        <div class="log-content sql-content" id="sql_content" v-loading="sqlLoadings">
+          <div style="color: blue" v-if="sqlData.length === 0 && sqlLoadings">变更记录加载中......</div>
+          <div style="color: blue" v-if="sqlData.length === 0 && !sqlLoadings">暂无变更记录</div>
           <div class="log-item" v-for="(item, index) in Object.values(sqlData)" :key="index">
             <div class="log-item-content">
               <pre v-highlight>
