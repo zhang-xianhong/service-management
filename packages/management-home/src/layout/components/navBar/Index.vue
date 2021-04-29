@@ -63,11 +63,11 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive } from 'vue';
+import { defineComponent, onBeforeUnmount, reactive } from 'vue';
 // import breadCurmb from '@/components/bread-curmb/Index.vue';
 import { userCurrentProject, userProjectList, userInfo } from '@/layout/messageCenter/user-info';
 import { postCurrentProject, logout } from '@/api/auth';
-import Message from 'element-plus/es/el-message';
+// import Message from 'element-plus/es/el-message';
 
 export default defineComponent({
   name: 'navBar',
@@ -95,16 +95,28 @@ export default defineComponent({
       }
     };
 
+    let intervalLogout = null as any;
+
     const handleLogout = () => {
-      logout().then((res: any) => {
-        const urls = res.data.logoutUrl;
-        if (urls) {
-          window.location.href = urls;
-        } else {
-          Message.error('登出失败');
-        }
+      logout().then(() => {
+        window.location.reload();
+        intervalLogout = setInterval(() => {
+          window.location.reload();
+        }, 1000);
+        // const urls = res.data.logoutUrl;
+        // if (urls) {
+        //   window.location.href = urls;
+        // } else {
+        //   Message.error('登出失败');
+        // }
       });
     };
+    onBeforeUnmount(() => {
+      if (intervalLogout) {
+        clearInterval(intervalLogout);
+        intervalLogout = null;
+      }
+    });
     return {
       projectList,
       userCurrentProject,
