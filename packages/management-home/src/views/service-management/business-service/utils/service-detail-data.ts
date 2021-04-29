@@ -9,14 +9,20 @@ export const buildServiceData = (branch = 'develop', userId = '123456') =>
   buildService({ serviceId: currentServiceIdForData.value, branch, userId });
 
 export const sqlData = ref([] as any);
+export const sqlLoadings = ref(true);
 export const sqlDialogVisiable = ref(false);
 export const getSqlData = () => {
   const id = currentServiceIdForData.value;
-  return getChanges(id).then((res) => {
-    sqlDialogVisiable.value = true;
-    sqlData.value = Object.values(res.data);
-    thenRefresh.value = !thenRefresh.value;
-  });
+  return getChanges(id)
+    .then((res) => {
+      sqlDialogVisiable.value = true;
+      sqlData.value = Object.values(res.data);
+      thenRefresh.value = !thenRefresh.value;
+      sqlLoadings.value = false;
+    })
+    .catch(() => {
+      sqlLoadings.value = false;
+    });
 };
 
 export const clearSql = () => {

@@ -137,7 +137,11 @@
         <div class="log-content sql-content" id="sql_content">
           <div style="color: blue" v-if="sqlData.length === 0">变更记录加载中......</div>
           <div class="log-item" v-for="(item, index) in Object.values(sqlData)" :key="index">
-            <div class="log-item-content">{{ logs(item) }}</div>
+            <div class="log-item-content">
+              <pre v-highlight>
+                <code v-html="item" class="sql"></code>
+              </pre>
+            </div>
           </div>
         </div>
         <div class="dialog-footer">
@@ -175,6 +179,7 @@ import {
   currentServiceIdForData,
   sqlDialogVisiable,
   sqlData,
+  sqlLoadings,
   clearSql,
   getTreaceId,
   thenRefresh,
@@ -499,6 +504,7 @@ export default {
       statusMap,
       maskText,
       userProjectList,
+      sqlLoadings,
     };
   },
 };

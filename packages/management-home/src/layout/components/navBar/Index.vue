@@ -45,7 +45,7 @@
       <el-dropdown trigger="click" class="header-title">
         <span class="el-dropdown-link">
           <i class="el-icon-user-solid"></i>
-          admin
+          {{ userInfo.userName }}
           <i class="el-icon-arrow-down el-icon--right"></i>
         </span>
         <template #dropdown>
@@ -54,7 +54,7 @@
             <!--            <el-dropdown-item icon="el-icon-map-location">登录地点</el-dropdown-item>-->
             <!--            <el-dropdown-item icon="el-icon-s-custom">我的资产</el-dropdown-item>-->
             <el-dropdown-item icon="el-icon-info">关于</el-dropdown-item>
-            <el-dropdown-item icon="el-icon-switch-button">登出</el-dropdown-item>
+            <el-dropdown-item icon="el-icon-switch-button" @click="logout">登出</el-dropdown-item>
           </el-dropdown-menu>
         </template>
       </el-dropdown>
@@ -65,7 +65,7 @@
 <script lang="ts">
 import { defineComponent, reactive } from 'vue';
 // import breadCurmb from '@/components/bread-curmb/Index.vue';
-import { userCurrentProject, userProjectList } from '@/layout/messageCenter/user-info';
+import { userCurrentProject, userProjectList, userInfo } from '@/layout/messageCenter/user-info';
 import { postCurrentProject } from '@/api/auth';
 
 export default defineComponent({
@@ -93,11 +93,17 @@ export default defineComponent({
         });
       }
     };
+
+    const logout = () => {
+      window.location.href = '/api/logout';
+    };
     return {
       projectList,
       userCurrentProject,
       userProjectList,
       handleDropClick,
+      userInfo,
+      logout,
     };
   },
 });

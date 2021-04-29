@@ -3,7 +3,7 @@
     <el-row>
       <el-col :span="6" style="text-align: left">
         <el-button type="primary" @click="add" style="width: 90px">新增</el-button>
-        <el-button @click="groupRemove()">删除</el-button>
+        <el-button @click="groupRemove()" :disabled="disabled">删除</el-button>
       </el-col>
       <el-col :offset="8" :span="10" style="text-align: right">
         <el-input
@@ -160,8 +160,10 @@ export default defineComponent({
 
     // 批量删除
     let selection: Array<number> = [];
+    const disabled = ref(true);
     const handleSelectionChange = (val: any) => {
       selection = _.map('id')(val);
+      disabled.value = !selection.length;
     };
     const groupRemove = async (ids = selection) => {
       ElMessageBox.confirm(`是否删除选中标签?`, '提示', {
@@ -261,6 +263,7 @@ export default defineComponent({
       formRef,
       loading,
       sortChange,
+      disabled,
     };
   },
 });
