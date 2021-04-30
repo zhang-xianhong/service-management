@@ -23,7 +23,10 @@ service.interceptors.request.use(
 );
 
 service.interceptors.response.use(
-  (response: AxiosResponse) => response.data,
+  (response: AxiosResponse) => {
+    localStorage.setItem('HEADERS', JSON.stringify([{ ...response.headers }]));
+    return response.data;
+  },
   (error) => {
     // 如果没有error.response返回，则当做服务器异常处理
     if (!error.response) {

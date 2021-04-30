@@ -219,6 +219,29 @@ const routes: Array<RouteRecordRaw> = [
       },
     ],
   },
+  {
+    path: '/iframe',
+    component: () => Layout,
+    name: 'IframeTest',
+    redirect: 'iframe-test',
+    meta: {
+      title: 'iframe传参',
+      icon: 'el-icon-eleme',
+      isRootLevel: true,
+    },
+    children: [
+      {
+        path: 'iframe-test',
+        component: () => import('@/views/iframe-test/Index.vue'),
+        name: 'IframeTest',
+        meta: {
+          title: 'iframe传参',
+          icon: 'el-icon-eleme',
+          isRootLevel: true,
+        },
+      },
+    ],
+  },
 ];
 
 export const reCreateRouter = (routes: Array<RouteRecordRaw>): Router =>
