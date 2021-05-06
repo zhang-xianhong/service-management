@@ -20,7 +20,7 @@ service.interceptors.request.use(
     const item = {} as any;
     item[PROJECT_ID] = localStorage.getItem('projectId') || '';
     item.Cookie = getCookies();
-    localStorage.setItem('HEADERS', JSON.stringify([{ ...item }]));
+    localStorage.setItem('HEADERS', JSON.stringify([item]));
     console.log(getCookies(), 'this is cookiejsons');
     return newConfig;
   },
