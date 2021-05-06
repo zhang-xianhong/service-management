@@ -5,7 +5,7 @@
     <el-button type="primary" @click="goSrc" @keyup.enter="goSrc">前往</el-button>
     <el-button @click="sendMessage">Send Token</el-button>
     <br />
-    <iframe :src="src" ref="iframesTest"></iframe>
+    <!--    <iframe :src="src" ref="iframesTest"></iframe>-->
   </div>
 </template>
 
