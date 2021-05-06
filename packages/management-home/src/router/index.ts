@@ -220,7 +220,7 @@ const routes: Array<RouteRecordRaw> = [
     ],
   },
   {
-    path: '/iframe',
+    path: '/iframe-management',
     component: () => Layout,
     name: 'IframeTest',
     redirect: 'iframe-test',
@@ -237,7 +237,7 @@ const routes: Array<RouteRecordRaw> = [
         meta: {
           title: 'iframe传参',
           icon: 'el-icon-eleme',
-          isRootLevel: true,
+          isRootLevel: false,
         },
       },
     ],
