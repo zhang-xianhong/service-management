@@ -17,16 +17,14 @@ service.interceptors.request.use(
       newConfig.headers[TOKEN] = getToken();
     }
     newConfig.headers[PROJECT_ID] = localStorage.getItem('projectId') || '';
+    localStorage.setItem('HEADERS', JSON.stringify([{ ...newConfig.headers }]));
     return newConfig;
   },
   (error) => Promise.reject(error),
 );
 
 service.interceptors.response.use(
-  (response: AxiosResponse) => {
-    localStorage.setItem('HEADERS', JSON.stringify([{ ...response.headers }]));
-    return response.data;
-  },
+  (response: AxiosResponse) => response.data,
   (error) => {
     // 如果没有error.response返回，则当做服务器异常处理
     if (!error.response) {
