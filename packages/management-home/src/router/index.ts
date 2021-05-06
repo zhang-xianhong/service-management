@@ -223,7 +223,7 @@ const routes: Array<RouteRecordRaw> = [
     path: '/iframe-management',
     component: () => Layout,
     name: 'IframeTest',
-    redirect: 'iframe-test',
+    redirect: '/iframe-test',
     meta: {
       title: 'iframe传参',
       icon: 'el-icon-eleme',

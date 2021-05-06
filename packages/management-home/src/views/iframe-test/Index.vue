@@ -16,8 +16,8 @@ import { userInfo } from '@/layout/messageCenter/user-info';
 export default defineComponent({
   name: 'IframeTest',
   setup() {
-    const urls = ref('http://dev.sa.qq.com:1026/');
-    const src = ref('http://dev.sa.qq.com:1026/');
+    const urls = ref('http://localhost:1026/');
+    const src = ref('http://localhost:1026/');
     const iframesTest = ref({} as any);
     const goSrc = () => {
       src.value = urls.value;
