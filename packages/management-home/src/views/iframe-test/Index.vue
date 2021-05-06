@@ -5,7 +5,7 @@
     <el-button type="primary" @click="goSrc" @keyup.enter="goSrc">前往</el-button>
     <el-button @click="sendMessage">Send Token</el-button>
     <br />
-    <!--    <iframe :src="src" ref="iframesTest"></iframe>-->
+    <iframe :src="src" ref="iframesTest"></iframe>
   </div>
 </template>
 
@@ -17,8 +17,8 @@ import { userInfo } from '@/layout/messageCenter/user-info';
 export default defineComponent({
   name: 'IframeTest',
   setup() {
-    const urls = ref('https://www.baidu.com');
-    const src = ref('https://www.baidu.com');
+    const urls = ref('http://localhost:1026/');
+    const src = ref('http://localhost:1026/');
     const iframesTest = ref({} as any);
     const goSrc = () => {
       src.value = urls.value;

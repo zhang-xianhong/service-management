@@ -221,22 +221,21 @@ const routes: Array<RouteRecordRaw> = [
   },
   {
     path: '/iframe-management',
-    component: () => Layout,
-    name: 'IframeTest',
+    redirect: '/iframe-detail',
+    component: Layout,
     meta: {
-      title: 'iframe传参',
-      icon: 'el-icon-eleme',
       isRootLevel: true,
     },
     children: [
       {
-        path: 'iframe-test',
-        component: () => import('@/views/iframe-test/Index.vue'),
-        name: 'IframeTestItem',
+        path: 'iframe-detail',
+        component: () => import(/* webpackChunkName: "tenant" */ '@/views/iframe-test/Index.vue'),
+        name: 'iframe',
         meta: {
-          title: 'iframe传参',
+          title: 'iframe传参管理',
           icon: 'el-icon-eleme',
           isRootLevel: false,
+          id: 2,
         },
       },
     ],
