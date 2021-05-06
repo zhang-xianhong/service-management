@@ -1,6 +1,7 @@
 <template>
   <div class="test-iframe">
     <el-input :value="urls" style="width: 400px; margin-bottom: 20px; margin-right: 20px" v-model="urls"></el-input>
+    <label>demo url: http://localhost:1026/ &nbsp;&nbsp;</label>
     <el-button type="primary" @click="goSrc" @keyup.enter="goSrc">前往</el-button>
     <el-button @click="sendMessage">Send Token</el-button>
     <br />
@@ -16,8 +17,8 @@ import { userInfo } from '@/layout/messageCenter/user-info';
 export default defineComponent({
   name: 'IframeTest',
   setup() {
-    const urls = ref('http://localhost:1026/');
-    const src = ref('http://localhost:1026/');
+    const urls = ref('https://www.baidu.com');
+    const src = ref('https://www.baidu.com');
     const iframesTest = ref({} as any);
     const goSrc = () => {
       src.value = urls.value;

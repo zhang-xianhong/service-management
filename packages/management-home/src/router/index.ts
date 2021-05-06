@@ -223,7 +223,6 @@ const routes: Array<RouteRecordRaw> = [
     path: '/iframe-management',
     component: () => Layout,
     name: 'IframeTest',
-    redirect: '/iframe-test',
     meta: {
       title: 'iframe传参',
       icon: 'el-icon-eleme',
@@ -233,7 +232,7 @@ const routes: Array<RouteRecordRaw> = [
       {
         path: 'iframe-test',
         component: () => import('@/views/iframe-test/Index.vue'),
-        name: 'IframeTest',
+        name: 'IframeTestItem',
         meta: {
           title: 'iframe传参',
           icon: 'el-icon-eleme',
