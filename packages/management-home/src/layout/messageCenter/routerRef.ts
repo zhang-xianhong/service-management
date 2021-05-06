@@ -69,6 +69,5 @@ export const getPermissionRoutes = function(config = getComputedRoutes() as any)
       route.push(obj);
     }
   });
-  console.log(route);
   return route;
 };
