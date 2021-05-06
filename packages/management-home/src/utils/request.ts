@@ -21,7 +21,6 @@ service.interceptors.request.use(
     item[PROJECT_ID] = localStorage.getItem('projectId') || '';
     item.Cookie = getCookies();
     localStorage.setItem('HEADERS', JSON.stringify([item]));
-    console.log(getCookies(), 'this is cookiejsons');
     return newConfig;
   },
   (error) => Promise.reject(error),

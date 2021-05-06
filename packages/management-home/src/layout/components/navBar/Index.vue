@@ -90,7 +90,7 @@ export default defineComponent({
         postCurrentProject({ id: project.id }).then(() => {
           userCurrentProject.value = project;
           localStorage.setItem('projectId', project.id);
-          window.location.reload();
+          window.location.href = '/';
         });
       }
     };
