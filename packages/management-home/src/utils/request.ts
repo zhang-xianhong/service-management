@@ -1,5 +1,5 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
-import { getToken, removeToken } from '@/utils/todoToken';
+import { getToken, removeToken, getCookies } from '@/utils/todoToken';
 import { ElMessage } from 'element-plus';
 
 const service = axios.create({
@@ -17,7 +17,11 @@ service.interceptors.request.use(
       newConfig.headers[TOKEN] = getToken();
     }
     newConfig.headers[PROJECT_ID] = localStorage.getItem('projectId') || '';
-    localStorage.setItem('HEADERS', JSON.stringify([{ ...newConfig.headers }]));
+    const item = {} as any;
+    item[PROJECT_ID] = localStorage.getItem('projectId') || '';
+    item.Cookie = getCookies();
+    localStorage.setItem('HEADERS', JSON.stringify([{ ...item }]));
+    console.log(getCookies(), 'this is cookiejsons');
     return newConfig;
   },
   (error) => Promise.reject(error),

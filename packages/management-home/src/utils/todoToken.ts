@@ -13,3 +13,7 @@ export function setToken(token: string) {
 export function removeToken() {
   return Cookies.remove(TOKENKEY);
 }
+
+export function getCookies() {
+  return Cookies.getJSON();
+}
