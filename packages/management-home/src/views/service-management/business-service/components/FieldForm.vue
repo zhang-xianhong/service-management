@@ -5,12 +5,12 @@
         <el-table-column type="index" width="50"></el-table-column>
         <el-table-column prop="name" label="属性名称">
           <template #default="scope">
-            <el-input v-model="scope.row.name" :disabled="isFieldDisabled(scope)"></el-input>
+            <el-input v-model.trim="scope.row.name" :disabled="isFieldDisabled(scope)"></el-input>
           </template>
         </el-table-column>
         <el-table-column prop="description" label="属性描述">
           <template #default="scope">
-            <el-input v-model="scope.row.description" :disabled="isFieldDisabled(scope)"></el-input>
+            <el-input v-model.trim="scope.row.description" :disabled="isFieldDisabled(scope)"></el-input>
           </template>
         </el-table-column>
         <el-table-column prop="type" label="数据类型">

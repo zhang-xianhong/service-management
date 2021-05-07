@@ -110,7 +110,7 @@
               { validator: validatorPass, message: '仅支持英文、数字、中划线', trigger: 'blur' },
             ]"
           >
-            <el-input v-model="serviceDetail.name" @blur="checkEnglishName">
+            <el-input v-model.trim="serviceDetail.name" @blur="checkEnglishName">
               <template #prepend>srv-</template>
             </el-input>
           </el-form-item>
@@ -123,7 +123,7 @@
               { min: 1, max: 60, message: '最大不能超过 60 个字符', trigger: 'blur' },
             ]"
           >
-            <el-input v-model="serviceDetail.description"></el-input>
+            <el-input v-model.trim="serviceDetail.description"></el-input>
           </el-form-item>
           <el-form-item label="负责人" :label-width="labelWidth">
             <fetch-owners-select @get-owners="setOwner"></fetch-owners-select>

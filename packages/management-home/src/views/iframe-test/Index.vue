@@ -17,8 +17,8 @@ import { userInfo } from '@/layout/messageCenter/user-info';
 export default defineComponent({
   name: 'IframeTest',
   setup() {
-    const urls = ref('http://localhost:1026/');
-    const src = ref('http://localhost:1026/');
+    const urls = ref('/iframe');
+    const src = ref('/iframe');
     const iframesTest = ref({} as any);
     const goSrc = () => {
       src.value = urls.value;
