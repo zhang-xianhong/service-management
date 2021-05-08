@@ -32,18 +32,22 @@ export default defineComponent({
       userProjectList.value = projects;
       resetPremissionRouter();
       loadings.value = false;
-      const includes = localsid && projects.map((x: any) => x.id).includes(localsid);
-      if (!includes) {
-        // eslint-disable-next-line prefer-destructuring
-        userCurrentProject.value = projects[0];
-        localStorage.setItem('projectId', projects[0].id);
-        window.location.href = '/';
-      } else {
-        projects.forEach((x: any) => {
-          if (localsid === x.id) {
-            userCurrentProject.value = x;
-          }
-        });
+      console.log(projects);
+      if (projects.length) {
+        const includes = localsid && projects.map((x: any) => x.id).includes(localsid);
+        if (!includes) {
+          // eslint-disable-next-line prefer-destructuring
+          userCurrentProject.value = projects[0];
+          localStorage.setItem('projectId', projects[0].id);
+          console.log(projects[0].id);
+          window.location.href = '/';
+        } else {
+          projects.forEach((x: any) => {
+            if (localsid === x.id) {
+              userCurrentProject.value = x;
+            }
+          });
+        }
       }
     });
 
