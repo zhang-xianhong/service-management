@@ -26,7 +26,10 @@
           </el-dropdown-menu>
         </template>
       </el-dropdown>
-      <el-dropdown trigger="click" class="header-title">
+      <span class="el-dropdown-link" v-if="!userCurrentProject.name" style="font-size: 14px; margin-right: 10px;">
+        <i class="el-icon-s-unfold header-title-object-icon3"></i> 暂无项目
+      </span>
+      <el-dropdown trigger="click" class="header-title" v-else>
         <span class="el-dropdown-link">
           <i class="el-icon-s-unfold header-title-object-icon3"></i> {{ userCurrentProject.name }}
         </span>
@@ -99,10 +102,6 @@ export default defineComponent({
 
     const handleLogout = () => {
       logout().then((res: any) => {
-        // window.location.reload();
-        // intervalLogout = setInterval(() => {
-        //   window.location.reload();
-        // }, 1000);
         const urls = res.data.logoutUrl;
         if (urls) {
           window.location.href = urls;

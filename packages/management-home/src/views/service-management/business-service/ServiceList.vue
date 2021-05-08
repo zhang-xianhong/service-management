@@ -4,7 +4,7 @@
     v-loading="!userProjectList.length"
     element-loading-text="暂无项目，请联系管理员添加项目"
     element-loading-spinner="el-icon-loading"
-    element-loading-background="rgba(0, 0, 0, 0.7)"
+    element-loading-background="rgba(255, 255, 255, 1)"
   >
     <div class="service-list_header">
       <div class="service-list_left">
@@ -94,6 +94,7 @@
         :page-size="pageInfo.pageSize"
         layout="sizes, prev, pager, next, jumper"
         :total="serviceTableList.total"
+        v-if="serviceTableList.list.length"
       ></packaged-pagination>
     </div>
 
@@ -248,10 +249,13 @@ export default defineComponent({
     };
   },
   setup() {
-    getClassifications();
-    getTagsForService();
 
-    refreshServiceList();
+    if(userProjectList.value.length) {
+      getClassifications();
+      getTagsForService();
+
+      refreshServiceList();
+    }
 
     const mutiArray = ref([] as any);
     const rememberMutiArray = ref([] as any);
@@ -292,10 +296,12 @@ export default defineComponent({
       });
     };
 
-    const intervalId = setInterval(() => {
-      // refreshDataAndChange();
-      console.log(111);
-    }, 5000);
+    let intervalId: any = null;
+    if(userProjectList.value.length){
+       intervalId = setInterval(() => {
+        refreshDataAndChange();
+      }, 5000);
+    }
 
     onBeforeUnmount(() => {
       clearInterval(intervalId);

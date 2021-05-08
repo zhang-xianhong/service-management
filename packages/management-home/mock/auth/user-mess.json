@@ -7,7 +7,8 @@
       "userName": "admin@yufuid.com",
       "displayName": "admin",
       "redirectUrl": "http://9.134.45.3/api/login",
-      "roleIds": []
+      "roleIds": [],
+      "admin": true
     },
     "menus": [
       {
@@ -169,7 +170,8 @@
         "name": "proj1",
         "description": "项目1"
       }
-    ]
+    ],
+    "projectTest": []
   },
   "message": "successful",
   "httpStatus": 200,
