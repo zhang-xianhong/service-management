@@ -1,58 +1,40 @@
 {
     "code": 0,
     "data": {
-        "id": 1,
-        "createTime": "2021-03-23T08:12:52.000Z",
-        "updateTime": "2021-03-23T08:12:51.000Z",
+        "id": 108,
+        "createTime": "2021-05-08T06:53:15.000Z",
+        "updateTime": "2021-05-08T06:54:01.000Z",
         "createUser": null,
         "updateUser": null,
         "isDelete": false,
-        "name": "srv-1",
+        "version": 0,
+        "projectId": 42,
+        "name": "srv-userinfo",
         "url": "",
-        "serverPort": 8080,
-        "depolyId": null,
+        "serverPort": 8092,
+        "deployId": null,
         "moduleDependencyId": null,
         "deposit": null,
         "status": 0,
-        "description": "测试数据",
-        "version": null,
-        "owner": "wxp",
-        "detail": "测试服务详情",
+        "description": "用户信息",
+        "detail": "hello ",
         "isAllByExtend": null,
         "extendVersion": null,
-        "classification": "2",
-        "tag": "业务",
+        "classification": "17",
+        "tag": "",
         "initTimes": 0,
-        "builtTimes": 0,
         "codeQuality": "",
         "serviceRank": "",
         "serviceApiUrl": "",
         "druidUrl": "",
         "startTime": null,
         "cloneBy": "",
-        "dependencies": [],
-        "config": {
-            "id": 1,
-            "createTime": "2021-03-23T08:29:05.000Z",
-            "updateTime": "2021-03-23T08:29:05.000Z",
-            "createUser": null,
-            "updateUser": null,
-            "serviceId": 1,
-            "config": {
-                "coordinate": {
-                    "1": {
-                        "x": 22,
-                        "y": 22
-                    },
-                    "2": {
-                        "x": 11,
-                        "y": 11
-                    }
-                }
-            }
-        }
+        "dependencies": [102],
+        "owners": [],
+        "sshHost": "http://9.134.38.8",
+        "ownerUsers": []
     },
     "message": "successful",
     "httpStatus": 200,
-    "timestamp": 1616488378492
+    "timestamp": 1620458841976
 }

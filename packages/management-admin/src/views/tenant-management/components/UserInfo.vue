@@ -10,23 +10,23 @@
       label-width="140px"
       label-position="left"
     >
-      <el-form-item prop="name" class="form-item" label="联系人姓名" required>
+      <el-form-item prop="name" class="form-item" label="联系人姓名">
         <template v-if="isEdit">{{ userInfo.name }}</template>
         <el-input v-else v-model="userInfo.name" style="width: 400px" placeholder="请输入联系人中文姓名"></el-input>
       </el-form-item>
-      <el-form-item prop="phone" class="form-item" label="联系人电话" required>
+      <el-form-item prop="phone" class="form-item" label="联系人电话">
         <template v-if="isEdit">{{ userInfo.phone }}</template>
         <el-input v-else v-model="userInfo.phone" style="width: 400px" placeholder="请输入联系人电话"></el-input>
       </el-form-item>
-      <el-form-item prop="IDCard" class="form-item" label="联系人身份证号" required>
+      <el-form-item prop="IDCard" class="form-item" label="联系人身份证号">
         <template v-if="isEdit">{{ userInfo.IDCard }}</template>
         <el-input v-else v-model="userInfo.IDCard" style="width: 400px" placeholder="请输入联系人身份证号"></el-input>
       </el-form-item>
-      <el-form-item prop="email" class="form-item" label="联系人邮箱" required>
+      <el-form-item prop="email" class="form-item" label="联系人邮箱">
         <template v-if="isEdit">{{ userInfo.email }}</template>
         <el-input v-else v-model="userInfo.email" style="width: 400px" placeholder="请输入联系人邮箱"></el-input>
       </el-form-item>
-      <el-form-item prop="frontPhoto" class="form-item" label="身份证正面" required>
+      <el-form-item prop="frontPhoto" class="form-item" label="身份证正面">
         <img v-if="frontPhoto" :src="frontPhoto" class="avatar" />
         <el-upload
           v-else
@@ -40,7 +40,7 @@
           <i class="el-icon-plus avatar-uploader-icon"></i>
         </el-upload>
       </el-form-item>
-      <el-form-item prop="reversePhoto" class="form-item" label="身份证反面" required>
+      <el-form-item prop="reversePhoto" class="form-item" label="身份证反面">
         <img v-if="reversePhoto" :src="reversePhoto" class="avatar" />
         <el-upload
           v-else

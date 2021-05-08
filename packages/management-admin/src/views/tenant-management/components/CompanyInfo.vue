@@ -2,7 +2,7 @@
   <el-row style="font-weight:bolder">企业信息</el-row>
   <el-row style="padding:0px 20px;font-size: 12px">
     <el-form ref="formRef" :model="companyInfo" :rules="rules" inline label-width="140px" label-position="left">
-      <el-form-item prop="name" class="form-item" label="企业名称" required>
+      <el-form-item prop="name" class="form-item" label="企业名称">
         <template v-if="isEdit">{{ companyInfo.name }}</template>
         <el-input
           v-else
@@ -16,7 +16,12 @@
         <el-input v-model="companyInfo.nameShort" style="width: 400px" placeholder="请输入企业简称"></el-input>
       </el-form-item>
       <el-form-item prop="tenantEngAbbr" class="form-item" label="企业英文简称">
-        <el-input v-model="companyInfo.tenantEngAbbr" style="width: 400px" placeholder="请输入企业英文简称"></el-input>
+        <el-input
+          v-model="companyInfo.tenantEngAbbr"
+          style="width: 400px"
+          placeholder="请输入企业英文简称"
+          @blur="validateTentantEngAbbr"
+        ></el-input>
       </el-form-item>
       <el-form-item prop="addr" class="form-item" label="企业地址">
         <el-select v-model="companyInfo.addr" style="width: 400px" placeholder="请选择省份">
@@ -128,7 +133,7 @@ import useCompanyInfo from '../utils/tenant-config';
 import { IMAGE_UPLOAD } from '@/shared/constant/file';
 import { SuccessResponse } from '@/types/response';
 import { getImageUrl } from '@/api/files';
-import { validateCompanyName, validateLicense } from '@/api/tenant';
+import { validateCompanyName, validateLicense, validateEngAbbr } from '@/api/tenant';
 
 interface CompanyInfoInterface {
   name: string; // 企业名称
@@ -331,6 +336,9 @@ export default {
 
     // 企业名称校验
     const validateName = async (el: any) => {
+      if (el.target.value === '') {
+        return;
+      }
       const { data } = await validateCompanyName(el.target.value);
       if (!data.usable) {
         (instance as any).proxy.$message({
@@ -342,11 +350,28 @@ export default {
 
     // 营业执照号校验
     const validateLicenseId = async (el: any) => {
+      if (el.target.value === '') {
+        return;
+      }
       const { data } = await validateLicense(el.target.value);
       if (!data.usable) {
         (instance as any).proxy.$message({
           type: 'error',
           message: '营业执照号已存在，请重新输入！',
+        });
+      }
+    };
+
+    // 企业英文简称校验
+    const validateTentantEngAbbr = async (el: any) => {
+      if (el.target.value === '') {
+        return;
+      }
+      const { data } = await validateEngAbbr(el.target.value);
+      if (!data.userable) {
+        (instance as any).proxy.$message({
+          type: 'error',
+          message: '企业英文简称已存在，请重新输入！',
         });
       }
     };
@@ -372,6 +397,7 @@ export default {
       uploadFailed,
       validateName,
       validateLicenseId,
+      validateTentantEngAbbr,
     };
   },
 };
