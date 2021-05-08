@@ -39,15 +39,15 @@
           <el-option
             v-for="(item, index) in industryOptions"
             :key="index"
-            :value="item.value"
-            :label="item.label"
+            :value="item.key"
+            :label="item.value"
           ></el-option>
         </el-select>
       </el-form-item>
       <el-form-item prop="addrDetail" class="form-item" label="详细地址">
         <el-input v-model="companyInfo.addrDetail" style="width: 400px" placeholder="请输入详细地址"></el-input>
       </el-form-item>
-      <el-form-item prop="natureId" class="form-item" label="企业性质" required>
+      <el-form-item prop="natureId" class="form-item" label="企业性质">
         <template v-if="isEdit">{{ computedNature || companyInfo.natureId }}</template>
         <el-select v-else v-model="companyInfo.natureId" style="width: 400px" placeholder="请选择企业性质">
           <el-option
