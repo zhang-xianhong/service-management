@@ -351,9 +351,6 @@ export default {
       if (+status !== 21) {
         buttons.value[2].disabled = true;
       }
-      if (+status === 22 || +status === 12) {
-        buttons.value[1].disabled = true;
-      }
       buttons.value[buttons.value.length - 1].disabled = false;
       buttons.value[0].label = +initTimes === 0 ? '初始化' : '同步配置';
       const statusmaps = computeStatusLabel(serverInfo.value.initTimes);
