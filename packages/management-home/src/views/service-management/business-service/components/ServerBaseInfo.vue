@@ -48,8 +48,8 @@
         </el-input>
       </el-form-item>
       <el-form-item label="服务依赖">
-        <div v-if="isShowMode" class="baseinfo-content">{{ formData.dependencies.join(',') }}</div>
-        <el-select v-model="formData.dependencies" clearable multiple>
+        <div v-if="isShowMode" class="baseinfo-content">{{ computedDependencyName }}</div>
+        <el-select v-else v-model="formData.dependencies" clearable multiple>
           <el-option v-for="item in computedServices" :key="item.id" :label="item.name" :value="item.id"></el-option>
         </el-select>
       </el-form-item>
@@ -66,7 +66,7 @@ import { reactive, ref, computed } from 'vue';
 import useClassifications from '../utils/service-baseinfo-classification';
 import useTags from '../utils/service-baseinfo-tag';
 import { updateService } from '@/api/servers';
-import { allService } from '../utils/service-data-utils';
+import { allService, getAllService } from '../utils/service-data-utils';
 import OwnerSelect from '@/components/owners-select/Index.vue';
 
 export default {
@@ -93,10 +93,11 @@ export default {
     },
   },
   setup(props: { data: any; id: number; tags: any[]; classifications: any[] }) {
+    getAllService();
     // 是否为显示模式标识，默认为true
     const isShowMode = ref(true);
 
-    const computedServices = computed(() => allService.filter((service: any) => service.id !== props.id));
+    const computedServices = computed(() => allService.value.filter((service: any) => service.id !== props.id));
 
     // 表单数据
     const formData = reactive({
@@ -108,6 +109,17 @@ export default {
       classification: props.data.classification,
       tag: props.data.tag,
       detail: props.data.detail,
+      dependencies: props.data.dependencies,
+    });
+
+    const computedDependencyName = computed(() => {
+      if (allService.value.length === 0) {
+        return '';
+      }
+      const names = formData.dependencies.map(
+        (id: number) => allService.value.filter((item: any) => item.id === id)[0]?.name,
+      );
+      return names.join(',');
     });
 
     // 负责人名称
@@ -134,13 +146,14 @@ export default {
 
     // 分类选择
     const selectClassification = (value: Array<Array<string>>) => {
-      formData.classification = value.map((item: Array<string>) => item[item.length - 1]).join(',');
+      formData.classification = value.map((item: Array<string>) => item[item.length - 1])?.join(',');
     };
 
     const { tagValue, tagNames } = useTags(formData.tag, props.tags);
 
     // 标签选择
     const selectTag = (tags: string[]) => {
+      console.log(tags, 666666);
       formData.tag = tags.join(',');
     };
 
@@ -166,6 +179,7 @@ export default {
       classificationName,
       classificationValue,
       selectClassification,
+      computedDependencyName,
       ownersName,
       tagValue,
       tagNames,

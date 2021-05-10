@@ -43,7 +43,7 @@
           <el-dropdown-menu>
             <el-dropdown-item icon="el-icon-edit">用户管理</el-dropdown-item>
             <el-dropdown-item icon="el-icon-info">关于</el-dropdown-item>
-            <el-dropdown-item icon="el-icon-switch-button">登出</el-dropdown-item>
+            <el-dropdown-item icon="el-icon-switch-button" @click="handleLogout">登出</el-dropdown-item>
           </el-dropdown-menu>
         </template>
       </el-dropdown>
@@ -53,6 +53,8 @@
 
 <script lang="ts">
 import { defineComponent, reactive } from 'vue';
+import { logout } from '@/api/auth';
+import { ElMessage } from 'element-plus';
 // import breadCurmb from '@/components/bread-curmb/Index.vue';
 
 export default defineComponent({
@@ -71,8 +73,19 @@ export default defineComponent({
         name: '测试项目2',
       },
     ]);
+    const handleLogout = () => {
+      logout().then((res: any) => {
+        const urls = res.data.logoutUrl;
+        if (urls) {
+          window.location.href = urls;
+        } else {
+          ElMessage.error('登出失败');
+        }
+      });
+    };
     return {
       projectList,
+      handleLogout,
     };
   },
 });

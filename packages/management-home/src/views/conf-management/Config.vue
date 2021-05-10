@@ -241,7 +241,7 @@ export default {
           if (!configForm.isEdit) {
             const { code } = await addConfig({
               ...configForm.formData,
-              type: parseInt(configForm.formData.type || '1', 10),
+              type: parseInt(configForm.formData.type, 10),
             });
             if (code === 0) {
               getTableData();
@@ -256,7 +256,7 @@ export default {
             // 编辑
             const { code } = await updateConfig(configForm.id, {
               ...configForm.formData,
-              type: parseInt(configForm.formData.type || '1', 10),
+              type: parseInt(configForm.formData.type, 10),
             });
             if (code === 0) {
               getTableData();
@@ -302,7 +302,8 @@ export default {
     const onEdit = async (rowData: any) => {
       configForm.isEdit = true;
       configForm.disabled = true;
-      configForm.formData = { ...configForm.formData, ...rowData, type: String(rowData.type || '1') };
+      configForm.id = rowData.id;
+      configForm.formData = { ...configForm.formData, ...rowData, type: String(rowData.type) };
       toggleConfigDialog();
     };
 
