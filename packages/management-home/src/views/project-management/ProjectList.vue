@@ -58,7 +58,11 @@
             label="项目名称"
             :label-width="labelWidth"
             prop="name"
-            :rules="[{ required: true, message: '请输入英文名称', trigger: 'blur' }]"
+            :rules="[
+              { required: true, message: '请输入英文名称', trigger: 'blur' },
+              { min: 1, max: 64, message: '最大不能超过 64 个字符', trigger: 'blur' },
+              { validator: validatorPass, message: '仅支持英文、数字、中划线', trigger: 'blur' },
+            ]"
           >
             <el-input v-model="projectDetail.name" @blur="checkEnglishName"></el-input>
           </el-form-item>
@@ -236,6 +240,13 @@ export default defineComponent({
       }
       projectNameTest({ name: projectDetail.name });
     };
+
+    const validatorPass = (rule: any, value: any, callback: any) => {
+      const reg = /^[a-z][a-z0-9-]+[a-z0-9]$/;
+      if (!reg.test(value)) {
+        callback(new Error(rule.message));
+      }
+    };
     return {
       addDialogVisible,
       projectDetail,
@@ -257,6 +268,7 @@ export default defineComponent({
       userProjectList,
       userInfo,
       loadings,
+      validatorPass,
     };
   },
 });
