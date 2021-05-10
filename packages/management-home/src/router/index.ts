@@ -254,16 +254,15 @@ export const reCreateRouterMatcher = (routes: Array<RouteRecordRaw>): RouterMatc
 let router = reCreateRouter([...baseRoutes]);
 
 export const resetPremissionRouter = () => {
-  router = reCreateRouter(getPermissionRoutes([...routes, ...baseRoutes]));
+  reCreateRouter(getPermissionRoutes([...routes, ...baseRoutes]));
   setRouterRef(router);
+  console.log(router.getRoutes(), 'this is test routers');
 };
 
-if (localStorage.permissionArr) {
-  resetPremissionRouter();
-}
+resetPremissionRouter();
 
 export const resetRouter = (routes: Array<RouteRecordRaw>): void => {
-  // router = reCreateRouter(routes);
+  // router = reCreateRouter(routes);s
   router.getRoutes().forEach((x: any) => {
     router.removeRoute(x);
   });
