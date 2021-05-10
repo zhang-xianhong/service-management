@@ -253,8 +253,6 @@ export const reCreateRouterMatcher = (routes: Array<RouteRecordRaw>): RouterMatc
 // eslint-disable-next-line
 let router = reCreateRouter([...baseRoutes]);
 
-localStorage.setItem('permissionArr', JSON.stringify(['Dashboard']));
-
 export const resetPremissionRouter = () => {
   router = reCreateRouter(getPermissionRoutes([...routes, ...baseRoutes]));
   setRouterRef(router);
@@ -265,8 +263,14 @@ if (localStorage.permissionArr) {
 }
 
 export const resetRouter = (routes: Array<RouteRecordRaw>): void => {
-  router = reCreateRouter(routes);
-  setRouterRef(router);
+  // router = reCreateRouter(routes);
+  router.getRoutes().forEach((x: any) => {
+    router.removeRoute(x);
+  });
+  routes.forEach((x) => {
+    router.addRoute(x);
+  });
+  setRouterRef(reCreateRouter(routes));
 };
 
 export const alloverRouter = () => reCreateRouter([...baseRoutes, ...routes]);
