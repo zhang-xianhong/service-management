@@ -36,9 +36,9 @@
         <el-table-column type="index" width="50" label="序号"></el-table-column>
         <el-table-column property="name" label="服务英文名">
           <template #default="scope">
-            <router-link :to="{ path: `service-list/detail/${scope.row.id}`, query: { detailName: scope.row.name } }">
-              {{ scope.row.name }}
-            </router-link>
+            <router-link :to="{ path: `service-list/detail/${scope.row.id}`, query: { detailName: scope.row.name } }">{{
+              scope.row.name
+            }}</router-link>
           </template>
         </el-table-column>
         <el-table-column property="description" label="服务中文名"></el-table-column>
@@ -46,9 +46,9 @@
         <el-table-column property="status" label="服务状态">
           <template #default="scope">
             <span class="service-list-borders" :style="{ background: statusColor[scope.row.status] }"></span>
-            <span :style="{ color: statusColor[scope.row.status] }">
-              {{ computeStatusLabel(scope.row.initTimes)[scope.row.status] }}
-            </span>
+            <span :style="{ color: statusColor[scope.row.status] }">{{
+              computeStatusLabel(scope.row.initTimes)[scope.row.status]
+            }}</span>
           </template>
         </el-table-column>
         <el-table-column property="classification" label="分类">
@@ -107,8 +107,12 @@
             prop="name"
             :rules="[
               { required: true, message: '请输入服务名称', trigger: 'blur' },
-              { min: 1, max: 100, message: '最大不能超过 100 个字符', trigger: 'blur' },
-              { validator: validatorPass, message: '仅支持英文、数字、中划线', trigger: 'blur' },
+              { min: 1, max: 32, message: '最大不能超过 32 个字符', trigger: 'blur' },
+              {
+                validator: validatorPass,
+                message: '仅支持英文、数字、中划线，不能以中划线开头和结尾',
+                trigger: 'blur',
+              },
             ]"
           >
             <el-input v-model.trim="serviceDetail.name" @blur="checkEnglishName">
@@ -250,7 +254,7 @@ export default defineComponent({
   },
   setup() {
 
-    if(userProjectList.value.length) {
+    if (userProjectList.value.length) {
       getClassifications();
       getTagsForService();
 
@@ -297,8 +301,8 @@ export default defineComponent({
     };
 
     let intervalId: any = null;
-    if(userProjectList.value.length){
-       intervalId = setInterval(() => {
+    if (userProjectList.value.length) {
+      intervalId = setInterval(() => {
         refreshDataAndChange();
       }, 5000);
     }
@@ -491,7 +495,7 @@ export default defineComponent({
       blackHoverclick();
     });
     const validatorPass = (rule: any, value: any, callback: any) => {
-      const reg = /^[A-Za-z0-9\-]{1,100}$/;
+      const reg = /^(?!-)(?!.*-$)[a-z0-9\-]+$/;
       if (!reg.test(value)) {
         callback(new Error(rule.message));
       }
