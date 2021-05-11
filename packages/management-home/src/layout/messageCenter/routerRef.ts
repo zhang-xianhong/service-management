@@ -52,7 +52,7 @@ export const getPermissionRoutes = function(config = getComputedRoutes() as any)
         }
       } else {
         obj.redirect = '/no-right';
-        obj.meta.hidden = true;
+        // obj.meta.hidden = true;
       }
     } else {
       obj = Object.assign({}, item);
@@ -71,5 +71,6 @@ export const getPermissionRoutes = function(config = getComputedRoutes() as any)
       route.push(obj);
     }
   });
+  // route[0].redirect = route[1] ? route[1].path : '/no-right';
   return route;
 };

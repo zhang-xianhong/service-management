@@ -5,21 +5,21 @@ import { setRouterRef, getPermissionRoutes } from '@/layout/messageCenter/router
 
 export const baseRoutes: Array<RouteRecordRaw> = [
   {
-    path: '/login',
-    name: 'login',
-    component: () => import('@/views/login/Index.vue'),
-    meta: {
-      isRootLevel: false,
-      title: '登录',
-    },
-  },
-  {
     path: '/no-right',
     name: 'noRight',
     component: () => import('@/views/no-right/Index.vue'),
     meta: {
       isRootLevel: false,
       title: '没有权限',
+    },
+  },
+  {
+    path: '/login',
+    name: 'login',
+    component: () => import('@/views/login/Index.vue'),
+    meta: {
+      isRootLevel: false,
+      title: '登录',
     },
   },
   {
@@ -49,7 +49,6 @@ const routes: Array<RouteRecordRaw> = [
     name: 'Dashboard',
     meta: {
       isRootLevel: true,
-      id: 2,
       hidden: true,
     },
   },
@@ -61,6 +60,7 @@ const routes: Array<RouteRecordRaw> = [
     meta: {
       isRootLevel: true,
       id: 2,
+      hidden: false,
     },
     children: [
       {
@@ -72,6 +72,7 @@ const routes: Array<RouteRecordRaw> = [
           icon: 'el-icon-eleme',
           isRootLevel: false,
           id: 2,
+          hidden: false,
         },
       },
     ],
@@ -86,6 +87,7 @@ const routes: Array<RouteRecordRaw> = [
       title: '项目管理',
       icon: 'el-icon-eleme',
       id: 4,
+      hidden: false,
     },
     children: [
       {
@@ -97,6 +99,7 @@ const routes: Array<RouteRecordRaw> = [
           icon: 'el-icon-eleme',
           isRootLevel: false,
           id: 4,
+          hidden: false,
         },
       },
       {
@@ -249,7 +252,6 @@ const routes: Array<RouteRecordRaw> = [
           title: 'iframe传参管理',
           icon: 'el-icon-eleme',
           isRootLevel: false,
-          id: 2,
         },
       },
     ],
@@ -279,7 +281,10 @@ export const resetRouter = (routes: Array<RouteRecordRaw>): void => {
 };
 
 export const resetPremissionRouter = () => {
-  resetRouter(getPermissionRoutes([...routes, ...baseRoutes]));
+  const routed = getPermissionRoutes([...routes, ...baseRoutes]);
+  routed[0].redirect = routed[1].path;
+  console.log(routed, 'this is all data res');
+  resetRouter(routed);
   setRouterRef(router);
   console.log(router.getRoutes(), 'this is get new routers');
 };

@@ -20,7 +20,7 @@
       </template>
       <sidebar-item
         v-for="child in item.children"
-        :key="logs(child.path)"
+        :key="child.path"
         :is-nest="true"
         :item="child"
         :base-path="resolvePath(item.path)"
@@ -65,8 +65,6 @@ export default defineComponent({
   },
   setup(props) {
     const onlyOneChild = reactive({ value: {} });
-
-    console.log(props.item, 'this is test data');
 
     const hasOwnShowingChild = (children = [], parent: any) => {
       const showChidren = children.filter((item) => {
