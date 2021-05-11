@@ -1,0 +1,26 @@
+{
+    "code": 0,
+    "data": {
+        "rows": [
+            {
+                "id": 2,
+                "createTime": "2021-05-06T06:31:11.000Z",
+                "updateTime": "2021-05-06T02:55:10.000Z",
+                "createUser": 83,
+                "updateUser": 83,
+                "version": 0,
+                "tenantId": 1,
+                "projectId": 72,
+                "name": "test",
+                "description": "测试应用",
+                "remark": "",
+                "thumbnail": "",
+                "status": 1
+            }
+        ],
+        "count": 1
+    },
+    "message": "successful",
+    "httpStatus": 200,
+    "timestamp": 1620282680230
+}

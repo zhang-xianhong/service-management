@@ -26,17 +26,17 @@
             <span :style="{ color: serverStatusInfo.color }">{{ serverStatusInfo.label }}</span>
           </div>
           <div class="detail-icons">
-            <!-- 服务详情 -->
-            <svg-icon
-              :icon-name="componentName === 'ServerBaseInfo' ? 'overview-hover' : 'overview'"
-              icon-class="detail-icons__item"
-              @click="openBaseInfo"
-            ></svg-icon>
             <!-- 接口列表 -->
             <svg-icon
-              :icon-name="drawerName === 'ServerPortsInfo' ? 'list-hover' : 'list'"
+              :icon-name="drawerName === 'ServerPortsInfo' ? 'overview-hover' : 'overview'"
               icon-class="detail-icons__item"
               @click="openPropertyInfo"
+            ></svg-icon>
+            <!-- 服务详情 -->
+            <svg-icon
+              :icon-name="componentName === 'ServerBaseInfo' ? 'list-hover' : 'list'"
+              icon-class="detail-icons__item"
+              @click="openBaseInfo"
             ></svg-icon>
             <!-- 代码预览 -->
             <svg-icon icon-name="gitlab" icon-class="detail-icons__item" @click="openGitlab"></svg-icon>

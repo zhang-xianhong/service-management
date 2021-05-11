@@ -157,7 +157,7 @@ export default {
       ],
       IDCard: [
         { required: true, message: '请输入联系人身份证号', trigger: 'blur' },
-        { pattern: /^[0-9|X]+$/g, message: '联系人电话输入格式不合法，请重新输入', trigger: 'blur' },
+        { pattern: /^[0-9|X]+$/g, message: '联系人身份证号输入格式不合法，请重新输入', trigger: 'blur' },
       ],
       email: [
         { required: true, message: '请输入联系人邮箱', trigger: 'blur' },

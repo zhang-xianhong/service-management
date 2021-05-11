@@ -8,12 +8,7 @@
   >
     <div class="service-list_header">
       <div class="service-list_left">
-        <el-button
-          icon="el-icon-plus"
-          type="primary"
-          @click="toggleServiceDialog"
-          style="width: 90px"
-        >新建</el-button>
+        <el-button icon="el-icon-plus" type="primary" @click="toggleServiceDialog" style="width: 90px">新建</el-button>
         <el-button @click="runService" :disabled="computedDisabled" v-if="false">启动</el-button>
         <el-button @click="stopService" :disabled="computedDisabled" v-if="false">停止</el-button>
         <el-button @click="deleteHandler" :disabled="computedDisabledForSS">删除</el-button>
@@ -41,12 +36,8 @@
         <el-table-column type="index" width="50" label="序号"></el-table-column>
         <el-table-column property="name" label="服务英文名">
           <template #default="scope">
-            <router-link
-              :to="{ path: `service-list/detail/${scope.row.id}`, query: { detailName: scope.row.name } }"
-            >
-              {{
-                scope.row.name
-              }}
+            <router-link :to="{ path: `service-list/detail/${scope.row.id}`, query: { detailName: scope.row.name } }">
+              {{ scope.row.name }}
             </router-link>
           </template>
         </el-table-column>
@@ -54,26 +45,16 @@
         <el-table-column property="ownerstr" label="负责人"></el-table-column>
         <el-table-column property="status" label="服务状态">
           <template #default="scope">
-            <span
-              class="service-list-borders"
-              :style="{ background: statusColor[scope.row.status] }"
-            ></span>
+            <span class="service-list-borders" :style="{ background: statusColor[scope.row.status] }"></span>
             <span :style="{ color: statusColor[scope.row.status] }">
-              {{
-                computeStatusLabel(scope.row.initTimes)[scope.row.status]
-              }}
+              {{ computeStatusLabel(scope.row.initTimes)[scope.row.status] }}
             </span>
           </template>
         </el-table-column>
         <el-table-column property="classification" label="分类">
           <template #header>
             <i class="el-icon-search"></i>
-            <el-popover
-              placement="bottom"
-              :width="200"
-              trigger="manual"
-              :visible="sortTitleVisiable"
-            >
+            <el-popover placement="bottom" :width="200" trigger="manual" :visible="sortTitleVisiable">
               <template #reference>
                 <el-button type="text" @click="sortTitleClick">分类</el-button>
               </template>
@@ -92,22 +73,12 @@
         <el-table-column property="tag" label="标签">
           <template #header>
             <i class="el-icon-search"></i>
-            <el-popover
-              placement="bottom"
-              :width="200"
-              trigger="manual"
-              :visible="tagTitleVisiable"
-            >
+            <el-popover placement="bottom" :width="200" trigger="manual" :visible="tagTitleVisiable">
               <template #reference>
                 <el-button type="text" @click="tagTitleClick">标签</el-button>
               </template>
               <el-select v-model="pageInfo.tags" placeholder="请选择标签" clearable multiple>
-                <el-option
-                  v-for="(item, index) in tags"
-                  :key="index"
-                  :label="item.name"
-                  :value="item.id"
-                ></el-option>
+                <el-option v-for="(item, index) in tags" :key="index" :label="item.name" :value="item.id"></el-option>
               </el-select>
             </el-popover>
           </template>
@@ -170,12 +141,7 @@
           </el-form-item>
           <el-form-item label="服务标签" :label-width="labelWidth">
             <el-select v-model="serviceDetail.tags" placeholder="请选择标签" clearable multiple>
-              <el-option
-                v-for="(item, index) in tags"
-                :key="index"
-                :label="item.name"
-                :value="item.id"
-              ></el-option>
+              <el-option v-for="(item, index) in tags" :key="index" :label="item.name" :value="item.id"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="服务详情" :label-width="labelWidth">
@@ -183,12 +149,7 @@
           </el-form-item>
           <el-form-item label="服务依赖" :label-width="labelWidth" prop="dependencies">
             <el-select v-model="serviceDetail.dependencies" clearable multiple>
-              <el-option
-                v-for="item in allService"
-                :key="item.id"
-                :label="item.name"
-                :value="item.id"
-              ></el-option>
+              <el-option v-for="item in allService" :key="item.id" :label="item.name" :value="item.id"></el-option>
             </el-select>
           </el-form-item>
         </el-form>
@@ -198,20 +159,16 @@
           <el-button type="primary" @click="addServiceByForm">提 交</el-button>
           <el-button
             @click="
-            addServiceDialog = false;
-            clearDialog();
+              addServiceDialog = false;
+              clearDialog();
             "
-          >关 闭</el-button>
+            >关 闭</el-button
+          >
         </span>
       </template>
     </el-dialog>
     <el-dialog :title="logType" v-model="logDialogVisible" width="40%">
-      <el-input
-        type="textarea"
-        :rows="25"
-        :autosize="{ maxRows: 25, minRows: 25 }"
-        v-model="logData"
-      ></el-input>
+      <el-input type="textarea" :rows="25" :autosize="{ maxRows: 25, minRows: 25 }" v-model="logData"></el-input>
       <div class="dialog-footer">
         <el-button type="primary" style="margin-top: 20px" @click="logDialogVisible = false">关闭</el-button>
       </div>
@@ -226,12 +183,7 @@
         </el-form-item>
         <el-form-item label="选择分支" v-if="runOptions.model !== 'fast-model'">
           <el-select v-model="runOptions.branch">
-            <el-option
-              v-for="(item, index) in branchOptions"
-              :key="index"
-              :label="item"
-              :value="item"
-            ></el-option>
+            <el-option v-for="(item, index) in branchOptions" :key="index" :label="item" :value="item"></el-option>
           </el-select>
         </el-form-item>
       </el-form>
