@@ -28,7 +28,6 @@ router.beforeEach(async (to, from, next) => {
       } else {
         if (routerLoading.value) {
           NProgress.done();
-          console.log(to.path, 11111);
           return next(`/router-loading?redirect=${to.path}`);
         }
       }

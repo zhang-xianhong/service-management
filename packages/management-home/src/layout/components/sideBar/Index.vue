@@ -39,7 +39,6 @@ export default defineComponent({
       // eslint-disable-next-line
       // @ts-ignore
       const route = proxy.$route;
-      console.log(proxy, route);
       const { meta, path } = route;
       if (meta.activeMenu) {
         return meta.activeMenu;

@@ -283,10 +283,8 @@ export const resetRouter = (routes: Array<RouteRecordRaw>): void => {
 export const resetPremissionRouter = () => {
   const routed = getPermissionRoutes([...routes, ...baseRoutes]);
   routed[0].redirect = routed[1].path;
-  console.log(routed, 'this is all data res');
   resetRouter(routed);
   setRouterRef(router);
-  console.log(router.getRoutes(), 'this is get new routers');
 };
 
 resetPremissionRouter();
