@@ -16,7 +16,9 @@
         <el-input v-model="companyInfo.nameShort" style="width: 400px" placeholder="请输入企业简称"></el-input>
       </el-form-item>
       <el-form-item prop="tenantEngAbbr" class="form-item" label="企业英文简称">
+        <template v-if="isEdit">{{ companyInfo.tenantEngAbbr }}</template>
         <el-input
+          v-else
           v-model="companyInfo.tenantEngAbbr"
           style="width: 400px"
           placeholder="请输入企业英文简称"
