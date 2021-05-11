@@ -19,7 +19,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, getCurrentInstance } from 'vue';
+import { defineComponent, computed, getCurrentInstance, ref } from 'vue';
 import SidebarItem from '@/layout/components/sideBar/SidebarItem.vue';
 import menuVariables from '@/styles/menu.scss';
 import { getComputedRoutes } from '@/layout/messageCenter/routerRef';
@@ -46,8 +46,7 @@ export default defineComponent({
       }
       return path;
     });
-    const permissionRoutes = getComputedRoutes();
-    console.log(permissionRoutes);
+    const permissionRoutes = ref(getComputedRoutes());
     return {
       menuVariables,
       isCollapse,
