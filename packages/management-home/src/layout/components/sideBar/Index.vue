@@ -1,6 +1,6 @@
 <template>
   <keep-alive>
-    <el-scrollbar wrap-class="scrollbar-wrapper">
+    <el-scrollbar wrap-class="scrollbar-wrapper" ref="scrollbar">
       <el-menu
         :collapse="isCollapse"
         :background-color="menuVariables.menuBg"
@@ -19,7 +19,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, getCurrentInstance } from 'vue';
+import { defineComponent, computed, getCurrentInstance, ref, onMounted } from 'vue';
 import SidebarItem from '@/layout/components/sideBar/SidebarItem.vue';
 import menuVariables from '@/styles/menu.scss';
 import { getComputedRoutes } from '@/layout/messageCenter/routerRef';
@@ -46,14 +46,24 @@ export default defineComponent({
       }
       return path;
     });
-    const permissionRoutes = getComputedRoutes();
-    console.log(permissionRoutes);
+    const permissionRoutes = ref(getComputedRoutes() as any);
+    const logs = (res: any) => {
+      console.log(res, 'this is log message');
+      return res;
+    };
+    const scrollbar = ref(null as any);
+
+    onMounted(() => {
+      scrollbar.value.$forceUpdate();
+    });
     return {
       menuVariables,
       isCollapse,
       activeMenu,
       permissionRoutes,
       getLink,
+      logs,
+      scrollbar,
     };
   },
 });

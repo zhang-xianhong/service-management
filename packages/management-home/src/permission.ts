@@ -5,6 +5,8 @@ import 'nprogress/nprogress.css';
 
 import { getToken } from '@/utils/todoToken';
 
+import { routerLoading } from '@/layout/messageCenter/routerRef';
+
 NProgress.configure({ showSpinner: false });
 
 const whiteList = baseRoutes.map((x) => x.path);
@@ -21,6 +23,15 @@ router.beforeEach(async (to, from, next) => {
       next('/');
       NProgress.done();
     } else {
+      if (whiteList.indexOf(to.path) !== -1) {
+        next();
+      } else {
+        if (routerLoading.value) {
+          NProgress.done();
+          console.log(to.path, 11111);
+          return next(`/router-loading?redirect=${to.path}`);
+        }
+      }
       if (to.matched.length > 1 || whiteList.includes(to.path)) {
         next();
       } else {

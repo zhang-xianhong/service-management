@@ -15,6 +15,7 @@ import { defineComponent, ref } from 'vue';
 import { getUserInfo } from '@/api/auth';
 import { userCurrentProject, userInfo, userMenus, userProjectList } from '@/layout/messageCenter/user-info';
 import { resetPremissionRouter } from '@/router';
+import { routerLoading } from '@/layout/messageCenter/routerRef';
 
 export default defineComponent({
   setup() {
@@ -32,7 +33,7 @@ export default defineComponent({
       userProjectList.value = projects;
       resetPremissionRouter();
       loadings.value = false;
-      console.log(projects);
+      routerLoading.value = false;
       if (projects.length) {
         const includes = localsid && projects.map((x: any) => x.id).includes(localsid);
         if (!includes) {

@@ -1,9 +1,11 @@
 import router from '@/router';
-import { reactive } from 'vue';
+import { reactive, ref } from 'vue';
 import { RouteRecordNormalized, RouteRecordRaw } from 'vue-router';
 import { userMenus } from '@/layout/messageCenter/user-info';
 
-const routerRef = reactive({ value: router });
+export const routerRef = reactive({ value: router });
+
+export const routerLoading = ref(true);
 
 export const getRouterRef = () => routerRef;
 
@@ -36,7 +38,7 @@ export const getPermissionRoutes = function(config = getComputedRoutes() as any)
       // 有权限
       // TODO 权限校验规则待定
       // eslint-disable-next-line no-constant-condition
-      if (true || arr.includes(`${item.meta.id}`)) {
+      if (arr.includes(`${item.meta.id}`)) {
         obj = Object.assign({}, item);
         if (item.children && item.children.length > 0) {
           obj.children = Object.assign([], getPermissionRoutes(item.children));

@@ -6,6 +6,7 @@
         component<VNode>            组件
         children Array<router>      子路由
         meta<meta>                  题头对象
+        name<string>                路由名称  *必选项
 
 ##meta
         hidden<boolen>              是否在左边栏隐藏，true隐藏

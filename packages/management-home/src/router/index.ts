@@ -31,12 +31,22 @@ export const baseRoutes: Array<RouteRecordRaw> = [
       title: '404',
     },
   },
+  {
+    path: '/router-loading',
+    name: 'RouterLoading',
+    component: () => import('@/views/router-loading/Index.vue'),
+    meta: {
+      isRootLevel: false,
+      title: '信息获取中...',
+    },
+  },
 ];
 
 const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
     redirect: '/tenant-management',
+    name: 'Dashboard',
     meta: {
       isRootLevel: true,
       id: 2,
@@ -46,6 +56,7 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/tenant-management',
     redirect: '/tenant-detail',
+    name: 'TenantManagement',
     component: Layout,
     meta: {
       isRootLevel: true,
@@ -68,6 +79,7 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/project-management',
     redirect: '/project-list',
+    name: 'ProjectManagement',
     component: Layout,
     meta: {
       isRootLevel: true,
@@ -106,6 +118,7 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/service-management',
     redirect: '/service-list',
+    name: 'ServiceManagement',
     component: Layout,
     meta: {
       title: '服务管理',
@@ -222,6 +235,7 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/iframe-management',
     redirect: '/iframe-detail',
+    name: 'IframeManagement',
     component: Layout,
     meta: {
       isRootLevel: true,
@@ -253,24 +267,24 @@ export const reCreateRouterMatcher = (routes: Array<RouteRecordRaw>): RouterMatc
 // eslint-disable-next-line
 let router = reCreateRouter([...baseRoutes]);
 
-export const resetPremissionRouter = () => {
-  reCreateRouter(getPermissionRoutes([...routes, ...baseRoutes]));
-  setRouterRef(router);
-  console.log(router.getRoutes(), 'this is test routers');
-};
-
-resetPremissionRouter();
-
 export const resetRouter = (routes: Array<RouteRecordRaw>): void => {
-  // router = reCreateRouter(routes);s
+  // router = reCreateRouter(routes);
   router.getRoutes().forEach((x: any) => {
-    router.removeRoute(x);
+    router.removeRoute(x.name);
   });
   routes.forEach((x) => {
     router.addRoute(x);
   });
   setRouterRef(reCreateRouter(routes));
 };
+
+export const resetPremissionRouter = () => {
+  resetRouter(getPermissionRoutes([...routes, ...baseRoutes]));
+  setRouterRef(router);
+  console.log(router.getRoutes(), 'this is get new routers');
+};
+
+resetPremissionRouter();
 
 export const alloverRouter = () => reCreateRouter([...baseRoutes, ...routes]);
 setRouterRef(router);
