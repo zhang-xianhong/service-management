@@ -196,6 +196,9 @@ export default defineComponent({
         pageInfo.page = 1;
         getProjectListData();
         closeDialog();
+        if (userProjectList.value.length === 0) {
+          window.location.reload();
+        }
       });
     };
 
