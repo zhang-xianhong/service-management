@@ -8,6 +8,7 @@
         placeholder="请输入项目名称"
         style="width: 100%"
         v-model="searchProps.keyword"
+        @input="filterApps"
         suffix-icon="el-icon-search"
       ></el-input>
     </el-col>
@@ -30,6 +31,8 @@
         :page-size="searchProps.pageSize"
         layout="total, sizes, prev, pager, next, jumper"
         :total="total"
+        @size-change="handlePageSizeChange"
+        @current-change="handlePageChange"
       ></packaged-pagination>
     </div>
   </el-row>
@@ -52,7 +55,7 @@
           @success="logoUploadSuccess"
         >
           <i v-if="!imageUrl" class="el-icon-plus avatar-uploader-icon"></i>
-          <img v-else :src="imageUrl" alt="" />
+          <img v-else :src="imageUrl" alt="" style="width: 110; height: 110px;" />
         </el-upload>
       </el-form-item>
       <el-form-item label="应用简介">
@@ -86,6 +89,7 @@ import { IMAGE_UPLOAD } from '@/shared/constant/file';
 import { getApps, createApp } from '@/api/app';
 import { SuccessResponse } from '@/types/response';
 import { allService, getAllService } from '../service-management/business-service/utils/service-data-utils';
+import { debounce } from 'lodash/fp';
 
 interface StateInterface {
   applicationList: any[];
@@ -185,6 +189,7 @@ export default defineComponent({
           type: 'success',
           message: '应用新建成功',
         });
+        state.createDialogVisible = false;
       }
     };
 
@@ -203,6 +208,20 @@ export default defineComponent({
       getAppList();
     };
 
+    const filterApps = debounce(500)(getAppList);
+
+    // 每页条数改变
+    const handlePageSizeChange = (pageSize: number) => {
+      searchProps.pageSize = pageSize;
+      getAppList();
+    };
+
+    // 页数切换
+    const handlePageChange = (pageNum: number) => {
+      searchProps.page = pageNum;
+      getAppList();
+    };
+
     return {
       IMAGE_UPLOAD,
       searchProps,
@@ -216,6 +235,9 @@ export default defineComponent({
       submitAppCreate,
       closeAppCreate,
       onUpdate,
+      filterApps,
+      handlePageSizeChange,
+      handlePageChange,
     };
   },
 });
@@ -228,6 +250,8 @@ export default defineComponent({
   cursor: pointer;
   position: relative;
   overflow: hidden;
+  width: 110px;
+  height: 110px;
   &:hover {
     border-color: #409eff;
   }

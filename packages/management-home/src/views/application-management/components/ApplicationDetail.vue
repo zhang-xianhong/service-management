@@ -17,22 +17,22 @@
           :before-upload="beforeUpload"
           @success="logoUploadSuccess"
         >
-          <i v-if="!imageUrl" class="el-icon-plus avatar-uploader-icon"></i>
-          <img v-else :src="imageUrl" alt="" />
+          <i v-if="!detailInfo.imageUrl" class="el-icon-plus avatar-uploader-icon"></i>
+          <img v-else style="width: 110px;height: 110px" :src="detailInfo.imageUrl" alt="" />
         </el-upload>
-        <img v-else style="width: 110px;height: 110px" :src="imageUrl" alt="" />
+        <img v-else style="width: 110px;height: 110px" :src="detailInfo.imageUrl" alt="" />
       </el-form-item>
       <el-form-item label="应用简介">
         <el-input
           v-if="isEditable"
-          v-model="detailInfo.summary"
+          v-model="detailInfo.remark"
           type="textarea"
           :rows="3"
           placeholder="请输入应用简介，小于225字"
           maxlength="225"
           show-word-limit
         ></el-input>
-        <template v-else>{{ detailInfo.summary }}</template>
+        <template v-else>{{ detailInfo.remark }}</template>
       </el-form-item>
       <el-form-item label="关联服务">
         <el-select v-if="isEditable" v-model="relatedServices" multiple></el-select>
@@ -42,7 +42,7 @@
     <div class="dialog-footer">
       <el-button v-if="isEditable" type="primary" @click="updateAppDetail">提交</el-button>
       <el-button v-else type="primary" @click="isEditable = true">编辑</el-button>
-      <el-button>关闭</el-button>
+      <el-button @click="$emit('close')">关闭</el-button>
     </div>
   </el-dialog>
 </template>
@@ -75,7 +75,7 @@ export default defineComponent({
       default: () => ({}),
     },
   },
-  emits: ['success'],
+  emits: ['close'],
   setup(props: { visable: boolean; detail: DetailInterface }, ctx: SetupContext) {
     const instance = getCurrentInstance();
     const detailInfo: Ref<DetailInterface> = ref(props.detail);
@@ -112,7 +112,7 @@ export default defineComponent({
           type: 'success',
           message: '应用更新成功',
         });
-        ctx.emit('success');
+        ctx.emit('close');
       }
     };
 

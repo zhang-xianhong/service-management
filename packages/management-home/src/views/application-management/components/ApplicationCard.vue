@@ -17,11 +17,7 @@
       </div>
     </div>
   </div>
-  <application-detail
-    :visable="isDetailVisable"
-    :detail="computedDetail"
-    @success="appUpdateHandler"
-  ></application-detail>
+  <application-detail :visable="isDetailVisable" :detail="computedDetail" @close="onClose"></application-detail>
 </template>
 
 <script lang="ts">
@@ -63,7 +59,7 @@ export default defineComponent({
 
     initializeImageUrl();
 
-    const appUpdateHandler = () => {
+    const onClose = () => {
       isDetailVisable.value = false;
       ctx.emit('update');
     };
@@ -74,7 +70,7 @@ export default defineComponent({
       detailInfo,
       imageUrl,
       computedDetail,
-      appUpdateHandler,
+      onClose,
     };
   },
 });

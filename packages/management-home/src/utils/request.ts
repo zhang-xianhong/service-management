@@ -1,5 +1,5 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
-import { getToken, removeToken } from '@/utils/todoToken';
+import { getToken, removeToken, getCookies } from '@/utils/todoToken';
 import { ElMessage } from 'element-plus';
 
 const service = axios.create({
@@ -9,6 +9,8 @@ const service = axios.create({
 
 const TOKEN = 'token';
 const PROJECT_ID = 'x-sa-project-id';
+const TENANT_ID = 'x-sa-tenant-id';
+const USER_ID = 'x-sa-user-id';
 
 service.interceptors.request.use(
   (config: AxiosRequestConfig): AxiosRequestConfig => {
@@ -17,6 +19,14 @@ service.interceptors.request.use(
       newConfig.headers[TOKEN] = getToken();
     }
     newConfig.headers[PROJECT_ID] = localStorage.getItem('projectId') || '';
+    if (process.env.NODE_ENV === 'development') {
+      newConfig.headers[TENANT_ID] = 1;
+      newConfig.headers[USER_ID] = 83;
+    }
+    const item = {} as any;
+    item[PROJECT_ID] = localStorage.getItem('projectId') || '';
+    item.Cookie = getCookies();
+    localStorage.setItem('HEADERS', JSON.stringify([item]));
     return newConfig;
   },
   (error) => Promise.reject(error),
