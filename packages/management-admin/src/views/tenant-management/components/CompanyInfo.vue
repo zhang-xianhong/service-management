@@ -370,7 +370,7 @@ export default {
         return;
       }
       const { data } = await validateEngAbbr(el.target.value);
-      if (!data.userable) {
+      if (!data.usable) {
         (instance as any).proxy.$message({
           type: 'error',
           message: '企业英文简称已存在，请重新输入！',

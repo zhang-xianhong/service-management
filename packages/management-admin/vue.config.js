@@ -22,7 +22,7 @@ module.exports = {
       '/api': {
         // 后端rest服务
         // target: 'http://10.91.22.33:3000',
-        target: 'http://10.91.21.87:3000',
+        target: 'http://10.91.21.38:3000',
         ws: true,
         changeOrigin: true
         // 添加所有请求路径前缀/api/

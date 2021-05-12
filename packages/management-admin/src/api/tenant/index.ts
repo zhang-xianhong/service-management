@@ -34,4 +34,4 @@ export const validateEngAbbr: (engAbbr: string) => Promise<SuccessResponse<any>>
   request.post(getUrl(URL.tenant.VALIDATE_ENGABBR), { engAbbr });
 
 export const validateAccount: (account: string) => Promise<SuccessResponse<any>> = (account: string) =>
-  request.post(getUrl(URL.tenant.VALIDATE_ENGABBR), { account });
+  request.post(getUrl(URL.tenant.VALIDATE_ACCOUNT), { account });
