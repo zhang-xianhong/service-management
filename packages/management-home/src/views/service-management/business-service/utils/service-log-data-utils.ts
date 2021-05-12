@@ -37,5 +37,8 @@ export const clearLogInterVal = () => {
 };
 
 export function formatLogData(str: string) {
-  return str.replace(/^(\d{4}(-\d{2}){2}\s\d{2}(:\d{2}){2},\d{3})/gm, (a, b) => `<span style="color: red">${b}</span>`);
+  return str.replace(
+    /^(\d{4}(-\d{2}){2}\s\d{2}(:\d{2}){2},\d{3})/gm,
+    (a, b) => `<span style="color: red; margin-right: 5px">${b}</span>`,
+  );
 }
