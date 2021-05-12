@@ -27,7 +27,7 @@
         <el-input v-else v-model="userInfo.email" style="width: 400px" placeholder="请输入联系人邮箱"></el-input>
       </el-form-item>
       <el-form-item prop="frontPhoto" class="form-item" label="身份证正面" required>
-        <img v-if="frontPhoto" :src="frontPhoto" class="avatar" />
+        <img v-if="isEdit" :src="frontPhoto" class="avatar" />
         <el-upload
           v-else
           class="avatar-uploader"
@@ -37,11 +37,12 @@
           :before-upload="beforeUpload"
           @success="frontUploadSuccess"
         >
-          <i class="el-icon-plus avatar-uploader-icon"></i>
+          <img v-if="frontPhoto" :src="frontPhoto" class="avatar" />
+          <i v-else class="el-icon-plus avatar-uploader-icon"></i>
         </el-upload>
       </el-form-item>
       <el-form-item prop="reversePhoto" class="form-item" label="身份证反面" required>
-        <img v-if="reversePhoto" :src="reversePhoto" class="avatar" />
+        <img v-if="isEdit" :src="reversePhoto" class="avatar" />
         <el-upload
           v-else
           class="avatar-uploader"
@@ -51,36 +52,23 @@
           :before-upload="beforeUpload"
           @success="reverseUploadSuccess"
         >
-          <i class="el-icon-plus avatar-uploader-icon"></i>
+          <img v-if="reversePhoto" :src="reversePhoto" class="avatar" />
+          <i v-else class="el-icon-plus avatar-uploader-icon"></i>
         </el-upload>
       </el-form-item>
     </el-form>
   </el-row>
-  <el-row>
-    <el-button @click="goPreviousStep">上一步</el-button>
-    <el-button type="primary" @click="goNextStep">下一步</el-button>
-  </el-row>
 </template>
 
 <script lang="ts">
-import { computed, ref, SetupContext, WritableComputedRef, getCurrentInstance, Ref, watch } from 'vue';
+import { computed, ref, WritableComputedRef, getCurrentInstance, Ref, watch } from 'vue';
 import { IMAGE_UPLOAD } from '@/shared/constant/file';
 import { SuccessResponse } from '@/types/response';
 import { getImageUrl } from '@/api/files';
-
-// 联系人信息
-interface UserInfoInterface {
-  name: string;
-  phone: string;
-  IDCard: string;
-  email: string;
-  frontPhoto: string;
-  reversePhoto: string;
-}
+import UserInfoInterface from '../types/user-info-interface';
 
 export default {
   name: 'UserInfo',
-  emits: ['go', 'submit'],
   props: {
     isEdit: {
       type: Boolean,
@@ -88,21 +76,18 @@ export default {
     },
     modelValue: {
       type: Object,
-      default: () => ({
-        contact: {},
-        manager: {},
-      }),
+      default: () => ({}),
     },
   },
-  setup(props: { isEdit: boolean; modelValue: any }, ctx: SetupContext) {
+  setup(props: { isEdit: boolean; modelValue: any }) {
     // 组件实例
     const instance = getCurrentInstance();
 
     // 表单引用
-    const formRef: any = ref(null);
+    const formRef: Ref<any> = ref(null);
 
     // 联系人信息
-    const userInfo: WritableComputedRef<UserInfoInterface> = computed(() => props.modelValue.contact);
+    const userInfo: WritableComputedRef<UserInfoInterface> = computed(() => props.modelValue);
 
     // 身份证正面
     const frontPhoto: Ref<string> = ref('');
@@ -171,20 +156,6 @@ export default {
       reversePhoto: [{ required: true, message: '请上传身份证反面', trigger: 'blur' }],
     };
 
-    // 点击前往上一步
-    const goPreviousStep = () => {
-      ctx.emit('go', 1);
-    };
-
-    // 点击跳往下一步
-    const goNextStep = () => {
-      formRef.value.validate(async (validator: boolean) => {
-        if (validator) {
-          ctx.emit('go', 3);
-        }
-      });
-    };
-
     // 图片上传大小校验
     const beforeUpload = (file: { size: number }) => {
       if (file.size > 1024 * 1024 * 3) {
@@ -229,8 +200,6 @@ export default {
       frontPhoto,
       reversePhoto,
       rules,
-      goPreviousStep,
-      goNextStep,
       beforeUpload,
       frontUploadSuccess,
       reverseUploadSuccess,

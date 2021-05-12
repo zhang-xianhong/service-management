@@ -1,93 +1,91 @@
 <template>
   <div style="background: #fff; padding: 30px">
-    <el-row><packaged-steps :data="steps" :active="activeStep"></packaged-steps></el-row>
-    <keep-alive>
-      <component
-        :is="componentName"
-        :isEdit="isEdit"
-        v-model="tenantDetail"
-        @go="goStep"
-        @submit="onSubmit"
-      ></component>
-    </keep-alive>
+    <company-info ref="companyRef" :isEdit="isEditMode" v-model="tenantDetail"></company-info>
+    <user-info ref="userRef" :isEdit="isEditMode" v-model="tenantDetail.concat"></user-info>
+    <manager-info ref="managerRef" :isEdit="isEditMode" v-model="tenantDetail.manager"></manager-info>
+    <el-row>
+      <el-button type="primary" @click="onSubmit">保存</el-button>
+      <el-button @click="onCancel">返回</el-button>
+    </el-row>
   </div>
 </template>
 
 <script lang="ts">
-import { reactive, toRefs, ref, getCurrentInstance } from 'vue';
+import { ref, getCurrentInstance, defineComponent, Ref } from 'vue';
 import CompanyInfo from './components/CompanyInfo.vue';
 import UserInfo from './components/UserInfo.vue';
 import ManagerInfo from './components/ManagerInfo.vue';
 import { useRoute, useRouter } from 'vue-router';
 import { getTenantDetail, createTenant, updateTenant } from '@/api/tenant';
-import PackagedSteps from '@/components/packaged-steps/Index.vue';
 
-export default {
+export default defineComponent({
   name: 'TenantEdit',
   components: {
     CompanyInfo,
     UserInfo,
     ManagerInfo,
-    PackagedSteps,
   },
   setup() {
     const instance = getCurrentInstance();
-    // 路由信息
     const route = useRoute();
-
     const router = useRouter();
-
     const tenantId = route.params.id as string;
-
-    const isEdit = parseInt(tenantId, 10) > 0;
-
-    const steps = [
-      {
-        title: '填写企业信息',
-      },
-      {
-        title: '填写联系人信息',
-      },
-      {
-        title: '注册系统管理员',
-      },
-    ];
-
+    const isEditMode = parseInt(tenantId, 10) > 0; // 标识是新建租户还是编辑租户，如果为true则为更新
+    const companyRef: Ref<any> = ref(null);
+    const userRef: Ref<any> = ref(null);
+    const managerRef: Ref<any> = ref(null);
     const tenantDetail = ref({
       contact: {},
       manager: {},
-    } as any);
+    });
 
     const getDetail = async () => {
       const { data } = await getTenantDetail(tenantId);
       tenantDetail.value = data;
     };
 
-    if (isEdit) {
+    if (isEditMode) {
       getDetail();
     }
 
-    const state = reactive({
-      activeStep: 1,
-      componentName: 'CompanyInfo',
-    });
-
-    const goStep = (step: number) => {
-      state.activeStep = step;
-      switch (step) {
-        case 1:
-          state.componentName = 'CompanyInfo';
-          break;
-        case 2:
-          state.componentName = 'UserInfo';
-          break;
-        default:
-          state.componentName = 'ManagerInfo';
-      }
-    };
+    // 校验表单输入
+    const validate: () => Promise<unknown> = async () =>
+      Promise.all([
+        new Promise((resolve) =>
+          companyRef.value.formRef.validate(async (validator: boolean) => {
+            if (validator) {
+              resolve(true);
+            } else {
+              resolve(false);
+            }
+          }),
+        ),
+        new Promise((resolve) =>
+          userRef.value.formRef.validate(async (validator: boolean) => {
+            if (validator) {
+              resolve(true);
+            } else {
+              resolve(false);
+            }
+          }),
+        ),
+        new Promise((resolve) =>
+          managerRef.value.formRef.validate(async (validator: boolean) => {
+            if (validator) {
+              resolve(true);
+            } else {
+              resolve(false);
+            }
+          }),
+        ),
+      ]);
 
     const onSubmit = async () => {
-      if (isEdit) {
+      const validator = await validate();
+      if (!validator) {
+        return;
+      }
+      if (isEditMode) {
         const { code } = await updateTenant(tenantId, {
           ...tenantDetail.value,
           ...{ contact: undefined, manager: undefined },
@@ -111,16 +109,21 @@ export default {
       }
     };
 
+    const onCancel = async () => {
+      router.back();
+    };
+
     return {
-      ...toRefs(state),
-      steps,
-      isEdit,
+      companyRef,
+      userRef,
+      managerRef,
+      isEditMode,
       tenantDetail,
-      goStep,
       onSubmit,
+      onCancel,
     };
   },
-};
+});
 </script>
 
 <style lang="scss" scoped>
