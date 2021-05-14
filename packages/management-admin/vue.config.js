@@ -1,3 +1,4 @@
+/** @type {import('@vue/cli-service').ProjectOptions} */
 const fs = require('fs')
 const Mock = require('mockjs')
 const path = require('path')
