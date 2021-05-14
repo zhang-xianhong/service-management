@@ -1,10 +1,11 @@
-import { logSetTimeOut } from './service-log-data-utils';
-import { ref } from 'vue';
 import {
+  getTraceAndLog,
   getSqlData,
   startServiceData,
   stopServiceData,
 } from '@/views/service-management/business-service/utils/service-detail-data';
+import { ref } from 'vue';
+
 import { ElMessageBox } from 'element-plus';
 import Message from 'element-plus/es/el-message';
 
@@ -74,7 +75,7 @@ export default function() {
   // 日志
   const log = () => {
     console.log('日志');
-    logSetTimeOut();
+    getTraceAndLog();
   };
 
   // 按钮配置

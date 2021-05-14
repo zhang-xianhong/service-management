@@ -1,4 +1,4 @@
-import { buildService, getChanges, getChangesApply, startService, stopService } from '@/api/servers';
+import { buildService, getChanges, getChangesApply, startService, stopService, getServiceTraceId } from '@/api/servers';
 import { ref } from 'vue';
 import { logSetTimeOut } from '@/views/service-management/business-service/utils/service-log-data-utils';
 import Message from 'element-plus/es/el-message';
@@ -62,4 +62,10 @@ export const stopServiceData = () => {
     .catch((e) => {
       console.log(e);
     });
+};
+
+export const getTraceAndLog = () => {
+  getServiceTraceId(currentServiceIdForData.value).then((res) => {
+    logSetTimeOut('sa-ci-cd', res.data);
+  });
 };

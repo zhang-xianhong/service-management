@@ -55,3 +55,6 @@ export const stopService: (payload: object) => Promise<SuccessResponse<any>> = (
 
 export const serviceNameTest = (payload: any): Promise<SuccessResponse<any>> =>
   request.post(getUrl(URL.service.SERVICE_NAME_TEST), payload);
+
+export const getServiceTraceId: (serviceId: any) => Promise<SuccessResponse<any>> = (serviceId: any) =>
+  request.get(getUrl(URL.service.GET_SERVICE_TRACE_ID), { params: { serviceId } });
