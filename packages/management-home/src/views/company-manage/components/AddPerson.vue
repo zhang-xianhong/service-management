@@ -2,27 +2,31 @@
   <el-dialog
     :title="title"
     v-model="dialogVisible"
-    width="450px"
+    width="600px"
     @closed="closeDialog"
     :close-on-click-modal="false"
   >
     <div class="add-config-set">
       <el-form :model="formData" ref="diagFormRef" :rules="formRules">
-        <el-form-item label="登记账号" prop="account" :label-width="labelWidth">
+        <el-form-item label="登记账号" prop="userName" :label-width="labelWidth">
           <el-input
-            v-model.trim="formData.account"
+            v-model.trim="formData.userName"
             :disabled="disable"
             placeholder="请输入英文登录账号，创建后不可修改"
           ></el-input>
         </el-form-item>
-        <el-form-item label="姓名" prop="name" :label-width="labelWidth">
-          <el-input v-model.trim="formData.name" :disabled="disable" placeholder="请输入中文姓名"></el-input>
+        <el-form-item label="姓名" prop="displayName" :label-width="labelWidth">
+          <el-input v-model.trim="formData.displayName" :disabled="disable" placeholder="请输入中文姓名"></el-input>
         </el-form-item>
-        <el-form-item label="手机" :label-width="labelWidth" prop="phone">
-          <el-input v-model.trim="formData.phone" :disabled="disable" placeholder="请输入中国大陆手机号"></el-input>
+        <el-form-item label="手机" prop="phoneNumber" :label-width="labelWidth">
+          <el-input
+            v-model.trim="formData.phoneNumber"
+            :disabled="disable"
+            placeholder="请输入中国大陆手机号"
+          ></el-input>
         </el-form-item>
-        <el-form-item label="邮箱" :label-width="labelWidth" prop="email">
-          <el-input v-model.trim="formData.email" :disabled="disable" placeholder="请输入注册邮箱"></el-input>
+        <el-form-item label="邮箱" prop="primaryMail" :label-width="labelWidth">
+          <el-input v-model.trim="formData.primaryMail" :disabled="disable" placeholder="请输入注册邮箱"></el-input>
         </el-form-item>
         <el-form-item label="账号状态" prop="status" :label-width="labelWidth">
           <el-radio-group v-model="formData.status" :disabled="disable">
@@ -34,7 +38,8 @@
     </div>
     <template #footer>
       <span class="dialog-footer">
-        <el-button type="primary" @click="submitConfigForm">保 存</el-button>
+        <el-button type="primary" @click="submitConfigForm" v-if="!disable">保 存</el-button>
+        <el-button type="primary" @click="() => disable = false" v-else>编辑</el-button>
         <el-button @click="closeDialog">返回</el-button>
       </span>
     </template>
@@ -44,11 +49,6 @@
 <script lang="ts">
 import { defineComponent, reactive, toRefs, Ref, ref, inject } from 'vue';
 
-interface PropType {
-  lable: string;
-  key: string;
-  [attr: string]: any;
-}
 // 定义数据type
 interface DialogState {
   title: string;
@@ -56,7 +56,7 @@ interface DialogState {
   isEdit: boolean;
   formData: any;
 }
-
+const labelWidth: string = "100px";
 export default defineComponent({
   name: 'AddPerson',
   setup() {
@@ -66,27 +66,27 @@ export default defineComponent({
       disable: false,
       isEdit: false,
       formData: {
-        account: '',
-        name: '',
-        phone: '',
-        email: '',
+        userName: '',
+        displayName: '',
+        phoneNumber: '',
+        primaryMail: '',
         status: '0'
       }
     });
-    const labelWidth: string = '100px';
     // 校验规则
     const formRules = {
-      account: [{ required: true, message: '请输入账号', trigger: 'blur' }],
-      name: [{ required: true, message: '请输入名称', trigger: 'blur' }],
-      phone: [{ required: true, message: '请输入手机号', trigger: 'blur' }],
-      email: [{ required: true, message: '请输入注册邮箱', trigger: 'blur' }]
+      userName: [{ required: true, message: '请输入账号', trigger: 'blur' }],
+      displayName: [{ required: true, message: '请输入名称', trigger: 'blur' }],
+      phoneNumber: [{ required: true, message: '请输入手机号', trigger: 'blur' }],
+      primaryMail: [{ required: true, message: '请输入注册邮箱', trigger: 'blur' }],
+      status: [{ required: true, message: '请选择账户状态', trigger: 'change' }]
     };
 
     // 打开对话框
     const openDialog = (type: string, data: any): void => {
       if (type === "edit") {
         dialogContent.isEdit = true;
-        dialogContent.disable = false;
+        dialogContent.disable = true;
         dialogContent.formData = data;
       } else {
         dialogContent.isEdit = false;
@@ -100,10 +100,10 @@ export default defineComponent({
       dialogContent.disable = false;
       dialogContent.isEdit = false;
       dialogContent.formData = {
-        account: '',
-        name: '',
-        phone: '',
-        email: '',
+        userName: '',
+        displayName: '',
+        phoneNumber: '',
+        primaryMail: '',
         status: '0'
       }
     }
@@ -139,9 +139,9 @@ export default defineComponent({
       openDialog,
       submitConfigForm,
       dialogVisible,
-      labelWidth,
       formRules,
-      diagFormRef
+      diagFormRef,
+      labelWidth
     }
   }
 })

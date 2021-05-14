@@ -1,0 +1,29 @@
+{
+  "code": 0,
+  "data": {
+    "count": 2,
+    "rows": [
+      {
+        "id": "1",
+        "userName": "andu",
+        "displayName": "张三",
+        "phoneNumber": "188092261777",
+        "primaryMail": "www@qq.com",
+        "status": 0,
+        "dept": "jkjkjk"
+      },
+      {
+        "id": "2",
+        "userName": "andy",
+        "displayName": "李四",
+        "phoneNumber": "188092261777",
+        "primaryMail": "www@qq.com",
+        "status": 0,
+        "dept": "jkjkjk"
+      }
+    ]
+  },
+  "message": "successful",
+  "httpStatus": 200,
+  "timestamp": 1614926751860
+}

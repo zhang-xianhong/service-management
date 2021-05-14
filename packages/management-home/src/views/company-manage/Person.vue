@@ -3,29 +3,36 @@
     <el-row>
       <el-col :span="10" style="text-align: left">
         <el-button type="primary" style="width: 90px" @click="openAddDialog">新建</el-button>
-        <el-button @click="handleAble">启用</el-button>
-        <el-button @click="handleDisable">禁用</el-button>
-        <el-button @click="handleDel">删除</el-button>
+        <el-button @click="handleAble" :disabled="!multipleSelection.length">启用</el-button>
+        <el-button @click="handleDisable" :disabled="!multipleSelection.length">禁用</el-button>
+        <el-button @click="handleDel" :disabled="!multipleSelection.length">删除</el-button>
       </el-col>
       <el-col :offset="10" :span="4" style="text-align: right">
-        <el-input placeholder="请输入键名称" suffix-icon="el-icon-search"></el-input>
-        <span class="el-icon-setting"></span>
+        <el-input
+          placeholder="请输入姓名"
+          suffix-icon="el-icon-search"
+          @input="filterAccount"
+          v-model="searchProps.keyword"
+        ></el-input>
+        <!-- <span class="el-icon-setting"></span> -->
       </el-col>
     </el-row>
     <el-row style="background: #fff">
-      <el-table :data="tableData" style="width: 100%">
+      <el-table :data="tableData" style="width: 100%" @selection-change="selChange">
         <el-table-column type="selection" width="45" />
         <el-table-column type="index" label="序号" width="50" />
-        <el-table-column label="登录账号" prop="account"></el-table-column>
-        <el-table-column label="姓名" prop="name"></el-table-column>
-        <el-table-column label="手机" prop="phone"></el-table-column>
-        <el-table-column label="邮箱" prop="email"></el-table-column>
-        <el-table-column label="账户状态" prop="accountStatus"></el-table-column>
-        <el-table-column label="激活状态" prop="defaultValue"></el-table-column>
+        <el-table-column label="登录账号" prop="userName"></el-table-column>
+        <el-table-column label="姓名" prop="displayName"></el-table-column>
+        <el-table-column label="手机" prop="phoneNumber"></el-table-column>
+        <el-table-column label="邮箱" prop="primaryMail"></el-table-column>
+        <el-table-column label="账户状态" prop="status">
+          <template #default="scope">{{ USERSTATUS[scope.row.status] }}</template>
+        </el-table-column>
+        <!-- <el-table-column label="激活状态" prop="defaultValue"></el-table-column> -->
         <el-table-column label="部门" prop="dept"></el-table-column>
         <el-table-column label="操作" width="300">
-          <template>
-            <el-button type="primary" size="mini">编辑</el-button>
+          <template #default="scope">
+            <el-button type="primary" size="mini" @click="openEditDialog(scope.row)">编辑</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -43,8 +50,15 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, reactive, toRefs, Ref, provide, onMounted } from 'vue';
-import AddPerson from './components/AddPerson.vue'
+import { defineComponent, ref, reactive, toRefs, Ref, provide, getCurrentInstance } from 'vue';
+import { ElMessageBox, ElMessage } from 'element-plus';
+import AddPerson from './components/AddPerson.vue';
+import { getUserList, createUser, updateUser, delUser, ableUser, disableUser } from '@/api/company/users';
+
+const USERSTATUS: any = {
+  0: '启用',
+  1: '禁用'
+};
 interface TableState {
   tableData: Array<object>;
   loading: boolean;
@@ -61,11 +75,15 @@ interface RefAddDialog {
   openDialog: Function;
   [attr: string]: any;
 }
+
+const RES_CODE: any = {
+  success: 0
+};
+
 export default defineComponent({
   name: 'Person',
   components: { AddPerson },
   setup() {
-    const selMenu = ref('list');
     // 表单相关状态
     const tableState: TableState = reactive({
       tableData: [],
@@ -82,61 +100,169 @@ export default defineComponent({
 
     const refAddDialog: Ref<RefAddDialog | null> = ref(null);
 
-    // 获取列表
-    const getList = async () => {
-      console.log('获取人员列表')
-    };
-
-    // 启用
-    const handleAble = () => {
-      console.log('启用')
-    };
-
-    // 禁用
-    const handleDisable = () => {
-      console.log('禁用')
-    };
-
-    // 删除
-    const handleDel = () => {
-      console.log('删除')
-    };
-
-    // 新建
-    const handleCreate = () => {
-      console.log('新建')
-    };
-
-    // 编辑
-    const handleEdit = () => {
-      console.log('编辑')
-    }
-
-    getList();
+    // 获取组件实例
+    const instance = getCurrentInstance();
 
     // 打开对话框
     const openAddDialog = (): void => {
       (refAddDialog.value as RefAddDialog).openDialog();
     };
 
-    const openEditDialog = (): void => {
-      (refAddDialog.value as RefAddDialog).openDialog('edit', {});
+    const openEditDialog = (data: any): void => {
+      (refAddDialog.value as RefAddDialog).openDialog('edit', { ...data, status: String(data.status) });
     }
+
+    // 关闭对话框
+    const closeDialog = () => {
+      (refAddDialog.value as RefAddDialog).closeDialog();
+    }
+
+    // 获取列表
+    const getList = async () => {
+      // tableState.loading = true;
+      const { code, data } = await getUserList(tableState.searchProps);
+      if (code === RES_CODE.success) {
+        tableState.total = data.count;
+        tableState.tableData = data.rows || [];
+      } else {
+        (instance as any).proxy.$message({
+          type: 'error',
+          message: '获取人员列表失败',
+        });
+      }
+    };
+    getList();
+
+    const selChange = (data: any): void => {
+      tableState.multipleSelection = data;
+    }
+
+    // 查询
+    const filterAccount = (): void => {
+      getList();
+    }
+
+    // 启用
+    const handleAble = async () => {
+      const { code } = await ableUser();
+      if (code === RES_CODE.success) {
+        (instance as any).proxy.$message({
+          type: 'success',
+          message: '启用成功',
+        });
+        getList();
+      } else {
+        (instance as any).proxy.$message({
+          type: 'error',
+          message: '启用失败',
+        });
+      }
+    };
+
+    // 禁用
+    const handleDisable = async () => {
+      const { code } = await disableUser();
+      if (code === RES_CODE.success) {
+        (instance as any).proxy.$message({
+          type: 'success',
+          message: '禁用成功',
+        });
+        getList();
+      } else {
+        (instance as any).proxy.$message({
+          type: 'error',
+          message: '禁用失败',
+        });
+      }
+    };
+
+    // 删除 await deleteConfig(rowData.id);
+    const handleDel = (): void => {
+      ElMessageBox.confirm(`是否删除已选项?`, '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+      })
+        .then(async () => {
+          // 待传参
+          const { code } = await delUser();
+          if (code === RES_CODE.success) {
+            (instance as any).proxy.$message({
+              type: 'success',
+              message: '删除成功',
+            });
+            getList();
+          } else {
+            (instance as any).proxy.$message({
+              type: 'error',
+              message: '删除失败',
+            });
+          }
+        })
+        .catch(() => {
+          ElMessage({
+            type: 'info',
+            message: '已取消操作',
+          });
+        });
+    };
+
+    // 新建
+    const handleCreate = async (data: any) => {
+      const { code } = await createUser({
+        ...data,
+        status: parseInt(data.status, 10),
+      });
+      if (code === RES_CODE.success) {
+        (instance as any).proxy.$message({
+          type: 'success',
+          message: '新建成功',
+        });
+        getList();
+      } else {
+        (instance as any).proxy.$message({
+          type: 'error',
+          message: '添加失败',
+        });
+      }
+      closeDialog();
+    };
+
+    // 编辑
+    const handleEdit = async (data: any) => {
+      const { code } = await updateUser({
+        ...data,
+        status: parseInt(data.status, 10),
+      });
+      if (code === RES_CODE.success) {
+        (instance as any).proxy.$message({
+          type: 'success',
+          message: '编辑成功',
+        });
+        getList();
+      } else {
+        (instance as any).proxy.$message({
+          type: 'error',
+          message: '编辑失败',
+        });
+      }
+      closeDialog();
+    }
+
     provide('handleCreate', handleCreate);
     provide('handleEdit', handleEdit);
-    onMounted(() => {
-      getList();
-    })
+
     return {
       ...toRefs(tableState),
-      selMenu,
       handleAble,
       openAddDialog,
       openEditDialog,
       handleDisable,
       handleDel,
-      Attr,
-      refAddDialog
+      selChange,
+      filterAccount,
+      refAddDialog,
+      USERSTATUS,
     }
   }
 })

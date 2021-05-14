@@ -5,6 +5,7 @@ import service from './service';
 import tenant from './tenant';
 import file from './file';
 import auth from './auth';
+import company from './company';
 
 export default {
   schema,
@@ -14,4 +15,5 @@ export default {
   tenant,
   file,
   auth,
+  company
 };
