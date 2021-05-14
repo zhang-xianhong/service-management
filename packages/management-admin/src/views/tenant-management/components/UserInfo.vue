@@ -27,7 +27,7 @@
         <el-input v-else v-model="userInfo.email" style="width: 400px" placeholder="请输入联系人邮箱"></el-input>
       </el-form-item>
       <el-form-item prop="frontPhoto" class="form-item" label="身份证正面">
-        <img v-if="frontPhoto" :src="frontPhoto" class="avatar" />
+        <img v-if="isEdit" :src="frontPhoto" class="avatar" />
         <el-upload
           v-else
           class="avatar-uploader"
@@ -37,11 +37,12 @@
           :before-upload="beforeUpload"
           @success="frontUploadSuccess"
         >
-          <i class="el-icon-plus avatar-uploader-icon"></i>
+          <img v-if="frontPhoto" :src="frontPhoto" class="avatar" />
+          <i v-else class="el-icon-plus avatar-uploader-icon"></i>
         </el-upload>
       </el-form-item>
       <el-form-item prop="reversePhoto" class="form-item" label="身份证反面">
-        <img v-if="reversePhoto" :src="reversePhoto" class="avatar" />
+        <img v-if="isEdit" :src="reversePhoto" class="avatar" />
         <el-upload
           v-else
           class="avatar-uploader"
@@ -51,7 +52,8 @@
           :before-upload="beforeUpload"
           @success="reverseUploadSuccess"
         >
-          <i class="el-icon-plus avatar-uploader-icon"></i>
+          <img v-if="reversePhoto" :src="reversePhoto" class="avatar" />
+          <i v-else class="el-icon-plus avatar-uploader-icon"></i>
         </el-upload>
       </el-form-item>
     </el-form>
@@ -148,7 +150,7 @@ export default {
     const rules = {
       name: [
         { required: true, message: '请输入联系人中文姓名', trigger: 'blur' },
-        { min: 3, max: 20, message: '联系人姓名长度在3到20个字符之间', trigger: 'blur' },
+        { min: 2, max: 20, message: '联系人姓名长度在2到20个字符之间', trigger: 'blur' },
         { pattern: /^[\u4e00-\u9fa5]+$/g, message: '联系人姓名仅支持中文', trigger: 'blur' },
       ],
       phone: [
