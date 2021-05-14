@@ -240,6 +240,41 @@ const routes: Array<RouteRecordRaw> = [
       },
     ],
   },
+  {
+    path: '/company-manage',
+    name: 'Company',
+    component: Layout,
+    meta: {
+      title: '公司管理',
+      icon: 'el-icon-eleme',
+      isRootLevel: true,
+      id: 9,
+    },
+    children: [
+      {
+        path: 'person',
+        component: () => import(/* webpackChunkName: "tenant" */ '@/views/company-manage/Person.vue'),
+        name: 'Person',
+        meta: {
+          title: '人员管理',
+          icon: 'el-icon-eleme',
+          isRootLevel: false,
+          id: 9,
+        },
+      },
+      {
+        path: 'departmentdepartment',
+        component: () => import(/* webpackChunkName: "tenant" */ '@/views/company-manage/Department.vue'),
+        name: 'Department',
+        meta: {
+          title: '部门管理',
+          icon: 'el-icon-eleme',
+          isRootLevel: false,
+          id: 9,
+        },
+      }
+    ],
+  },
 ];
 
 export const reCreateRouter = (routes: Array<RouteRecordRaw>): Router =>
