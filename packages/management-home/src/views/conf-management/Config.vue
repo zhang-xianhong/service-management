@@ -3,7 +3,6 @@
     <el-row>
       <el-col :span="6" style="text-align: left">
         <el-button type="primary" @click="addNewConfig" style="width: 90px">新建</el-button>
-        <el-button @click="issueConfig" :disabled="!multipleSelection.length">配置下发</el-button>
       </el-col>
       <el-col :offset="8" :span="10" style="text-align: right">
         <el-input
@@ -15,7 +14,12 @@
       </el-col>
     </el-row>
     <el-row style="background: #fff">
-      <el-table :data="tableData" v-loading="loading" style="width: 100%" @selection-change="handleSelectionChange">
+      <el-table
+        :data="tableData"
+        v-loading="loading"
+        style="width: 100%"
+        @selection-change="handleSelectionChange"
+      >
         <el-table-column type="selection" width="45" />
         <el-table-column type="index" label="序号" width="50" />
         <el-table-column label="键" prop="name"></el-table-column>
@@ -61,7 +65,10 @@
             <el-input v-model.trim="configForm.formData.value" :disabled="configForm.disabled"></el-input>
           </el-form-item>
           <el-form-item label="默认值" prop="defaultValue" :label-width="labelWidth">
-            <el-input v-model.trim="configForm.formData.defaultValue" :disabled="configForm.disabled"></el-input>
+            <el-input
+              v-model.trim="configForm.formData.defaultValue"
+              :disabled="configForm.disabled"
+            ></el-input>
           </el-form-item>
           <el-form-item label="类型" prop="type" :label-width="labelWidth">
             <el-radio-group v-model="configForm.formData.type" :disabled="configForm.disabled">
@@ -70,7 +77,10 @@
             </el-radio-group>
           </el-form-item>
           <el-form-item label="配置描述" :label-width="labelWidth" prop="description">
-            <el-input v-model.trim="configForm.formData.description" :disabled="configForm.disabled"></el-input>
+            <el-input
+              v-model.trim="configForm.formData.description"
+              :disabled="configForm.disabled"
+            ></el-input>
           </el-form-item>
         </el-form>
       </div>
@@ -277,22 +287,6 @@ export default {
       toggleConfigDialog();
     }
 
-    // 配置下发
-    const issueConfig = async () => {
-      const { code } = await deliveryConfig();
-      if (code === 0) {
-        (instance as any).proxy.$message({
-          type: 'success',
-          message: '下发配置参数成功',
-        });
-      } else {
-        (instance as any).proxy.$message({
-          type: 'error',
-          message: '下发参数配置失败',
-        });
-      }
-    };
-
     // 开启编辑
     function ableEdit() {
       configForm.disabled = false;
@@ -380,7 +374,6 @@ export default {
     return {
       ...toRefs(tableState),
       addNewConfig,
-      issueConfig,
       labelWidth,
       configForm,
       configRules,
