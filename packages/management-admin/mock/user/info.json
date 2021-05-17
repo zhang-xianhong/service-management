@@ -1,0 +1,20 @@
+{
+  "code": 0,
+  "data": {
+    "count": 2,
+    "rows": [
+      {
+        "id": "1",
+        "userName": "admin",
+        "displayName": "超级管理员",
+        "phoneNumber": "188092261777",
+        "primaryMail": "www@qq.com",
+        "passWd": "2121212121",
+        "rPassWd": "2121212121"
+      }
+    ]
+  },
+  "message": "successful",
+  "httpStatus": 200,
+  "timestamp": 1614926751860
+}
