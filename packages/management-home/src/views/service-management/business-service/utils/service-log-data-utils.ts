@@ -10,10 +10,10 @@ export const getLogs = (name = 'sa-ci-cd', keyword?: any) => {
   getLogRuntime(name, realtime.value, keyword).then((res) => {
     realtime.value = res.data.realtimeTs;
     const dataArr = res.data.businessLogSet.content;
-    // const narr = [...logData.value, ...dataArr];
+    const narr = [...logData.value, ...dataArr];
     // narr.reverse();
     // logData.value = narr.splice(0, 50).reverse();
-    logData.value = dataArr.slice(-50);
+    logData.value = narr.slice(-500);
     const ele = document.getElementById('log_content') as any;
     setTimeout(() => {
       ele.scrollTop = ele.scrollHeight;
