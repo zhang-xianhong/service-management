@@ -8,7 +8,7 @@
     <div class="mask" v-if="maskText">{{ maskText }}</div>
     <div class="detail" :class="{ 'cannot-operate': !!maskText }">
       <el-row>
-        <el-col :span="16">
+        <el-col :span="16" v-if="getShowBool('init')">
           <el-button
             v-for="(button, index) in buttons"
             :key="index"
@@ -25,7 +25,7 @@
             <span :style="{ background: serverStatusInfo.color }" class="detail-status__icon"></span>
             <span :style="{ color: serverStatusInfo.color }">{{ serverStatusInfo.label }}</span>
           </div>
-          <div class="detail-icons">
+          <div class="detail-icons" v-if="getShowBool('update')">
             <!-- 服务详情 -->
             <el-tooltip effect="light" content="服务详情" placement="bottom">
               <svg-icon
@@ -171,6 +171,7 @@ import { getClassificationList } from '@/api/settings/classification';
 import { getServiceModelList, getModelDetail } from '@/api/schema/model';
 import { getDataTypesAll } from '@/api/settings/data-types';
 import { useRoute } from 'vue-router';
+import { getShowBool } from '@/utils/permission-show-module';
 import {
   statusMap,
   computeStatusLabel,
@@ -509,6 +510,7 @@ export default {
       maskText,
       userProjectList,
       sqlLoadings,
+      getShowBool,
     };
   },
 };

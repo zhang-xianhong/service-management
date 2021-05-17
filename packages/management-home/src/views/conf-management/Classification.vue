@@ -1,12 +1,13 @@
 <template>
   <div>
     <el-row class="classific-row">
-      <el-button style="width: 120px" type="primary" @click="addTop">新增顶级分类</el-button>
+      <el-button style="width: 120px" type="primary" @click="addTop" v-if="getShowBool('add')">新增顶级分类</el-button>
       <el-button
         style="width: 120px"
         :type="currentNode.id !== -1 ? 'primary' : ''"
         @click="addChild"
         :disabled="currentNode.id === -1"
+        v-if="getShowBool('update')"
         >新增子级分类</el-button
       >
       <el-button type="primary" v-if="!allExpanded" @click="expandAll">展开所有</el-button>
@@ -34,8 +35,8 @@
         </el-scrollbar>
       </el-col>
       <el-col :span="12" v-if="~currentNode.id">
-        <el-button type="primary" @click="save">保存</el-button>
-        <el-button @click="remove">删除</el-button>
+        <el-button type="primary" @click="save" v-if="getShowBool('update')">保存</el-button>
+        <el-button @click="remove" v-if="getShowBool('delete')">删除</el-button>
         <el-form :model="currentNode" label-position="top" :rules="rules" class="mt20">
           <el-form-item prop="name" label="分类名称">
             <el-input v-model="currentNode.name"></el-input>
@@ -55,6 +56,8 @@ import { TreeData } from 'element-plus/packages/tree/src/tree.type';
 import * as confApi from '@/api/settings/classification';
 import _ from 'lodash/fp';
 import { ElMessageBox, ElMessage } from 'element-plus';
+import { getShowBool } from '@/utils/permission-show-module';
+
 interface ClassicificNode {
   id: number;
   name: string;
@@ -235,6 +238,7 @@ export default defineComponent({
       remove,
       addChild,
       addTop,
+      getShowBool,
     };
   },
 });

@@ -8,10 +8,19 @@
   >
     <div class="service-list_header">
       <div class="service-list_left">
-        <el-button icon="el-icon-plus" type="primary" @click="toggleServiceDialog" style="width: 90px">新建</el-button>
+        <el-button
+          icon="el-icon-plus"
+          v-if="getShowBool('add')"
+          type="primary"
+          @click="toggleServiceDialog"
+          style="width: 90px"
+          >新建</el-button
+        >
         <el-button @click="runService" :disabled="computedDisabled" v-if="false">启动</el-button>
         <el-button @click="stopService" :disabled="computedDisabled" v-if="false">停止</el-button>
-        <el-button @click="deleteHandler" :disabled="computedDisabledForSS">删除</el-button>
+        <el-button @click="deleteHandler" :disabled="computedDisabledForSS" v-if="getShowBool('delete')"
+          >删除</el-button
+        >
       </div>
       <div class="service-list_right">
         <el-input
@@ -36,9 +45,12 @@
         <el-table-column type="index" width="50" label="序号"></el-table-column>
         <el-table-column property="name" label="服务英文名">
           <template #default="scope">
-            <router-link :to="{ path: `service-list/detail/${scope.row.id}`, query: { detailName: scope.row.name } }">{{
-              scope.row.name
-            }}</router-link>
+            <router-link
+              v-if="getShowBool('selectDetail')"
+              :to="{ path: `service-list/detail/${scope.row.id}`, query: { detailName: scope.row.name } }"
+              >{{ scope.row.name }}</router-link
+            >
+            <el-button type="text" v-else>{{ scope.row.name }}</el-button>
           </template>
         </el-table-column>
         <el-table-column property="description" label="服务中文名"></el-table-column>
@@ -216,6 +228,7 @@
 import { defineComponent, reactive, ref, onBeforeUnmount, computed } from 'vue';
 import PackagedPagination from '@/components/pagination/Index.vue';
 import { userProjectList } from '@/layout/messageCenter/user-info';
+import { getShowBool } from "@/utils/permission-show-module";
 import {
   refreshServiceList,
   serviceTableList,
@@ -551,7 +564,8 @@ export default defineComponent({
       refreshMess,
       checkEnglishName,
       userProjectList,
-      validatorPass
+      validatorPass,
+      getShowBool,
     };
   },
 });

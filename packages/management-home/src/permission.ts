@@ -33,6 +33,8 @@ router.beforeEach(async (to, from, next) => {
       }
       if (to.matched.length > 1 || whiteList.includes(to.path)) {
         next();
+        console.log(to, 'this is to');
+        localStorage.setItem('currentPathId', to.meta.id);
       } else {
         const { matched } = usefulRoutes.resolve(to);
         if (matched.length > 1) {

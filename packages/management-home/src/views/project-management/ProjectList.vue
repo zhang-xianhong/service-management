@@ -8,6 +8,7 @@
           @click="addDialogVisible = true"
           style="width: 90px"
           :disabled="!userInfo.admin"
+          v-if="getShowBool('add')"
         >
           新建
         </el-button>
@@ -37,6 +38,8 @@
           :key="item.id"
           @delete-project="deleteProject"
           @reload-projects="getProjectListData"
+          :delete-or-not="getShowBool('delete')"
+          :update-or-not="getShowBool('update')"
         ></project-item>
         <div v-if="!projectList.length && !loadings" class="placeholders">暂无数据</div>
       </div>
@@ -129,6 +132,7 @@
 import { defineComponent, onMounted, ref, watch } from 'vue';
 import ProjectItem from '@/views/project-management/components/ProjectItem.vue';
 import PackagedPagination from '@/components/pagination/Index.vue';
+import { getShowBool } from '@/utils/permission-show-module';
 import {
   getProjectListData,
   projectDetail,
@@ -269,6 +273,7 @@ export default defineComponent({
       userInfo,
       loadings,
       validatorPass,
+      getShowBool,
     };
   },
 });

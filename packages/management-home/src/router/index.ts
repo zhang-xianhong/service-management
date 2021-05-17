@@ -127,7 +127,7 @@ const routes: Array<RouteRecordRaw> = [
       title: '服务管理',
       icon: 'el-icon-eleme',
       isRootLevel: true,
-      id: 7,
+      id: 16,
     },
     children: [
       {
@@ -138,7 +138,7 @@ const routes: Array<RouteRecordRaw> = [
           title: '业务服务',
           icon: 'el-icon-eleme',
           isRootLevel: false,
-          id: 7,
+          id: 16,
         },
       },
       {
@@ -151,7 +151,7 @@ const routes: Array<RouteRecordRaw> = [
           isRootLevel: false,
           hidden: true,
           activeMenu: '/service-management/service-list',
-          id: 7,
+          id: 16,
         },
       },
       // {
@@ -185,7 +185,7 @@ const routes: Array<RouteRecordRaw> = [
           title: '分类信息',
           icon: 'el-icon-eleme',
           isRootLevel: false,
-          id: 8,
+          id: 17,
         },
       },
       {
@@ -196,7 +196,7 @@ const routes: Array<RouteRecordRaw> = [
           title: '标签信息',
           icon: 'el-icon-eleme',
           isRootLevel: false,
-          id: 8,
+          id: 18,
         },
       },
       {
@@ -207,7 +207,7 @@ const routes: Array<RouteRecordRaw> = [
           title: '数据类型',
           icon: 'el-icon-eleme',
           isRootLevel: false,
-          id: 8,
+          id: 19,
         },
       },
       {
@@ -219,7 +219,7 @@ const routes: Array<RouteRecordRaw> = [
           icon: 'el-icon-eleme',
           hidden: true,
           isRootLevel: false,
-          id: 8,
+          id: 19,
         },
       },
       {
@@ -230,7 +230,7 @@ const routes: Array<RouteRecordRaw> = [
           title: '通用配置',
           icon: 'el-icon-eleme',
           isRootLevel: false,
-          id: 8,
+          id: 20,
         },
       },
     ],

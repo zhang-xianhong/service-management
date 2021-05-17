@@ -23,14 +23,24 @@ export default defineComponent({
     let localsid = localStorage.getItem('projectId') as any;
     localsid = Number.isNaN(Number(localsid)) ? 0 : Number(localsid);
     getUserInfo({ projectId: localsid }).then((res) => {
-      const { info, menus, projects } = res.data;
+      const { info, projects } = res.data;
+      const { userAuth } = info;
       userInfo.value = info;
       const menuObj = {} as any;
-      menus.forEach((x: any) => {
-        menuObj[x.id] = x.authorization;
+      userAuth.forEach((x: any) => {
+        menuObj[x.id] = [];
+        if (x.modules) {
+          x.modules.forEach((y: any) => {
+            if (y.code) {
+              menuObj[x.id] = [...y.code.split('-'), ...menuObj[x.id]];
+            }
+          });
+        }
+        menuObj[x.id] = [...new Set(menuObj[x.id])];
       });
       userMenus.value = menuObj;
       userProjectList.value = projects;
+      console.log(menuObj, 'this is userinfo');
       resetPremissionRouter();
       loadings.value = false;
       routerLoading.value = false;
@@ -40,7 +50,6 @@ export default defineComponent({
           // eslint-disable-next-line prefer-destructuring
           userCurrentProject.value = projects[0];
           localStorage.setItem('projectId', projects[0].id);
-          console.log(projects[0].id);
           window.location.href = '/';
         } else {
           projects.forEach((x: any) => {
