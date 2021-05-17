@@ -14,12 +14,7 @@
       </el-col>
     </el-row>
     <el-row style="background: #fff">
-      <el-table
-        :data="tableData"
-        v-loading="loading"
-        style="width: 100%"
-        @selection-change="handleSelectionChange"
-      >
+      <el-table :data="tableData" v-loading="loading" style="width: 100%" @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="45" />
         <el-table-column type="index" label="序号" width="50" />
         <el-table-column label="键" prop="name"></el-table-column>
@@ -65,10 +60,7 @@
             <el-input v-model.trim="configForm.formData.value" :disabled="configForm.disabled"></el-input>
           </el-form-item>
           <el-form-item label="默认值" prop="defaultValue" :label-width="labelWidth">
-            <el-input
-              v-model.trim="configForm.formData.defaultValue"
-              :disabled="configForm.disabled"
-            ></el-input>
+            <el-input v-model.trim="configForm.formData.defaultValue" :disabled="configForm.disabled"></el-input>
           </el-form-item>
           <el-form-item label="类型" prop="type" :label-width="labelWidth">
             <el-radio-group v-model="configForm.formData.type" :disabled="configForm.disabled">
@@ -77,10 +69,7 @@
             </el-radio-group>
           </el-form-item>
           <el-form-item label="配置描述" :label-width="labelWidth" prop="description">
-            <el-input
-              v-model.trim="configForm.formData.description"
-              :disabled="configForm.disabled"
-            ></el-input>
+            <el-input v-model.trim="configForm.formData.description" :disabled="configForm.disabled"></el-input>
           </el-form-item>
         </el-form>
       </div>
@@ -126,7 +115,7 @@
 
 <script lang="ts">
 import { reactive, getCurrentInstance, toRefs, ref } from 'vue';
-import { getConfig, addConfig, updateConfig, deleteConfig, getHistory, deliveryConfig } from '@/api/settings/config';
+import { getConfig, addConfig, updateConfig, deleteConfig, getHistory } from '@/api/settings/config';
 import PackagedPagination from '@/components/pagination/Index.vue';
 import { debounce } from 'lodash';
 import { ElMessageBox, ElMessage } from 'element-plus';
