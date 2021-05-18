@@ -1,7 +1,13 @@
 <template>
-  <el-dialog :title="title" v-model="dialogVisible" width="500px" @closed="closeDialog" :close-on-click-modal="false">
+  <el-dialog
+    :title="title"
+    v-model="dialogVisible"
+    width="500px"
+    @closed="closeDialog"
+    :close-on-click-modal="false"
+  >
     <div class="add-config-set">
-      <el-form :model="formData" ref="diagFormRef" :rules="formRules">
+      <el-form :model="formData" ref="diagFormRef">
         <el-form-item label="登记账号" prop="username" :label-width="labelWidth">
           <el-input
             v-model.trim="formData.username"
@@ -29,7 +35,12 @@
           </el-radio-group>
         </el-form-item>
         <el-form-item label="初始密码" prop="initPasswd" :label-width="labelWidth" v-if="!isEdit">
-          <el-tooltip content="复制密码，保存后可用密码登录" placement="top" effect="light" style="margin-right: 5px">
+          <el-tooltip
+            content="复制密码，保存后可用密码登录"
+            placement="top"
+            effect="light"
+            style="margin-right: 5px"
+          >
             <svg-icon icon-name="wenhao" icon-class="detail-icons__item"></svg-icon>
           </el-tooltip>
           <el-input v-model.trim="formData.password" disabled style="width: 280px" show-password></el-input>
@@ -51,7 +62,12 @@
             style="width: 280px"
             show-password
           ></el-input>
-          <el-button type="text" style="margin-left: 20px" @click="handleReset" :disabled="disable">重置</el-button>
+          <el-button
+            type="text"
+            style="margin-left: 20px"
+            @click="handleReset"
+            :disabled="disable"
+          >重置</el-button>
         </el-form-item>
       </el-form>
     </div>
