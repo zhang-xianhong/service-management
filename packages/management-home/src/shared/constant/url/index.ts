@@ -15,5 +15,5 @@ export default {
   tenant,
   file,
   auth,
-  company
+  company,
 };

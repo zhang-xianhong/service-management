@@ -22,13 +22,13 @@
               :expand-on-click-node="false"
               :props="treeProps"
             >
-              <template #default="{ data, node }">
+              <template #default="{ data }">
                 <div class="node-bg" :class="{ 'checked-node': data.checked }"></div>
                 <el-checkbox
                   v-model="data.checked"
                   :disabled="data.disabled"
                   :indeterminate="data.isIndeterminate"
-                  @change="checkUser(data, node)"
+                  @change="checkUser(data)"
                 ></el-checkbox>
                 <span style="z-index: 1; background: transparent">{{ data.name }}</span>
               </template>
@@ -41,12 +41,12 @@
               lazy
               :props="treeProps"
             >
-              <template #default="{ data, node }">
+              <template #default="{ data }">
                 <el-checkbox
                   v-model="data.checked"
                   :disabled="data.disabled"
                   :indeterminate="data.isIndeterminate"
-                  @change="checkUser(data, node)"
+                  @change="checkUser(data)"
                 ></el-checkbox>
                 {{ data.name }}
               </template>

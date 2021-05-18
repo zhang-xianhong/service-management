@@ -3,8 +3,8 @@
     <el-row>
       <el-col :span="10" style="text-align: left">
         <el-button type="primary" style="width: 90px" @click="openAddDialog">新建</el-button>
-        <el-button @click="handleAble" :disabled="!multipleSelection.length">启用</el-button>
-        <el-button @click="handleDisable" :disabled="!multipleSelection.length">禁用</el-button>
+        <el-button @click="handleUpdateStatus(0)" :disabled="!multipleSelection.length">启用</el-button>
+        <el-button @click="handleUpdateStatus(-1)" :disabled="!multipleSelection.length">禁用</el-button>
         <el-button @click="handleDel" :disabled="!multipleSelection.length">删除</el-button>
       </el-col>
       <el-col :offset="10" :span="4" style="text-align: right">
@@ -53,16 +53,16 @@
 import { defineComponent, ref, reactive, toRefs, Ref, provide, getCurrentInstance } from 'vue';
 import { ElMessageBox, ElMessage } from 'element-plus';
 import AddPerson from './components/AddPerson.vue';
-import { getUserList, createUser, updateUser, delUser, ableUser, disableUser } from '@/api/company/users';
+import { getUserList, createUser, updateUser, delUser, updateUserStatus } from '@/api/company/users';
 
 const USERSTATUS: any = {
   0: '启用',
-  1: '禁用'
+  '-1': '禁用',
 };
 interface TableState {
   tableData: Array<object>;
   loading: boolean;
-  multipleSelection: Array<object>;
+  multipleSelection: Array<any>;
   total: number;
   historyData: Array<object>;
   searchProps: {
@@ -77,7 +77,7 @@ interface RefAddDialog {
 }
 
 const RES_CODE: any = {
-  success: 0
+  success: 0,
 };
 
 export default defineComponent({
@@ -94,7 +94,7 @@ export default defineComponent({
       searchProps: {
         keyword: '',
         page: 1,
-        pageSize: 10
+        pageSize: 10,
       },
     });
 
@@ -110,13 +110,17 @@ export default defineComponent({
 
     const openEditDialog = (data: any): void => {
       (refAddDialog.value as RefAddDialog).openDialog('edit', { ...data, status: String(data.status) });
-    }
+    };
 
     // 关闭对话框
     const closeDialog = () => {
       (refAddDialog.value as RefAddDialog).closeDialog();
-    }
+    };
 
+    // 初始化dialog
+    const initAddDialog = () => {
+      (refAddDialog.value as RefAddDialog).initDialog();
+    };
     // 获取列表
     const getList = async () => {
       // tableState.loading = true;
@@ -135,43 +139,27 @@ export default defineComponent({
 
     const selChange = (data: any): void => {
       tableState.multipleSelection = data;
-    }
+    };
 
     // 查询
     const filterAccount = (): void => {
       getList();
-    }
-
-    // 启用
-    const handleAble = async () => {
-      const { code } = await ableUser();
-      if (code === RES_CODE.success) {
-        (instance as any).proxy.$message({
-          type: 'success',
-          message: '启用成功',
-        });
-        getList();
-      } else {
-        (instance as any).proxy.$message({
-          type: 'error',
-          message: '启用失败',
-        });
-      }
     };
 
-    // 禁用
-    const handleDisable = async () => {
-      const { code } = await disableUser();
+    // 更新状态
+    const handleUpdateStatus = async (status: number) => {
+      const ids = tableState.multipleSelection.map((item) => item.id);
+      const { code } = await updateUserStatus({ ids, status });
       if (code === RES_CODE.success) {
         (instance as any).proxy.$message({
           type: 'success',
-          message: '禁用成功',
+          message: '修改成功',
         });
         getList();
       } else {
         (instance as any).proxy.$message({
           type: 'error',
-          message: '禁用失败',
+          message: '修改失败',
         });
       }
     };
@@ -184,8 +172,9 @@ export default defineComponent({
         type: 'warning',
       })
         .then(async () => {
+          const ids = tableState.multipleSelection.map((item) => item.id);
           // 待传参
-          const { code } = await delUser();
+          const { code } = await delUser({ ids });
           if (code === RES_CODE.success) {
             (instance as any).proxy.$message({
               type: 'success',
@@ -218,6 +207,7 @@ export default defineComponent({
           type: 'success',
           message: '新建成功',
         });
+        initAddDialog();
         getList();
       } else {
         (instance as any).proxy.$message({
@@ -225,7 +215,6 @@ export default defineComponent({
           message: '添加失败',
         });
       }
-      closeDialog();
     };
 
     // 编辑
@@ -247,26 +236,23 @@ export default defineComponent({
         });
       }
       closeDialog();
-    }
+    };
 
     provide('handleCreate', handleCreate);
     provide('handleEdit', handleEdit);
 
     return {
       ...toRefs(tableState),
-      handleAble,
+      handleUpdateStatus,
       openAddDialog,
       openEditDialog,
-      handleDisable,
       handleDel,
       selChange,
       filterAccount,
       refAddDialog,
       USERSTATUS,
-    }
-  }
-})
+    };
+  },
+});
 </script>
-<style lang="sass" scoped>
-
-</style>
+<style lang="sass" scoped></style>

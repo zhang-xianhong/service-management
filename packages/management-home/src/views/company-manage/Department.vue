@@ -27,11 +27,7 @@
               <template #default="{ node }">
                 <div class="customNode">
                   <svg-icon v-if="node.level < 3" icon-name="folder" icon-class="tree-node-folder"></svg-icon>
-                  <svg-icon
-                    v-if="node.level === 3"
-                    icon-name="member"
-                    icon-class="tree-node-member"
-                  ></svg-icon>
+                  <svg-icon v-if="node.level === 3" icon-name="member" icon-class="tree-node-member"></svg-icon>
                   <span>{{ node.label }}</span>
                   <!-- <i
                     v-if="node.level === 2"
@@ -61,7 +57,7 @@
             <el-table-column label="状态" prop="status"></el-table-column>
             <el-table-column label="操作" width="300">
               <template #default="scope">
-                <el-button type="primary" size="mini" @click="handleDel(scope.row)">删除</el-button>
+                <el-button type="primary" size="mini" @click="handleDelPerson(scope.row)">删除</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -79,76 +75,77 @@
     <TreeSelector
       :option="allDeptUser"
       :checked="selectedUser"
+      :not-allow="otherRoleUser"
       optionPlaceholder="请输入部门/人员名称"
       optionLabel="选择人员"
+      :role="treeSelectorRole"
       ref="treeSelectorRef"
+      @user-changed="reloadUserList"
     ></TreeSelector>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, toRefs, ref, Ref } from 'vue';
+import { defineComponent, reactive, toRefs, ref, Ref, getCurrentInstance } from 'vue';
 import _ from 'lodash/fp';
+import { getMemberList } from '@/api/project/project';
 import { getTenentDepartment } from '@/api/tenant';
 import TreeSelector from './components/TreeSelector.vue';
+import { ElMessageBox, ElMessage } from 'element-plus';
+import { delUser } from '@/api/company/users';
 
 interface TreeDataSourceType {
   label: string;
   [attr: string]: any;
-};
+}
 
 interface TreeDataType {
   currentKey: string;
   treeDataSource: Array<TreeDataSourceType>;
 }
 
+interface TableDataType {
+  total: number;
+  searchProps: {
+    page: number;
+    pageSize: number;
+  };
+  tableDataSource: any;
+}
+const userStatus = {
+  '-1': '冻结',
+  0: '启用',
+};
+const genderLabel = {
+  0: '男',
+  1: '女',
+};
+const RES_CODE: any = {
+  success: 0,
+};
 export default defineComponent({
-  name: "Department",
+  name: 'Department',
   components: { TreeSelector },
   setup() {
-    const treeData: TreeDataType = reactive({
+    const treeData: any = reactive({
       currentKey: '',
-      treeDataSource: [{
-        id: 1,
-        label: '一级 1',
-        children: [{
-          id: 4,
-          label: '二级 1-1',
-          children: [{
-            id: 9,
-            label: '三级 1-1-1'
-          }, {
-            id: 10,
-            label: '三级 1-1-2'
-          }]
-        }]
-      }, {
-        id: 2,
-        label: '一级 2',
-        children: [{
-          id: 5,
-          label: '二级 2-1'
-        }, {
-          id: 6,
-          label: '二级 2-2'
-        }]
-      }, {
-        id: 3,
-        label: '一级 3',
-        children: [{
-          id: 7,
-          label: '二级 3-1'
-        }]
-      }]
-    })
+      currentNodeData: {},
+      currentNode: {},
+      treeDataSource: [
+        {
+          label: '云智中心',
+          children: [],
+        },
+      ],
+    });
 
-    const tableData = reactive({
+    const tableData: TableDataType = reactive({
       total: 0,
       searchProps: {
         page: 1,
-        pageSize: 10
+        pageSize: 10,
       },
-      tableDataSource: []
+      tableDataSource: [],
     });
 
     const treeSelectorRef: any = ref(null);
@@ -157,8 +154,10 @@ export default defineComponent({
     const userTreeRef: any = ref(null);
     // tree selector数据
     const allDeptUser: Ref<Array<any>> = ref([]);
-    const treeSelectorRole = ref({});
+    const treeSelectorRole: any = ref({});
     const otherRoleUser: Ref<Array<any>> = ref([]);
+    // 获取组件实例
+    const instance = getCurrentInstance();
 
     const initDepartments = async () => {
       const { code, data } = await getTenentDepartment({ deptId: 0, level: 9 });
@@ -206,38 +205,167 @@ export default defineComponent({
 
     // 添加子部门
     const handleAddDept = (): void => {
-      console.log('添加子部门')
+      // 判断当前选中的是不是部门
+      if (!treeData.currentNode.isLeaf) {
+        (instance as any).proxy.$message({
+          type: 'warning',
+          message: '请选中部门！',
+        });
+      } else {
+        (instance as any).proxy.$message({
+          type: 'success',
+          message: '添加成功！',
+        });
+      }
     };
-
+    const handleDel = () => {
+      // 判断当前选中的是不是部门
+      // if (!treeData.currentNode.isLeaf) {
+      //     (instance as any).proxy.$message({
+      //       type: 'warning',
+      //       message: '请选中部门！',
+      //     });
+      //   } else {
+      //     (instance as any).proxy.$message({
+      //       type: 'success',
+      //       message: '添加成功！',
+      //     });
+      //   }
+      // 获取当前选中的节点
+      ElMessageBox.confirm(`是否删除已选项?`, '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+      })
+        .then(async () => {
+          // 待传参
+          const { code } = await delUser(treeData.currentNodeData);
+          if (code === RES_CODE.success) {
+            (instance as any).proxy.$message({
+              type: 'success',
+              message: '删除成功',
+            });
+            initDepartments();
+          } else {
+            (instance as any).proxy.$message({
+              type: 'error',
+              message: '删除失败',
+            });
+          }
+        })
+        .catch(() => {
+          ElMessage({
+            type: 'info',
+            message: '已取消操作',
+          });
+        });
+    };
     // 删除
-    const handleDel = (data: any): void => {
-      console.log('删除', data)
+    const handleDelPerson = (data: any): void => {
+      ElMessageBox.confirm(`是否删除已选项?`, '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+      })
+        .then(async () => {
+          // 待传参
+          const { code } = await delUser(data);
+          if (code === RES_CODE.success) {
+            (instance as any).proxy.$message({
+              type: 'success',
+              message: '删除成功',
+            });
+            initDepartments();
+          } else {
+            (instance as any).proxy.$message({
+              type: 'error',
+              message: '删除失败',
+            });
+          }
+        })
+        .catch(() => {
+          ElMessage({
+            type: 'info',
+            message: '已取消操作',
+          });
+        });
     };
 
     // 添加人员
-    const handleAddPerson = (node: any, data: any): void => {
-      selectedUser.value = _.intersectionBy('id')(allUsers.value)(data.children);
-      otherRoleUser.value = _.differenceBy('id')(allUsers.value)(data.children);
+    const handleAddPerson = (): void => {
+      // 获取当前选中部门的节点id
+      treeSelectorRole.value = treeData.currentNodeData;
       treeSelectorRef.value.show();
     };
 
     // 重命名
     const handleRename = (): void => {
-      console.log('重命名')
+      console.log('重命名');
     };
 
     // 上移
     const handleUpMove = (): void => {
-      console.log('上移一层')
+      console.log('上移一层');
+    };
+    const userList: Ref<any[]> = ref([]);
+
+    function nodeClickHandle(data: any, node: any): void {
+      treeData.currentNodeData = data;
+      treeData.currentNode = node;
+      if (node.level === 1) {
+        tableData.tableDataSource = allUsers.value;
+      }
+      if (node.level === 2) {
+        tableData.tableDataSource = _.intersectionWith((node: any, user: any) => node.id === user.id)(allUsers.value)(
+          node.data.children,
+        );
+      }
+    }
+
+    const initUserList = async () => {
+      const { code, data } = await getMemberList({
+        projectId: '',
+      });
+      if (code === 0) {
+        allUsers.value = data.users.map((user: any) => ({
+          ...user,
+          status: userStatus[user.status as 0 | -1],
+          gender: genderLabel[user.gender as 0 | 1],
+        }));
+        treeData.treeDataSource[0].children = _.flow(
+          _.reject({ isOwnerRole: true }),
+          _.map((role: any) => ({
+            id: role.id,
+            label: role.role.name,
+            children: _.map((member: any) => {
+              const user: any = _.find({ id: member.userId })(data.users);
+              return {
+                label: user.displayName,
+                id: user.id,
+              };
+            })(role.members),
+          })),
+        )(data.roles);
+        userList.value = [];
+      }
+    };
+    initUserList();
+
+    const reloadUserList = async (role: any) => {
+      console.log('role1111', role);
+      await initUserList();
+      userTreeRef.value.setCurrentKey(role.id);
+      const treeUser: any = _.find({ id: role.id })(treeData.treeDataSource[0].children);
+      userList.value = _.intersectionWith((node: any, user: any) => node.id === user.id)(allUsers.value)(
+        treeUser.children,
+      );
     };
 
-    function nodeClickHandle(): void {
-      console.log('获取node节点')
-    };
     return {
       ...toRefs(tableData),
       ...toRefs(treeData),
       handleAddDept,
+      handleDelPerson,
       handleDel,
       handleAddPerson,
       handleRename,
@@ -249,9 +377,11 @@ export default defineComponent({
       userTreeRef,
       treeSelectorRole,
       selectedUser,
-    }
+      otherRoleUser,
+      reloadUserList,
+    };
   },
-})
+});
 </script>
 
 <style lang="scss">

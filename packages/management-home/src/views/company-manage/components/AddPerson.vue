@@ -1,16 +1,10 @@
 <template>
-  <el-dialog
-    :title="title"
-    v-model="dialogVisible"
-    width="600px"
-    @closed="closeDialog"
-    :close-on-click-modal="false"
-  >
+  <el-dialog :title="title" v-model="dialogVisible" width="500px" @closed="closeDialog" :close-on-click-modal="false">
     <div class="add-config-set">
       <el-form :model="formData" ref="diagFormRef" :rules="formRules">
-        <el-form-item label="登记账号" prop="userName" :label-width="labelWidth">
+        <el-form-item label="登记账号" prop="username" :label-width="labelWidth">
           <el-input
-            v-model.trim="formData.userName"
+            v-model.trim="formData.username"
             :disabled="disable"
             placeholder="请输入英文登录账号，创建后不可修改"
           ></el-input>
@@ -30,16 +24,41 @@
         </el-form-item>
         <el-form-item label="账号状态" prop="status" :label-width="labelWidth">
           <el-radio-group v-model="formData.status" :disabled="disable">
-            <el-radio label="1">启用</el-radio>
-            <el-radio label="0">禁用</el-radio>
+            <el-radio label="0">启用</el-radio>
+            <el-radio label="-1">禁用</el-radio>
           </el-radio-group>
+        </el-form-item>
+        <el-form-item label="初始密码" prop="initPasswd" :label-width="labelWidth" v-if="!isEdit">
+          <el-tooltip content="复制密码，保存后可用密码登录" placement="top" effect="light" style="margin-right: 5px">
+            <svg-icon icon-name="wenhao" icon-class="detail-icons__item"></svg-icon>
+          </el-tooltip>
+          <el-input v-model.trim="formData.password" disabled style="width: 280px" show-password></el-input>
+          <el-button type="text" style="margin-left: 20px" @click="handleCopy">复制</el-button>
+        </el-form-item>
+        <el-form-item label="登录密码" prop="password" :label-width="labelWidth" v-else>
+          <el-tooltip
+            content="重置密码后复制密码，保存后可用新密码登录"
+            placement="top"
+            effect="light"
+            style="margin-right: 5px"
+          >
+            <svg-icon icon-name="wenhao" icon-class="detail-icons__item"></svg-icon>
+          </el-tooltip>
+          <el-input
+            v-model.trim="formData.password"
+            :disabled="disable"
+            placeholder="请输入密码"
+            style="width: 280px"
+            show-password
+          ></el-input>
+          <el-button type="text" style="margin-left: 20px" @click="handleReset" :disabled="disable">重置</el-button>
         </el-form-item>
       </el-form>
     </div>
     <template #footer>
       <span class="dialog-footer">
-        <el-button type="primary" @click="submitConfigForm" v-if="!disable">保 存</el-button>
-        <el-button type="primary" @click="() => disable = false" v-else>编辑</el-button>
+        <el-button type="primary" @click="submitConfigForm" v-if="!disable">保存&继续添加</el-button>
+        <el-button type="primary" @click="() => (disable = false)" v-else>编辑</el-button>
         <el-button @click="closeDialog">返回</el-button>
       </span>
     </template>
@@ -48,6 +67,8 @@
 
 <script lang="ts">
 import { defineComponent, reactive, toRefs, Ref, ref, inject } from 'vue';
+import { ElMessage } from 'element-plus';
+// import wenhao from '../../../icons/svg/wenhao.svg';
 
 // 定义数据type
 interface DialogState {
@@ -56,7 +77,31 @@ interface DialogState {
   isEdit: boolean;
   formData: any;
 }
-const labelWidth: string = "100px";
+const labelWidth = '100px';
+const defaultPasswd = '000000000000';
+
+// 手机号校验
+function checkMobile(value: string): boolean {
+  const subValue = value.replace(/[^-|\d]/g, '');
+  return /^(1)\d{10}$/.test(subValue);
+}
+const validatorMobilePass = (rule: any, value: string, callback: Function) => {
+  if (!checkMobile(value)) {
+    callback(new Error(rule.message));
+  }
+};
+
+// 邮箱校验
+function checkMail(szMail: string): boolean {
+  const szReg = /^[A-Za-zd]+([-_.][A-Za-zd]+)*@([A-Za-zd]+[-.])+[A-Za-zd]{2,5}$/;
+  return szReg.test(szMail);
+}
+const validatorMailPass = (rule: any, value: string, callback: Function) => {
+  if (!checkMail(value)) {
+    callback(new Error(rule.message));
+  }
+};
+
 export default defineComponent({
   name: 'AddPerson',
   setup() {
@@ -66,33 +111,83 @@ export default defineComponent({
       disable: false,
       isEdit: false,
       formData: {
-        userName: '',
+        username: '',
         displayName: '',
         phoneNumber: '',
         primaryMail: '',
-        status: '0'
-      }
+        status: '0',
+        password: '',
+      },
     });
     // 校验规则
     const formRules = {
-      userName: [{ required: true, message: '请输入账号', trigger: 'blur' }],
+      username: [{ required: true, message: '请输入账号', trigger: 'blur' }],
       displayName: [{ required: true, message: '请输入名称', trigger: 'blur' }],
-      phoneNumber: [{ required: true, message: '请输入手机号', trigger: 'blur' }],
-      primaryMail: [{ required: true, message: '请输入注册邮箱', trigger: 'blur' }],
-      status: [{ required: true, message: '请选择账户状态', trigger: 'change' }]
+      phoneNumber: [
+        { required: true, message: '请输入手机号', trigger: 'blur' },
+        { validator: validatorMobilePass, message: '请输入正确的手机号码', trigger: 'blur' },
+      ],
+      primaryMail: [
+        { required: true, message: '请输入注册邮箱', trigger: 'blur' },
+        { validator: validatorMailPass, message: '请输入正确的邮箱', trigger: 'blur' },
+      ],
+      status: [{ required: true, message: '请选择账户状态', trigger: 'change' }],
+      passwd: [
+        { required: true, message: '请输入密码', trigger: 'blur' },
+        { min: 8, max: 16, message: '长度在 8 到 16 个字符', trigger: 'blur' },
+      ],
+    };
+
+    // 初始密码生成
+    const generatePasswd = (len: number) => {
+      let length = Number(len);
+      // Limit length
+      if (length < 6) {
+        length = 6;
+      } else if (length > 16) {
+        length = 16;
+      }
+      const passwordArray = ['ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz', '1234567890', '!@#$%^&'];
+      const password = [];
+      let n = 0;
+      for (let i = 0; i < length; i++) {
+        // If password length less than 9, all value random
+        if (password.length < length - 4) {
+          // Get random passwordArray index
+          const arrayRandom = Math.floor(Math.random() * 4);
+          // Get password array value
+          const passwordItem = passwordArray[arrayRandom];
+          // Get password array value random index
+          // Get random real value
+          const item = passwordItem[Math.floor(Math.random() * passwordItem.length)];
+          password.push(item);
+        } else {
+          // If password large then 9, lastest 4 password will push in according to the random password index
+          // Get the array values sequentially
+          const newItem = passwordArray[n];
+          const lastItem = newItem[Math.floor(Math.random() * newItem.length)];
+          // Get array splice index
+          const spliceIndex = Math.floor(Math.random() * password.length);
+          password.splice(spliceIndex, 0, lastItem);
+          n = n + 1;
+        }
+      }
+      return password.join('');
     };
 
     // 打开对话框
     const openDialog = (type: string, data: any): void => {
-      if (type === "edit") {
+      if (type === 'edit') {
         dialogContent.isEdit = true;
         dialogContent.disable = true;
         dialogContent.formData = data;
+        dialogContent.formData.passwd = defaultPasswd;
       } else {
         dialogContent.isEdit = false;
+        dialogContent.formData.passwd = generatePasswd(12);
       }
       dialogVisible.value = true;
-    }
+    };
 
     // 初始化对话框数据
     function initDialog(): void {
@@ -100,18 +195,18 @@ export default defineComponent({
       dialogContent.disable = false;
       dialogContent.isEdit = false;
       dialogContent.formData = {
-        userName: '',
+        username: '',
         displayName: '',
         phoneNumber: '',
         primaryMail: '',
-        status: '0'
-      }
+        status: '-1',
+      };
     }
     // 关闭对话框
     const closeDialog = () => {
       initDialog();
       dialogVisible.value = false;
-    }
+    };
 
     // 表单引用
     const diagFormRef: any = ref({});
@@ -128,23 +223,56 @@ export default defineComponent({
           if (!dialogContent.isEdit) {
             handleCreate(dialogContent.formData);
           } else {
+            if (dialogContent.formData.passwd === defaultPasswd) {
+              delete dialogContent.formData.passwd;
+            }
             handleEdit(dialogContent.formData);
           }
         }
       });
     }
+
+    // 复制功能
+    function copyFun(content: string) {
+      const input = document.createElement('input');
+      input.setAttribute('readonly', 'readonly');
+      document.body.appendChild(input);
+      input.setAttribute('value', content);
+      input.select();
+      if (document.execCommand('copy')) {
+        document.execCommand('copy');
+        ElMessage({
+          type: 'success',
+          message: '复制成功!',
+        });
+      }
+      document.body.removeChild(input);
+    }
+
+    // 复制密码
+    const handleCopy = () => {
+      copyFun(dialogContent.formData.passwd);
+    };
+
+    // 重置密码门
+    const handleReset = () => {
+      dialogContent.formData.passwd = '';
+    };
     return {
       ...toRefs(dialogContent),
       closeDialog,
       openDialog,
       submitConfigForm,
       dialogVisible,
+      initDialog,
       formRules,
       diagFormRef,
-      labelWidth
-    }
-  }
-})
+      labelWidth,
+      handleCopy,
+      handleReset,
+    };
+  },
+});
 </script>
 <style lang="scss" scoped>
 .dialog-footer {

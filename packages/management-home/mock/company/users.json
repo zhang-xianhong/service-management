@@ -5,7 +5,7 @@
     "rows": [
       {
         "id": "1",
-        "userName": "andu",
+        "username": "andu",
         "displayName": "张三",
         "phoneNumber": "188092261777",
         "primaryMail": "www@qq.com",
@@ -14,7 +14,7 @@
       },
       {
         "id": "2",
-        "userName": "andy",
+        "username": "andy",
         "displayName": "李四",
         "phoneNumber": "188092261777",
         "primaryMail": "www@qq.com",
