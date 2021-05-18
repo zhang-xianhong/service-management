@@ -15,7 +15,7 @@
         "deployId": null,
         "moduleDependencyId": null,
         "deposit": null,
-        "status": 10,
+        "status": 11,
         "description": "用户信息",
         "detail": "hello ",
         "isAllByExtend": null,

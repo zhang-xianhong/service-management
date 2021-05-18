@@ -4,9 +4,9 @@
       <el-button style="width: 120px" type="primary" @click="addTop">新增顶级分类</el-button>
       <el-button
         style="width: 120px"
-        :type="currentNode.id !== -1 ? 'primary' : ''"
+        :type="currentNode.id === -1 || !treeFirstIdArray.includes(currentNode.id) ? 'info' : 'primary'"
         @click="addChild"
-        :disabled="currentNode.id === -1"
+        :disabled="currentNode.id === -1 || !treeFirstIdArray.includes(currentNode.id)"
         >新增子级分类</el-button
       >
       <el-button type="primary" v-if="!allExpanded" @click="expandAll">展开所有</el-button>
@@ -70,6 +70,7 @@ export default defineComponent({
   setup() {
     const tree: any = ref(null);
     const treeData: Ref<TreeData> = ref([]);
+    const treeFirstIdArray = ref([] as any);
     const allExpanded = ref(false);
     // 获取组件实例
     const instance = getCurrentInstance();
@@ -84,6 +85,7 @@ export default defineComponent({
     const loadTreeData = async () => {
       const { data } = await confApi.getClassificationList();
       treeData.value = data;
+      treeFirstIdArray.value = data.map((x: any) => x.id);
       currentNode.value.id = NULL_KEY;
       currentNode.value.name = '';
     };
@@ -164,6 +166,8 @@ export default defineComponent({
     // 点击节点显示表单
     const handleNodeClick = async (data: any) => {
       currentNode.value = data;
+      console.log(data, 'this is second data');
+      console.log(treeFirstIdArray.value, treeFirstIdArray.value.includes(currentNode.value.id));
     };
     // 编辑表单
     const rules = {
@@ -235,6 +239,7 @@ export default defineComponent({
       remove,
       addChild,
       addTop,
+      treeFirstIdArray,
     };
   },
 });

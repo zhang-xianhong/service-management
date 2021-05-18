@@ -461,7 +461,6 @@ export default {
     };
 
     const maskText = computed(() => {
-      console.log(serverInfo.value, 'this isttees');
       switch (serverInfo.value.status) {
         case 10:
           return '应用变更中, 请稍后...';
