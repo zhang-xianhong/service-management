@@ -4,7 +4,7 @@
       <div class="project-list_left">
         <el-button
           icon="el-icon-plus"
-          :type="userInfo.admin ? 'primary' : ''"
+          :type="userInfo.admin ? 'primary' : 'info'"
           @click="addDialogVisible = true"
           style="width: 90px"
           :disabled="!userInfo.admin"

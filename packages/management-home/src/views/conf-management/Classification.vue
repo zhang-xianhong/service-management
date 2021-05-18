@@ -4,7 +4,7 @@
       <el-button style="width: 120px" type="primary" @click="addTop" v-if="getShowBool('add')">新增顶级分类</el-button>
       <el-button
         style="width: 120px"
-        :type="currentNode.id !== -1 ? 'primary' : ''"
+        :type="currentNode.id !== -1 ? 'primary' : 'info'"
         @click="addChild"
         :disabled="currentNode.id === -1"
         v-if="getShowBool('update')"

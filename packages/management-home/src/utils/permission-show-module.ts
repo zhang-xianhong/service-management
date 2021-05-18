@@ -14,7 +14,6 @@ export const showModule = (perName?: string): boolean => {
 
 export const getShowBool = (id: string | number) => {
   const currentId = localStorage.getItem('currentPathId');
-  console.log(currentId, 'this is current path id');
   if (currentId) {
     return userMenus.value[currentId].includes(id);
   }
