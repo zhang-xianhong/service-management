@@ -1,5 +1,6 @@
 import { ref } from 'vue';
 import { getLogRuntime } from '@/api/servers';
+import _ from 'lodash';
 
 export const logDialogVisible = ref(false);
 export const logData = ref([] as any);
@@ -10,9 +11,8 @@ export const getLogs = (name = 'sa-ci-cd', keyword?: any) => {
   getLogRuntime(name, realtime.value, keyword).then((res) => {
     realtime.value = res.data.realtimeTs;
     const dataArr = res.data.businessLogSet.content;
-    const narr = [...logData.value, ...dataArr];
-    // narr.reverse();
-    // logData.value = narr.splice(0, 50).reverse();
+    let narr = _.differenceBy(dataArr, logData.value, 'logId');
+    narr = [...logData.value, ...narr];
     logData.value = narr.slice(-500);
     const ele = document.getElementById('log_content') as any;
     setTimeout(() => {
