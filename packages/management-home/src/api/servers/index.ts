@@ -36,10 +36,10 @@ export const updateServiceApis: (payload: object, id: string) => Promise<Success
 
 export const getLogRuntime: (
   name: string,
-  realtimeTS?: string | number,
+  realtimeTs?: string | number,
   keyword?: any,
-) => Promise<SuccessResponse<any>> = (name: string, realtimeTS?: string | number, keyword?: any) =>
-  request.get(getUrl(URL.service.GET_LOG_RUNTIME), { params: { name, realtimeTS, keyword } });
+) => Promise<SuccessResponse<any>> = (name: string, realtimeTs?: string | number, keyword?: any) =>
+  request.get(getUrl(URL.service.GET_LOG_RUNTIME), { params: { name, realtimeTs, keyword } });
 
 export const getChanges: (id: any) => Promise<SuccessResponse<any>> = (id: string) =>
   request.get(getUrl(URL.service.GET_CHANGES, id));
