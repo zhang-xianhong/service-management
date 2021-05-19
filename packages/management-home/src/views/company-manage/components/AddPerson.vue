@@ -216,6 +216,7 @@ export default defineComponent({
         phoneNumber: '',
         primaryMail: '',
         status: '-1',
+        password: generatePasswd(12)
       };
     }
     // 关闭对话框
