@@ -21,13 +21,16 @@
               :expand-on-click-node="false"
               :highlight-current="true"
               node-key="id"
-              :current-node-key="currentKey"
               @node-click="nodeClickHandle"
             >
               <template #default="{ node }">
                 <div class="customNode">
                   <svg-icon v-if="node.level < 3" icon-name="folder" icon-class="tree-node-folder"></svg-icon>
-                  <svg-icon v-if="node.level === 3" icon-name="member" icon-class="tree-node-member"></svg-icon>
+                  <svg-icon
+                    v-if="node.level === 3"
+                    icon-name="member"
+                    icon-class="tree-node-member"
+                  ></svg-icon>
                   <span>{{ node.label }}</span>
                   <!-- <i
                     v-if="node.level === 2"
@@ -82,6 +85,27 @@
       ref="treeSelectorRef"
       @user-changed="reloadUserList"
     ></TreeSelector>
+    <el-dialog
+      title="添加子部门"
+      v-model="dialogVisible"
+      width="500px"
+      @closed="closeDialog"
+      :close-on-click-modal="false"
+    >
+      <div>
+        <el-form :model="formData" ref="deptDiagFormRef" :rules="formRules">
+          <el-form-item label="部门名称" prop="deptName" label-width="100px">
+            <el-input v-model.trim="formData.deptName" placeholder="请输入部门中文名称"></el-input>
+          </el-form-item>
+        </el-form>
+      </div>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button type="primary" @click="submitConfigForm">保存</el-button>
+          <el-button @click="closeDialog">返回</el-button>
+        </span>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
@@ -89,7 +113,7 @@
 import { defineComponent, reactive, toRefs, ref, Ref, getCurrentInstance } from 'vue';
 import _ from 'lodash/fp';
 import { getMemberList } from '@/api/project/project';
-import { getTenentDepartment } from '@/api/tenant';
+import { getTenentDepartment, createDept } from '@/api/company/dept';
 import TreeSelector from './components/TreeSelector.vue';
 import { ElMessageBox, ElMessage } from 'element-plus';
 import { delUser } from '@/api/company/users';
@@ -100,8 +124,8 @@ interface TreeDataSourceType {
 }
 
 interface TreeDataType {
-  currentKey: string;
   treeDataSource: Array<TreeDataSourceType>;
+  [attr: string]: any;
 }
 
 interface TableDataType {
@@ -123,12 +147,23 @@ const genderLabel = {
 const RES_CODE: any = {
   success: 0,
 };
+
+// 中文校验
+function checkZNName(name: string): boolean {
+  const szReg = /[\u4e00-\u9fa5]{2,}/;
+  return szReg.test(name);
+}
+const validatorZNNamePass = (rule: any, value: string, callback: Function) => {
+  if (!checkZNName(value)) {
+    callback(new Error('请输入长度至少2个字的中文格式名称'));
+  }
+  callback();
+};
 export default defineComponent({
   name: 'Department',
   components: { TreeSelector },
   setup() {
-    const treeData: any = reactive({
-      currentKey: '',
+    const treeData: TreeDataType = reactive({
       currentNodeData: {},
       currentNode: {},
       treeDataSource: [
@@ -158,6 +193,19 @@ export default defineComponent({
     const otherRoleUser: Ref<Array<any>> = ref([]);
     // 获取组件实例
     const instance = getCurrentInstance();
+    const dialogVisible: Ref<boolean> = ref(false);
+
+    const formData = reactive({
+      deptName: ''
+    });
+
+    // 校验规则
+    const formRules = {
+      deptName: [
+        { required: true, message: '请输入部门中文名称', trigger: 'blur' },
+        { validator: validatorZNNamePass, trigger: 'blur' },
+      ]
+    };
 
     const initDepartments = async () => {
       const { code, data } = await getTenentDepartment({ deptId: 0, level: 9 });
@@ -212,10 +260,11 @@ export default defineComponent({
           message: '请选中部门！',
         });
       } else {
-        (instance as any).proxy.$message({
-          type: 'success',
-          message: '添加成功！',
-        });
+        dialogVisible.value = true;
+        // (instance as any).proxy.$message({
+        //   type: 'success',
+        //   message: '添加成功！',
+        // });
       }
     };
     const handleDel = () => {
@@ -260,6 +309,7 @@ export default defineComponent({
           });
         });
     };
+
     // 删除
     const handleDelPerson = (data: any): void => {
       ElMessageBox.confirm(`是否删除已选项?`, '提示', {
@@ -352,7 +402,6 @@ export default defineComponent({
     initUserList();
 
     const reloadUserList = async (role: any) => {
-      console.log('role1111', role);
       await initUserList();
       userTreeRef.value.setCurrentKey(role.id);
       const treeUser: any = _.find({ id: role.id })(treeData.treeDataSource[0].children);
@@ -360,6 +409,24 @@ export default defineComponent({
         treeUser.children,
       );
     };
+    // 关闭dialog
+    const closeDialog = () => {
+      dialogVisible.value = false;
+    }
+    const deptDiagFormRef: any = ref(null);
+    // 保存
+    const submitConfigForm = () => {
+      deptDiagFormRef.value.validate((valid: boolean) => {
+        if (valid) {
+          createDept();
+          console.log('校验通过');
+          (instance as any).proxy.$message({
+            type: 'success',
+            message: '添加成功！',
+          });
+        }
+      });
+    }
 
     return {
       ...toRefs(tableData),
@@ -379,6 +446,12 @@ export default defineComponent({
       selectedUser,
       otherRoleUser,
       reloadUserList,
+      closeDialog,
+      dialogVisible,
+      formData,
+      formRules,
+      submitConfigForm,
+      deptDiagFormRef
     };
   },
 });

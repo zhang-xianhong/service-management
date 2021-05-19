@@ -14,22 +14,20 @@
           @input="filterAccount"
           v-model="searchProps.keyword"
         ></el-input>
-        <!-- <span class="el-icon-setting"></span> -->
       </el-col>
     </el-row>
     <el-row style="background: #fff">
       <el-table :data="tableData" style="width: 100%" @selection-change="selChange">
         <el-table-column type="selection" width="45" />
         <el-table-column type="index" label="序号" width="50" />
-        <el-table-column label="登录账号" prop="username"></el-table-column>
+        <el-table-column label="登录账号" prop="userName"></el-table-column>
         <el-table-column label="姓名" prop="displayName"></el-table-column>
         <el-table-column label="手机" prop="phoneNumber"></el-table-column>
         <el-table-column label="邮箱" prop="primaryMail"></el-table-column>
         <el-table-column label="账户状态" prop="status">
           <template #default="scope">{{ USERSTATUS[scope.row.status] }}</template>
         </el-table-column>
-        <!-- <el-table-column label="激活状态" prop="defaultValue"></el-table-column> -->
-        <el-table-column label="部门" prop="dept"></el-table-column>
+        <el-table-column label="部门" prop="deptName"></el-table-column>
         <el-table-column label="操作" width="300">
           <template #default="scope">
             <el-button type="primary" size="mini" @click="openEditDialog(scope.row)">编辑</el-button>
@@ -53,6 +51,7 @@
 import { defineComponent, ref, reactive, toRefs, Ref, provide, getCurrentInstance } from 'vue';
 import { ElMessageBox, ElMessage } from 'element-plus';
 import AddPerson from './components/AddPerson.vue';
+import { debounce } from 'lodash';
 import { getUserList, createUser, updateUser, delUser, updateUserStatus } from '@/api/company/users';
 
 const USERSTATUS: any = {
@@ -142,9 +141,7 @@ export default defineComponent({
     };
 
     // 查询
-    const filterAccount = (): void => {
-      getList();
-    };
+    const filterAccount = debounce(getList, 1000);
 
     // 更新状态
     const handleUpdateStatus = async (status: number) => {

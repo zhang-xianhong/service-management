@@ -1,6 +1,12 @@
 <template>
-  <el-dialog :title="title" v-model="dialogVisible" width="500px" @closed="closeDialog" :close-on-click-modal="false">
-    <div class="add-config-set">
+  <el-dialog
+    :title="title"
+    v-model="dialogVisible"
+    width="500px"
+    @closed="closeDialog"
+    :close-on-click-modal="false"
+  >
+    <div>
       <el-form :model="formData" ref="diagFormRef" :rules="formRules">
         <el-form-item label="登记账号" prop="username" :label-width="labelWidth">
           <el-input
@@ -29,7 +35,12 @@
           </el-radio-group>
         </el-form-item>
         <el-form-item label="初始密码" :label-width="labelWidth" v-if="!isEdit">
-          <el-tooltip content="复制密码，保存后可用密码登录" placement="top" effect="light" style="margin-right: 5px">
+          <el-tooltip
+            content="复制密码，保存后可用密码登录"
+            placement="top"
+            effect="light"
+            style="margin-right: 5px"
+          >
             <svg-icon icon-name="wenhao" icon-class="detail-icons__item"></svg-icon>
           </el-tooltip>
           <el-input v-model.trim="formData.password" disabled style="width: 280px" show-password></el-input>
@@ -51,7 +62,12 @@
             style="width: 280px"
             show-password
           ></el-input>
-          <el-button type="text" style="margin-left: 20px" @click="handleReset" :disabled="disable">重置</el-button>
+          <el-button
+            type="text"
+            style="margin-left: 20px"
+            @click="handleReset"
+            :disabled="disable"
+          >重置</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -72,7 +88,6 @@
 <script lang="ts">
 import { defineComponent, reactive, toRefs, Ref, ref, inject } from 'vue';
 import { ElMessage } from 'element-plus';
-// import wenhao from '../../../icons/svg/wenhao.svg';
 
 // 定义数据type
 interface DialogState {
@@ -91,7 +106,7 @@ function checkMobile(value: string): boolean {
 }
 const validatorMobilePass = (rule: any, value: string, callback: Function) => {
   if (!checkMobile(value)) {
-    callback(new Error(rule.message));
+    callback(new Error('请输入正确的手机号码'));
   }
   callback();
 };
@@ -103,7 +118,7 @@ function checkMail(szMail: string): boolean {
 }
 const validatorMailPass = (rule: any, value: string, callback: Function) => {
   if (!checkMail(value)) {
-    callback(new Error(rule.message));
+    callback(new Error('请输入正确的邮箱格式'));
   }
   callback();
 };
@@ -115,7 +130,7 @@ function checkPasswd(passwd: string): boolean {
 }
 const validatorPasswdPass = (rule: any, value: string, callback: Function) => {
   if (!checkPasswd(value)) {
-    callback(new Error(rule.message));
+    callback(new Error('长度在 8 到 16 个字符,至少1个大写字母，1个小写字母，1个数字和1个特殊字符($@$!%*?&)'));
   }
   callback();
 };
@@ -127,7 +142,7 @@ function checkZNName(name: string): boolean {
 }
 const validatorZNNamePass = (rule: any, value: string, callback: Function) => {
   if (!checkZNName(value)) {
-    callback(new Error(rule.message));
+    callback(new Error('请输入长度至少2个字的中文格式名称'));
   }
   callback();
 };
@@ -139,7 +154,7 @@ function checkEnName(name: string): boolean {
 }
 const validatorEnPass = (rule: any, value: string, callback: Function) => {
   if (!checkEnName(value)) {
-    callback(new Error(rule.message));
+    callback(new Error('请输入长度至少2个英文字母的账户名称'));
   }
   callback();
 };
@@ -165,28 +180,24 @@ export default defineComponent({
     const formRules = {
       username: [
         { required: true, message: '请输入账号', trigger: 'blur' },
-        { validator: validatorEnPass, message: '请输入长度至少2个英文字母的账户名称', trigger: 'blur' },
+        { validator: validatorEnPass, trigger: 'blur' },
       ],
       displayName: [
         { required: true, message: '请输入中文名称', trigger: 'blur' },
-        { validator: validatorZNNamePass, message: '请输入长度至少2个字的中文格式名称', trigger: 'blur' },
+        { validator: validatorZNNamePass, trigger: 'blur' },
       ],
       phoneNumber: [
         { required: true, message: '请输入手机号', trigger: 'blur' },
-        { validator: validatorMobilePass, message: '请输入正确的手机号码', trigger: 'blur' },
+        { validator: validatorMobilePass, trigger: 'blur' },
       ],
       primaryMail: [
         { required: true, message: '请输入注册邮箱', trigger: 'blur' },
-        { validator: validatorMailPass, message: '请输入正确的邮箱', trigger: 'blur' },
+        { validator: validatorMailPass, trigger: 'blur' },
       ],
       status: [{ required: true, message: '请选择账户状态', trigger: 'change' }],
       password: [
         { required: true, message: '请输入密码', trigger: 'blur' },
-        {
-          validator: validatorPasswdPass,
-          message: '长度在 8 到 16 个字符,至少1个大写字母，1个小写字母，1个数字和1个特殊字符($@$!%*?&)',
-          trigger: 'blur',
-        },
+        { validator: validatorPasswdPass, trigger: 'blur' },
       ],
     };
 
@@ -234,6 +245,7 @@ export default defineComponent({
         dialogContent.disable = true;
         dialogContent.formData = data;
         dialogContent.formData.password = defaultPasswd;
+        dialogContent.formData.username = data.userName;
       } else {
         dialogContent.isEdit = false;
         dialogContent.formData.password = generatePasswd(12);
