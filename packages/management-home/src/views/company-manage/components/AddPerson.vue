@@ -1,13 +1,7 @@
 <template>
-  <el-dialog
-    :title="title"
-    v-model="dialogVisible"
-    width="500px"
-    @closed="closeDialog"
-    :close-on-click-modal="false"
-  >
+  <el-dialog :title="title" v-model="dialogVisible" width="500px" @closed="closeDialog" :close-on-click-modal="false">
     <div class="add-config-set">
-      <el-form :model="formData" ref="diagFormRef">
+      <el-form :model="formData" ref="diagFormRef" :rules="formRules">
         <el-form-item label="登记账号" prop="username" :label-width="labelWidth">
           <el-input
             v-model.trim="formData.username"
@@ -35,12 +29,7 @@
           </el-radio-group>
         </el-form-item>
         <el-form-item label="初始密码" :label-width="labelWidth" v-if="!isEdit">
-          <el-tooltip
-            content="复制密码，保存后可用密码登录"
-            placement="top"
-            effect="light"
-            style="margin-right: 5px"
-          >
+          <el-tooltip content="复制密码，保存后可用密码登录" placement="top" effect="light" style="margin-right: 5px">
             <svg-icon icon-name="wenhao" icon-class="detail-icons__item"></svg-icon>
           </el-tooltip>
           <el-input v-model.trim="formData.password" disabled style="width: 280px" show-password></el-input>
@@ -62,19 +51,18 @@
             style="width: 280px"
             show-password
           ></el-input>
-          <el-button
-            type="text"
-            style="margin-left: 20px"
-            @click="handleReset"
-            :disabled="disable"
-          >重置</el-button>
+          <el-button type="text" style="margin-left: 20px" @click="handleReset" :disabled="disable">重置</el-button>
         </el-form-item>
       </el-form>
     </div>
     <template #footer>
-      <span class="dialog-footer">
-        <el-button type="primary" @click="submitConfigForm" v-if="!disable">保存&继续添加</el-button>
-        <el-button type="primary" @click="() => (disable = false)" v-else>编辑</el-button>
+      <span class="dialog-footer" v-if="!isEdit">
+        <el-button type="primary" @click="submitConfigForm">保存&继续添加</el-button>
+        <el-button @click="closeDialog">返回</el-button>
+      </span>
+      <span class="dialog-footer" v-else>
+        <el-button type="primary" @click="() => (disable = false)" v-if="disable">编辑</el-button>
+        <el-button type="primary" @click="submitConfigForm" v-else>保存</el-button>
         <el-button @click="closeDialog">返回</el-button>
       </span>
     </template>
@@ -94,7 +82,7 @@ interface DialogState {
   formData: any;
 }
 const labelWidth = '100px';
-const defaultPasswd = '000000000000';
+const defaultPasswd = 'Tt@00000';
 
 // 手机号校验
 function checkMobile(value: string): boolean {
@@ -105,17 +93,55 @@ const validatorMobilePass = (rule: any, value: string, callback: Function) => {
   if (!checkMobile(value)) {
     callback(new Error(rule.message));
   }
+  callback();
 };
 
 // 邮箱校验
 function checkMail(szMail: string): boolean {
-  const szReg = /^[A-Za-zd]+([-_.][A-Za-zd]+)*@([A-Za-zd]+[-.])+[A-Za-zd]{2,5}$/;
+  const szReg = /^\w+((.\w+)|(-\w+))@[A-Za-z0-9]+((.|-)[A-Za-z0-9]+).[A-Za-z0-9]+$/;
   return szReg.test(szMail);
 }
 const validatorMailPass = (rule: any, value: string, callback: Function) => {
   if (!checkMail(value)) {
     callback(new Error(rule.message));
   }
+  callback();
+};
+
+// 密码校验
+function checkPasswd(passwd: string): boolean {
+  const szReg = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@!^#%&])[A-Za-z\d$@$!%*?&]{8,16}/;
+  return szReg.test(passwd);
+}
+const validatorPasswdPass = (rule: any, value: string, callback: Function) => {
+  if (!checkPasswd(value)) {
+    callback(new Error(rule.message));
+  }
+  callback();
+};
+
+// 中文校验
+function checkZNName(name: string): boolean {
+  const szReg = /[\u4e00-\u9fa5]{2,}/;
+  return szReg.test(name);
+}
+const validatorZNNamePass = (rule: any, value: string, callback: Function) => {
+  if (!checkZNName(value)) {
+    callback(new Error(rule.message));
+  }
+  callback();
+};
+
+// 英文名称校验
+function checkEnName(name: string): boolean {
+  const szReg = /[A-Za-z\d]{2,}/;
+  return szReg.test(name);
+}
+const validatorEnPass = (rule: any, value: string, callback: Function) => {
+  if (!checkEnName(value)) {
+    callback(new Error(rule.message));
+  }
+  callback();
 };
 
 export default defineComponent({
@@ -137,8 +163,14 @@ export default defineComponent({
     });
     // 校验规则
     const formRules = {
-      username: [{ required: true, message: '请输入账号', trigger: 'blur' }],
-      displayName: [{ required: true, message: '请输入名称', trigger: 'blur' }],
+      username: [
+        { required: true, message: '请输入账号', trigger: 'blur' },
+        { validator: validatorEnPass, message: '请输入长度至少2个英文字母的账户名称', trigger: 'blur' },
+      ],
+      displayName: [
+        { required: true, message: '请输入中文名称', trigger: 'blur' },
+        { validator: validatorZNNamePass, message: '请输入长度至少2个字的中文格式名称', trigger: 'blur' },
+      ],
       phoneNumber: [
         { required: true, message: '请输入手机号', trigger: 'blur' },
         { validator: validatorMobilePass, message: '请输入正确的手机号码', trigger: 'blur' },
@@ -148,9 +180,13 @@ export default defineComponent({
         { validator: validatorMailPass, message: '请输入正确的邮箱', trigger: 'blur' },
       ],
       status: [{ required: true, message: '请选择账户状态', trigger: 'change' }],
-      passwd: [
+      password: [
         { required: true, message: '请输入密码', trigger: 'blur' },
-        { min: 8, max: 16, message: '长度在 8 到 16 个字符', trigger: 'blur' },
+        {
+          validator: validatorPasswdPass,
+          message: '长度在 8 到 16 个字符,至少1个大写字母，1个小写字母，1个数字和1个特殊字符($@$!%*?&)',
+          trigger: 'blur',
+        },
       ],
     };
 
@@ -216,7 +252,7 @@ export default defineComponent({
         phoneNumber: '',
         primaryMail: '',
         status: '-1',
-        password: generatePasswd(12)
+        password: generatePasswd(12),
       };
     }
     // 关闭对话框
@@ -226,7 +262,7 @@ export default defineComponent({
     };
 
     // 表单引用
-    const diagFormRef: any = ref({});
+    const diagFormRef: any = ref(null);
     // 新建
     const handleCreate: any = inject('handleCreate');
     // 编辑
@@ -234,14 +270,14 @@ export default defineComponent({
 
     // 保存
     async function submitConfigForm() {
-      diagFormRef.value.validate(async (valid: boolean) => {
+      diagFormRef.value.validate((valid: boolean) => {
         if (valid) {
           // 添加
           if (!dialogContent.isEdit) {
             handleCreate(dialogContent.formData);
           } else {
-            if (dialogContent.formData.passwd === defaultPasswd) {
-              delete dialogContent.formData.passwd;
+            if (dialogContent.formData.password === defaultPasswd) {
+              delete dialogContent.formData.password;
             }
             handleEdit(dialogContent.formData);
           }
@@ -268,12 +304,12 @@ export default defineComponent({
 
     // 复制密码
     const handleCopy = () => {
-      copyFun(dialogContent.formData.passwd);
+      copyFun(dialogContent.formData.password);
     };
 
     // 重置密码门
     const handleReset = () => {
-      dialogContent.formData.passwd = '';
+      dialogContent.formData.password = '';
     };
     return {
       ...toRefs(dialogContent),

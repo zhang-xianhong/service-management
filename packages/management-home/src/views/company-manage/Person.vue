@@ -21,7 +21,7 @@
       <el-table :data="tableData" style="width: 100%" @selection-change="selChange">
         <el-table-column type="selection" width="45" />
         <el-table-column type="index" label="序号" width="50" />
-        <el-table-column label="登录账号" prop="userName"></el-table-column>
+        <el-table-column label="登录账号" prop="username"></el-table-column>
         <el-table-column label="姓名" prop="displayName"></el-table-column>
         <el-table-column label="手机" prop="phoneNumber"></el-table-column>
         <el-table-column label="邮箱" prop="primaryMail"></el-table-column>
