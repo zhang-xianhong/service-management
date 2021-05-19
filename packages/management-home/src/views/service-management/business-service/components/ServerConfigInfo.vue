@@ -5,19 +5,19 @@
       <el-table-column label="键" prop="name" width="500">
         <template #default="scope">
           <a v-if="!scope.row.isEdit" @click="openDetailDialog(scope.row)">{{ scope.row.name }}</a>
-          <el-input v-else v-model="scope.row.name" placeholder="请输入键"></el-input>
+          <el-input v-else v-model.trim="scope.row.name" placeholder="请输入键"></el-input>
         </template>
       </el-table-column>
       <el-table-column label="值" prop="value">
         <template #default="scope">
           <span v-if="!scope.row.isEdit">{{ scope.row.value }}</span>
-          <el-input v-else v-model="scope.row.value" placeholder="请输入值"></el-input>
+          <el-input v-else v-model.trim="scope.row.value" placeholder="请输入值"></el-input>
         </template>
       </el-table-column>
       <el-table-column label="默认值" prop="defaultValue">
         <template #default="scope">
           <span v-if="!scope.row.isEdit">{{ scope.row.defaultValue }}</span>
-          <el-input v-else v-model="scope.row.defaultValue" placeholder="请输入默认值"></el-input>
+          <el-input v-else v-model.trim="scope.row.defaultValue" placeholder="请输入默认值"></el-input>
         </template>
       </el-table-column>
       <el-table-column label="类型" prop="type">
@@ -32,7 +32,7 @@
       <el-table-column label="版本" prop="version">
         <template #default="scope">
           <span v-if="!scope.row.isEdit">{{ scope.row.version }}</span>
-          <el-input v-else v-model="scope.row.version" placeholder="请输入版本号"></el-input>
+          <el-input v-else v-model.trim="scope.row.version" placeholder="请输入版本号"></el-input>
         </template>
       </el-table-column>
       <el-table-column label="操作" width="160">
@@ -59,11 +59,11 @@
     <el-form :mode="detailInfo" label-width="120px" label-position="left">
       <el-form-item label="键" prop="name">{{ detailInfo.name }}</el-form-item>
       <el-form-item label="值" prop="value">
-        <el-input v-if="isEditable" v-model="detailInfo.value" placeholder="请输入值"></el-input>
+        <el-input v-if="isEditable" v-model.trim="detailInfo.value" placeholder="请输入值"></el-input>
         <template v-else>{{ detailInfo.value }}</template>
       </el-form-item>
       <el-form-item label="默认值" prop="defaultValue">
-        <el-input v-if="isEditable" v-model="detailInfo.defaultValue" placeholder="请输入默认值"></el-input>
+        <el-input v-if="isEditable" v-model.trim="detailInfo.defaultValue" placeholder="请输入默认值"></el-input>
         <template v-else>{{ detailInfo.defaultValue }}</template>
       </el-form-item>
       <el-form-item label="类型" prop="type">

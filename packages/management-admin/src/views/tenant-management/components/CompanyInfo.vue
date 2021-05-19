@@ -190,7 +190,11 @@ export default {
       name: [
         { required: true, message: '请输入企业名称', trigger: 'blur' },
         { min: 2, max: 40, message: '企业名称长度在2到40个字符之间', trigger: 'blur' },
-        { pattern: /^[\u4e00-\u9fa5|a-zA-Z|()]+$/g, message: '该企业名称包含非法字符，请重新输入', trigger: 'blur' },
+        {
+          pattern: /^[\u4e00-\u9fa5|a-zA-Z|()]+$/g,
+          message: '包含非法字符，只能输入中文、大小写字母及()',
+          trigger: 'blur',
+        },
       ],
       nameShort: [
         { min: 2, max: 40, message: '企业别称长度在2到40个字符之间', trigger: 'blur' },

@@ -133,7 +133,7 @@ export default {
     const rules = {
       name: [
         { required: true, message: '请输入联系人中文姓名', trigger: 'blur' },
-        { min: 2, max: 20, message: '联系人姓名长度在2到40个字符之间', trigger: 'blur' },
+        { min: 3, max: 20, message: '联系人姓名长度在3到20个字符之间', trigger: 'blur' },
         { pattern: /^[\u4e00-\u9fa5]+$/g, message: '联系人姓名仅支持中文', trigger: 'blur' },
       ],
       phone: [

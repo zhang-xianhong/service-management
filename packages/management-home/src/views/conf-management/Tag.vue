@@ -3,7 +3,7 @@
     <el-row>
       <el-col :span="6" style="text-align: left">
         <el-button type="primary" @click="add" style="width: 90px">新增</el-button>
-        <el-button @click="groupRemove()">删除</el-button>
+        <el-button @click="groupRemove()" :disabled="disabled">删除</el-button>
       </el-col>
       <el-col :offset="8" :span="10" style="text-align: right">
         <el-input
@@ -37,6 +37,7 @@
         </el-table-column>
       </el-table>
       <packaged-pagination
+        v-if="total"
         :current-page="page"
         :page-size="pageSize"
         :page-sizes="[10, 20, 50]"
@@ -126,20 +127,24 @@ export default defineComponent({
     };
     const getTagList = async () => {
       loading.value = true;
-      const { code, data } = await listTags({
-        page: page.value,
-        pageSize: pageSize.value,
-        keyword: filterText.value,
-        sortType,
-        sortField,
-      });
-      loading.value = false;
-      if (code === 0) {
-        total.value = data.count;
-        tagList.value = data.rows.map((row: any) => ({
-          ...row,
-          createTime: dateFormat(row.createTime),
-        }));
+      try {
+        const { code, data } = await listTags({
+          page: page.value,
+          pageSize: pageSize.value,
+          keyword: filterText.value,
+          sortType,
+          sortField,
+        });
+        loading.value = false;
+        if (code === 0) {
+          total.value = data.count;
+          tagList.value = data.rows.map((row: any) => ({
+            ...row,
+            createTime: dateFormat(row.createTime),
+          }));
+        }
+      } catch (err) {
+        loading.value = false;
       }
     };
 
@@ -155,8 +160,10 @@ export default defineComponent({
 
     // 批量删除
     let selection: Array<number> = [];
+    const disabled = ref(true);
     const handleSelectionChange = (val: any) => {
       selection = _.map('id')(val);
+      disabled.value = !selection.length;
     };
     const groupRemove = async (ids = selection) => {
       ElMessageBox.confirm(`是否删除选中标签?`, '提示', {
@@ -256,6 +263,7 @@ export default defineComponent({
       formRef,
       loading,
       sortChange,
+      disabled,
     };
   },
 });

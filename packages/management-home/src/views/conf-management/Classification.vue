@@ -2,7 +2,13 @@
   <div>
     <el-row class="classific-row">
       <el-button style="width: 120px" type="primary" @click="addTop">新增顶级分类</el-button>
-      <el-button style="width: 120px" type="primary" @click="addChild">新增子级分类</el-button>
+      <el-button
+        style="width: 120px"
+        :type="currentNode.id !== -1 ? 'primary' : ''"
+        @click="addChild"
+        :disabled="currentNode.id === -1"
+        >新增子级分类</el-button
+      >
       <el-button type="primary" v-if="!allExpanded" @click="expandAll">展开所有</el-button>
       <el-button type="primary" v-if="allExpanded" @click="collapseAll">折叠所有</el-button>
     </el-row>

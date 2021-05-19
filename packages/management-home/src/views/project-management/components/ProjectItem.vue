@@ -18,7 +18,7 @@
         <span>{{ dataObj.name }}</span>
         <span class="flex_flow_right">
           <span class="cricle-class" :class="{ using: dataObj.status === 1, block: dataObj.status === 0 }"></span>
-          <span @click.stop="deleteProject"><i class="el-icon-close"></i></span>
+          <span @click.stop="deleteProject" class="close-project"><i class="el-icon-close"></i></span>
         </span>
       </div>
       <div class="project-item_mess"><label>负责人</label>{{ dataObj.ownerstr }}</div>
@@ -191,6 +191,9 @@ export default defineComponent({
   }
   .block {
     background-color: yellow;
+  }
+  .close-project:hover {
+    color: #409eff;
   }
 }
 </style>

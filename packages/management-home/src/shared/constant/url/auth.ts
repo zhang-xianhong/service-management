@@ -2,5 +2,6 @@
 export default {
   GET_USER_MESSAGE: ['/users/info', '/mock/auth/user-mess.json'],
   POST_CURRENT_PROJECT: ['/projects/switch'],
-  GET_HEALTH: ['/health', '/mock/health'],
+  GET_HEALTH: ['/health', '/mock/auth/health.json'],
+  LOGOUT: ['/logout'],
 };

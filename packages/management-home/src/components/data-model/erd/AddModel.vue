@@ -5,10 +5,10 @@
     <el-dialog v-model="dialogVisible" title="创建数据对象" width="600px">
       <el-form ref="formRef" label-width="120px" label-position="left" :model="form" :rules="rules">
         <el-form-item label="数据对象名称" prop="name">
-          <el-input v-model="form.name"></el-input>
+          <el-input v-model.trim="form.name"></el-input>
         </el-form-item>
         <el-form-item label="数据对象描述" prop="description">
-          <el-input v-model="form.description"></el-input>
+          <el-input v-model.trim="form.description"></el-input>
         </el-form-item>
       </el-form>
       <template #footer>
@@ -22,6 +22,8 @@
 <script lang="ts">
 import { defineComponent, inject, nextTick, ref } from 'vue';
 import { createModel } from '@/api/schema/model';
+import { ElMessage } from 'element-plus';
+
 export default defineComponent({
   name: 'AddModel',
   setup() {
@@ -50,6 +52,7 @@ export default defineComponent({
       });
       if (code === 0) {
         dialogVisible.value = false;
+        ElMessage.success('创建成功');
         erdEmit('model-change');
       }
     };

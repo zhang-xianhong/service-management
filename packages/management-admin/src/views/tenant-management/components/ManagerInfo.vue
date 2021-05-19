@@ -99,11 +99,11 @@ export default {
       account: [
         { required: true, message: '请输入管理员账号' },
         { min: 3, max: 20, message: '管理员账号长度在2到40个字符之间', trigger: 'blur' },
-        { pattern: /^[a-zA-Z0-9-]+$/g, message: '包含非法字符，只能输入小写字母、数字、中划线', trigger: 'blur' },
+        { pattern: /^[a-z0-9-]+$/g, message: '包含非法字符，只能输入小写字母、数字、中划线', trigger: 'blur' },
       ],
       name: [
         { required: true, message: '请输入管理人中文姓名' },
-        { min: 3, max: 20, message: '联系人姓名长度在2到40个字符之间', trigger: 'blur' },
+        { min: 2, max: 20, message: '联系人姓名长度在2到40个字符之间', trigger: 'blur' },
         { pattern: /^[\u4e00-\u9fa5]+$/g, message: '联系人姓名仅支持中文', trigger: 'blur' },
       ],
       phone: [
@@ -113,6 +113,7 @@ export default {
       password: [
         { required: true, message: '请输入初始密码' },
         { min: 8, max: 16, message: '密码长度在8到16位', trigger: 'blur' },
+        { pattern: /^[a-zA-Z0-9_]+$/g, message: '包含非法字符，只能输入大小写字母、数字、下划线', trigger: 'blur' },
         { validator: validatePass, trigger: 'blur' },
       ],
       confirmPassword: [{ validator: checkPasswordValidator, trigger: 'blur' }],

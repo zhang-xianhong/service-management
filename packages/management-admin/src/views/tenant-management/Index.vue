@@ -131,12 +131,12 @@ export default {
         id: item.id,
         name: item.name,
         status: item.status,
-        contactName: item.contact.name,
-        contactTel: item.contact.phone,
-        contactEmail: item.contact.email,
-        managerName: item.manager.name,
-        managerAccount: item.manager.account,
-        managerTel: item.manager.phone,
+        contactName: item.contact?.name,
+        contactTel: item.contact?.phone,
+        contactEmail: item.contact?.email,
+        managerName: item.manager?.name,
+        managerAccount: item.manager?.account,
+        managerTel: item.manager?.phone,
       }));
       tableState.total = data.count;
       tableState.loading = false;

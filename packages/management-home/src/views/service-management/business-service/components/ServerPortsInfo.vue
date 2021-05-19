@@ -4,7 +4,7 @@
       <el-table-column label="序号" type="index" width="50"></el-table-column>
       <el-table-column label="接口名称" prop="name">
         <template #default="scope">
-          <el-input v-if="!scope.row.isSystem" v-model="scope.row.name" placeholder="请输入英文名称"></el-input>
+          <el-input v-if="!scope.row.isSystem" v-model.trim="scope.row.name" placeholder="请输入英文名称"></el-input>
           <template v-else>{{ scope.row.name }}</template>
         </template>
       </el-table-column>
@@ -36,13 +36,17 @@
       </el-table-column>
       <el-table-column label="URL" prop="url">
         <template #default="scope">
-          <el-input v-if="!scope.row.isSystem" v-model="scope.row.url" placeholder="请输入URL"></el-input>
+          <el-input v-if="!scope.row.isSystem" v-model.trim="scope.row.url" placeholder="请输入URL"></el-input>
           <template v-else>{{ scope.row.url }}</template>
         </template>
       </el-table-column>
       <el-table-column label="接口描述" prop="description">
         <template #default="scope">
-          <el-input v-if="!scope.row.isSystem" v-model="scope.row.description" placeholder="请填写接口描述"></el-input>
+          <el-input
+            v-if="!scope.row.isSystem"
+            v-model.trim="scope.row.description"
+            placeholder="请填写接口描述"
+          ></el-input>
           <template v-else>{{ scope.row.description }}</template>
         </template>
       </el-table-column>
@@ -68,7 +72,7 @@
         {{ getMethodName(dialogState.method) }}
       </el-col>
       <el-col :span="20">
-        <el-input v-model="dialogState.url" placeholder="请输入URL"></el-input>
+        <el-input v-model.trim="dialogState.url" placeholder="请输入URL"></el-input>
       </el-col>
     </el-row>
     <el-row>
@@ -82,7 +86,7 @@
       <el-table :data="computedParams" border>
         <el-table-column prop="name" label="参数名称">
           <template #default="scope">
-            <el-input v-model="scope.row.name" placeholder="请输入参数名称"></el-input>
+            <el-input v-model.trim="scope.row.name" placeholder="请输入参数名称"></el-input>
           </template>
         </el-table-column>
         <el-table-column label="参数类型">{{ ParamTypeEnum[dialogState.paramType] }}</el-table-column>
@@ -344,6 +348,9 @@ export default defineComponent({
 <style scoped lang="scss">
 .operation-link {
   margin-right: 4px;
+  &:hover {
+    cursor: pointer;
+  }
 }
 .ports-configuration__operations {
   display: flex;

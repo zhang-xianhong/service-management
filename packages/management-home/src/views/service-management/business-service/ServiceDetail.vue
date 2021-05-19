@@ -26,28 +26,38 @@
             <span :style="{ color: serverStatusInfo.color }">{{ serverStatusInfo.label }}</span>
           </div>
           <div class="detail-icons">
-            <!-- 接口列表 -->
-            <svg-icon
-              :icon-name="drawerName === 'ServerPortsInfo' ? 'overview-hover' : 'overview'"
-              icon-class="detail-icons__item"
-              @click="openPropertyInfo"
-            ></svg-icon>
             <!-- 服务详情 -->
-            <svg-icon
-              :icon-name="componentName === 'ServerBaseInfo' ? 'list-hover' : 'list'"
-              icon-class="detail-icons__item"
-              @click="openBaseInfo"
-            ></svg-icon>
+            <el-tooltip effect="light" content="服务详情" placement="bottom">
+              <svg-icon
+                :icon-name="componentName === 'ServerBaseInfo' ? 'overview-hover' : 'overview'"
+                icon-class="detail-icons__item"
+                @click="openBaseInfo"
+              ></svg-icon>
+            </el-tooltip>
+            <!-- 接口列表 -->
+            <el-tooltip effect="light" content="接口列表" placement="bottom">
+              <svg-icon
+                :icon-name="drawerName === 'ServerPortsInfo' ? 'list-hover' : 'list'"
+                icon-class="detail-icons__item"
+                @click="openPropertyInfo"
+              ></svg-icon>
+            </el-tooltip>
             <!-- 代码预览 -->
-            <svg-icon icon-name="gitlab" icon-class="detail-icons__item" @click="openGitlab"></svg-icon>
+            <el-tooltip effect="light" content="代码预览" placement="bottom">
+              <svg-icon icon-name="gitlab" icon-class="detail-icons__item" @click="openGitlab"></svg-icon>
+            </el-tooltip>
             <!-- 文档下载 -->
-            <svg-icon icon-name="daily" icon-class="detail-icons__item detail-icons__item--disabled"></svg-icon>
+            <el-tooltip effect="light" content="文档下载" placement="bottom">
+              <svg-icon icon-name="daily" icon-class="detail-icons__item detail-icons__item--disabled"></svg-icon>
+            </el-tooltip>
             <!-- 服务配置 -->
-            <svg-icon
-              :icon-name="drawerName === 'ServerConfigInfo' ? 'setting-hover' : 'setting'"
-              icon-class="detail-icons__item"
-              @click="openConfigInfo"
-            ></svg-icon>
+            <el-tooltip effect="light" content="服务配置" placement="bottom">
+              <svg-icon
+                :icon-name="drawerName === 'ServerConfigInfo' ? 'setting-hover' : 'setting'"
+                icon-class="detail-icons__item"
+                @click="openConfigInfo"
+              ></svg-icon>
+            </el-tooltip>
           </div>
         </el-col>
       </el-row>
@@ -124,10 +134,15 @@
         </div>
       </el-dialog>
       <el-dialog title="变更记录" v-model="sqlDialogVisiable" width="60%" @close="clearSql">
-        <div class="log-content sql-content" id="sql_content">
-          <div style="color: blue" v-if="sqlData.length === 0">变更记录加载中......</div>
+        <div class="log-content sql-content" id="sql_content" v-loading="sqlLoadings">
+          <div style="color: blue" v-if="sqlData.length === 0 && sqlLoadings">变更记录加载中......</div>
+          <div style="color: blue" v-if="sqlData.length === 0 && !sqlLoadings">暂无变更记录</div>
           <div class="log-item" v-for="(item, index) in Object.values(sqlData)" :key="index">
-            <div class="log-item-content">{{ logs(item) }}</div>
+            <div class="log-item-content">
+              <pre v-highlight>
+                <code v-html="item" class="sql"></code>
+              </pre>
+            </div>
           </div>
         </div>
         <div class="dialog-footer">
@@ -165,6 +180,7 @@ import {
   currentServiceIdForData,
   sqlDialogVisiable,
   sqlData,
+  sqlLoadings,
   clearSql,
   getTreaceId,
   thenRefresh,
@@ -335,6 +351,9 @@ export default {
       if (+status !== 21) {
         buttons.value[2].disabled = true;
       }
+      if (+status === 22 || +status === 12) {
+        buttons.value[1].disabled = true;
+      }
       buttons.value[buttons.value.length - 1].disabled = false;
       buttons.value[0].label = +initTimes === 0 ? '初始化' : '同步配置';
       const statusmaps = computeStatusLabel(serverInfo.value.initTimes);
@@ -489,6 +508,7 @@ export default {
       statusMap,
       maskText,
       userProjectList,
+      sqlLoadings,
     };
   },
 };
@@ -507,6 +527,8 @@ export default {
     display: inline-flex;
     align-items: center;
     margin-left: 24px;
+    vertical-align: bottom;
+    margin-bottom: 3px;
     &__item {
       width: 24px;
       height: 24px;
@@ -514,6 +536,9 @@ export default {
       padding: 4px;
       margin-right: 9px;
       border: 1px solid #fff;
+      &:hover {
+        cursor: pointer;
+      }
       &--disabled {
         background: #bbb;
         cursor: not-allowed;
@@ -574,7 +599,11 @@ export default {
   border: solid 1px rgba(0, 0, 0, 0.4);
   color: black;
   font-weight: 400;
-  padding: 10px;
+  padding: 0;
+  pre {
+    margin: 0;
+    padding: 0 10px;
+  }
 }
 .log-item {
   width: 100%;

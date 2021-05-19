@@ -10,11 +10,13 @@ import Router from './router';
 import DataList from './components/data-list/Index.vue';
 import FormPanel from './components/form-panel/Index.vue';
 import { showModule } from '@/utils/permission-show-module';
+import { addHighLight } from '@/plugins/highlight';
 
 const app: Vue.App = createApp(App);
 
 app.component('DataList', DataList);
 app.component('FormPanel', FormPanel);
+addHighLight(app);
 
 // element全局配置
 app.config.globalProperties.$ELEMENT = {

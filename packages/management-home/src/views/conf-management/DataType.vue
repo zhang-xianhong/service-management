@@ -36,6 +36,7 @@
       </el-table-column>
     </el-table>
     <packaged-pagination
+      v-if="total"
       :current-page="searchProps.page"
       :page-size="searchProps.pageSize"
       :page-sizes="[10, 20, 50]"

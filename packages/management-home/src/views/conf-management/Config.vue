@@ -3,7 +3,7 @@
     <el-row>
       <el-col :span="6" style="text-align: left">
         <el-button type="primary" @click="addNewConfig" style="width: 90px">新建</el-button>
-        <el-button @click="issueConfig">配置下发</el-button>
+        <el-button @click="issueConfig" :disabled="!multipleSelection.length">配置下发</el-button>
       </el-col>
       <el-col :offset="8" :span="10" style="text-align: right">
         <el-input
@@ -36,6 +36,7 @@
         </el-table-column>
       </el-table>
       <packaged-pagination
+        v-if="total"
         :current-page="searchProps.page"
         :page-size="searchProps.pageSize"
         :page-sizes="[10, 20, 50]"
@@ -54,13 +55,13 @@
       <div class="add-config-set">
         <el-form :model="configForm.formData" :rules="configRules" ref="configFormRef">
           <el-form-item label="键" :label-width="labelWidth" prop="name">
-            <el-input v-model="configForm.formData.name" :disabled="configForm.disabled"></el-input>
+            <el-input v-model.trim="configForm.formData.name" :disabled="configForm.disabled"></el-input>
           </el-form-item>
           <el-form-item label="值" prop="value" :label-width="labelWidth">
-            <el-input v-model="configForm.formData.value" :disabled="configForm.disabled"></el-input>
+            <el-input v-model.trim="configForm.formData.value" :disabled="configForm.disabled"></el-input>
           </el-form-item>
           <el-form-item label="默认值" prop="defaultValue" :label-width="labelWidth">
-            <el-input v-model="configForm.formData.defaultValue" :disabled="configForm.disabled"></el-input>
+            <el-input v-model.trim="configForm.formData.defaultValue" :disabled="configForm.disabled"></el-input>
           </el-form-item>
           <el-form-item label="类型" prop="type" :label-width="labelWidth">
             <el-radio-group v-model="configForm.formData.type" :disabled="configForm.disabled">
@@ -69,7 +70,7 @@
             </el-radio-group>
           </el-form-item>
           <el-form-item label="配置描述" :label-width="labelWidth" prop="description">
-            <el-input v-model="configForm.formData.description" :disabled="configForm.disabled"></el-input>
+            <el-input v-model.trim="configForm.formData.description" :disabled="configForm.disabled"></el-input>
           </el-form-item>
         </el-form>
       </div>
