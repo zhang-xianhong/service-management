@@ -34,7 +34,7 @@
             <el-radio label="-1">禁用</el-radio>
           </el-radio-group>
         </el-form-item>
-        <el-form-item label="初始密码" prop="initPasswd" :label-width="labelWidth" v-if="!isEdit">
+        <el-form-item label="初始密码" :label-width="labelWidth" v-if="!isEdit">
           <el-tooltip
             content="复制密码，保存后可用密码登录"
             placement="top"
@@ -197,10 +197,10 @@ export default defineComponent({
         dialogContent.isEdit = true;
         dialogContent.disable = true;
         dialogContent.formData = data;
-        dialogContent.formData.passwd = defaultPasswd;
+        dialogContent.formData.password = defaultPasswd;
       } else {
         dialogContent.isEdit = false;
-        dialogContent.formData.passwd = generatePasswd(12);
+        dialogContent.formData.password = generatePasswd(12);
       }
       dialogVisible.value = true;
     };
