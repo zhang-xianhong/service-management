@@ -16,6 +16,7 @@
           :show-file-list="false"
           :before-upload="beforeUpload"
           @success="logoUploadSuccess"
+          @error="logoUploadError"
         >
           <i v-if="!detailInfo.imageUrl" class="el-icon-plus avatar-uploader-icon"></i>
           <img v-else style="width: 110px;height: 110px" :src="detailInfo.imageUrl" alt="" />
@@ -83,15 +84,19 @@ export default defineComponent({
 
     const isVisable = computed(() => props.visable);
 
+    const logoUploadError = () => {
+      (instance as any).proxy.$message({
+        type: 'error',
+        message: '上传失败，请重新上传！',
+      });
+    };
+
     const logoUploadSuccess = (res: SuccessResponse<any>, file: { raw: unknown }) => {
       if (res.code === 0 && res.data?.fileKey) {
         detailInfo.value.thumbnail = res.data.fileKey;
         detailInfo.value.imageUrl = URL.createObjectURL(file.raw);
       } else {
-        (instance as any).proxy.$message({
-          type: 'error',
-          message: '上传失败，请重新上传！',
-        });
+        logoUploadError();
       }
     };
 
@@ -120,6 +125,7 @@ export default defineComponent({
       isVisable,
       isEditable,
       detailInfo,
+      logoUploadError,
       logoUploadSuccess,
       beforeUpload,
       updateAppDetail,

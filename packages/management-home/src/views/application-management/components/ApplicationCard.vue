@@ -1,7 +1,22 @@
 <template>
   <div class="application-card">
     <div class="application-info">
-      <img :src="imageUrl" alt="" />
+      <img v-if="imageUrl" class="application-info__image" :src="imageUrl" alt="" />
+      <el-upload
+        v-else
+        class="application-info__image"
+        :action="IMAGE_UPLOAD"
+        accept=".jpg,.png,.jpeg"
+        :show-file-list="false"
+        :before-upload="beforeUpload"
+        @success="logoUploadSuccess"
+        @error="logoUploadError"
+      >
+        <div class="application-info__content">
+          <i class="el-icon-plus"></i>
+          <div style="font-size: 12px">上传Logo</div>
+        </div>
+      </el-upload>
       <div class="application-detail">
         <div class="application-detail__name">{{ detailInfo.description }}</div>
         <div class="application-detail__desc">{{ detailInfo.remark }}</div>
@@ -21,10 +36,11 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, PropType, Ref, computed, SetupContext } from 'vue';
+import { defineComponent, ref, PropType, Ref, computed, SetupContext, getCurrentInstance } from 'vue';
 import { IMAGE_UPLOAD } from '@/shared/constant/file';
 import { getImageUrl } from '@/api/files';
 import ApplicationDetail from './ApplicationDetail.vue';
+import { SuccessResponse } from '@/types/response';
 
 interface PropsInterface {
   id: string;
@@ -49,6 +65,7 @@ export default defineComponent({
     const isDetailVisable: Ref<boolean> = ref(false);
     const detailInfo: Ref<PropsInterface> = ref(props.data);
     const imageUrl: Ref<string> = ref('');
+    const instance = getCurrentInstance();
 
     const computedDetail = computed(() => ({ ...detailInfo.value, imageUrl }));
 
@@ -64,6 +81,32 @@ export default defineComponent({
       ctx.emit('update');
     };
 
+    const beforeUpload = (file: { size: number }) => {
+      if (file.size > 1024 * 50) {
+        (instance as any).proxy.$message({
+          type: 'warning',
+          message: '上传图片大小不能超过 50 kb',
+        });
+        return false;
+      }
+    };
+
+    const logoUploadError = () => {
+      (instance as any).proxy.$message({
+        type: 'error',
+        message: '上传失败，请重新上传！',
+      });
+    };
+
+    const logoUploadSuccess = (res: SuccessResponse<any>, file: { raw: unknown }) => {
+      if (res.code === 0 && res.data?.fileKey) {
+        detailInfo.value.thumbnail = res.data.fileKey;
+        imageUrl.value = URL.createObjectURL(file.raw);
+      } else {
+        logoUploadError();
+      }
+    };
+
     return {
       IMAGE_UPLOAD,
       isDetailVisable,
@@ -71,10 +114,23 @@ export default defineComponent({
       imageUrl,
       computedDetail,
       onClose,
+      beforeUpload,
+      logoUploadSuccess,
+      logoUploadError,
     };
   },
 });
 </script>
+
+<style lang="scss">
+.application-info__image {
+  background: #e3f0fc;
+  .el-upload {
+    width: 100%;
+    height: 100%;
+  }
+}
+</style>
 
 <style scoped lang="scss">
 .application-card {
@@ -90,11 +146,18 @@ export default defineComponent({
   }
   .application-info {
     position: relative;
-    img {
+    &__image {
+      display: inline-block;
       width: 60px;
       height: 60px;
       border-radius: 50%;
       overflow: hidden;
+      background: #e3f0fc;
+    }
+    &__content {
+      display: inline-block;
+      height: 100%;
+      padding: 10px 0;
     }
     .application-detail {
       display: inline-block;

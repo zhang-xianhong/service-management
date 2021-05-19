@@ -18,7 +18,7 @@ router.beforeEach(async (to, from, next) => {
 
   if (!hasToken) {
     if (to.path === '/login') {
-      next('/');
+      next();
       NProgress.done();
     } else {
       if (to.matched.length > 1 || whiteList.includes(to.path)) {
