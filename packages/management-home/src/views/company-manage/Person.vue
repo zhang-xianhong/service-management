@@ -34,6 +34,16 @@
           </template>
         </el-table-column>
       </el-table>
+      <!-- <packaged-pagination
+        v-if="total"
+        :current-page="searchProps.page"
+        :page-size="searchProps.pageSize"
+        :page-sizes="[10, 20, 50]"
+        layout="sizes, prev, pager, next, jumper"
+        :total="total"
+        @size-change="handlePageSizeChange"
+        @current-change="handlePageChange"
+      ></packaged-pagination>-->
       <packaged-pagination
         v-if="total"
         :current-page="searchProps.page"
@@ -41,6 +51,8 @@
         :page-sizes="[10, 20, 50]"
         layout="sizes, prev, pager, next, jumper"
         :total="total"
+        @size-change="handlePageSizeChange"
+        @current-change="handlePageChange"
       ></packaged-pagination>
     </el-row>
     <AddPerson ref="refAddDialog" />
@@ -51,6 +63,7 @@
 import { defineComponent, ref, reactive, toRefs, Ref, provide, getCurrentInstance } from 'vue';
 import { ElMessageBox, ElMessage } from 'element-plus';
 import AddPerson from './components/AddPerson.vue';
+import PackagedPagination from '@/components/pagination/Index.vue';
 import { debounce } from 'lodash';
 import { getUserList, createUser, updateUser, delUser, updateUserStatus } from '@/api/company/users';
 
@@ -81,7 +94,7 @@ const RES_CODE: any = {
 
 export default defineComponent({
   name: 'Person',
-  components: { AddPerson },
+  components: { AddPerson, PackagedPagination },
   setup() {
     // 表单相关状态
     const tableState: TableState = reactive({
@@ -127,6 +140,7 @@ export default defineComponent({
       if (code === RES_CODE.success) {
         tableState.total = data.count;
         tableState.tableData = data.rows || [];
+        console.log(' tableState', tableState.total);
       } else {
         (instance as any).proxy.$message({
           type: 'error',
@@ -237,6 +251,16 @@ export default defineComponent({
 
     provide('handleCreate', handleCreate);
     provide('handleEdit', handleEdit);
+    // 每页条数改变
+    const handlePageSizeChange = (pageSize: number) => {
+      tableState.searchProps.pageSize = pageSize;
+      getList();
+    };
+    // 页数切换
+    const handlePageChange = (pageNum: number) => {
+      tableState.searchProps.page = pageNum;
+      getList();
+    };
 
     return {
       ...toRefs(tableState),
@@ -248,6 +272,8 @@ export default defineComponent({
       filterAccount,
       refAddDialog,
       USERSTATUS,
+      handlePageSizeChange,
+      handlePageChange
     };
   },
 });

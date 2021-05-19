@@ -292,6 +292,7 @@ export default defineComponent({
               delete dialogContent.formData.password;
             }
             handleEdit(dialogContent.formData);
+            closeDialog();
           }
         }
       });
