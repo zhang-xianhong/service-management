@@ -60,7 +60,7 @@ service.interceptors.response.use(
           // 登录失效处理
           if (httpStatus === 401) {
             removeToken();
-            // window.location.href = '/login';
+            window.location.href = '/login';
             location.reload();
           }
         },

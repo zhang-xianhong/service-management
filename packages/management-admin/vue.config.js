@@ -1,3 +1,4 @@
+/** @import () */
 const fs = require('fs')
 const Mock = require('mockjs')
 const path = require('path')
@@ -10,6 +11,9 @@ module.exports = {
         prependData: '@import "@/styles/common/index.scss";'
       }
     }
+  },
+  configureWebpack: {
+    devtool: 'eval-cheap-module-source-map'
   },
   devServer: {
     host: 'dev.sa.qq.com',

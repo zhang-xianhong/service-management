@@ -45,27 +45,14 @@
       </el-form-item>
     </el-form>
   </el-row>
-  <el-row>
-    <el-button @click="goPreviousStep">上一步</el-button>
-    <el-button type="primary" @click="onSubmit">完成</el-button>
-  </el-row>
 </template>
 
 <script lang="ts">
-import { computed, ref, SetupContext, WritableComputedRef } from 'vue';
-
-// 管理员信息接口
-interface ManagerInfoInterface {
-  account: string;
-  name: string;
-  phone: string;
-  password: string;
-  confirmPassword: string;
-}
+import { computed, ref, WritableComputedRef, Ref } from 'vue';
+import ManagerInfoInterface from '../types/manager-info-interface';
 
 export default {
   name: 'ManagerInfo',
-  emits: ['go', 'submit'],
   props: {
     isEdit: {
       type: Boolean,
@@ -73,18 +60,15 @@ export default {
     },
     modelValue: {
       type: Object,
-      default: () => ({
-        contact: {},
-        manager: {},
-      }),
+      default: () => ({}),
     },
   },
-  setup(props: { isEdit: boolean; modelValue: any }, ctx: SetupContext) {
+  setup(props: { isEdit: boolean; modelValue: any }) {
     // 表单引用
-    const formRef: any = ref(null);
+    const formRef: Ref<any> = ref(null);
 
     // 管理员信息
-    const managerInfo: WritableComputedRef<ManagerInfoInterface> = computed(() => props.modelValue.manager);
+    const managerInfo: WritableComputedRef<ManagerInfoInterface> = computed(() => props.modelValue);
 
     // 初始密码校验
     const validatePass = (rule: any, value: string, callback: Function) => {
@@ -135,24 +119,10 @@ export default {
       confirmPassword: [{ validator: checkPasswordValidator, trigger: 'blur' }],
     };
 
-    const goPreviousStep = () => {
-      ctx.emit('go', 2);
-    };
-
-    const onSubmit = () => {
-      formRef.value.validate((validator: boolean) => {
-        if (validator) {
-          ctx.emit('submit');
-        }
-      });
-    };
-
     return {
       formRef,
       managerInfo,
       rules,
-      goPreviousStep,
-      onSubmit,
     };
   },
 };

@@ -86,7 +86,7 @@
       </el-form-item>
       <el-form-item prop="licenseUrl" class="form-item" label="营业执照" required>
         <template v-slot:label>营业执照<i class="el-icon-question info-icon"></i></template>
-        <img v-if="licenseUrl" :src="licenseUrl" class="avatar" />
+        <img v-if="isEdit" :src="licenseUrl" class="avatar" />
         <el-upload
           v-else
           class="avatar-uploader"
@@ -97,7 +97,8 @@
           @error="uploadFailed"
           @success="licenseUploadSuccess"
         >
-          <i class="el-icon-plus avatar-uploader-icon"></i>
+          <img v-if="licenseUrl" :src="licenseUrl" class="avatar" />
+          <i v-else class="el-icon-plus avatar-uploader-icon"></i>
         </el-upload>
       </el-form-item>
       <el-form-item prop="logoUrl" class="form-item">
@@ -117,37 +118,19 @@
       </el-form-item>
     </el-form>
   </el-row>
-  <el-row>
-    <el-button type="primary" @click="goNextStep">下一步</el-button>
-  </el-row>
 </template>
 
 <script lang="ts">
-import { computed, SetupContext, ref, WritableComputedRef, getCurrentInstance, Ref, watch } from 'vue';
+import { computed, ref, WritableComputedRef, getCurrentInstance, Ref, watch } from 'vue';
 import useCompanyInfo from '../utils/tenant-config';
 import { IMAGE_UPLOAD } from '@/shared/constant/file';
 import { SuccessResponse } from '@/types/response';
 import { getImageUrl } from '@/api/files';
 import { validateCompanyName, validateLicense } from '@/api/tenant';
-
-interface CompanyInfoInterface {
-  name: string; // 企业名称
-  nameShort: string; // 企业别称
-  tenantEngAbbr: string; // 企业英文简称
-  industryId: string; // 行业
-  addr: string; // 省份
-  natureId: string; // 企业性质
-  addrDetail: string; // 详细地址
-  scaleId: string; // 企业规模
-  intro: string; // 企业简介
-  license: string; // 企业执照号
-  licenseUrl: string; // 营业执照
-  logoUrl: string; // 企业logo
-}
+import CompanyInfoInterface from '../types/company-info-interface';
 
 export default {
   name: 'CompanyInfo',
-  emits: ['go', 'submit'],
   props: {
     isEdit: {
       type: Boolean,
@@ -158,12 +141,12 @@ export default {
       default: () => ({}),
     },
   },
-  setup(props: { isEdit: boolean; modelValue: any }, ctx: SetupContext) {
+  setup(props: { isEdit: boolean; modelValue: any }) {
     // 组件实例
     const instance = getCurrentInstance();
 
     // 表单引用
-    const formRef: any = ref(null);
+    const formRef: Ref<any> = ref(null);
 
     // 企业信息
     const companyInfo: WritableComputedRef<CompanyInfoInterface> = computed(() => props.modelValue);
@@ -320,15 +303,6 @@ export default {
       }
     };
 
-    // 点击前往下一步
-    const goNextStep = () => {
-      formRef.value.validate(async (valid: boolean) => {
-        if (valid) {
-          ctx.emit('go', 2);
-        }
-      });
-    };
-
     // 企业名称校验
     const validateName = async (el: any) => {
       const { data } = await validateCompanyName(el.target.value);
@@ -365,7 +339,6 @@ export default {
       computedNature,
       scaleOptions,
       computedScale,
-      goNextStep,
       beforeUpload,
       licenseUploadSuccess,
       logoUploadSuccess,

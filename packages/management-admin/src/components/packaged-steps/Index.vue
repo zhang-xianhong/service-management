@@ -3,20 +3,15 @@
     <div
       v-for="(item, index) in data"
       :key="index"
-      class="packaged-steps__step"
-      :class="{ 'packaged-steps__step--active': index + 1 <= active }"
+      class="packaged-steps__item"
+      :class="{ 'packaged-steps__item--active': index + 1 <= active }"
       :style="{ width: computedStepWidth }"
     >
-      <i v-if="item.icon" :class="icon"></i>
-      <span v-else class="packaged-steps__icon" :class="{ 'packaged-steps__icon--active': index + 1 <= active }">
-        {{ index + 1 }}
-      </span>
-      <span class="packaged-steps__title" :class="{ 'packaged-steps__title--active': index + 1 <= active }">{{
-        item.title
-      }}</span>
-      <span class="packaged-steps__next" v-if="index + 1 < data.length">
-        <i class="el-icon-arrow-right"></i>
-      </span>
+      <div class="step-title">{{ item.title }}</div>
+      <div class="step-icon">
+        <div class="step-icon__rect"></div>
+        <div v-if="index + 1 < data.length" class="step-icon__triangle"></div>
+      </div>
     </div>
   </div>
 </template>
@@ -57,45 +52,46 @@ export default {
 
 <style lang="scss" scoped>
 .packaged-steps {
-  &__step {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 60px;
+  &__item {
     display: inline-block;
-  }
-  &__icon {
-    width: 32px;
-    height: 32px;
-    line-height: 28px;
-    display: inline-block;
-    border-radius: 16px;
-    text-align: center;
-    margin-right: 12px;
-    border: 1px solid #bbb;
-    color: #bbb;
+    --bg-color: #e6e6e6;
     &--active {
-      background: #006eff;
-      border: #006eff;
-      color: #fff;
-      line-height: 32px;
+      --bg-color: #006eff;
     }
-  }
-  &__title {
-    color: #bbb;
-    font-size: 14px;
-    font-weight: bolder;
-    height: 32px;
-    line-height: 32px;
-    display: inline-block;
-    &--active {
-      color: #000;
+    .step-title {
+      height: 30px;
+      line-height: 30px;
+      font-size: 20px;
+      font-weight: bolder;
+      color: var(--bg-color);
     }
-  }
-  &__next {
-    height: 32px;
-    line-height: 32px;
-    display: inline-block;
-    margin-left: 35%;
-    font-size: larger;
-    font-weight: bolder;
-    color: #bbb;
+    .step-icon {
+      width: 100%;
+      height: 16px;
+      margin-top: 12px;
+      &__rect {
+        display: inline-block;
+        width: 160px;
+        height: 8px;
+        margin: 4px 0px;
+        background: var(--bg-color);
+      }
+      &__triangle {
+        display: inline-block;
+        height: 0;
+        width: 0;
+        overflow: hidden;
+        font-size: 0;
+        line-height: 0;
+        border-color: transparent;
+        border-left-color: var(--bg-color);
+        border-style: solid;
+        border-width: 8px;
+      }
+    }
   }
 }
 </style>
