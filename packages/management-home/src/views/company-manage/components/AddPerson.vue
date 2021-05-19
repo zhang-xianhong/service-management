@@ -11,7 +11,7 @@
         <el-form-item label="登记账号" prop="username" :label-width="labelWidth">
           <el-input
             v-model.trim="formData.username"
-            :disabled="disable"
+            :disabled="isEdit"
             placeholder="请输入英文登录账号，创建后不可修改"
           ></el-input>
         </el-form-item>
