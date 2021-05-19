@@ -219,27 +219,27 @@ const routes: Array<RouteRecordRaw> = [
       },
     ],
   },
-  {
-    path: '/iframe-management',
-    redirect: '/iframe-detail',
-    component: Layout,
-    meta: {
-      isRootLevel: true,
-    },
-    children: [
-      {
-        path: 'iframe-detail',
-        component: () => import(/* webpackChunkName: "tenant" */ '@/views/iframe-test/Index.vue'),
-        name: 'iframe',
-        meta: {
-          title: 'iframe传参管理',
-          icon: 'el-icon-eleme',
-          isRootLevel: false,
-          id: 2,
-        },
-      },
-    ],
-  },
+  // {
+  //   path: '/iframe-management',
+  //   redirect: '/iframe-detail',
+  //   component: Layout,
+  //   meta: {
+  //     isRootLevel: true,
+  //   },
+  //   children: [
+  //     {
+  //       path: 'iframe-detail',
+  //       component: () => import(/* webpackChunkName: "tenant" */ '@/views/iframe-test/Index.vue'),
+  //       name: 'iframe',
+  //       meta: {
+  //         title: 'iframe传参管理',
+  //         icon: 'el-icon-eleme',
+  //         isRootLevel: false,
+  //         id: 2,
+  //       },
+  //     },
+  //   ],
+  // },
 ];
 
 export const reCreateRouter = (routes: Array<RouteRecordRaw>): Router =>
