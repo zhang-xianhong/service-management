@@ -59,6 +59,7 @@
       @size-change="handlePageSizeChange"
       @current-change="handlePageChange"
     ></packaged-pagination>
+    <router-link to="/login">登录页面</router-link>
   </el-row>
 </template>
 

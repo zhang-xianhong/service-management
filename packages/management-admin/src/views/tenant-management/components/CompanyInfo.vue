@@ -2,7 +2,7 @@
   <el-row style="font-weight:bolder">企业信息</el-row>
   <el-row style="padding:0px 20px;font-size: 12px">
     <el-form ref="formRef" :model="companyInfo" :rules="rules" inline label-width="140px" label-position="left">
-      <el-form-item prop="name" class="form-item" label="企业名称">
+      <el-form-item prop="name" class="form-item" label="企业名称" required>
         <template v-if="isEdit">{{ companyInfo.name }}</template>
         <el-input
           v-else
@@ -16,14 +16,7 @@
         <el-input v-model="companyInfo.nameShort" style="width: 400px" placeholder="请输入企业简称"></el-input>
       </el-form-item>
       <el-form-item prop="tenantEngAbbr" class="form-item" label="企业英文简称">
-        <template v-if="isEdit">{{ companyInfo.tenantEngAbbr }}</template>
-        <el-input
-          v-else
-          v-model="companyInfo.tenantEngAbbr"
-          style="width: 400px"
-          placeholder="请输入企业英文简称"
-          @blur="validateTentantEngAbbr"
-        ></el-input>
+        <el-input v-model="companyInfo.tenantEngAbbr" style="width: 400px" placeholder="请输入企业英文简称"></el-input>
       </el-form-item>
       <el-form-item prop="addr" class="form-item" label="企业地址">
         <el-select v-model="companyInfo.addr" style="width: 400px" placeholder="请选择省份">
@@ -41,15 +34,15 @@
           <el-option
             v-for="(item, index) in industryOptions"
             :key="index"
-            :value="item.key"
-            :label="item.value"
+            :value="item.value"
+            :label="item.label"
           ></el-option>
         </el-select>
       </el-form-item>
       <el-form-item prop="addrDetail" class="form-item" label="详细地址">
         <el-input v-model="companyInfo.addrDetail" style="width: 400px" placeholder="请输入详细地址"></el-input>
       </el-form-item>
-      <el-form-item prop="natureId" class="form-item" label="企业性质">
+      <el-form-item prop="natureId" class="form-item" label="企业性质" required>
         <template v-if="isEdit">{{ computedNature || companyInfo.natureId }}</template>
         <el-select v-else v-model="companyInfo.natureId" style="width: 400px" placeholder="请选择企业性质">
           <el-option
@@ -125,37 +118,19 @@
       </el-form-item>
     </el-form>
   </el-row>
-  <el-row>
-    <el-button type="primary" @click="goNextStep">下一步</el-button>
-  </el-row>
 </template>
 
 <script lang="ts">
-import { computed, SetupContext, ref, WritableComputedRef, getCurrentInstance, Ref, watch } from 'vue';
+import { computed, ref, WritableComputedRef, getCurrentInstance, Ref, watch } from 'vue';
 import useCompanyInfo from '../utils/tenant-config';
 import { IMAGE_UPLOAD } from '@/shared/constant/file';
 import { SuccessResponse } from '@/types/response';
 import { getImageUrl } from '@/api/files';
-import { validateCompanyName, validateLicense, validateEngAbbr } from '@/api/tenant';
-
-interface CompanyInfoInterface {
-  name: string; // 企业名称
-  nameShort: string; // 企业别称
-  tenantEngAbbr: string; // 企业英文简称
-  industryId: string; // 行业
-  addr: string; // 省份
-  natureId: string; // 企业性质
-  addrDetail: string; // 详细地址
-  scaleId: string; // 企业规模
-  intro: string; // 企业简介
-  license: string; // 企业执照号
-  licenseUrl: string; // 营业执照
-  logoUrl: string; // 企业logo
-}
+import { validateCompanyName, validateLicense } from '@/api/tenant';
+import CompanyInfoInterface from '../types/company-info-interface';
 
 export default {
   name: 'CompanyInfo',
-  emits: ['go', 'submit'],
   props: {
     isEdit: {
       type: Boolean,
@@ -166,12 +141,12 @@ export default {
       default: () => ({}),
     },
   },
-  setup(props: { isEdit: boolean; modelValue: any }, ctx: SetupContext) {
+  setup(props: { isEdit: boolean; modelValue: any }) {
     // 组件实例
     const instance = getCurrentInstance();
 
     // 表单引用
-    const formRef: any = ref(null);
+    const formRef: Ref<any> = ref(null);
 
     // 企业信息
     const companyInfo: WritableComputedRef<CompanyInfoInterface> = computed(() => props.modelValue);
@@ -216,7 +191,7 @@ export default {
         { required: true, message: '请输入企业名称', trigger: 'blur' },
         { min: 2, max: 40, message: '企业名称长度在2到40个字符之间', trigger: 'blur' },
         {
-          pattern: /^[\u4e00-\u9fa5|a-zA-Z|（）()]+$/g,
+          pattern: /^[\u4e00-\u9fa5|a-zA-Z|()]+$/g,
           message: '包含非法字符，只能输入中文、大小写字母及()',
           trigger: 'blur',
         },
@@ -328,20 +303,8 @@ export default {
       }
     };
 
-    // 点击前往下一步
-    const goNextStep = () => {
-      formRef.value.validate(async (valid: boolean) => {
-        if (valid) {
-          ctx.emit('go', 2);
-        }
-      });
-    };
-
     // 企业名称校验
     const validateName = async (el: any) => {
-      if (el.target.value === '') {
-        return;
-      }
       const { data } = await validateCompanyName(el.target.value);
       if (!data.usable) {
         (instance as any).proxy.$message({
@@ -353,28 +316,11 @@ export default {
 
     // 营业执照号校验
     const validateLicenseId = async (el: any) => {
-      if (el.target.value === '') {
-        return;
-      }
       const { data } = await validateLicense(el.target.value);
       if (!data.usable) {
         (instance as any).proxy.$message({
           type: 'error',
           message: '营业执照号已存在，请重新输入！',
-        });
-      }
-    };
-
-    // 企业英文简称校验
-    const validateTentantEngAbbr = async (el: any) => {
-      if (el.target.value === '') {
-        return;
-      }
-      const { data } = await validateEngAbbr(el.target.value);
-      if (!data.usable) {
-        (instance as any).proxy.$message({
-          type: 'error',
-          message: '企业英文简称已存在，请重新输入！',
         });
       }
     };
@@ -393,14 +339,12 @@ export default {
       computedNature,
       scaleOptions,
       computedScale,
-      goNextStep,
       beforeUpload,
       licenseUploadSuccess,
       logoUploadSuccess,
       uploadFailed,
       validateName,
       validateLicenseId,
-      validateTentantEngAbbr,
     };
   },
 };

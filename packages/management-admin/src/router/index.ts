@@ -14,6 +14,15 @@ export const baseRoutes: Array<RouteRecordRaw> = [
     },
   },
   {
+    path: '/forget-password',
+    name: 'password',
+    component: () => import('@/views/login/ForgetPassword.vue'),
+    meta: {
+      isRootLevel: false,
+      title: '密码找回',
+    },
+  },
+  {
     path: '/no-right',
     name: 'noRight',
     component: () => import('@/views/no-right/Index.vue'),
@@ -36,7 +45,7 @@ export const baseRoutes: Array<RouteRecordRaw> = [
 const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
-    redirect: '/tenant-management',
+    redirect: '/login',
   },
   {
     path: '/tenant-management',

@@ -167,6 +167,31 @@ const routes: Array<RouteRecordRaw> = [
     ],
   },
   {
+    path: '/application',
+    name: 'ApplicationManagement',
+    redirect: '/application-list',
+    component: Layout,
+    meta: {
+      title: '应用编排',
+      icon: 'el-icon-eleme',
+      isRootLevel: true,
+      id: 9,
+    },
+    children: [
+      {
+        path: 'application-list',
+        component: () => import(/* webpackChunkName: "classification" */ '@/views/application-management/Index.vue'),
+        name: 'ApplicationList',
+        meta: {
+          title: '应用列表',
+          icon: 'el-icon-eleme',
+          isRootLevel: false,
+          id: 8,
+        },
+      },
+    ],
+  },
+  {
     path: '/settings',
     name: 'Settings',
     component: Layout,
@@ -255,6 +280,41 @@ const routes: Array<RouteRecordRaw> = [
           isRootLevel: false,
         },
       },
+    ],
+  },
+  {
+    path: '/company-manage',
+    name: 'Company',
+    component: Layout,
+    meta: {
+      title: '公司管理',
+      icon: 'el-icon-eleme',
+      isRootLevel: true,
+      id: 9,
+    },
+    children: [
+      {
+        path: 'person',
+        component: () => import(/* webpackChunkName: "tenant" */ '@/views/company-manage/Person.vue'),
+        name: 'Person',
+        meta: {
+          title: '人员管理',
+          icon: 'el-icon-eleme',
+          isRootLevel: false,
+          id: 9,
+        },
+      },
+      // {
+      //   path: 'departmentdepartment',
+      //   component: () => import(/* webpackChunkName: "tenant" */ '@/views/company-manage/Department.vue'),
+      //   name: 'Department',
+      //   meta: {
+      //     title: '部门管理',
+      //     icon: 'el-icon-eleme',
+      //     isRootLevel: false,
+      //     id: 9,
+      //   },
+      // }
     ],
   },
 ];

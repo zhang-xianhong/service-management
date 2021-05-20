@@ -1,6 +1,10 @@
 <template>
   <div class="nav-bar">
-    <a class="app-logo"><img src="./tencent.png" /> <span>|</span> <img src="./citybase.png" /> </a>
+    <a class="app-logo">
+      <img src="./tencent.png" />
+      <span>|</span>
+      <img src="./citybase.png" />
+    </a>
     <div class="bread-bar">
       <!--      <bread-curmb></bread-curmb>-->
     </div>
@@ -24,7 +28,7 @@
             <el-dropdown-item icon="el-icon-bell">系统通知</el-dropdown-item>
           </el-dropdown-menu>
         </template>
-      </el-dropdown> -->
+      </el-dropdown>-->
       <!-- <el-dropdown trigger="click" class="header-title">
         <span class="el-dropdown-link"> <i class="el-icon-s-unfold header-title-object-icon3"></i>项目 </span>
         <template #dropdown>
@@ -32,7 +36,7 @@
             <el-dropdown-item v-for="(project, index) in projectList" :key="index">{{ project.name }}</el-dropdown-item>
           </el-dropdown-menu>
         </template>
-      </el-dropdown> -->
+      </el-dropdown>-->
       <el-dropdown trigger="click" class="header-title">
         <span class="el-dropdown-link">
           <i class="el-icon-user-solid"></i>
@@ -41,26 +45,33 @@
         </span>
         <template #dropdown>
           <el-dropdown-menu>
-            <el-dropdown-item icon="el-icon-edit">用户管理</el-dropdown-item>
+            <el-dropdown-item icon="el-icon-edit" @click="openEditDialog">用户管理</el-dropdown-item>
             <el-dropdown-item icon="el-icon-info">关于</el-dropdown-item>
             <el-dropdown-item icon="el-icon-switch-button" @click="handleLogout">登出</el-dropdown-item>
           </el-dropdown-menu>
         </template>
       </el-dropdown>
     </div>
+    <ManageDialog ref="refManageDialog" />
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive } from 'vue';
 import { logout } from '@/api/auth';
 import { ElMessage } from 'element-plus';
+import { defineComponent, reactive, ref, Ref } from 'vue';
+import ManageDialog from './ManageDialog.vue';
 // import breadCurmb from '@/components/bread-curmb/Index.vue';
 
+interface RefDialog {
+  openDialog: Function;
+  [attr: string]: any;
+}
 export default defineComponent({
   name: 'navBar',
   components: {
     // breadCurmb,
+    ManageDialog
   },
   setup() {
     const projectList = reactive([
@@ -73,6 +84,16 @@ export default defineComponent({
         name: '测试项目2',
       },
     ]);
+    const refManageDialog: Ref<RefDialog | null> = ref(null);
+
+    const openEditDialog = (): void => {
+      (refManageDialog.value as RefDialog).openDialog();
+    }
+
+    // 关闭对话框
+    const closeDialog = () => {
+      (refManageDialog.value as RefDialog).closeDialog();
+    }
     const handleLogout = () => {
       logout().then((res: any) => {
         const urls = res.data.logoutUrl;
@@ -85,6 +106,9 @@ export default defineComponent({
     };
     return {
       projectList,
+      refManageDialog,
+      closeDialog,
+      openEditDialog
       handleLogout,
     };
   },
