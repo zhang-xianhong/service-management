@@ -327,6 +327,41 @@ const routes: Array<RouteRecordRaw> = [
       // }
     ],
   },
+  {
+    path: '/publish',
+    name: 'Publish',
+    component: Layout,
+    meta: {
+      title: '发布管理',
+      icon: 'el-icon-eleme',
+      isRootLevel: true,
+      id: 10,
+    },
+    children: [
+      {
+        path: 'apply',
+        component: () => import(/* webpackChunkName: "general" */ '@/views/demands/publish/Apply.vue'),
+        name: 'PublishApply',
+        meta: {
+          title: '发布申请',
+          icon: 'el-icon-eleme',
+          isRootLevel: false,
+          id: 9,
+        },
+      },
+      {
+        path: 'review',
+        component: () => import(/* webpackChunkName: "general" */ '@/views/demands/publish/Review.vue'),
+        name: 'PublishReview',
+        meta: {
+          title: '发布审核',
+          icon: 'el-icon-eleme',
+          isRootLevel: false,
+          id: 10,
+        },
+      },
+    ],
+  },
 ];
 
 export const reCreateRouter = (routes: Array<RouteRecordRaw>): Router =>

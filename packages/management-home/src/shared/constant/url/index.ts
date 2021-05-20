@@ -5,6 +5,7 @@ import service from './service';
 import tenant from './tenant';
 import file from './file';
 import auth from './auth';
+import publish from './publish';
 import app from './app';
 import company from './company';
 
@@ -16,6 +17,7 @@ export default {
   tenant,
   file,
   auth,
+  publish,
   app,
   company,
 };

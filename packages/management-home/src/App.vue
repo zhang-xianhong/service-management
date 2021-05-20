@@ -89,6 +89,14 @@ body {
     background-color: #006eff;
     border-color: #006eff;
   }
+  .el-button--primary.is-disabled,
+  .el-button--primary.is-disabled:active,
+  .el-button--primary.is-disabled:focus,
+  .el-button--primary.is-disabled:hover {
+    color: #fff;
+    background-color: #a0cfff;
+    border-color: #a0cfff;
+  }
   .el-input__inner,
   .el-input-group__append,
   .el-popover.el-popper,
