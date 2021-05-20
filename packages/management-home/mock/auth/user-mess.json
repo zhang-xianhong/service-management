@@ -2,176 +2,407 @@
   "code": 0,
   "data": {
     "info": {
-      "userId": 75,
+      "userId": 83,
       "tenantId": 1,
-      "userName": "admin@yufuid.com",
-      "displayName": "admin",
-      "redirectUrl": "http://9.134.45.3/api/login",
-      "roleIds": []
+      "userName": "test1111",
+      "displayName": "test2222",
+      "redirectUrl": "http://tenant1.dev-citybase.oa.com/api/login",
+      "roleIds": [],
+      "userAuth": [
+        {
+          "id": 1,
+          "name": "首页",
+          "parentId": null,
+          "description": "",
+          "modules": []
+        },
+        {
+          "id": 2,
+          "name": "租户管理",
+          "parentId": null,
+          "description": "",
+          "modules": []
+        },
+        {
+          "id": 3,
+          "name": "公司管理",
+          "parentId": null,
+          "description": "",
+          "modules": []
+        },
+        {
+          "id": 4,
+          "name": "项目管理",
+          "parentId": null,
+          "description": "",
+          "modules": [
+            {
+              "id": 8,
+              "menuId": 4,
+              "name": "项目列表",
+              "code": "select",
+              "description": "查询项目列表"
+            },
+            {
+              "id": 9,
+              "menuId": 4,
+              "name": "编辑项目",
+              "code": "update",
+              "description": "编辑项目信息"
+            },
+            {
+              "id": 10,
+              "menuId": 4,
+              "name": "项目详情",
+              "code": "selectDetail",
+              "description": "查询项目详情"
+            },
+            {
+              "id": 7,
+              "menuId": 4,
+              "name": "管理项目",
+              "code": "add-update-delete",
+              "description": "新建、编辑、删除项目"
+            }
+          ]
+        },
+        {
+          "id": 5,
+          "name": "需求管理",
+          "parentId": null,
+          "description": "",
+          "modules": []
+        },
+        {
+          "id": 6,
+          "name": "发布管理",
+          "parentId": null,
+          "description": "",
+          "modules": []
+        },
+        {
+          "id": 7,
+          "name": "服务管理",
+          "parentId": null,
+          "description": "",
+          "modules": []
+        },
+        {
+          "id": 8,
+          "name": "配置管理",
+          "parentId": null,
+          "description": "",
+          "modules": []
+        },
+        {
+          "id": 9,
+          "name": "租户列表",
+          "parentId": 2,
+          "description": "",
+          "modules": [
+            {
+              "id": 1,
+              "menuId": 9,
+              "name": "管理租户",
+              "code": "select-add-update-delete-run-stop",
+              "description": "租户列表、新建、编辑、删除、冻结、启用"
+            },
+            {
+              "id": 2,
+              "menuId": 9,
+              "name": "租户列表",
+              "code": "select",
+              "description": "查看租户列表"
+            },
+            {
+              "id": 3,
+              "menuId": 9,
+              "name": "租户编辑",
+              "code": "update",
+              "description": "编辑租户信息"
+            },
+            {
+              "id": 4,
+              "menuId": 9,
+              "name": "租户详情",
+              "code": "selectDetail",
+              "description": "查看租户详情"
+            }
+          ]
+        },
+        {
+          "id": 10,
+          "name": "租户详情",
+          "parentId": 2,
+          "description": "",
+          "modules": [
+            {
+              "id": 6,
+              "menuId": 10,
+              "name": "租户详情",
+              "code": "selectDetail",
+              "description": "查看租户详情"
+            },
+            {
+              "id": 5,
+              "menuId": 10,
+              "name": "租户编辑",
+              "code": "update",
+              "description": "编辑租户"
+            }
+          ]
+        },
+        {
+          "id": 11,
+          "name": "人员管理",
+          "parentId": 3,
+          "description": "",
+          "modules": []
+        },
+        {
+          "id": 12,
+          "name": "部门管理",
+          "parentId": 3,
+          "description": "",
+          "modules": []
+        },
+        {
+          "id": 13,
+          "name": "项目列表",
+          "parentId": 4,
+          "description": "",
+          "modules": []
+        },
+        {
+          "id": 14,
+          "name": "发布申请",
+          "parentId": 6,
+          "description": "",
+          "modules": []
+        },
+        {
+          "id": 15,
+          "name": "发布审核",
+          "parentId": 6,
+          "description": "",
+          "modules": []
+        },
+        {
+          "id": 16,
+          "name": "业务服务",
+          "parentId": 7,
+          "description": "",
+          "modules": [
+            {
+              "id": 18,
+              "menuId": 16,
+              "name": "接口信息",
+              "code": "selectDetail",
+              "description": "查看接口信息"
+            },
+            {
+              "id": 19,
+              "menuId": 16,
+              "name": "服务操作",
+              "code": "init-run-stop-log",
+              "description": "初始化、同步配置、启动、停止、日志"
+            },
+            {
+              "id": 20,
+              "menuId": 16,
+              "name": "服务配置",
+              "code": "update",
+              "description": "添加服务配置"
+            },
+            {
+              "id": 11,
+              "menuId": 16,
+              "name": "管理服务",
+              "code": "add-update-delete",
+              "description": "新建、编辑、删除服务"
+            },
+            {
+              "id": 12,
+              "menuId": 16,
+              "name": "服务列表",
+              "code": "select",
+              "description": "查看服务列表"
+            },
+            {
+              "id": 13,
+              "menuId": 16,
+              "name": "编辑服务",
+              "code": "update",
+              "description": "编辑服务信息"
+            },
+            {
+              "id": 14,
+              "menuId": 16,
+              "name": "服务详情",
+              "code": "selectDetail",
+              "description": "查看服务详情"
+            },
+            {
+              "id": 15,
+              "menuId": 16,
+              "name": "模型管理",
+              "code": "add-update-select",
+              "description": "添加、编辑、删除模型"
+            },
+            {
+              "id": 16,
+              "menuId": 16,
+              "name": "模型信息",
+              "code": "selectDetail",
+              "description": "查看模型信息"
+            },
+            {
+              "id": 17,
+              "menuId": 16,
+              "name": "接口管理",
+              "code": "add-update-delete",
+              "description": "添加、编辑、删除接口"
+            }
+          ]
+        },
+        {
+          "id": 17,
+          "name": "分类信息",
+          "parentId": 8,
+          "description": "",
+          "modules": [
+            {
+              "id": 21,
+              "menuId": 17,
+              "name": "管理分类",
+              "code": "add-update-delete",
+              "description": "新增、编辑、删除分类"
+            },
+            {
+              "id": 22,
+              "menuId": 17,
+              "name": "分类列表",
+              "code": "select",
+              "description": "查看分类"
+            }
+          ]
+        },
+        {
+          "id": 18,
+          "name": "标签信息",
+          "parentId": 8,
+          "description": "",
+          "modules": [
+            {
+              "id": 23,
+              "menuId": 18,
+              "name": "管理标签",
+              "code": "add-update-delete",
+              "description": "新增、编辑、删除标签"
+            },
+            {
+              "id": 24,
+              "menuId": 18,
+              "name": "标签列表",
+              "code": "selectDetail",
+              "description": "查看标签"
+            }
+          ]
+        },
+        {
+          "id": 19,
+          "name": "数据类型",
+          "parentId": 8,
+          "description": "",
+          "modules": [
+            {
+              "id": 25,
+              "menuId": 19,
+              "name": "管理数据类型",
+              "code": "add-update-delete",
+              "description": "新增、编辑、删除数据类型"
+            },
+            {
+              "id": 26,
+              "menuId": 19,
+              "name": "数据类型列表",
+              "code": "selectDetail",
+              "description": "查看数据类型"
+            }
+          ]
+        },
+        {
+          "id": 20,
+          "name": "统一配置",
+          "parentId": 8,
+          "description": "",
+          "modules": [
+            {
+              "id": 27,
+              "menuId": 20,
+              "name": "管理配置",
+              "code": "add-update-delete",
+              "description": "新增、编辑、删除配置"
+            },
+            {
+              "id": 28,
+              "menuId": 20,
+              "name": "配置列表",
+              "code": "select-detail",
+              "description": "查看配置列表"
+            }
+          ]
+        },
+        {
+          "id": 21,
+          "name": "项目详情",
+          "parentId": 4,
+          "description": "",
+          "modules": []
+        }
+      ],
+      "admin": false
     },
-    "menus": [
-      {
-        "id": 1,
-        "parentId": null,
-        "name": "首页",
-        "description": "",
-        "menuId": 1,
-        "authorization": 1
-      },
-      {
-        "id": 2,
-        "parentId": null,
-        "name": "租户管理",
-        "description": "",
-        "menuId": 2,
-        "authorization": 1
-      },
-      {
-        "id": 3,
-        "parentId": null,
-        "name": "公司管理",
-        "description": "",
-        "menuId": 3,
-        "authorization": 1
-      },
-      {
-        "id": 4,
-        "parentId": null,
-        "name": "项目管理",
-        "description": "",
-        "menuId": 4,
-        "authorization": 1
-      },
-      {
-        "id": 5,
-        "parentId": null,
-        "name": "需求管理",
-        "description": "",
-        "menuId": 5,
-        "authorization": 1
-      },
-      {
-        "id": 6,
-        "parentId": null,
-        "name": "发布管理",
-        "description": "",
-        "menuId": 6,
-        "authorization": 1
-      },
-      {
-        "id": 7,
-        "parentId": null,
-        "name": "服务管理",
-        "description": "",
-        "menuId": 7,
-        "authorization": 1
-      },
-      {
-        "id": 8,
-        "parentId": null,
-        "name": "配置管理",
-        "description": "",
-        "menuId": 8,
-        "authorization": 1
-      },
-      {
-        "id": 9,
-        "parentId": 2,
-        "name": "租户列表",
-        "description": "",
-        "menuId": 9,
-        "authorization": 0
-      },
-      {
-        "id": 10,
-        "parentId": 2,
-        "name": "租户详情",
-        "description": "",
-        "menuId": 10,
-        "authorization": 2
-      },
-      {
-        "id": 11,
-        "parentId": 3,
-        "name": "人员管理",
-        "description": "",
-        "menuId": 11,
-        "authorization": 1
-      },
-      {
-        "id": 12,
-        "parentId": 3,
-        "name": "部门管理",
-        "description": "",
-        "menuId": 12,
-        "authorization": 1
-      },
-      {
-        "id": 13,
-        "parentId": 4,
-        "name": "项目列表",
-        "description": "",
-        "menuId": 13,
-        "authorization": 2
-      },
-      {
-        "id": 14,
-        "parentId": 6,
-        "name": "发布申请",
-        "description": "",
-        "menuId": 14,
-        "authorization": 2
-      },
-      {
-        "id": 15,
-        "parentId": 6,
-        "name": "发布审核",
-        "description": "",
-        "menuId": 15,
-        "authorization": 2
-      },
-      {
-        "id": 16,
-        "parentId": 7,
-        "name": "业务服务",
-        "description": "",
-        "menuId": 16,
-        "authorization": 1
-      },
-      {
-        "id": 17,
-        "parentId": 8,
-        "name": "分类信息",
-        "description": "",
-        "menuId": 17,
-        "authorization": 2
-      },
-      {
-        "id": 18,
-        "parentId": 8,
-        "name": "标签信息",
-        "description": "",
-        "menuId": 18,
-        "authorization": 2
-      },
-      {
-        "id": 19,
-        "parentId": 8,
-        "name": "数据类型",
-        "description": "",
-        "menuId": 19,
-        "authorization": 2
-      }
-    ],
+    "menus": [],
     "projects": [
       {
-        "id": 36,
-        "name": "proj1",
-        "description": "项目1"
+        "id": 42,
+        "name": "dasita",
+        "description": "打死他"
+      },
+      {
+        "id": 72,
+        "name": "citybase-chongqing",
+        "description": "重庆服务迁移"
+      },
+      {
+        "id": 73,
+        "name": "giao",
+        "description": "giao"
+      },
+      {
+        "id": 74,
+        "name": "giao",
+        "description": "giao"
+      },
+      {
+        "id": 77,
+        "name": "giao",
+        "description": "giao"
+      },
+      {
+        "id": 78,
+        "name": "testone",
+        "description": "不可描述的内容"
+      },
+      {
+        "id": 91,
+        "name": "test-create",
+        "description": "创建项目测试"
       }
     ]
   },
   "message": "successful",
   "httpStatus": 200,
-  "timestamp": 1619159714026
+  "timestamp": 1621221966069
 }

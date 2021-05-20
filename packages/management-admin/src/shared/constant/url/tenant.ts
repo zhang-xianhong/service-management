@@ -9,4 +9,6 @@ export default {
   UPDATE_TENT: ['/tenants/_', 'mock/services/delete.json'],
   VALIDATE_NAME: ['/tenants/name/usable', 'mock/services/validate.json'],
   VALIDATE_LICENSE: ['/tenants/license/usable', 'mock/services/validate.json'],
+  VALIDATE_ENGABBR: ['/tenants/engAbbr/usable', 'mock/services/validate.json'],
+  VALIDATE_ACCOUNT: ['/tenants/account/usable', 'mock/services/validate.json'],
 };

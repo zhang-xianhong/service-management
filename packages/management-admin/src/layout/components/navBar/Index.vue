@@ -47,7 +47,7 @@
           <el-dropdown-menu>
             <el-dropdown-item icon="el-icon-edit" @click="openEditDialog">用户管理</el-dropdown-item>
             <el-dropdown-item icon="el-icon-info">关于</el-dropdown-item>
-            <el-dropdown-item icon="el-icon-switch-button">登出</el-dropdown-item>
+            <el-dropdown-item icon="el-icon-switch-button" @click="handleLogout">登出</el-dropdown-item>
           </el-dropdown-menu>
         </template>
       </el-dropdown>
@@ -57,6 +57,8 @@
 </template>
 
 <script lang="ts">
+import { logout } from '@/api/auth';
+import { ElMessage } from 'element-plus';
 import { defineComponent, reactive, ref, Ref } from 'vue';
 import ManageDialog from './ManageDialog.vue';
 // import breadCurmb from '@/components/bread-curmb/Index.vue';
@@ -92,11 +94,22 @@ export default defineComponent({
     const closeDialog = () => {
       (refManageDialog.value as RefDialog).closeDialog();
     }
+    const handleLogout = () => {
+      logout().then((res: any) => {
+        const urls = res.data.logoutUrl;
+        if (urls) {
+          window.location.href = urls;
+        } else {
+          ElMessage.error('登出失败');
+        }
+      });
+    };
     return {
       projectList,
       refManageDialog,
       closeDialog,
       openEditDialog
+      handleLogout,
     };
   },
 });

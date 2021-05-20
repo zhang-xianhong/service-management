@@ -120,15 +120,15 @@ import dateFormat from '@/utils/date-format';
 
 export default {
   name: 'ServerConfigInfo',
-  inheritAttrs: false,
-  prop: {
+  props: {
     id: {
-      type: String,
-      default: '',
+      type: Number,
+      default: 0,
     },
   },
+  inheritAttrs: false,
   emits: ['back'],
-  setup(props: { id: string }) {
+  setup(props: { id: number }) {
     const { proxy } = getCurrentInstance() as any;
 
     const state = reactive({
@@ -150,8 +150,9 @@ export default {
 
     // 获取服务配置数据
     const getTableData = async () => {
-      const { data } = await getServiceConfig(props.id);
+      const { data } = await getServiceConfig(String(props.id));
       state.tableData = data.map((item: any) => ({ ...item, ...{ isEdit: false } }));
+      state.tableData.push({ name: '', value: '', defaultValue: '', type: '', version: '', isEdit: true });
     };
 
     onMounted(() => {
@@ -234,7 +235,7 @@ export default {
     };
 
     const deliveryList = async () => {
-      const { code } = await deliveryServiceConfig(props.id);
+      const { code } = await deliveryServiceConfig(String(props.id));
       if (code === 0) {
         proxy.$message({
           type: 'success',

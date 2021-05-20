@@ -23,7 +23,7 @@
       <el-input v-model="typeForm.description" placeholder="请选择"></el-input>
     </el-form-item>
     <el-form-item>
-      <el-button type="primary" @click="onSubmit">保存</el-button>
+      <el-button type="primary" @click="onSubmit" v-if="getShowBool('update')">保存</el-button>
       <el-button @click="onCancel">取消</el-button>
     </el-form-item>
   </el-form>
@@ -33,6 +33,7 @@
 import { ref, reactive, computed, getCurrentInstance } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { addDataType, getDataTypeDetail, updateDataType } from '@/api/settings/data-types';
+import { getShowBool } from '@/utils/permission-show-module';
 
 export default {
   name: 'DataTypeEdit',
@@ -140,6 +141,7 @@ export default {
       datatypeOptions,
       onSubmit,
       onCancel,
+      getShowBool,
     };
   },
 };

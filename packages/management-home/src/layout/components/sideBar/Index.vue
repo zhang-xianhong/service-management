@@ -19,7 +19,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, getCurrentInstance } from 'vue';
+import { defineComponent, computed, getCurrentInstance, ref } from 'vue';
 import SidebarItem from '@/layout/components/sideBar/SidebarItem.vue';
 import menuVariables from '@/styles/menu.scss';
 import { getComputedRoutes } from '@/layout/messageCenter/routerRef';
@@ -39,15 +39,14 @@ export default defineComponent({
       // eslint-disable-next-line
       // @ts-ignore
       const route = proxy.$route;
-      console.log(proxy, route);
       const { meta, path } = route;
       if (meta.activeMenu) {
         return meta.activeMenu;
       }
       return path;
     });
-    const permissionRoutes = getComputedRoutes();
-    console.log(permissionRoutes);
+    const permissionRoutes = ref(getComputedRoutes() as any);
+
     return {
       menuVariables,
       isCollapse,
