@@ -26,11 +26,7 @@
               <template #default="{ node }">
                 <div class="customNode">
                   <svg-icon v-if="node.level < 3" icon-name="folder" icon-class="tree-node-folder"></svg-icon>
-                  <svg-icon
-                    v-if="node.level === 3"
-                    icon-name="member"
-                    icon-class="tree-node-member"
-                  ></svg-icon>
+                  <svg-icon v-if="node.level === 3" icon-name="member" icon-class="tree-node-member"></svg-icon>
                   <span>{{ node.label }}</span>
                   <!-- <i
                     v-if="node.level === 2"
@@ -196,7 +192,7 @@ export default defineComponent({
     const dialogVisible: Ref<boolean> = ref(false);
 
     const formData = reactive({
-      deptName: ''
+      deptName: '',
     });
 
     // 校验规则
@@ -204,7 +200,7 @@ export default defineComponent({
       deptName: [
         { required: true, message: '请输入部门中文名称', trigger: 'blur' },
         { validator: validatorZNNamePass, trigger: 'blur' },
-      ]
+      ],
     };
 
     const initDepartments = async () => {
@@ -412,7 +408,7 @@ export default defineComponent({
     // 关闭dialog
     const closeDialog = () => {
       dialogVisible.value = false;
-    }
+    };
     const deptDiagFormRef: any = ref(null);
     // 保存
     const submitConfigForm = () => {
@@ -426,7 +422,7 @@ export default defineComponent({
           });
         }
       });
-    }
+    };
 
     return {
       ...toRefs(tableData),
@@ -451,7 +447,7 @@ export default defineComponent({
       formData,
       formRules,
       submitConfigForm,
-      deptDiagFormRef
+      deptDiagFormRef,
     };
   },
 });

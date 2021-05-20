@@ -301,7 +301,7 @@ const routes: Array<RouteRecordRaw> = [
           title: '人员管理',
           icon: 'el-icon-eleme',
           isRootLevel: false,
-          id: 9,
+          id: 11,
         },
       },
       // {

@@ -273,7 +273,7 @@ export default defineComponent({
       refAddDialog,
       USERSTATUS,
       handlePageSizeChange,
-      handlePageChange
+      handlePageChange,
     };
   },
 });
