@@ -23,6 +23,15 @@ export const baseRoutes: Array<RouteRecordRaw> = [
     },
   },
   {
+    path: '/forget-password',
+    name: 'password',
+    component: () => import('@/views/login/ForgetPassword.vue'),
+    meta: {
+      isRootLevel: false,
+      title: '密码找回',
+    },
+  },
+  {
     path: '/not-found',
     name: 'notFound',
     component: () => import('@/views/not-found/Index.vue'),

@@ -4,3 +4,8 @@ import { getUrl } from '../utils';
 import { SuccessResponse } from '@/types/response';
 
 export const logout: () => Promise<SuccessResponse<any>> = () => request.get(getUrl(URL.auth.LOGOUT));
+
+export const getCaptcha: () => Promise<SuccessResponse<any>> = () => request.get(getUrl(URL.auth.GET_CAPTCHA));
+
+export const login: (payload: any) => Promise<SuccessResponse<any>> = (payload: any) =>
+  request.post(getUrl(URL.auth.LOGIN), payload);

@@ -71,7 +71,7 @@ export default defineComponent({
   name: 'navBar',
   components: {
     // breadCurmb,
-    ManageDialog
+    ManageDialog,
   },
   setup() {
     const projectList = reactive([
@@ -88,12 +88,12 @@ export default defineComponent({
 
     const openEditDialog = (): void => {
       (refManageDialog.value as RefDialog).openDialog();
-    }
+    };
 
     // 关闭对话框
     const closeDialog = () => {
       (refManageDialog.value as RefDialog).closeDialog();
-    }
+    };
     const handleLogout = () => {
       logout().then((res: any) => {
         const urls = res.data.logoutUrl;
@@ -108,7 +108,7 @@ export default defineComponent({
       projectList,
       refManageDialog,
       closeDialog,
-      openEditDialog
+      openEditDialog,
       handleLogout,
     };
   },

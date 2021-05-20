@@ -45,7 +45,7 @@ export const baseRoutes: Array<RouteRecordRaw> = [
 const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
-    redirect: '/login',
+    redirect: '/tenant-management',
   },
   {
     path: '/tenant-management',
