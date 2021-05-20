@@ -18,3 +18,6 @@ export const delUser: (payload?: object) => Promise<SuccessResponse<any>> = (pay
 // 批量修改状态
 export const updateUserStatus: (payload?: object) => Promise<SuccessResponse<any>> = (payload: any) =>
   request.post(getUrl(URL.company.UPDATE_USER_STATUS), payload);
+// 修改密码
+export const resetPassWd: (payload?: object) => Promise<SuccessResponse<any>> = (payload: any) =>
+  request.post(getUrl(URL.company.UPDATE_USER_PASSWD), payload);

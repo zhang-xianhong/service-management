@@ -31,6 +31,7 @@
         <el-table-column label="操作" width="300">
           <template #default="scope">
             <el-button type="primary" size="mini" @click="openEditDialog(scope.row)">编辑</el-button>
+            <el-button type="primary" size="mini" @click="handleResetPasswd(scope.row)">重置密码</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -46,6 +47,35 @@
       ></packaged-pagination>
     </el-row>
     <AddPerson ref="refAddDialog" />
+    <el-dialog
+      title="重置密码"
+      v-model="resetDialogVisible"
+      width="500px"
+      @closed="closeResetDialog"
+      :close-on-click-modal="false"
+    >
+      <div>
+        <el-form :model="resetFormData" ref="resetDiagFormRef" :rules="resetFormRules">
+          <el-form-item label="密码" prop="newPassword" label-width="100px">
+            <el-tooltip :content="passwdMsg" placement="top" effect="light" style="margin-right: 5px">
+              <svg-icon icon-name="wenhao" icon-class="detail-icons__item"></svg-icon>
+            </el-tooltip>
+            <el-input
+              v-model.trim="resetFormData.newPassword"
+              placeholder="请输入新的密码"
+              show-password
+              style="width: 280px"
+            ></el-input>
+          </el-form-item>
+        </el-form>
+      </div>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button type="primary" @click="submitResetForm">保存</el-button>
+          <el-button @click="closeResetDialog">返回</el-button>
+        </span>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
@@ -55,7 +85,7 @@ import { ElMessageBox, ElMessage } from 'element-plus';
 import AddPerson from './components/AddPerson.vue';
 import PackagedPagination from '@/components/pagination/Index.vue';
 import { debounce } from 'lodash';
-import { getUserList, createUser, updateUser, delUser, updateUserStatus } from '@/api/company/users';
+import { getUserList, createUser, updateUser, delUser, updateUserStatus, resetPassWd } from '@/api/company/users';
 
 const USERSTATUS: any = {
   0: '启用',
@@ -82,6 +112,79 @@ const RES_CODE: any = {
   success: 0,
 };
 
+const passwdMsg = '长度在 8 到 16 个字符,至少1个大写字母，1个小写字母，1个数字和1个特殊字符($@$!%*?&)';
+
+// 密码校验
+function checkPasswd(passwd: string): boolean {
+  const szReg = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@!^#%&])[A-Za-z\d$@$!%*?&]{8,16}/;
+  return szReg.test(passwd);
+}
+const validatorPasswdPass = (rule: any, value: string, callback: Function) => {
+  if (!checkPasswd(value)) {
+    callback(new Error(passwdMsg));
+  }
+  callback();
+};
+const resetFormRules = {
+  newPassword: [
+    { required: true, message: '请输入新的密码', trigger: 'blur' },
+    { validator: validatorPasswdPass, trigger: 'blur' },
+  ],
+};
+
+// 初始密码生成
+function generatePasswd(len: number): string {
+  let length = Number(len);
+  // Limit length
+  if (length < 6) {
+    length = 6;
+  } else if (length > 16) {
+    length = 16;
+  }
+  const passwordArray = ['ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz', '1234567890', '@$!%*?&'];
+  const password = [];
+  let n = 0;
+  for (let i = 0; i < length; i++) {
+    // If password length less than 9, all value random
+    if (password.length < length - 4) {
+      // Get random passwordArray index
+      const arrayRandom = Math.floor(Math.random() * 4);
+      // Get password array value
+      const passwordItem = passwordArray[arrayRandom];
+      // Get password array value random index
+      // Get random real value
+      const item = passwordItem[Math.floor(Math.random() * passwordItem.length)];
+      password.push(item);
+    } else {
+      // If password large then 9, lastest 4 password will push in according to the random password index
+      // Get the array values sequentially
+      const newItem = passwordArray[n];
+      const lastItem = newItem[Math.floor(Math.random() * newItem.length)];
+      // Get array splice index
+      const spliceIndex = Math.floor(Math.random() * password.length);
+      password.splice(spliceIndex, 0, lastItem);
+      n = n + 1;
+    }
+  }
+  return password.join('');
+}
+
+// 复制功能
+function copyFun(content: string) {
+  const input = document.createElement('input');
+  input.setAttribute('readonly', 'readonly');
+  document.body.appendChild(input);
+  input.setAttribute('value', content);
+  input.select();
+  if (document.execCommand('copy')) {
+    document.execCommand('copy');
+    ElMessage({
+      type: 'success',
+      message: '复制成功!',
+    });
+  }
+  document.body.removeChild(input);
+}
 export default defineComponent({
   name: 'Person',
   components: { AddPerson, PackagedPagination },
@@ -123,6 +226,15 @@ export default defineComponent({
     const initAddDialog = () => {
       (refAddDialog.value as RefAddDialog).initDialog();
     };
+
+    // 重置密码
+    const resetDialog = reactive({
+      resetDialogVisible: false,
+      resetFormData: {
+        newPassword: '',
+        userId: 0,
+      },
+    });
     // 获取列表
     const getList = async () => {
       // tableState.loading = true;
@@ -130,7 +242,6 @@ export default defineComponent({
       if (code === RES_CODE.success) {
         tableState.total = data.count;
         tableState.tableData = data.rows || [];
-        console.log(' tableState', tableState.total);
       } else {
         (instance as any).proxy.$message({
           type: 'error',
@@ -252,8 +363,47 @@ export default defineComponent({
       getList();
     };
 
+    // 重置密码
+    const handleResetPasswd = (data: any) => {
+      const { id } = data;
+      resetDialog.resetFormData = {
+        userId: id,
+        newPassword: generatePasswd(12),
+      };
+      resetDialog.resetDialogVisible = true;
+    };
+    // 关闭重置密码
+    const closeResetDialog = () => {
+      resetDialog.resetDialogVisible = false;
+    };
+    const resetDiagFormRef: any = ref(null);
+    const submitResetForm = () => {
+      resetDiagFormRef.value.validate(async (valid: boolean) => {
+        if (valid) {
+          const { userId, newPassword } = resetDialog.resetFormData;
+          const { code } = await resetPassWd({
+            userId,
+            newPassword,
+          });
+          if (code === RES_CODE.success) {
+            copyFun(newPassword);
+            // 复制到剪切板上
+            (instance as any).proxy.$message({
+              type: 'success',
+              message: '密码重置成功,已复制到剪切板',
+            });
+          } else {
+            (instance as any).proxy.$message({
+              type: 'error',
+              message: '密码重置失败',
+            });
+          }
+        }
+      });
+    };
     return {
       ...toRefs(tableState),
+      ...toRefs(resetDialog),
       handleUpdateStatus,
       openAddDialog,
       openEditDialog,
@@ -264,6 +414,12 @@ export default defineComponent({
       USERSTATUS,
       handlePageSizeChange,
       handlePageChange,
+      resetFormRules,
+      handleResetPasswd,
+      closeResetDialog,
+      submitResetForm,
+      resetDiagFormRef,
+      passwdMsg,
     };
   },
 });

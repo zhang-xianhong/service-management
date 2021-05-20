@@ -5,7 +5,9 @@ export default {
   DEL_USER: ['/users/delete', '/mock/company/del.json'],
   UPDATE_USER_STATUS: ['/users/update/status', '/mock/company/status.json'],
   GET_DEPT_LIST: ['/dept', '/mock/company/depts.json'],
-  CREATE_DEPT: ['/dept', '/mock/company/create.json'],
-  DEL_DEPT: ['/dept/delete', '/mock/company/del.json'],
+  CREATE_DEPT: ['/department', '/mock/company/create.json'],
+  UPDATE_DEPT: ['/department/_', '/mock/company/create.json'],
+  DEL_DEPT: ['/department/delete/_', '/mock/company/del.json'],
   ADD_USER: ['/dept/user', '/mock/company/create.json'],
+  UPDATE_USER_PASSWD: ['/users/update/password', '/mock/company/create.json'],
 };

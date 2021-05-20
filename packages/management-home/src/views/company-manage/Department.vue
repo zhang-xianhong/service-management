@@ -7,47 +7,12 @@
       </el-col>
       <el-col :offset="10" :span="4" style="text-align: right">
         <el-input placeholder="请输入键名称" suffix-icon="el-icon-search"></el-input>
-        <!-- <span class="el-icon-setting"></span> -->
       </el-col>
     </el-row>
     <el-row>
       <el-col :span="6" style="background: #fff">
         <div class="user-tree">
           <el-scrollbar>
-            <!-- <el-tree
-              ref="userTreeRef"
-              :data="allDeptUser"
-              :default-expand-all="true"
-              :expand-on-click-node="false"
-              :highlight-current="true"
-              node-key="id"
-              @node-click="nodeClickHandle"
-              :props="treeProps"
-            >
-             <template #default="{ node }">
-                <div class="customNode">
-                  <svg-icon v-if="node.level < 3" icon-name="folder" icon-class="tree-node-folder"></svg-icon>
-                  <svg-icon
-                    v-if="node.level === 3"
-                    icon-name="member"
-                    icon-class="tree-node-member"
-                  ></svg-icon>
-                  <span>{{ node.label }}</span>
-                   <i
-                    v-if="node.level === 2"
-                    class="el-icon-circle-plus"
-                    style="float: right"
-                    @click.stop="handleAddPerson(node, data)"
-              ></i>
-              <template #default="{ data }">
-                <svg-icon v-if="data.children" icon-name="folder" icon-class="tree-node-folder"></svg-icon>
-                <svg-icon v-else icon-name="person" icon-class="tree-node-folder"></svg-icon>
-                <span style="z-index: 1; background: transparent">{{ data.name }}</span>
-              </template>
-               </div>
-              </template>
-            </el-tree>-->
-
             <el-tree
               ref="userTreeRef"
               node-key="id"
@@ -200,7 +165,7 @@ export default defineComponent({
       treeDataSource: [
         {
           label: '云智中心',
-          children: [],
+          _children: [],
         },
       ],
     });
@@ -238,6 +203,7 @@ export default defineComponent({
       ],
     };
 
+    // 获取部门数据
     const initDepartments = async () => {
       const { code, data } = await getTenentDepartment({ deptId: 0, level: 9 });
       if (code === 0) {
@@ -280,12 +246,13 @@ export default defineComponent({
       }
     };
     initDepartments();
+
     const allUsers = ref([]);
 
     // 添加子部门
     const handleAddDept = (): void => {
       // 判断当前选中的是不是部门
-      if (!treeData.currentNodeData.children) {
+      if (!treeData.currentNodeData._children) {
         (instance as any).proxy.$message({
           type: 'warning',
           message: '请选中一个部门！',
@@ -371,8 +338,8 @@ export default defineComponent({
     // 添加人员
     const handleAddPerson = (): void => {
       // 获取当前选中部门的节点id
-      treeSelectorRole.value = treeData.currentNodeData;
-      console.log('treeSelectorRef.value.', treeSelectorDept)
+      treeSelectorRole.value = treeData.currentNode;
+      console.log('treeSelectorRef.value.', treeSelectorDept);
       treeSelectorDept.value.show();
     };
 
@@ -396,6 +363,7 @@ export default defineComponent({
           status: userStatus[user.status as 0 | -1],
           gender: genderLabel[user.gender as 0 | 1],
         }));
+
         treeData.treeDataSource[0]._children = _.flow(
           _.reject({ isOwnerRole: true }),
           _.map((role: any) => ({
@@ -410,6 +378,7 @@ export default defineComponent({
             })(role.members),
           })),
         )(data.roles);
+        console.log('treeData.treeDataSource[0]', treeData.treeDataSource[0]);
         userList.value = [];
       }
     };
@@ -419,14 +388,16 @@ export default defineComponent({
       await initUserList();
       userTreeRef.value.setCurrentKey(role.id);
       const treeUser: any = _.find({ id: role.id })(treeData.treeDataSource[0]._children);
+      console.log('treeUser', treeUser);
       userList.value = _.intersectionWith((node: any, user: any) => node.id === user.id)(allUsers.value)(
-        treeUser.children,
+        treeUser._children,
       );
     };
 
     function nodeClickHandle(data: any, node: any): void {
-      reloadUserList(node);
+      // reloadUserList(node);
       treeData.currentNodeData = data;
+      console.log('treeData.currentNodeData', node);
       treeData.currentNode = node;
       console.log('allUsers.value', allUsers.value);
       if (node.level === 1) {
@@ -446,14 +417,23 @@ export default defineComponent({
     const deptDiagFormRef: any = ref(null);
     // 保存
     const submitConfigForm = () => {
-      deptDiagFormRef.value.validate((valid: boolean) => {
+      deptDiagFormRef.value.validate(async (valid: boolean) => {
         if (valid) {
-          createDept();
-          console.log('校验通过');
-          (instance as any).proxy.$message({
-            type: 'success',
-            message: '添加成功！',
+          const { code } = await createDept({
+            deptName: formData.deptName,
+            parentId: 0,
           });
+          if (code === RES_CODE.success) {
+            (instance as any).proxy.$message({
+              type: 'success',
+              message: '添加成功！',
+            });
+          } else {
+            (instance as any).proxy.$message({
+              type: 'error',
+              message: '添加失败！',
+            });
+          }
         }
       });
     };
@@ -503,7 +483,7 @@ export default defineComponent({
       deptDiagFormRef,
       treeProps,
       loadNode,
-      dataDone
+      dataDone,
     };
   },
 });
