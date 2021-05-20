@@ -4,9 +4,9 @@
       <el-button style="width: 120px" type="primary" @click="addTop" v-if="getShowBool('add')">新增顶级分类</el-button>
       <el-button
         style="width: 120px"
-        :type="currentNode.id !== -1 ? 'primary' : 'info'"
+        :type="currentNode.id === -1 || !treeFirstIdArray.includes(currentNode.id) ? 'info' : 'primary'"
         @click="addChild"
-        :disabled="currentNode.id === -1"
+        :disabled="currentNode.id === -1 || !treeFirstIdArray.includes(currentNode.id)"
         v-if="getShowBool('update')"
         >新增子级分类</el-button
       >
@@ -73,6 +73,7 @@ export default defineComponent({
   setup() {
     const tree: any = ref(null);
     const treeData: Ref<TreeData> = ref([]);
+    const treeFirstIdArray = ref([] as any);
     const allExpanded = ref(false);
     // 获取组件实例
     const instance = getCurrentInstance();
@@ -87,6 +88,7 @@ export default defineComponent({
     const loadTreeData = async () => {
       const { data } = await confApi.getClassificationList();
       treeData.value = data;
+      treeFirstIdArray.value = data.map((x: any) => x.id);
       currentNode.value.id = NULL_KEY;
       currentNode.value.name = '';
     };
@@ -239,6 +241,7 @@ export default defineComponent({
       addChild,
       addTop,
       getShowBool,
+      treeFirstIdArray,
     };
   },
 });

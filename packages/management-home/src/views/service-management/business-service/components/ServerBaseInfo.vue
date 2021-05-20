@@ -24,8 +24,9 @@
           v-model="classificationValue"
           :options="classifications"
           :show-all-levels="false"
-          :props="{ multiple: true, label: 'name', value: 'id' }"
+          :props="{ multiple: false, label: 'name', value: 'id' }"
           @change="selectClassification"
+          filterable
           clearable
         ></el-cascader>
       </el-form-item>
@@ -146,14 +147,14 @@ export default {
 
     // 分类选择
     const selectClassification = (value: Array<Array<string>>) => {
-      formData.classification = value.map((item: Array<string>) => item[item.length - 1])?.join(',');
+      // formData.classification = value.map((item: Array<string>) => item[item.length - 1])?.join(',');
+      formData.classification = value ? value.join(',') : '';
     };
 
     const { tagValue, tagNames } = useTags(formData.tag, props.tags);
 
     // 标签选择
     const selectTag = (tags: string[]) => {
-      console.log(tags, 666666);
       formData.tag = tags.join(',');
     };
 

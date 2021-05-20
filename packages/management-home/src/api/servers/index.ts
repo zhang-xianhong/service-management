@@ -36,10 +36,10 @@ export const updateServiceApis: (payload: object, id: string) => Promise<Success
 
 export const getLogRuntime: (
   name: string,
-  realtimeTS?: string | number,
+  realtimeTs?: string | number,
   keyword?: any,
-) => Promise<SuccessResponse<any>> = (name: string, realtimeTS?: string | number, keyword?: any) =>
-  request.get(getUrl(URL.service.GET_LOG_RUNTIME), { params: { name, realtimeTS, keyword } });
+) => Promise<SuccessResponse<any>> = (name: string, realtimeTs?: string | number, keyword?: any) =>
+  request.get(getUrl(URL.service.GET_LOG_RUNTIME), { params: { name, realtimeTs, keyword } });
 
 export const getChanges: (id: any) => Promise<SuccessResponse<any>> = (id: string) =>
   request.get(getUrl(URL.service.GET_CHANGES, id));
@@ -55,3 +55,6 @@ export const stopService: (payload: object) => Promise<SuccessResponse<any>> = (
 
 export const serviceNameTest = (payload: any): Promise<SuccessResponse<any>> =>
   request.post(getUrl(URL.service.SERVICE_NAME_TEST), payload);
+
+export const getServiceTraceId: (serviceId: any) => Promise<SuccessResponse<any>> = (serviceId: any) =>
+  request.get(getUrl(URL.service.GET_SERVICE_TRACE_ID), { params: { serviceId } });

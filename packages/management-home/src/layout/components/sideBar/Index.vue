@@ -1,6 +1,6 @@
 <template>
   <keep-alive>
-    <el-scrollbar wrap-class="scrollbar-wrapper" ref="scrollbar">
+    <el-scrollbar wrap-class="scrollbar-wrapper">
       <el-menu
         :collapse="isCollapse"
         :background-color="menuVariables.menuBg"
@@ -39,6 +39,7 @@ export default defineComponent({
       // eslint-disable-next-line
       // @ts-ignore
       const route = proxy.$route;
+      console.log(proxy, route);
       const { meta, path } = route;
       if (meta.activeMenu) {
         return meta.activeMenu;
@@ -46,10 +47,6 @@ export default defineComponent({
       return path;
     });
     const permissionRoutes = ref(getComputedRoutes() as any);
-    const logs = (res: any) => {
-      console.log(res, 'this is log message');
-      return res;
-    };
     const scrollbar = ref(null as any);
 
     onMounted(() => {
@@ -61,7 +58,6 @@ export default defineComponent({
       activeMenu,
       permissionRoutes,
       getLink,
-      logs,
       scrollbar,
     };
   },

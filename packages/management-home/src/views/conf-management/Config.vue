@@ -2,10 +2,7 @@
   <div class="general">
     <el-row>
       <el-col :span="6" style="text-align: left">
-        <el-button type="primary" @click="addNewConfig" style="width: 90px" v-if="getShowBool('add')">新建</el-button>
-        <el-button @click="issueConfig" :disabled="!multipleSelection.length" v-if="getShowBool('update')"
-          >配置下发</el-button
-        >
+        <el-button type="primary" @click="addNewConfig" style="width: 90px">新建</el-button>
       </el-col>
       <el-col :offset="8" :span="10" style="text-align: right">
         <el-input

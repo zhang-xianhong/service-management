@@ -6,7 +6,7 @@
     element-loading-background="rgba(0, 0, 0, 0.7)"
   >
     <div class="mask" v-if="maskText">{{ maskText }}</div>
-    <div class="detail" :class="{ 'cannot-operate': !!maskText }">
+    <div class="detail">
       <el-row>
         <el-col :span="16" v-if="getShowBool('init')">
           <el-button
@@ -61,65 +61,67 @@
           </div>
         </el-col>
       </el-row>
-      <el-row :style="{ height: computedHeight, background: '#fff', padding: '12px', marginBottom: '10px' }">
-        <el-col :span="componentName ? 20 : 24" style="height: 100%">
-          <el-row>
-            <!-- 服务下拉选择框 -->
-            <el-select v-model="currentServiceId" placeholder="请选择" @change="selectService">
-              <el-option
-                v-for="server in serverList"
-                :key="server.id"
-                :value="server.id"
-                :label="server.name"
-              ></el-option>
-            </el-select>
-          </el-row>
-          <div class="data-model__container">
-            <erd
-              v-loading="erdLoading"
-              width="100%"
-              height="100%"
-              v-model="modelList"
-              :serviceStatus="serverInfo.status"
-              @model-change="initModelList"
-              @select-change="modelSelected"
-            ></erd>
-          </div>
-          <!-- <div v-if="!isShowDownDrawer">
-            <div>
-              服务代码：
-              <a :href="serverInfo.sshHost + (serverInfo.deposit ? serverInfo.deposit : '')" target="_blank">{{
-                serverInfo.sshHost + (serverInfo.deposit ? serverInfo.deposit : '')
-              }}</a>
+      <div :class="{ 'cannot-operate': !!maskText }">
+        <el-row :style="{ height: computedHeight, background: '#fff', padding: '12px', marginBottom: '10px' }">
+          <el-col :span="componentName ? 20 : 24" style="height: 100%">
+            <el-row>
+              <!-- 服务下拉选择框 -->
+              <el-select v-model="currentServiceId" placeholder="请选择" @change="selectService">
+                <el-option
+                  v-for="server in serverList"
+                  :key="server.id"
+                  :value="server.id"
+                  :label="server.name"
+                ></el-option>
+              </el-select>
+            </el-row>
+            <div class="data-model__container">
+              <erd
+                v-loading="erdLoading"
+                width="100%"
+                height="100%"
+                v-model="modelList"
+                :serviceStatus="serverInfo.status"
+                @model-change="initModelList"
+                @select-change="modelSelected"
+              ></erd>
             </div>
-          </div> -->
-        </el-col>
-        <el-col v-if="componentName" :span="4" style="border-left: 1px solid #bbbbbb; height: 100%">
-          <template v-if="componentName">
+            <!-- <div v-if="!isShowDownDrawer">
+              <div>
+                服务代码：
+                <a :href="serverInfo.sshHost + (serverInfo.deposit ? serverInfo.deposit : '')" target="_blank">{{
+                  serverInfo.sshHost + (serverInfo.deposit ? serverInfo.deposit : '')
+                }}</a>
+              </div>
+            </div> -->
+          </el-col>
+          <el-col v-if="componentName" :span="4" style="border-left: 1px solid #bbbbbb; height: 100%">
+            <template v-if="componentName">
+              <keep-alive>
+                <component
+                  :is="componentName"
+                  :data="computedComponentData"
+                  :tags="tags"
+                  :classifications="classifications"
+                  :id="currentServiceId"
+                ></component>
+              </keep-alive>
+            </template>
+          </el-col>
+        </el-row>
+        <transition name="slide-fade">
+          <div v-if="isShowDownDrawer" class="detail-drawer__container">
             <keep-alive>
               <component
-                :is="componentName"
-                :data="computedComponentData"
-                :tags="tags"
-                :classifications="classifications"
+                :is="drawerName"
                 :id="currentServiceId"
+                :modelList="modelList.tables"
+                @back="isShowDownDrawer = false"
               ></component>
             </keep-alive>
-          </template>
-        </el-col>
-      </el-row>
-      <transition name="slide-fade">
-        <div v-if="isShowDownDrawer" class="detail-drawer__container">
-          <keep-alive>
-            <component
-              :is="drawerName"
-              :id="currentServiceId"
-              :modelList="modelList.tables"
-              @back="isShowDownDrawer = false"
-            ></component>
-          </keep-alive>
-        </div>
-      </transition>
+          </div>
+        </transition>
+      </div>
 
       <el-dialog title="日志" v-model="logDialogVisible" width="80%" @close="clearLogInterVal">
         <!--      <el-input type="textarea" :rows="25" :autosize="{ maxRows: 25, minRows: 25 }" v-model="logData"></el-input>-->
@@ -351,9 +353,6 @@ export default {
       }
       if (+status !== 21) {
         buttons.value[2].disabled = true;
-      }
-      if (+status === 22 || +status === 12) {
-        buttons.value[1].disabled = true;
       }
       buttons.value[buttons.value.length - 1].disabled = false;
       buttons.value[0].label = +initTimes === 0 ? '初始化' : '同步配置';
@@ -609,7 +608,9 @@ export default {
 }
 .log-item {
   width: 100%;
-  margin-bottom: 20px;
+  margin: 10px;
+  font-size: 14px;
+  color: rgb(255, 255, 255, 0.8);
 }
 .log-item-title {
   color: red;

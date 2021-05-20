@@ -1,5 +1,6 @@
 import { ref } from 'vue';
 import { getLogRuntime } from '@/api/servers';
+import _ from 'lodash';
 
 export const logDialogVisible = ref(false);
 export const logData = ref([] as any);
@@ -10,10 +11,9 @@ export const getLogs = (name = 'sa-ci-cd', keyword?: any) => {
   getLogRuntime(name, realtime.value, keyword).then((res) => {
     realtime.value = res.data.realtimeTs;
     const dataArr = res.data.businessLogSet.content;
-    // const narr = [...logData.value, ...dataArr];
-    // narr.reverse();
-    // logData.value = narr.splice(0, 50).reverse();
-    logData.value = dataArr.slice(-50);
+    let narr = _.differenceBy(dataArr, logData.value, 'logId');
+    narr = [...logData.value, ...narr];
+    logData.value = narr.slice(-500);
     const ele = document.getElementById('log_content') as any;
     setTimeout(() => {
       ele.scrollTop = ele.scrollHeight;
@@ -37,5 +37,8 @@ export const clearLogInterVal = () => {
 };
 
 export function formatLogData(str: string) {
-  return str.replace(/^(\d{4}(-\d{2}){2}\s\d{2}(:\d{2}){2},\d{3})/gm, (a, b) => `<span style="color: red">${b}</span>`);
+  return str.replace(
+    /^(\d{4}(-\d{2}){2}\s\d{2}(:\d{2}){2},\d{3})/gm,
+    (a, b) => `<span style="color: red; margin-right: 5px">${b}</span>`,
+  );
 }

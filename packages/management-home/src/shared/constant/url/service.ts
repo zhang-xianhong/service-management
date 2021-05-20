@@ -15,4 +15,5 @@ export default {
   START_SERVICE: ['/services/start'],
   STOP_SERVICE: ['/services/stop'],
   SERVICE_NAME_TEST: ['/services/name/usable'],
+  GET_SERVICE_TRACE_ID: ['/logs/runtime/traceid/', '/mock/services/service-trace-id.json'],
 };
