@@ -35,24 +35,6 @@
           <el-input v-model.trim="formData.password" disabled style="width: 280px" show-password></el-input>
           <el-button type="text" style="margin-left: 20px" @click="handleCopy">复制</el-button>
         </el-form-item>
-        <el-form-item label="登录密码" prop="password" :label-width="labelWidth" v-else>
-          <el-tooltip
-            content="重置密码后复制密码，保存后可用新密码登录"
-            placement="top"
-            effect="light"
-            style="margin-right: 5px"
-          >
-            <svg-icon icon-name="wenhao" icon-class="detail-icons__item"></svg-icon>
-          </el-tooltip>
-          <el-input
-            v-model.trim="formData.password"
-            :disabled="disable"
-            placeholder="请输入密码"
-            style="width: 280px"
-            show-password
-          ></el-input>
-          <el-button type="text" style="margin-left: 20px" @click="handleReset" :disabled="disable">重置</el-button>
-        </el-form-item>
       </el-form>
     </div>
     <template #footer>
@@ -61,7 +43,7 @@
         <el-button @click="closeDialog">返回</el-button>
       </span>
       <span class="dialog-footer" v-else>
-        <el-button type="primary" @click="() => (disable = false)" v-if="disable">编辑</el-button>
+        <el-button type="primary" @click="enableEdit" v-if="disable">编辑</el-button>
         <el-button type="primary" @click="submitConfigForm" v-else>保存</el-button>
         <el-button @click="closeDialog">返回</el-button>
       </span>
@@ -81,7 +63,6 @@ interface DialogState {
   formData: any;
 }
 const labelWidth = '100px';
-const defaultPasswd = 'Tt@00000';
 
 // 手机号校验
 function checkMobile(value: string): boolean {
@@ -103,18 +84,6 @@ function checkMail(szMail: string): boolean {
 const validatorMailPass = (rule: any, value: string, callback: Function) => {
   if (!checkMail(value)) {
     callback(new Error('请输入正确的邮箱格式'));
-  }
-  callback();
-};
-
-// 密码校验
-function checkPasswd(passwd: string): boolean {
-  const szReg = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@!^#%&])[A-Za-z\d$@$!%*?&]{8,16}/;
-  return szReg.test(passwd);
-}
-const validatorPasswdPass = (rule: any, value: string, callback: Function) => {
-  if (!checkPasswd(value)) {
-    callback(new Error('长度在 8 到 16 个字符,至少1个大写字母，1个小写字母，1个数字和1个特殊字符($@$!%*?&)'));
   }
   callback();
 };
@@ -179,10 +148,6 @@ export default defineComponent({
         { validator: validatorMailPass, trigger: 'blur' },
       ],
       status: [{ required: true, message: '请选择账户状态', trigger: 'change' }],
-      password: [
-        { required: true, message: '请输入密码', trigger: 'blur' },
-        { validator: validatorPasswdPass, trigger: 'blur' },
-      ],
     };
 
     // 初始密码生成
@@ -226,9 +191,9 @@ export default defineComponent({
     const openDialog = (type: string, data: any): void => {
       if (type === 'edit') {
         dialogContent.isEdit = true;
+        dialogContent.title = '人员详情';
         dialogContent.disable = true;
         dialogContent.formData = data;
-        dialogContent.formData.password = defaultPasswd;
         dialogContent.formData.username = data.userName;
       } else {
         dialogContent.isEdit = false;
@@ -272,9 +237,7 @@ export default defineComponent({
           if (!dialogContent.isEdit) {
             handleCreate(dialogContent.formData);
           } else {
-            if (dialogContent.formData.password === defaultPasswd) {
-              delete dialogContent.formData.password;
-            }
+            delete dialogContent.formData.password;
             handleEdit(dialogContent.formData);
             closeDialog();
           }
@@ -308,6 +271,10 @@ export default defineComponent({
     const handleReset = () => {
       dialogContent.formData.password = '';
     };
+    const enableEdit = () => {
+      dialogContent.disable = false;
+      dialogContent.title = '编辑人员';
+    };
     return {
       ...toRefs(dialogContent),
       closeDialog,
@@ -320,6 +287,7 @@ export default defineComponent({
       labelWidth,
       handleCopy,
       handleReset,
+      enableEdit,
     };
   },
 });

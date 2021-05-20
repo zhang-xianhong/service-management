@@ -27,7 +27,7 @@ export const getComputedRoutes = () =>
     })
     .filter((x: any) => x);
 
-export const getPermissionRoutes = function(config = getComputedRoutes() as any) {
+export const getPermissionRoutes = function (config = getComputedRoutes() as any) {
   const route: Array<RouteRecordRaw> = [];
   const arr = Object.keys(userMenus.value);
   // const permissionArr = localStorage.permissionArr ? JSON.parse(localStorage.permissionArr) : []; // 权限
