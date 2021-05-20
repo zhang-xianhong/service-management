@@ -278,6 +278,7 @@ const routes: Array<RouteRecordRaw> = [
           title: 'iframe传参管理',
           icon: 'el-icon-eleme',
           isRootLevel: false,
+          id: 12345,
         },
       },
     ],
@@ -290,7 +291,7 @@ const routes: Array<RouteRecordRaw> = [
       title: '公司管理',
       icon: 'el-icon-eleme',
       isRootLevel: true,
-      id: 9,
+      id: 11,
     },
     children: [
       {
