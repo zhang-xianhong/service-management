@@ -34,16 +34,6 @@
           </template>
         </el-table-column>
       </el-table>
-      <!-- <packaged-pagination
-        v-if="total"
-        :current-page="searchProps.page"
-        :page-size="searchProps.pageSize"
-        :page-sizes="[10, 20, 50]"
-        layout="sizes, prev, pager, next, jumper"
-        :total="total"
-        @size-change="handlePageSizeChange"
-        @current-change="handlePageChange"
-      ></packaged-pagination>-->
       <packaged-pagination
         v-if="total"
         :current-page="searchProps.page"
@@ -175,7 +165,7 @@ export default defineComponent({
       }
     };
 
-    // 删除 await deleteConfig(rowData.id);
+    // 删除
     const handleDel = (): void => {
       ElMessageBox.confirm(`是否删除已选项?`, '提示', {
         confirmButtonText: '确定',
@@ -273,7 +263,7 @@ export default defineComponent({
       refAddDialog,
       USERSTATUS,
       handlePageSizeChange,
-      handlePageChange
+      handlePageChange,
     };
   },
 });
