@@ -242,6 +242,7 @@ const routes: Array<RouteRecordRaw> = [
     component: Layout,
     meta: {
       isRootLevel: true,
+      hidden: true,
     },
     children: [
       {
