@@ -19,7 +19,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, getCurrentInstance, ref, onMounted } from 'vue';
+import { defineComponent, computed, getCurrentInstance, ref } from 'vue';
 import SidebarItem from '@/layout/components/sideBar/SidebarItem.vue';
 import menuVariables from '@/styles/menu.scss';
 import { getComputedRoutes } from '@/layout/messageCenter/routerRef';
@@ -47,18 +47,13 @@ export default defineComponent({
       return path;
     });
     const permissionRoutes = ref(getComputedRoutes() as any);
-    const scrollbar = ref(null as any);
 
-    onMounted(() => {
-      scrollbar.value.$forceUpdate();
-    });
     return {
       menuVariables,
       isCollapse,
       activeMenu,
       permissionRoutes,
       getLink,
-      scrollbar,
     };
   },
 });
