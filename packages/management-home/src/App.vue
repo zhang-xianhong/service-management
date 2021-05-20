@@ -1,12 +1,6 @@
 <template>
-  <div
-    class="apps"
-    v-loading="loadings"
-    element-loading-text="拼命加载中"
-    element-loading-spinner="el-icon-loading"
-    element-loading-background="rgba(0, 0, 0, 0.7)"
-  >
-    <router-view v-if="userInfo" />
+  <div class="apps">
+    <router-view></router-view>
   </div>
 </template>
 
