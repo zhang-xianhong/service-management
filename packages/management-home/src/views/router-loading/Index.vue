@@ -13,7 +13,6 @@ export default defineComponent({
     const router = useRouter();
     const route = useRoute();
     if (!routerLoading.value) {
-      console.log(router, route.redirectedFrom);
       router.push(route.redirectedFrom?.path || '/');
     }
   },

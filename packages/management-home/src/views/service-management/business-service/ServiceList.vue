@@ -379,7 +379,6 @@ export default defineComponent({
     }
     function getCascaderForm(res: any) {
       serviceDetail.classification = res;
-      console.log(res, serviceDetail.classification);
     }
 
     // 筛选
@@ -502,7 +501,6 @@ export default defineComponent({
       tagTitleVisiable.value = false;
       blackHoverVisible.value = false;
       searchForList();
-      console.log('111111');
     }
     onBeforeUnmount(() => {
       blackHoverclick();

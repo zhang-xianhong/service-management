@@ -457,7 +457,7 @@ export default {
 
     const enterLogs = () => {
       getTreaceId().then((res) => {
-        console.log(res, '2e323');
+        console.log(res);
       });
     };
 

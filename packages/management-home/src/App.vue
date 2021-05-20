@@ -40,7 +40,6 @@ export default defineComponent({
       });
       userMenus.value = menuObj;
       userProjectList.value = projects;
-      console.log(menuObj, 'this is userinfo');
       resetPremissionRouter();
       loadings.value = false;
       routerLoading.value = false;

@@ -150,7 +150,6 @@ export default {
 
     // 获取服务配置数据
     const getTableData = async () => {
-      console.log(props.id, 666);
       const { data } = await getServiceConfig(String(props.id));
       state.tableData = data.map((item: any) => ({ ...item, ...{ isEdit: false } }));
       state.tableData.push({ name: '', value: '', defaultValue: '', type: '', version: '', isEdit: true });

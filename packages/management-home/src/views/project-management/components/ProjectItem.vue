@@ -71,7 +71,6 @@ export default defineComponent({
     const src = ref('');
     const changeSelectPic = (res: any) => {
       const { files } = res.target;
-      console.log(files[0], 'this is files message');
       if (files[0].size > 10 * 1024 * 1024) {
         return Message.warning('上传图片不得大于10Mb');
       }
