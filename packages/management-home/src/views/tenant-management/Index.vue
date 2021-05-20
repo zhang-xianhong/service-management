@@ -16,6 +16,7 @@ import CompanyInfo from './components/CompanyInfo.vue';
 import UserInfo from './components/UserInfo.vue';
 import ManagerInfo from './components/ManagerInfo.vue';
 import { getTenantDetail, updateTenant } from '@/api/tenant';
+import { userInfo } from '@/layout/messageCenter/user-info';
 
 export default {
   name: 'TenantEdit',
@@ -28,9 +29,6 @@ export default {
     // 组件实例
     const instance = getCurrentInstance();
 
-    // TODO: 后续从用户信息中获取，目前先写死
-    const tenantId = '1';
-
     const isEdit = ref(false);
 
     // 租户详情
@@ -40,14 +38,14 @@ export default {
     } as any);
 
     const getDetail = async () => {
-      const { data } = await getTenantDetail(tenantId);
+      const { data } = await getTenantDetail(userInfo.value.tenantId);
       tenantDetail.value = data;
     };
 
     getDetail();
 
     const onSave = async () => {
-      const { code } = await updateTenant(tenantId, {
+      const { code } = await updateTenant(userInfo.value.tenantId, {
         ...tenantDetail.value,
         ...{ contact: undefined, manager: undefined },
       });

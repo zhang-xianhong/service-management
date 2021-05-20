@@ -5,6 +5,15 @@ import { setRouterRef, getPermissionRoutes } from '@/layout/messageCenter/router
 
 export const baseRoutes: Array<RouteRecordRaw> = [
   {
+    path: '/no-right',
+    name: 'noRight',
+    component: () => import('@/views/no-right/Index.vue'),
+    meta: {
+      isRootLevel: false,
+      title: '没有权限',
+    },
+  },
+  {
     path: '/login',
     name: 'login',
     component: () => import('@/views/login/Index.vue'),
@@ -14,12 +23,12 @@ export const baseRoutes: Array<RouteRecordRaw> = [
     },
   },
   {
-    path: '/no-right',
-    name: 'noRight',
-    component: () => import('@/views/no-right/Index.vue'),
+    path: '/forget-password',
+    name: 'password',
+    component: () => import('@/views/login/ForgetPassword.vue'),
     meta: {
       isRootLevel: false,
-      title: '没有权限',
+      title: '密码找回',
     },
   },
   {
@@ -31,25 +40,36 @@ export const baseRoutes: Array<RouteRecordRaw> = [
       title: '404',
     },
   },
+  {
+    path: '/router-loading',
+    name: 'RouterLoading',
+    component: () => import('@/views/router-loading/Index.vue'),
+    meta: {
+      isRootLevel: false,
+      title: '信息获取中...',
+    },
+  },
 ];
 
 const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
     redirect: '/tenant-management',
+    name: 'Dashboard',
     meta: {
       isRootLevel: true,
-      id: 2,
       hidden: true,
     },
   },
   {
     path: '/tenant-management',
     redirect: '/tenant-detail',
+    name: 'TenantManagement',
     component: Layout,
     meta: {
       isRootLevel: true,
       id: 2,
+      hidden: false,
     },
     children: [
       {
@@ -61,6 +81,7 @@ const routes: Array<RouteRecordRaw> = [
           icon: 'el-icon-eleme',
           isRootLevel: false,
           id: 2,
+          hidden: false,
         },
       },
     ],
@@ -68,12 +89,14 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/project-management',
     redirect: '/project-list',
+    name: 'ProjectManagement',
     component: Layout,
     meta: {
       isRootLevel: true,
       title: '项目管理',
       icon: 'el-icon-eleme',
       id: 4,
+      hidden: false,
     },
     children: [
       {
@@ -85,6 +108,7 @@ const routes: Array<RouteRecordRaw> = [
           icon: 'el-icon-eleme',
           isRootLevel: false,
           id: 4,
+          hidden: false,
         },
       },
       {
@@ -106,12 +130,13 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/service-management',
     redirect: '/service-list',
+    name: 'ServiceManagement',
     component: Layout,
     meta: {
       title: '服务管理',
       icon: 'el-icon-eleme',
       isRootLevel: true,
-      id: 7,
+      id: 16,
     },
     children: [
       {
@@ -122,7 +147,7 @@ const routes: Array<RouteRecordRaw> = [
           title: '业务服务',
           icon: 'el-icon-eleme',
           isRootLevel: false,
-          id: 7,
+          id: 16,
         },
       },
       {
@@ -135,7 +160,7 @@ const routes: Array<RouteRecordRaw> = [
           isRootLevel: false,
           hidden: true,
           activeMenu: '/service-management/service-list',
-          id: 7,
+          id: 16,
         },
       },
       // {
@@ -194,7 +219,7 @@ const routes: Array<RouteRecordRaw> = [
           title: '分类信息',
           icon: 'el-icon-eleme',
           isRootLevel: false,
-          id: 8,
+          id: 17,
         },
       },
       {
@@ -205,7 +230,7 @@ const routes: Array<RouteRecordRaw> = [
           title: '标签信息',
           icon: 'el-icon-eleme',
           isRootLevel: false,
-          id: 8,
+          id: 18,
         },
       },
       {
@@ -216,7 +241,7 @@ const routes: Array<RouteRecordRaw> = [
           title: '数据类型',
           icon: 'el-icon-eleme',
           isRootLevel: false,
-          id: 8,
+          id: 19,
         },
       },
       {
@@ -228,7 +253,7 @@ const routes: Array<RouteRecordRaw> = [
           icon: 'el-icon-eleme',
           hidden: true,
           isRootLevel: false,
-          id: 8,
+          id: 19,
         },
       },
       {
@@ -239,7 +264,7 @@ const routes: Array<RouteRecordRaw> = [
           title: '通用配置',
           icon: 'el-icon-eleme',
           isRootLevel: false,
-          id: 8,
+          id: 20,
         },
       },
     ],
@@ -247,9 +272,11 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/iframe-management',
     redirect: '/iframe-detail',
+    name: 'IframeManagement',
     component: Layout,
     meta: {
       isRootLevel: true,
+      hidden: true,
     },
     children: [
       {
@@ -260,7 +287,7 @@ const routes: Array<RouteRecordRaw> = [
           title: 'iframe传参管理',
           icon: 'el-icon-eleme',
           isRootLevel: false,
-          id: 2,
+          id: 12345,
         },
       },
     ],
@@ -273,7 +300,7 @@ const routes: Array<RouteRecordRaw> = [
       title: '公司管理',
       icon: 'el-icon-eleme',
       isRootLevel: true,
-      id: 9,
+      id: 11,
     },
     children: [
       {
@@ -284,7 +311,7 @@ const routes: Array<RouteRecordRaw> = [
           title: '人员管理',
           icon: 'el-icon-eleme',
           isRootLevel: false,
-          id: 9,
+          id: 11,
         },
       },
       // {
@@ -300,6 +327,41 @@ const routes: Array<RouteRecordRaw> = [
       // }
     ],
   },
+  {
+    path: '/publish',
+    name: 'Publish',
+    component: Layout,
+    meta: {
+      title: '发布管理',
+      icon: 'el-icon-eleme',
+      isRootLevel: true,
+      id: 10,
+    },
+    children: [
+      {
+        path: 'apply',
+        component: () => import(/* webpackChunkName: "general" */ '@/views/demands/publish/Apply.vue'),
+        name: 'PublishApply',
+        meta: {
+          title: '发布申请',
+          icon: 'el-icon-eleme',
+          isRootLevel: false,
+          id: 9,
+        },
+      },
+      {
+        path: 'review',
+        component: () => import(/* webpackChunkName: "general" */ '@/views/demands/publish/Review.vue'),
+        name: 'PublishReview',
+        meta: {
+          title: '发布审核',
+          icon: 'el-icon-eleme',
+          isRootLevel: false,
+          id: 10,
+        },
+      },
+    ],
+  },
 ];
 
 export const reCreateRouter = (routes: Array<RouteRecordRaw>): Router =>
@@ -313,21 +375,25 @@ export const reCreateRouterMatcher = (routes: Array<RouteRecordRaw>): RouterMatc
 // eslint-disable-next-line
 let router = reCreateRouter([...baseRoutes]);
 
-localStorage.setItem('permissionArr', JSON.stringify(['Dashboard']));
+export const resetRouter = (routes: Array<RouteRecordRaw>): void => {
+  // router = reCreateRouter(routes);
+  router.getRoutes().forEach((x: any) => {
+    router.removeRoute(x.name);
+  });
+  routes.forEach((x) => {
+    router.addRoute(x);
+  });
+  setRouterRef(reCreateRouter(routes));
+};
 
 export const resetPremissionRouter = () => {
-  router = reCreateRouter(getPermissionRoutes([...routes, ...baseRoutes]));
+  const routed = getPermissionRoutes([...routes, ...baseRoutes]);
+  routed[0].redirect = routed[1].path;
+  resetRouter(routed);
   setRouterRef(router);
 };
 
-if (localStorage.permissionArr) {
-  resetPremissionRouter();
-}
-
-export const resetRouter = (routes: Array<RouteRecordRaw>): void => {
-  router = reCreateRouter(routes);
-  setRouterRef(router);
-};
+resetPremissionRouter();
 
 export const alloverRouter = () => reCreateRouter([...baseRoutes, ...routes]);
 setRouterRef(router);

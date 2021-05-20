@@ -29,3 +29,9 @@ export const validateCompanyName: (name: string) => Promise<SuccessResponse<any>
 
 export const validateLicense: (license: string) => Promise<SuccessResponse<any>> = (license: string) =>
   request.post(getUrl(URL.tenant.VALIDATE_LICENSE), { license });
+
+export const validateEngAbbr: (engAbbr: string) => Promise<SuccessResponse<any>> = (engAbbr: string) =>
+  request.post(getUrl(URL.tenant.VALIDATE_ENGABBR), { engAbbr });
+
+export const validateAccount: (account: string) => Promise<SuccessResponse<any>> = (account: string) =>
+  request.post(getUrl(URL.tenant.VALIDATE_ACCOUNT), { account });

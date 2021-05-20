@@ -10,7 +10,7 @@
       <div>
         <div class="title">
           项目信息
-          <span class="edit-btn" v-if="!editMode" @click="editMode = true">编辑</span>
+          <span class="edit-btn" v-if="!editMode && getShowBool('update')" @click="editMode = true">编辑</span>
         </div>
         <basic-info-form
           :project-detail="projectDetail"
@@ -83,6 +83,7 @@ import { ElMessageBox } from 'element-plus';
 import { getMemberList, getProjectDetail, deleteMember } from '@/api/project/project';
 import { getTenentDepartment } from '@/api/tenant';
 import { userProjectList } from '@/layout/messageCenter/user-info';
+import { getShowBool } from '@/utils/permission-show-module';
 
 const userStatus = {
   '-1': '冻结',
@@ -301,6 +302,7 @@ export default {
       reloadUserList,
       otherRoleUser,
       userProjectList,
+      getShowBool,
     };
   },
 };

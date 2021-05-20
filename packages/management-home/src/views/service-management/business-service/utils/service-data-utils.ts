@@ -37,7 +37,6 @@ export function refreshServiceList(payload = {} as any) {
       delete data[x];
     }
   });
-  console.log(data, 'this is data');
   return getServiceList(data).then((res) => {
     ownersMap.value = {};
     if (res.data.ownerUsers) {
@@ -105,7 +104,6 @@ export const getClassifications = () => {
     const ids = { children: res.data };
     deleteBlankArray(ids);
     sorts.value = ids.children;
-    console.log(sorts.value, sortMap.value);
   });
 };
 

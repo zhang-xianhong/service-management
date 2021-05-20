@@ -18,7 +18,9 @@
         <span>{{ dataObj.name }}</span>
         <span class="flex_flow_right">
           <span class="cricle-class" :class="{ using: dataObj.status === 1, block: dataObj.status === 0 }"></span>
-          <span @click.stop="deleteProject" class="close-project"><i class="el-icon-close"></i></span>
+          <span @click.stop="deleteProject" class="close-project" v-if="deleteOrNot"
+            ><i class="el-icon-close"></i
+          ></span>
         </span>
       </div>
       <div class="project-item_mess"><label>负责人</label>{{ dataObj.ownerstr }}</div>
@@ -38,6 +40,7 @@
 import { defineComponent, getCurrentInstance, ref } from 'vue';
 import { imgUpload, updateProject } from '@/api/project/project';
 import Message from 'element-plus/es/el-message';
+import { ElMessage } from 'element-plus';
 
 export default defineComponent({
   name: 'ProjectItem',
@@ -54,13 +57,20 @@ export default defineComponent({
         accessType: '永久',
       }),
     },
+    deleteOrNot: {
+      type: Boolean,
+      default: () => true,
+    },
+    updateOrNot: {
+      type: Boolean,
+      default: () => true,
+    },
   },
   setup(props, ctx) {
     const selectPic = ref(null as any);
     const src = ref('');
     const changeSelectPic = (res: any) => {
       const { files } = res.target;
-      console.log(files[0], 'this is files message');
       if (files[0].size > 10 * 1024 * 1024) {
         return Message.warning('上传图片不得大于10Mb');
       }
@@ -80,7 +90,11 @@ export default defineComponent({
     };
     const changePic = (res: any) => {
       console.log('change picture', res);
-      selectPic.value.click();
+      if (props.updateOrNot) {
+        selectPic.value.click();
+      } else {
+        ElMessage.warning('暂无更新权限');
+      }
     };
 
     const levelArr = ['', '统一级', '行业级', '租户级'];

@@ -1,9 +1,9 @@
 <template>
   <el-row>
-    <el-col :span="6" style="text-align: left;">
+    <el-col :span="6" style="text-align: left">
       <el-button type="primary" icon="el-icon-plus" style="width: 90px" @click="openCreateDialog">新增</el-button>
     </el-col>
-    <el-col :span="6" :offset="12" style="text-align: right;">
+    <el-col :span="6" :offset="12" style="text-align: right">
       <el-input
         placeholder="请输入项目名称"
         style="width: 100%"
@@ -13,7 +13,7 @@
       ></el-input>
     </el-col>
   </el-row>
-  <el-row style="background: #fff;">
+  <el-row style="background: #fff">
     <div style="background: #fff; width: 100%" v-loading="loading" element-loading-text="数据加载中...">
       <div class="application-list_content">
         <application-card
@@ -55,7 +55,7 @@
           @success="logoUploadSuccess"
         >
           <i v-if="!imageUrl" class="el-icon-plus avatar-uploader-icon"></i>
-          <img v-else :src="imageUrl" alt="" style="width: 110; height: 110px;" />
+          <img v-else :src="imageUrl" alt="" style="width: 110; height: 110px" />
         </el-upload>
       </el-form-item>
       <el-form-item label="应用简介">

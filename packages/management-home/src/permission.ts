@@ -5,6 +5,8 @@ import 'nprogress/nprogress.css';
 
 import { getToken } from '@/utils/todoToken';
 
+import { routerLoading } from '@/layout/messageCenter/routerRef';
+
 NProgress.configure({ showSpinner: false });
 
 const whiteList = baseRoutes.map((x) => x.path);
@@ -18,11 +20,20 @@ router.beforeEach(async (to, from, next) => {
 
   if (!hasToken) {
     if (to.path === '/login') {
-      next('/');
+      next();
       NProgress.done();
     } else {
+      if (whiteList.indexOf(to.path) !== -1) {
+        next();
+      } else {
+        if (routerLoading.value) {
+          NProgress.done();
+          return next(`/router-loading?redirect=${to.path}`);
+        }
+      }
       if (to.matched.length > 1 || whiteList.includes(to.path)) {
         next();
+        localStorage.setItem('currentPathId', to.meta.id as any);
       } else {
         const { matched } = usefulRoutes.resolve(to);
         if (matched.length > 1) {

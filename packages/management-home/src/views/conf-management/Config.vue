@@ -3,7 +3,6 @@
     <el-row>
       <el-col :span="6" style="text-align: left">
         <el-button type="primary" @click="addNewConfig" style="width: 90px">新建</el-button>
-        <el-button @click="issueConfig" :disabled="!multipleSelection.length">配置下发</el-button>
       </el-col>
       <el-col :offset="8" :span="10" style="text-align: right">
         <el-input
@@ -29,9 +28,13 @@
         <el-table-column label="配置版本" prop="version" width="100"></el-table-column>
         <el-table-column label="操作" width="300">
           <template #default="scope">
-            <el-button type="primary" size="mini" @click="onEdit(scope.row)">编辑</el-button>
-            <el-button type="primary" size="mini" @click="changeHistory(scope.row)">变更历史</el-button>
-            <el-button size="mini" @click="onDelete(scope.row)">删除</el-button>
+            <el-button type="primary" size="mini" @click="onEdit(scope.row)" v-if="getShowBool('update')"
+              >编辑</el-button
+            >
+            <el-button type="primary" size="mini" @click="changeHistory(scope.row)" v-if="getShowBool('selectDetail')"
+              >变更历史</el-button
+            >
+            <el-button size="mini" @click="onDelete(scope.row)" v-if="getShowBool('delete')">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -121,6 +124,7 @@ import PackagedPagination from '@/components/pagination/Index.vue';
 import { debounce } from 'lodash';
 import { ElMessageBox, ElMessage } from 'element-plus';
 import dateFormat from '@/utils/date-format';
+import { getShowBool } from '@/utils/permission-show-module';
 
 interface TableState {
   tableData: Array<object>;
@@ -241,7 +245,7 @@ export default {
           if (!configForm.isEdit) {
             const { code } = await addConfig({
               ...configForm.formData,
-              type: parseInt(configForm.formData.type || '1', 10),
+              type: parseInt(configForm.formData.type, 10),
             });
             if (code === 0) {
               getTableData();
@@ -256,7 +260,7 @@ export default {
             // 编辑
             const { code } = await updateConfig(configForm.id, {
               ...configForm.formData,
-              type: parseInt(configForm.formData.type || '1', 10),
+              type: parseInt(configForm.formData.type, 10),
             });
             if (code === 0) {
               getTableData();
@@ -302,7 +306,8 @@ export default {
     const onEdit = async (rowData: any) => {
       configForm.isEdit = true;
       configForm.disabled = true;
-      configForm.formData = { ...configForm.formData, ...rowData, type: String(rowData.type || '1') };
+      configForm.id = rowData.id;
+      configForm.formData = { ...configForm.formData, ...rowData, type: String(rowData.type) };
       toggleConfigDialog();
     };
 
@@ -398,6 +403,7 @@ export default {
       handlePageSizeChange,
       handlePageChange,
       dateFormat,
+      getShowBool,
     };
   },
 };

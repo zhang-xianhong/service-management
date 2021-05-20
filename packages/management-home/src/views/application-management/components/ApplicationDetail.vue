@@ -19,9 +19,9 @@
           @error="logoUploadError"
         >
           <i v-if="!detailInfo.imageUrl" class="el-icon-plus avatar-uploader-icon"></i>
-          <img v-else style="width: 110px;height: 110px" :src="detailInfo.imageUrl" alt="" />
+          <img v-else style="width: 110px; height: 110px" :src="detailInfo.imageUrl" alt="" />
         </el-upload>
-        <img v-else style="width: 110px;height: 110px" :src="detailInfo.imageUrl" alt="" />
+        <img v-else style="width: 110px; height: 110px" :src="detailInfo.imageUrl" alt="" />
       </el-form-item>
       <el-form-item label="应用简介">
         <el-input

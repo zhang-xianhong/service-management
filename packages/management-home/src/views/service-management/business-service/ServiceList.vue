@@ -4,14 +4,23 @@
     v-loading="!userProjectList.length"
     element-loading-text="暂无项目，请联系管理员添加项目"
     element-loading-spinner="el-icon-loading"
-    element-loading-background="rgba(0, 0, 0, 0.7)"
+    element-loading-background="rgba(255, 255, 255, 1)"
   >
     <div class="service-list_header">
       <div class="service-list_left">
-        <el-button icon="el-icon-plus" type="primary" @click="toggleServiceDialog" style="width: 90px">新建</el-button>
+        <el-button
+          icon="el-icon-plus"
+          v-if="getShowBool('add')"
+          type="primary"
+          @click="toggleServiceDialog"
+          style="width: 90px"
+          >新建</el-button
+        >
         <el-button @click="runService" :disabled="computedDisabled" v-if="false">启动</el-button>
         <el-button @click="stopService" :disabled="computedDisabled" v-if="false">停止</el-button>
-        <el-button @click="deleteHandler" :disabled="computedDisabledForSS">删除</el-button>
+        <el-button @click="deleteHandler" :disabled="computedDisabledForSS" v-if="getShowBool('delete')"
+          >删除</el-button
+        >
       </div>
       <div class="service-list_right">
         <el-input
@@ -36,9 +45,12 @@
         <el-table-column type="index" width="50" label="序号"></el-table-column>
         <el-table-column property="name" label="服务英文名">
           <template #default="scope">
-            <router-link :to="{ path: `service-list/detail/${scope.row.id}`, query: { detailName: scope.row.name } }">
-              {{ scope.row.name }}
-            </router-link>
+            <router-link
+              v-if="getShowBool('selectDetail')"
+              :to="{ path: `service-list/detail/${scope.row.id}`, query: { detailName: scope.row.name } }"
+              >{{ scope.row.name }}</router-link
+            >
+            <el-button type="text" v-else>{{ scope.row.name }}</el-button>
           </template>
         </el-table-column>
         <el-table-column property="description" label="服务中文名"></el-table-column>
@@ -46,9 +58,9 @@
         <el-table-column property="status" label="服务状态">
           <template #default="scope">
             <span class="service-list-borders" :style="{ background: statusColor[scope.row.status] }"></span>
-            <span :style="{ color: statusColor[scope.row.status] }">
-              {{ computeStatusLabel(scope.row.initTimes)[scope.row.status] }}
-            </span>
+            <span :style="{ color: statusColor[scope.row.status] }">{{
+              computeStatusLabel(scope.row.initTimes)[scope.row.status]
+            }}</span>
           </template>
         </el-table-column>
         <el-table-column property="classification" label="分类">
@@ -94,6 +106,7 @@
         :page-size="pageInfo.pageSize"
         layout="sizes, prev, pager, next, jumper"
         :total="serviceTableList.total"
+        v-if="serviceTableList.list.length"
       ></packaged-pagination>
     </div>
 
@@ -106,8 +119,12 @@
             prop="name"
             :rules="[
               { required: true, message: '请输入服务名称', trigger: 'blur' },
-              { min: 1, max: 100, message: '最大不能超过 100 个字符', trigger: 'blur' },
-              { validator: validatorPass, message: '仅支持英文、数字、中划线', trigger: 'blur' },
+              { min: 1, max: 32, message: '最大不能超过 32 个字符', trigger: 'blur' },
+              {
+                validator: validatorPass,
+                message: '仅支持英文、数字、中划线，不能以中划线开头和结尾',
+                trigger: 'blur',
+              },
             ]"
           >
             <el-input v-model.trim="serviceDetail.name" @blur="checkEnglishName">
@@ -211,6 +228,7 @@
 import { defineComponent, reactive, ref, onBeforeUnmount, computed } from 'vue';
 import PackagedPagination from '@/components/pagination/Index.vue';
 import { userProjectList } from '@/layout/messageCenter/user-info';
+import { getShowBool } from "@/utils/permission-show-module";
 import {
   refreshServiceList,
   serviceTableList,
@@ -248,10 +266,13 @@ export default defineComponent({
     };
   },
   setup() {
-    getClassifications();
-    getTagsForService();
 
-    refreshServiceList();
+    if (userProjectList.value.length) {
+      getClassifications();
+      getTagsForService();
+
+      refreshServiceList();
+    }
 
     const mutiArray = ref([] as any);
     const rememberMutiArray = ref([] as any);
@@ -292,10 +313,12 @@ export default defineComponent({
       });
     };
 
-    const intervalId = setInterval(() => {
-      // refreshDataAndChange();
-      console.log(111);
-    }, 5000);
+    let intervalId: any = null;
+    if (userProjectList.value.length) {
+      intervalId = setInterval(() => {
+        refreshDataAndChange();
+      }, 5000);
+    }
 
     onBeforeUnmount(() => {
       clearInterval(intervalId);
@@ -356,7 +379,6 @@ export default defineComponent({
     }
     function getCascaderForm(res: any) {
       serviceDetail.classification = res;
-      console.log(res, serviceDetail.classification);
     }
 
     // 筛选
@@ -479,13 +501,12 @@ export default defineComponent({
       tagTitleVisiable.value = false;
       blackHoverVisible.value = false;
       searchForList();
-      console.log('111111');
     }
     onBeforeUnmount(() => {
       blackHoverclick();
     });
     const validatorPass = (rule: any, value: any, callback: any) => {
-      const reg = /^[A-Za-z0-9\-]{1,100}$/;
+      const reg = /^(?!-)(?!.*-$)[a-z0-9\-]+$/;
       if (!reg.test(value)) {
         callback(new Error(rule.message));
       }
@@ -541,7 +562,8 @@ export default defineComponent({
       refreshMess,
       checkEnglishName,
       userProjectList,
-      validatorPass
+      validatorPass,
+      getShowBool,
     };
   },
 });

@@ -1,14 +1,15 @@
 <template>
-  <div
-    class="project-list"
-    v-loading="!userProjectList.length"
-    element-loading-text="暂无项目，请联系管理员添加项目"
-    element-loading-spinner="el-icon-loading"
-    element-loading-background="rgba(0, 0, 0, 0.7)"
-  >
+  <div class="project-list">
     <div class="project-list_title">
       <div class="project-list_left">
-        <el-button icon="el-icon-plus" type="primary" @click="addDialogVisible = true" style="width: 90px">
+        <el-button
+          icon="el-icon-plus"
+          :type="userInfo.admin ? 'primary' : 'info'"
+          @click="addDialogVisible = true"
+          style="width: 90px"
+          :disabled="!userInfo.admin"
+          v-if="getShowBool('add')"
+        >
           新建
         </el-button>
       </div>
@@ -19,10 +20,17 @@
           v-model="pageInfo.keyword"
           suffix-icon="el-icon-search"
           @input="searchProject"
+          :disabled="!userProjectList.length"
         ></el-input>
       </div>
     </div>
-    <div style="background: #fff" v-loading="loadings">
+    <div
+      style="background: #fff"
+      v-loading="!userProjectList.length"
+      element-loading-text="暂无项目，请联系管理员添加项目"
+      element-loading-spinner="el-icon-loading"
+      element-loading-background="rgba(255, 255, 255, 1)"
+    >
       <div class="project-list_content" ref="projectParentDiv" :style="{ paddingLeft: paddings }">
         <project-item
           v-for="item in projectList"
@@ -30,6 +38,8 @@
           :key="item.id"
           @delete-project="deleteProject"
           @reload-projects="getProjectListData"
+          :delete-or-not="getShowBool('delete')"
+          :update-or-not="getShowBool('update')"
         ></project-item>
         <div v-if="!projectList.length && !loadings" class="placeholders">暂无数据</div>
       </div>
@@ -51,7 +61,11 @@
             label="项目名称"
             :label-width="labelWidth"
             prop="name"
-            :rules="[{ required: true, message: '请输入英文名称', trigger: 'blur' }]"
+            :rules="[
+              { required: true, message: '请输入英文名称', trigger: 'blur' },
+              { min: 1, max: 64, message: '最大不能超过 64 个字符', trigger: 'blur' },
+              { validator: validatorPass, message: '仅支持英文、数字、中划线', trigger: 'blur' },
+            ]"
           >
             <el-input v-model="projectDetail.name" @blur="checkEnglishName"></el-input>
           </el-form-item>
@@ -118,6 +132,7 @@
 import { defineComponent, onMounted, ref, watch } from 'vue';
 import ProjectItem from '@/views/project-management/components/ProjectItem.vue';
 import PackagedPagination from '@/components/pagination/Index.vue';
+import { getShowBool } from '@/utils/permission-show-module';
 import {
   getProjectListData,
   projectDetail,
@@ -131,7 +146,7 @@ import {
 import Message from 'element-plus/es/el-message';
 import fetchOwnersSelect from '@/components/fetchOwnersSelect/Index.vue';
 import { projectNameTest } from '@/api/project/project';
-import { userProjectList } from '@/layout/messageCenter/user-info';
+import { userProjectList, userInfo } from '@/layout/messageCenter/user-info';
 
 export default defineComponent({
   name: 'ProjectList',
@@ -162,9 +177,13 @@ export default defineComponent({
       projectDetail.status = 1;
     };
 
-    getProjectListData().then(() => {
+    if (userProjectList.value.length) {
+      getProjectListData().then(() => {
+        loadings.value = false;
+      });
+    } else {
       loadings.value = false;
-    });
+    }
     getAllTems();
 
     const submitProjectDetail = () => {
@@ -181,6 +200,9 @@ export default defineComponent({
         pageInfo.page = 1;
         getProjectListData();
         closeDialog();
+        if (userProjectList.value.length === 0) {
+          window.location.reload();
+        }
       });
     };
 
@@ -225,6 +247,13 @@ export default defineComponent({
       }
       projectNameTest({ name: projectDetail.name });
     };
+
+    const validatorPass = (rule: any, value: any, callback: any) => {
+      const reg = /^[a-z][a-z0-9-]+[a-z0-9]$/;
+      if (!reg.test(value)) {
+        callback(new Error(rule.message));
+      }
+    };
     return {
       addDialogVisible,
       projectDetail,
@@ -244,7 +273,10 @@ export default defineComponent({
       paddings,
       checkEnglishName,
       userProjectList,
+      userInfo,
       loadings,
+      validatorPass,
+      getShowBool,
     };
   },
 });

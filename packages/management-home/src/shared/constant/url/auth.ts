@@ -4,4 +4,6 @@ export default {
   POST_CURRENT_PROJECT: ['/projects/switch'],
   GET_HEALTH: ['/health', '/mock/auth/health.json'],
   LOGOUT: ['/logout'],
+  GET_CAPTCHA: ['/auth/captcha', 'mock/auth/captcha.json'],
+  LOGIN: ['auth/login', 'mock/auth/login.json'],
 };

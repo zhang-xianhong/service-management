@@ -2,8 +2,8 @@
   <div>
     <el-row>
       <el-col :span="6" style="text-align: left">
-        <el-button type="primary" @click="add" style="width: 90px">新增</el-button>
-        <el-button @click="groupRemove()" :disabled="disabled">删除</el-button>
+        <el-button type="primary" @click="add" style="width: 90px" v-if="getShowBool('add')">新增</el-button>
+        <el-button @click="groupRemove()" :disabled="disabled" v-if="getShowBool('delete')">删除</el-button>
       </el-col>
       <el-col :offset="8" :span="10" style="text-align: right">
         <el-input
@@ -29,10 +29,10 @@
         <el-table-column prop="operation" width="220">
           <template #default="{ row }">
             <!-- <el-button type="primary" @click="detail(row)" size="mini">详情</el-button> -->
-            <el-button type="primary" @click="disabled(row)" size="mini">禁用</el-button>
+            <el-button type="primary" @click="disabled(row)" size="mini" v-if="getShowBool('update')">禁用</el-button>
             <!-- <el-button type="primary" @click="enabled(row)" size="mini">启用</el-button> -->
-            <el-button type="primary" @click="rename(row)" size="mini">修改</el-button>
-            <el-button @click="groupRemove([row.id])">删除</el-button>
+            <el-button type="primary" @click="rename(row)" size="mini" v-if="getShowBool('update')">修改</el-button>
+            <el-button @click="groupRemove([row.id])" v-if="getShowBool('delete')">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -67,6 +67,8 @@ import { listTags, addTag, updateTag, deleteTags } from '@/api/settings/tags';
 import PackagedPagination from '@/components/pagination/Index.vue';
 import _ from 'lodash/fp';
 import { ElMessageBox, ElMessage } from 'element-plus';
+import { getShowBool } from '@/utils/permission-show-module';
+
 export default defineComponent({
   name: 'Tag',
   components: {
@@ -264,6 +266,7 @@ export default defineComponent({
       loading,
       sortChange,
       disabled,
+      getShowBool,
     };
   },
 });

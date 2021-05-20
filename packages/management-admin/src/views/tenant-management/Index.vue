@@ -59,7 +59,6 @@
       @size-change="handlePageSizeChange"
       @current-change="handlePageChange"
     ></packaged-pagination>
-    <router-link to="/login">登录页面</router-link>
   </el-row>
 </template>
 
@@ -181,9 +180,13 @@ export default {
     };
 
     const onDelete = async (rowData: any) => {
-      (instance as any).proxy.$alert(`是否删除${rowData.contactName}租户`, '提示', {
-        confirmButtonText: '确定',
-        callback: async () => {
+      (instance as any).proxy
+        .$confirm(`是否删除${rowData.contactName}租户`, '提示', {
+          distinguishCancelAndClose: true,
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+        })
+        .then(async () => {
           const { code } = await deleteTenant(rowData.id);
           if (code === 0) {
             (instance as any).proxy.$message({
@@ -192,8 +195,7 @@ export default {
             });
             getTableData();
           }
-        },
-      });
+        });
     };
 
     const onFreeze = async (id: string) => {

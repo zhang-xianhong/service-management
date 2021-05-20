@@ -1,16 +1,12 @@
 <template>
-  <div></div>
+  <div class="blank-log"></div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-
 export default defineComponent({
-  name: 'Complete',
-  setup() {
-    return {};
-  },
+  name: 'Log',
 });
 </script>
 
-<style scoped></style>
+<style lang="scss"></style>
