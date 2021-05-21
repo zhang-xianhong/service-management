@@ -82,6 +82,7 @@ export default defineComponent({
     display: block;
     width: 400px;
     height: 48px;
+    line-height: 48px;
     margin-bottom: 16px;
     &__link {
       color: #bbb;
