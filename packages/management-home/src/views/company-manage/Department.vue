@@ -35,12 +35,10 @@
                 <div :class="data.id === 0 ? 'disable' : ''">
                   <svg-icon v-if="data._children" icon-name="folder" icon-class="tree-node-folder"></svg-icon>
                   <svg-icon v-else icon-name="person" icon-class="tree-node-folder"></svg-icon>
-                  <span
-                    style="z-index: 1; background: transparent;margin-right:5px;"
-                  >{{ data.name }}</span>
+                  <span style="z-index: 1; background: transparent; margin-right: 5px">{{ data.name }}</span>
                   <el-dropdown v-if="data._children && data.id !== 0">
                     <span class="el-dropdown-link">
-                      <i class="el-icon-more" style="transform:rotate(90deg);"></i>
+                      <i class="el-icon-more" style="transform: rotate(90deg)"></i>
                     </span>
                     <template #dropdown>
                       <el-dropdown-menu icon="el-icon-plus">
@@ -48,7 +46,8 @@
                         <el-dropdown-item
                           @click="handleUpMove(data)"
                           v-if="data.id !== 0 && data.parent && data.parent.id !== 0"
-                        >上移一层</el-dropdown-item>
+                          >上移一层</el-dropdown-item
+                        >
                       </el-dropdown-menu>
                     </template>
                   </el-dropdown>
@@ -59,7 +58,9 @@
         </div>
       </el-col>
       <el-col :offset="1" :span="18">
-        <el-row>{{ currentNodeData.name ? (currentNodeData._children ? currentNodeData.name : currentNodeData.parent.name) : '--' }}</el-row>
+        <el-row>{{
+          currentNodeData.name ? (currentNodeData._children ? currentNodeData.name : currentNodeData.parent.name) : '--'
+        }}</el-row>
         <el-row>
           <el-button @click="handleAddPerson" :disabled="!isSel">添加成员</el-button>
         </el-row>
@@ -208,7 +209,7 @@ export default defineComponent({
       searchProps: {
         page: 1,
         pageSize: 10,
-        keyword: ''
+        keyword: '',
       },
       tableDataSource: [],
     });
@@ -300,16 +301,18 @@ export default defineComponent({
       tableData.searchProps = {
         page: 1,
         pageSize: 10,
-        keyword: ''
+        keyword: '',
       };
       tableData.tableDataSource = [];
-    }
+    };
 
     initDepartments();
 
     // 删除人员
     const handleDelPerson = (data: any): void => {
-      const currentDept = treeData.currentNodeData._children ? treeData.currentNodeData : treeData.currentNodeData.parent;
+      const currentDept = treeData.currentNodeData._children
+        ? treeData.currentNodeData
+        : treeData.currentNodeData.parent;
       ElMessageBox.confirm(`是否将【${data.displayName || data.name}】从【${currentDept.name}】删除?`, '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -382,7 +385,7 @@ export default defineComponent({
           });
       } else {
         // 删除人员
-        handleDelPerson(treeData.currentNodeData)
+        handleDelPerson(treeData.currentNodeData);
       }
     };
 
@@ -439,7 +442,7 @@ export default defineComponent({
       } else {
         tableData.tableDataSource = data.slice(startIndex, pageMaxCount - 1);
       }
-    }
+    };
 
     function nodeClickHandle(data: any, node: any): void {
       // 首节点不做选中
@@ -462,8 +465,8 @@ export default defineComponent({
     // 初始化添加部门表单数据
     const initFormData = () => {
       formData.isEdit = false;
-      formData.deptName = "";
-    }
+      formData.deptName = '';
+    };
     // 添加子部门
     const handleAddDept = (): void => {
       // 判断当前选中的是不是部门
@@ -504,13 +507,13 @@ export default defineComponent({
           if (code === RES_CODE.success) {
             (instance as any).proxy.$message({
               type: 'success',
-              message: `${formData.isEdit ? "编辑" : "添加"}成功！`,
+              message: `${formData.isEdit ? '编辑' : '添加'}成功！`,
             });
             closeDialog();
           } else {
             (instance as any).proxy.$message({
               type: 'error',
-              message: `${formData.isEdit ? "编辑" : "添加"}失败！`,
+              message: `${formData.isEdit ? '编辑' : '添加'}失败！`,
             });
           }
         }
@@ -550,12 +553,12 @@ export default defineComponent({
     const handlePageSizeChange = (data: any) => {
       const { page } = tableData.searchProps;
       getCurrentTableData(treeData.currentNodeUsers, page, data);
-    }
+    };
     // 页面改变
     const handlePageChange = (data: any) => {
       const { pageSize } = tableData.searchProps;
       getCurrentTableData(treeData.currentNodeUsers, data, pageSize);
-    }
+    };
     return {
       ...toRefs(tableData),
       ...toRefs(treeData),
@@ -585,7 +588,7 @@ export default defineComponent({
       dataDone,
       filterAccount,
       handlePageSizeChange,
-      handlePageChange
+      handlePageChange,
     };
   },
 });

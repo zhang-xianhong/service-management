@@ -10,5 +10,5 @@ export default {
   DEL_DEPT: ['/department/delete/_', '/mock/company/del.json'],
   ADD_USER: ['/departments/_/members', '/mock/company/create.json'],
   UPDATE_USER_PASSWD: ['/users/update/password', '/mock/company/create.json'],
-  DEL_DEPT_USER: ['/departments/delete/members', '/mock/company/create.json']
+  DEL_DEPT_USER: ['/departments/delete/members', '/mock/company/create.json'],
 };

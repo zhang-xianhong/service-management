@@ -324,7 +324,7 @@ const routes: Array<RouteRecordRaw> = [
           isRootLevel: false,
           id: 9,
         },
-      }
+      },
     ],
   },
   {
