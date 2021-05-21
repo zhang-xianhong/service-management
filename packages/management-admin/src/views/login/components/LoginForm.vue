@@ -8,6 +8,7 @@
       class="form-item"
       v-model="loginInfo.password"
       placeholder="密码"
+      minlength="8"
     ></el-input>
     <el-input class="form-item" v-model="loginInfo.captchaCode" placeholder="验证码">
       <template #suffix>
