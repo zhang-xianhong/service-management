@@ -172,9 +172,15 @@ export default defineComponent({
     };
     // 编辑表单
     const rules = {
-      name: [{ required: true, message: '请输入分类名称', trigger: 'blur' }],
+      name: [
+        { required: true, message: '请输入分类名称', trigger: 'blur' },
+        { min: 1, max: 20, message: '长度不超过20个字符', trigger: 'blur' },
+      ],
     };
     const save = async () => {
+      if (currentNode.value.name.length > 20 || currentNode.value.name.length === 0) {
+        return ElMessage.error('长度不得超过20个字符,且不为空');
+      }
       if (currentNode.value.id) {
         const { code } = await confApi.updateClassification(_.pick(['id', 'name', 'description'])(currentNode.value));
         if (code === 0) {

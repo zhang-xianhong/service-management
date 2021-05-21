@@ -353,6 +353,13 @@ export default defineComponent({
           type: 'error',
         });
       }
+      if (senddata.name.length > 60) {
+        return ElMessage({
+          showClose: true,
+          message: '服务名称长度不得超过60个字符',
+          type: 'error',
+        });
+      }
       if (!senddata.description) {
         return ElMessage({
           showClose: true,
