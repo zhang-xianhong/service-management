@@ -80,8 +80,9 @@
 <script lang="ts">
 /* eslint-disable no-param-reassign */
 import _ from 'lodash/fp';
-import { computed, inject, ref, Ref, watchEffect, nextTick } from 'vue';
-import { updateMembers } from '@/api/project/project';
+import { computed, ref, Ref, watchEffect, nextTick } from 'vue';
+import { addUser } from '@/api/company/dept';
+
 export default {
   name: 'TreeSelector',
   props: {
@@ -115,7 +116,6 @@ export default {
   emits: ['userChanged'],
   setup(props: any, context: any) {
     const dialogVisible = ref(false);
-    const projectId = inject('projectId') as string;
     const searchStr = ref('');
     const selectedUser: Ref<Array<any>> = ref([]);
     const show = () => {
@@ -146,7 +146,10 @@ export default {
         syncStatus(node.parent);
       }
     };
-    const valueLabel = computed(() => `${props.option[0]?.name} - ${props.role?.label}`);
+    const valueLabel = computed(() => {
+      const { data } = props.role;
+      return `${props.option[0]?.name} - ${data._children ? data.name : data.parent.name}`;
+    });
     const setChecked = (treeOption: Array<any>, ids: Array<number>, notAllowIds: Array<number>) => {
       treeOption.forEach((treeNode: any) => {
         if (treeNode.isLeaf) {
@@ -231,10 +234,9 @@ export default {
       }
     };
     const submit = async () => {
-      const { code } = await updateMembers({
-        projectId,
-        projectRoleId: props.role.id,
-        members: _.map('id')(selectedUser.value.concat(props.checked)),
+      const { code } = await addUser({
+        id: props.role.id,
+        userIds: _.map('id')(selectedUser.value.concat(props.checked)),
       });
       if (code === 0) {
         dialogVisible.value = false;
@@ -243,7 +245,7 @@ export default {
     };
     const cancel = () => {
       dialogVisible.value = false;
-      context.emit('userChanged', props.role);
+      // context.emit('userChanged', props.role);
     };
 
     const searchResult: Ref<any> = ref([]);

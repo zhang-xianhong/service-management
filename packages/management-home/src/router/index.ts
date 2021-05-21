@@ -314,17 +314,17 @@ const routes: Array<RouteRecordRaw> = [
           id: 11,
         },
       },
-      // {
-      //   path: 'departmentdepartment',
-      //   component: () => import(/* webpackChunkName: "tenant" */ '@/views/company-manage/Department.vue'),
-      //   name: 'Department',
-      //   meta: {
-      //     title: '部门管理',
-      //     icon: 'el-icon-eleme',
-      //     isRootLevel: false,
-      //     id: 9,
-      //   },
-      // }
+      {
+        path: 'departmentdepartment',
+        component: () => import(/* webpackChunkName: "tenant" */ '@/views/company-manage/Department.vue'),
+        name: 'Department',
+        meta: {
+          title: '部门管理',
+          icon: 'el-icon-eleme',
+          isRootLevel: false,
+          id: 9,
+        },
+      },
     ],
   },
   {
