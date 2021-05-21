@@ -17,7 +17,7 @@ export const AUDIT_RESULTS_CODE: any = {
 
 export const STATUS: any = {
   0: '未审核',
-  1: '已审核',
-  2: '未发布',
+  1: '审核通过',
+  2: '审核不通过',
   3: '已发布',
 };

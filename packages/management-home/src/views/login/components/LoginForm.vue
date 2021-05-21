@@ -8,6 +8,7 @@
       class="form-item"
       v-model="loginInfo.password"
       placeholder="密码"
+      minlength="8"
     ></el-input>
     <el-input class="form-item" v-model="loginInfo.captchaCode" placeholder="验证码">
       <template #suffix>
@@ -23,6 +24,7 @@
 import { defineComponent, reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { getCaptcha, login } from '@/api/auth';
+import { getUser } from '@/shared/userinfo';
 
 export default defineComponent({
   name: 'LoginForm',
@@ -48,6 +50,7 @@ export default defineComponent({
     const onLogin = async () => {
       const { code } = await login(loginInfo);
       if (code === 0) {
+        await getUser();
         router.push('/');
       } else {
         getCaptchaUrl();
@@ -81,6 +84,7 @@ export default defineComponent({
     display: block;
     width: 400px;
     height: 48px;
+    line-height: 48px;
     margin-bottom: 16px;
     &__link {
       color: #bbb;
