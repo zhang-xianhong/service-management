@@ -1,5 +1,11 @@
 <template>
-  <el-dialog :title="title" v-model="dialogVisible" width="500px" @closed="closeDialog" :close-on-click-modal="false">
+  <el-dialog
+    :title="title"
+    v-model="dialogVisible"
+    width="500px"
+    @closed="closeDialog"
+    :close-on-click-modal="false"
+  >
     <div>
       <el-form :model="formData" ref="diagFormRef" :rules="formRules">
         <el-form-item label="登记账号" prop="username" :label-width="labelWidth">
@@ -29,7 +35,12 @@
           </el-radio-group>
         </el-form-item>
         <el-form-item label="初始密码" :label-width="labelWidth" v-if="!isEdit">
-          <el-tooltip content="复制密码，保存后可用密码登录" placement="top" effect="light" style="margin-right: 5px">
+          <el-tooltip
+            content="复制密码，保存后可用密码登录"
+            placement="top"
+            effect="light"
+            style="margin-right: 5px"
+          >
             <svg-icon icon-name="wenhao" icon-class="detail-icons__item"></svg-icon>
           </el-tooltip>
           <el-input v-model.trim="formData.password" disabled style="width: 280px" show-password></el-input>
@@ -53,7 +64,8 @@
 
 <script lang="ts">
 import { defineComponent, reactive, toRefs, Ref, ref, inject } from 'vue';
-import { ElMessage } from 'element-plus';
+import { checkMail, checkZNName, checkEnName, checkMobile } from '@/utils/validate';
+import { generatePasswd, copyFun } from '../utils';
 
 // 定义数据type
 interface DialogState {
@@ -65,10 +77,6 @@ interface DialogState {
 const labelWidth = '100px';
 
 // 手机号校验
-function checkMobile(value: string): boolean {
-  const subValue = value.replace(/[^-|\d]/g, '');
-  return /^(1)\d{10}$/.test(subValue);
-}
 const validatorMobilePass = (rule: any, value: string, callback: Function) => {
   if (!checkMobile(value)) {
     callback(new Error('请输入正确的手机号码'));
@@ -77,10 +85,6 @@ const validatorMobilePass = (rule: any, value: string, callback: Function) => {
 };
 
 // 邮箱校验
-function checkMail(szMail: string): boolean {
-  const szReg = /^\w+((.\w+)|(-\w+))@[A-Za-z0-9]+((.|-)[A-Za-z0-9]+).[A-Za-z0-9]+$/;
-  return szReg.test(szMail);
-}
 const validatorMailPass = (rule: any, value: string, callback: Function) => {
   if (!checkMail(value)) {
     callback(new Error('请输入正确的邮箱格式'));
@@ -88,11 +92,7 @@ const validatorMailPass = (rule: any, value: string, callback: Function) => {
   callback();
 };
 
-// 中文校验
-function checkZNName(name: string): boolean {
-  const szReg = /[\u4e00-\u9fa5]{2,}/;
-  return szReg.test(name);
-}
+// 中文姓名校验
 const validatorZNNamePass = (rule: any, value: string, callback: Function) => {
   if (!checkZNName(value)) {
     callback(new Error('请输入长度至少2个字的中文格式名称'));
@@ -101,10 +101,6 @@ const validatorZNNamePass = (rule: any, value: string, callback: Function) => {
 };
 
 // 英文名称校验
-function checkEnName(name: string): boolean {
-  const szReg = /[A-Za-z\d]{2,}/;
-  return szReg.test(name);
-}
 const validatorEnPass = (rule: any, value: string, callback: Function) => {
   if (!checkEnName(value)) {
     callback(new Error('请输入长度至少2个英文字母的账户名称'));
@@ -148,43 +144,6 @@ export default defineComponent({
         { validator: validatorMailPass, trigger: 'blur' },
       ],
       status: [{ required: true, message: '请选择账户状态', trigger: 'change' }],
-    };
-
-    // 初始密码生成
-    const generatePasswd = (len: number) => {
-      let length = Number(len);
-      // Limit length
-      if (length < 6) {
-        length = 6;
-      } else if (length > 16) {
-        length = 16;
-      }
-      const passwordArray = ['ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz', '1234567890', '!@#$%^&'];
-      const password = [];
-      let n = 0;
-      for (let i = 0; i < length; i++) {
-        // If password length less than 9, all value random
-        if (password.length < length - 4) {
-          // Get random passwordArray index
-          const arrayRandom = Math.floor(Math.random() * 4);
-          // Get password array value
-          const passwordItem = passwordArray[arrayRandom];
-          // Get password array value random index
-          // Get random real value
-          const item = passwordItem[Math.floor(Math.random() * passwordItem.length)];
-          password.push(item);
-        } else {
-          // If password large then 9, lastest 4 password will push in according to the random password index
-          // Get the array values sequentially
-          const newItem = passwordArray[n];
-          const lastItem = newItem[Math.floor(Math.random() * newItem.length)];
-          // Get array splice index
-          const spliceIndex = Math.floor(Math.random() * password.length);
-          password.splice(spliceIndex, 0, lastItem);
-          n = n + 1;
-        }
-      }
-      return password.join('');
     };
 
     // 打开对话框
@@ -243,23 +202,6 @@ export default defineComponent({
           }
         }
       });
-    }
-
-    // 复制功能
-    function copyFun(content: string) {
-      const input = document.createElement('input');
-      input.setAttribute('readonly', 'readonly');
-      document.body.appendChild(input);
-      input.setAttribute('value', content);
-      input.select();
-      if (document.execCommand('copy')) {
-        document.execCommand('copy');
-        ElMessage({
-          type: 'success',
-          message: '复制成功!',
-        });
-      }
-      document.body.removeChild(input);
     }
 
     // 复制密码
