@@ -25,6 +25,9 @@
       <el-form-item prop="phone" class="form-item" label="管理员电话" required>
         {{ managerInfo.phone }}
       </el-form-item>
+      <el-form-item prop="email" class="form-item" label="管理员邮箱" required>
+        {{ managerInfo.email }}
+      </el-form-item>
     </el-form>
   </el-row>
 </template>
@@ -35,6 +38,7 @@ import { computed, ref, SetupContext, WritableComputedRef } from 'vue';
 interface ManagerInfoInterface {
   account: string;
   name: string;
+  email: string;
   phone: string;
   password: string;
   confirmPassword: string;
@@ -91,13 +95,21 @@ export default {
         { pattern: /^[a-zA-Z0-9-]+$/g, message: '包含非法字符，只能输入小写字母、数字、中划线', trigger: 'blur' },
       ],
       name: [
-        { required: true, message: '请输入管理人中文姓名' },
-        { min: 3, max: 20, message: '联系人姓名长度在2到40个字符之间', trigger: 'blur' },
+        { required: true, message: '请输入管理员中文姓名' },
+        { min: 3, max: 20, message: '管理员姓名长度在2到40个字符之间', trigger: 'blur' },
         { pattern: /^[\u4e00-\u9fa5]+$/g, message: '联系人姓名仅支持中文', trigger: 'blur' },
       ],
       phone: [
-        { required: true, message: '请输入联系人电话' },
-        { pattern: /^\d{11}$/g, message: '联系人电话输入格式不合法，请重新输入', trigger: 'blur' },
+        { required: true, message: '请输入管理员电话' },
+        { pattern: /^\d{11}$/g, message: '管理员电话输入格式不合法，请重新输入', trigger: 'blur' },
+      ],
+      email: [
+        { required: true, message: '请输入管理员邮箱', trigger: 'blur' },
+        {
+          pattern: /^\w+((.\w+)|(-\w+))@[A-Za-z0-9]+((.|-)[A-Za-z0-9]+).[A-Za-z0-9]+$/g,
+          message: '管理员邮箱输入格式不合法，请重新输入',
+          trigger: 'blur',
+        },
       ],
       password: [
         { required: true, message: '请输入初始密码' },
