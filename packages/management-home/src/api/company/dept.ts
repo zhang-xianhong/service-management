@@ -8,6 +8,15 @@ export const getTenentDepartment = (payload?: object): Promise<SuccessResponse<a
 // 新建子部门
 export const createDept: (payload?: object) => Promise<SuccessResponse<any>> = (payload: any) =>
   request.post(getUrl(URL.company.CREATE_DEPT), payload);
-// 删除
+// 删除部门
 export const delDept: (payload?: object) => Promise<SuccessResponse<any>> = (payload: any) =>
   request.post(getUrl(URL.company.DEL_DEPT, payload.id), payload);
+// 删除人员
+export const delUser: (payload?: object) => Promise<SuccessResponse<any>> = (payload: any) =>
+  request.post(getUrl(URL.company.DEL_DEPT_USER, payload.id), payload);
+// 添加人员
+export const addUser: (payload?: object) => Promise<SuccessResponse<any>> = (payload: any) =>
+  request.post(getUrl(URL.company.ADD_USER, payload.id), payload);
+// 更新部门
+export const updateDept: (payload?: object) => Promise<SuccessResponse<any>> = (payload: any) =>
+  request.post(getUrl(URL.company.UPDATE_DEPT, payload.id), payload);

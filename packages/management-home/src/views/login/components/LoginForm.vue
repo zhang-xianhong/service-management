@@ -8,14 +8,16 @@
       class="form-item"
       v-model="loginInfo.password"
       placeholder="密码"
+      minlength="8"
     ></el-input>
     <el-input class="form-item" v-model="loginInfo.captchaCode" placeholder="验证码">
       <template #suffix>
         <img @click="getCaptchaUrl" :src="captchaUrl" />
       </template>
     </el-input>
-    <el-button class="form-item" type="primary" @click="onLogin">登录</el-button>
-    <div class="form-item__link" @click="goForgetPassword">忘记密码?</div>
+    <el-button class="form-item__btn" type="primary" @click="onLogin">登录</el-button>
+    <!-- TODO:后续版本开发 -->
+    <!-- <div class="form-item__link" @click="goForgetPassword">忘记密码?</div> -->
   </div>
 </template>
 
@@ -23,6 +25,7 @@
 import { defineComponent, reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { getCaptcha, login } from '@/api/auth';
+import { getUser } from '@/shared/userinfo';
 
 export default defineComponent({
   name: 'LoginForm',
@@ -46,10 +49,16 @@ export default defineComponent({
     };
 
     const onLogin = async () => {
-      const { code } = await login(loginInfo);
-      if (code === 0) {
-        router.push('/');
-      } else {
+      try {
+        const { code } = await login(loginInfo);
+        if (code === 0) {
+          await getUser();
+          console.log(router.getRoutes(), 'router');
+          router.push('/tenant-management');
+        } else {
+          getCaptchaUrl();
+        }
+      } catch {
         getCaptchaUrl();
       }
     };
@@ -81,7 +90,13 @@ export default defineComponent({
     display: block;
     width: 400px;
     height: 48px;
+    line-height: 48px;
     margin-bottom: 16px;
+    &__btn {
+      width: 400px;
+      height: 48px;
+      font-size: 14px;
+    }
     &__link {
       color: #bbb;
       cursor: pointer;

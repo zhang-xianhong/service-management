@@ -28,7 +28,7 @@ export default defineComponent({
 </script>
 
 <style scoped lang="scss">
-$image: url(~@/assets/img/citybase-login.png);
+$image: url(~@/assets/img/citybase-login.jpg);
 .login {
   height: 100%;
   background: #fff;
@@ -37,7 +37,7 @@ $image: url(~@/assets/img/citybase-login.png);
     width: 524px;
     height: 100%;
     color: #fff;
-    background: $image no-repeat;
+    background: $image no-repeat #f0f0f0;
     background-size: cover;
     &__nav {
       display: inline-block;
