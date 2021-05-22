@@ -35,7 +35,9 @@
                 <div :class="data.id === 0 ? 'disable' : ''">
                   <svg-icon v-if="data._children" icon-name="folder" icon-class="tree-node-folder"></svg-icon>
                   <svg-icon v-else icon-name="person" icon-class="tree-node-folder"></svg-icon>
-                  <span style="z-index: 1; background: transparent; margin-right: 5px">{{ data.name }}</span>
+                  <span
+                    style="z-index: 1; background: transparent; margin-right: 5px"
+                  >{{ data.name }}</span>
                   <el-dropdown v-if="data._children && data.id !== 0">
                     <span class="el-dropdown-link">
                       <i class="el-icon-more" style="transform: rotate(90deg)"></i>
@@ -46,8 +48,7 @@
                         <el-dropdown-item
                           @click="handleUpMove(data)"
                           v-if="data.id !== 0 && data.parent && data.parent.id !== 0"
-                          >上移一层</el-dropdown-item
-                        >
+                        >上移一层</el-dropdown-item>
                       </el-dropdown-menu>
                     </template>
                   </el-dropdown>
@@ -58,9 +59,11 @@
         </div>
       </el-col>
       <el-col :offset="1" :span="18">
-        <el-row>{{
-          currentNodeData.name ? (currentNodeData._children ? currentNodeData.name : currentNodeData.parent.name) : '--'
-        }}</el-row>
+        <el-row>
+          {{
+            currentNodeData.name ? (currentNodeData._children ? currentNodeData.name : currentNodeData.parent.name) : '--'
+          }}
+        </el-row>
         <el-row>
           <el-button @click="handleAddPerson" :disabled="!isSel">添加成员</el-button>
         </el-row>
@@ -408,8 +411,8 @@ export default defineComponent({
     const handleUpMove = async (data: any) => {
       const { id, parent } = data;
       const { code } = await updateDept({
+        ...data,
         parentId: parent.id,
-        id,
       });
       if (code === RES_CODE.success) {
         (instance as any).proxy.$message({
@@ -491,8 +494,9 @@ export default defineComponent({
         if (valid) {
           let res;
           if (formData.isEdit) {
-            const { id } = editFormData.value;
+            const { id, parent } = editFormData.value;
             res = await updateDept({
+              parentId: parent ? parent.id : 0,
               deptName: formData.deptName,
               id,
             });
