@@ -45,7 +45,7 @@
         </span>
         <template #dropdown>
           <el-dropdown-menu>
-            <el-dropdown-item icon="el-icon-edit" @click="openEditDialog">用户管理</el-dropdown-item>
+            <el-dropdown-item icon="el-icon-edit" @click="openPersonalCenter">个人中心</el-dropdown-item>
             <el-dropdown-item icon="el-icon-info">关于</el-dropdown-item>
             <el-dropdown-item icon="el-icon-switch-button" @click="handleLogout">登出</el-dropdown-item>
           </el-dropdown-menu>
@@ -60,6 +60,7 @@
 import { logout } from '@/api/auth';
 import { ElMessage } from 'element-plus';
 import { defineComponent, reactive, ref, Ref } from 'vue';
+import { useRouter } from 'vue-router';
 import ManageDialog from './ManageDialog.vue';
 // import breadCurmb from '@/components/bread-curmb/Index.vue';
 
@@ -74,6 +75,7 @@ export default defineComponent({
     ManageDialog,
   },
   setup() {
+    const router = useRouter();
     const projectList = reactive([
       {
         id: 1,
@@ -85,6 +87,10 @@ export default defineComponent({
       },
     ]);
     const refManageDialog: Ref<RefDialog | null> = ref(null);
+
+    const openPersonalCenter = () => {
+      router.push('/user-info');
+    };
 
     const openEditDialog = (): void => {
       (refManageDialog.value as RefDialog).openDialog();
@@ -107,6 +113,7 @@ export default defineComponent({
     return {
       projectList,
       refManageDialog,
+      openPersonalCenter,
       closeDialog,
       openEditDialog,
       handleLogout,

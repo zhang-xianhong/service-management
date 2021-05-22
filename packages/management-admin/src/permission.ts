@@ -10,6 +10,7 @@ NProgress.configure({ showSpinner: false });
 const whiteList = baseRoutes.map((x) => x.path);
 
 router.beforeEach(async (to, from, next) => {
+  console.log(to, 'to');
   NProgress.start();
   document.title = `${to.meta.title} city-base`;
 
@@ -25,7 +26,7 @@ router.beforeEach(async (to, from, next) => {
         next();
       } else {
         const { matched } = usefulRoutes.resolve(to);
-        if (matched.length > 1) {
+        if (matched.length >= 1) {
           next('/no-right');
         } else {
           next('/not-found');
