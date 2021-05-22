@@ -300,7 +300,7 @@ const routes: Array<RouteRecordRaw> = [
       title: '公司管理',
       icon: 'el-icon-eleme',
       isRootLevel: true,
-      id: 11,
+      // id: 11,
     },
     children: [
       {
@@ -311,7 +311,7 @@ const routes: Array<RouteRecordRaw> = [
           title: '人员管理',
           icon: 'el-icon-eleme',
           isRootLevel: false,
-          id: 11,
+          // id: 11,
         },
       },
       {
@@ -322,7 +322,7 @@ const routes: Array<RouteRecordRaw> = [
           title: '部门管理',
           icon: 'el-icon-eleme',
           isRootLevel: false,
-          id: 9,
+          // id: 9,
         },
       },
     ],
