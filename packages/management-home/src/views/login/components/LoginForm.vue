@@ -54,7 +54,7 @@ export default defineComponent({
         if (code === 0) {
           await getUser();
           console.log(router.getRoutes(), 'router');
-          router.push('/tenant-management');
+          router.push('/');
         } else {
           getCaptchaUrl();
         }
