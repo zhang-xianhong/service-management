@@ -6,4 +6,5 @@ export default {
   LOGOUT: ['/logout'],
   GET_CAPTCHA: ['/auth/captcha', 'mock/auth/captcha.json'],
   LOGIN: ['auth/login', 'mock/auth/login.json'],
+  GET_PROFILE: ['/users/profile', 'mock/auth/user-profile.json'],
 };
