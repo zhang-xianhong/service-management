@@ -35,9 +35,7 @@
                 <div :class="data.id === 0 ? 'disable' : ''">
                   <svg-icon v-if="data._children" icon-name="folder" icon-class="tree-node-folder"></svg-icon>
                   <svg-icon v-else icon-name="person" icon-class="tree-node-folder"></svg-icon>
-                  <span
-                    style="z-index: 1; background: transparent; margin-right: 5px"
-                  >{{ data.name }}</span>
+                  <span style="z-index: 1; background: transparent; margin-right: 5px">{{ data.name }}</span>
                   <el-dropdown v-if="data._children && data.id !== 0">
                     <span class="el-dropdown-link">
                       <i class="el-icon-more" style="transform: rotate(90deg)"></i>
@@ -48,7 +46,8 @@
                         <el-dropdown-item
                           @click="handleUpMove(data)"
                           v-if="data.id !== 0 && data.parent && data.parent.id !== 0"
-                        >上移一层</el-dropdown-item>
+                          >上移一层</el-dropdown-item
+                        >
                       </el-dropdown-menu>
                     </template>
                   </el-dropdown>
@@ -61,7 +60,11 @@
       <el-col :offset="1" :span="18">
         <el-row>
           {{
-            currentNodeData.name ? (currentNodeData._children ? currentNodeData.name : currentNodeData.parent.name) : '--'
+            currentNodeData.name
+              ? currentNodeData._children
+                ? currentNodeData.name
+                : currentNodeData.parent.name
+              : '--'
           }}
         </el-row>
         <el-row>
@@ -96,7 +99,7 @@
       </el-col>
     </el-row>
     <TreeSelector
-      :option="allDeptUser"
+      :option="queryUserListData"
       :checked="selectedUser"
       :not-allow="otherRoleUser"
       optionPlaceholder="请输入部门/人员名称"
@@ -134,6 +137,7 @@ import { defineComponent, reactive, toRefs, ref, Ref, getCurrentInstance, watchE
 import _ from 'lodash/fp';
 // import { getMemberList } from '@/api/project/project';
 import { getTenentDepartment, createDept, delDept, delUser, updateDept } from '@/api/company/dept';
+import { queryInTenant } from '@/api/tenant';
 import TreeSelector from './components/TreeSelector.vue';
 import { ElMessageBox, ElMessage } from 'element-plus';
 import { debounce } from 'lodash';
@@ -216,7 +220,7 @@ export default defineComponent({
       },
       tableDataSource: [],
     });
-
+    const queryUserListData: Ref<Array<any>> = ref([]);
     const treeSelectorDept: Ref<any> = ref(null);
     const editMode = ref(false);
     const selectedUser: Ref<Array<any>> = ref([]);
@@ -565,6 +569,33 @@ export default defineComponent({
       const { pageSize } = tableData.searchProps;
       getCurrentTableData(treeData.currentNodeUsers, data, pageSize);
     };
+
+    // 查询租户下所有的用户
+    const queryUserList = async () => {
+      const { code, data } = await queryInTenant({
+        keyword: '',
+        field: 'user',
+      });
+      console.log('人员列表', data);
+      if (code !== RES_CODE.success) {
+        (instance as any).proxy.$message({
+          type: 'error',
+          message: '获取人员列表失败',
+        });
+      } else {
+        const { users } = data;
+        queryUserListData.value = users.map((item: any) => {
+          const { id, displayName } = item;
+          return {
+            name: displayName,
+            id,
+            isLeaf: true,
+          };
+        });
+      }
+    };
+    queryUserList();
+
     return {
       ...toRefs(tableData),
       ...toRefs(treeData),
@@ -595,6 +626,7 @@ export default defineComponent({
       filterAccount,
       handlePageSizeChange,
       handlePageChange,
+      queryUserListData,
     };
   },
 });
