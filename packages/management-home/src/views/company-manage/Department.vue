@@ -410,9 +410,10 @@ export default defineComponent({
 
     // 上移
     const handleUpMove = async (data: any) => {
-      const { parent } = data;
+      const { id, parent, name } = data;
       const { code } = await updateDept({
-        ...data,
+        id,
+        deptName: name,
         parentId: parent.id,
       });
       if (code === RES_CODE.success) {

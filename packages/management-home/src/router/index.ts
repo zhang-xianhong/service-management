@@ -315,7 +315,7 @@ const routes: Array<RouteRecordRaw> = [
         },
       },
       {
-        path: 'departmentdepartment',
+        path: 'department',
         component: () => import(/* webpackChunkName: "tenant" */ '@/views/company-manage/Department.vue'),
         name: 'Department',
         meta: {
