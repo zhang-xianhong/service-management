@@ -8,6 +8,7 @@
       class="form-item"
       v-model="loginInfo.password"
       placeholder="密码"
+      minlength="8"
     ></el-input>
     <el-input class="form-item" v-model="loginInfo.captchaCode" placeholder="验证码">
       <template #suffix>
@@ -81,6 +82,7 @@ export default defineComponent({
     display: block;
     width: 400px;
     height: 48px;
+    line-height: 48px;
     margin-bottom: 16px;
     &__link {
       color: #bbb;
