@@ -28,7 +28,7 @@ router.beforeEach(async (to, from, next) => {
       } else {
         if (routerLoading.value) {
           NProgress.done();
-          return next(`/router-loading?redirect=${to.path}`);
+          return next(`/login?redirect=${to.path}`);
         }
       }
       if (to.matched.length > 1 || whiteList.includes(to.path)) {
