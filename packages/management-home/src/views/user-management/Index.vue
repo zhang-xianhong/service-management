@@ -25,7 +25,7 @@
 <script lang="ts">
 import { defineComponent, reactive, ref } from 'vue';
 import { userInfo } from '@/layout/messageCenter/user-info';
-import { getUserProfile } from '@/api/auth';
+import { getUserProfile, updateUserProfile } from '@/api/auth';
 
 export default defineComponent({
   name: 'UserManagement',
@@ -49,6 +49,11 @@ export default defineComponent({
     };
     const save = (id: number, prop: string) => {
       console.log(id, prop);
+      const item = {};
+      item[prop] = userSetInfo[prop];
+      updateUserProfile(item).then(() => {
+        checkStatus(id);
+      });
     };
     const cancel = (id: number, prop?: string) => {
       checkStatus(id);

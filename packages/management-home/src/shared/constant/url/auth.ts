@@ -7,4 +7,6 @@ export default {
   GET_CAPTCHA: ['/auth/captcha', 'mock/auth/captcha.json'],
   LOGIN: ['auth/login', 'mock/auth/login.json'],
   GET_PROFILE: ['/users/profile', 'mock/auth/user-profile.json'],
+  UPDATE_PROFILE: ['/users/update/profile', 'mock/auth/update-profile.json'],
+  UPDATE_PASSWORD: ['/users/update/profile/password', 'mock/auth/update-password.json'],
 };

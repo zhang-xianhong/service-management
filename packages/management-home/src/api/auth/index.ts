@@ -19,3 +19,9 @@ export const login: (payload: any) => Promise<SuccessResponse<any>> = (payload: 
   request.post(getUrl(URL.auth.LOGIN), payload);
 
 export const getUserProfile: () => Promise<SuccessResponse<any>> = () => request.get(getUrl(URL.auth.GET_PROFILE));
+
+export const updateUserProfile: (payload: any) => Promise<SuccessResponse<any>> = (payload: any) =>
+  request.post(getUrl(URL.auth.UPDATE_PROFILE), payload);
+
+export const updateUserPassword: (payload: any) => Promise<SuccessResponse<any>> = (payload: any) =>
+  request.post(getUrl(URL.auth.UPDATE_PASSWORD), payload);
