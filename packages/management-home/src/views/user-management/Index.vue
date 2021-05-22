@@ -11,21 +11,46 @@
               :readonly="!statusArr[index]"
             />
           </div>
-          <el-button type="text" v-if="!statusArr[index]" @click="checkStatus(index)">修改</el-button>
-          <span v-else>
-            <el-button type="text" @click="save(index, item)">保存</el-button>
-            <el-button type="text" @click="cancel(index, item)">取消</el-button>
-          </span>
+          <template v-if="index !== 4">
+            <el-button type="text" v-if="!statusArr[index]" @click="checkStatus(index)">修改</el-button>
+            <span v-else>
+              <el-button type="text" @click="save(index, item)">保存</el-button>
+              <el-button type="text" @click="cancel(index, item)">取消</el-button>
+            </span>
+          </template>
+          <template v-else>
+            <el-button type="text" @click="reWritePass()">修改密码</el-button>
+          </template>
         </el-form-item>
       </el-form>
     </div>
+
+    <el-dialog title="修改密码" v-model="dialogFormVisible" width="500px">
+      <el-form :model="passForm" ref="formRef" :rules="formRules">
+        <el-form-item label="原始密码" label-width="80px" prop="oldPassword">
+          <el-input v-model="passForm.oldPassword" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="新密码" label-width="80px" prop="newPassword">
+          <el-input v-model="passForm.newPassword" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="确认密码" label-width="80px" prop="confirmPassword">
+          <el-input v-model="passForm.confirmPassword" autocomplete="off"></el-input>
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <span class="dialog-footer" style="width: 100%; text-align: center; display: inline-block">
+          <el-button type="primary" @click="dialogFormVisible = false">保存</el-button>
+          <el-button @click="dialogFormVisible = false">返回</el-button>
+        </span>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, reactive, ref } from 'vue';
 import { userInfo } from '@/layout/messageCenter/user-info';
-import { getUserProfile, updateUserProfile } from '@/api/auth';
+import { getUserProfile, updateUserPassword, updateUserProfile } from '@/api/auth';
 
 export default defineComponent({
   name: 'UserManagement',
@@ -49,7 +74,7 @@ export default defineComponent({
     };
     const save = (id: number, prop: string) => {
       console.log(id, prop);
-      const item = {};
+      const item = {} as any;
       item[prop] = userSetInfo[prop];
       updateUserProfile(item).then(() => {
         checkStatus(id);
@@ -58,8 +83,67 @@ export default defineComponent({
     const cancel = (id: number, prop?: string) => {
       checkStatus(id);
       if (prop) {
-        userSetInfo[prop] = userRelease[prop];
+        (userSetInfo[prop] as any) = userRelease[prop] as any;
       }
+    };
+
+    const dialogFormVisible = ref(false);
+    const passForm = reactive({} as any);
+    const reWritePass = () => {
+      dialogFormVisible.value = true;
+    };
+
+    const sendPass = () => {
+      updateUserPassword({ ...passForm }).then((res) => {
+        console.log(res);
+      });
+    };
+    const formRef = ref(null as any);
+
+    // 初始密码校验
+    const validatePass = (rule: any, value: string, callback: Function) => {
+      if (value !== '') {
+        if (value === userSetInfo.value.displayName) {
+          callback(new Error('密码不能与用户名相同'));
+        }
+        formRef.value.validateField('confirmPassword');
+      }
+      callback();
+    };
+
+    // 密码再次输入校验
+    const checkPasswordValidator = (rule: any, value: string, callback: Function) => {
+      if (value === '') {
+        callback(new Error('请再次输入密码'));
+      } else {
+        if (value !== passForm.newPassword) {
+          callback(new Error('两次输入密码不一致'));
+        }
+        callback();
+      }
+    };
+
+    const formRules = {
+      oldPassword: [
+        { required: true, message: '请输入原密码' },
+        // TODO:原密码不应该加校验
+        // { min: 8, max: 16, message: '密码长度在8到16位', trigger: 'blur' },
+        // { pattern: /^[a-zA-Z0-9_]+$/g, message: '包含非法字符，只能输入大小写字母、数字、下划线', trigger: 'blur' },
+      ],
+      newPassword: [
+        { required: true, message: '请输入新密码' },
+        { min: 8, max: 16, message: '密码长度在8到16位', trigger: 'blur' },
+        {
+          pattern: /^(?=.*[A-Z])(?=.*[a-z])[A-Za-z\d]{8,16}$/g,
+          message: '包含非法字符，只能输入大小写字母、数字、下划线，且必须包含大、小写字母',
+          trigger: 'blur',
+        },
+        { validator: validatePass, trigger: 'blur' },
+      ],
+      confirmPassword: [
+        { required: true, message: '请再次输入新密码' },
+        { validator: checkPasswordValidator, trigger: 'blur' },
+      ],
     };
 
     return {
@@ -71,6 +155,12 @@ export default defineComponent({
       cancel,
       props,
       labels,
+      reWritePass,
+      dialogFormVisible,
+      passForm,
+      sendPass,
+      formRules,
+      formRef,
     };
   },
 });
