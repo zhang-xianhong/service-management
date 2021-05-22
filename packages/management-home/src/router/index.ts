@@ -322,7 +322,7 @@ const routes: Array<RouteRecordRaw> = [
           title: '部门管理',
           icon: 'el-icon-eleme',
           isRootLevel: false,
-          id: 9,
+          // id: 9,
         },
       },
     ],
