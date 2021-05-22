@@ -68,7 +68,7 @@ const routes: Array<RouteRecordRaw> = [
     component: Layout,
     meta: {
       isRootLevel: true,
-      id: 2,
+      // id: 2,
       hidden: false,
     },
     children: [
@@ -80,7 +80,7 @@ const routes: Array<RouteRecordRaw> = [
           title: '租户管理',
           icon: 'el-icon-eleme',
           isRootLevel: false,
-          id: 2,
+          // id: 2,
           hidden: false,
         },
       },
@@ -95,7 +95,7 @@ const routes: Array<RouteRecordRaw> = [
       isRootLevel: true,
       title: '项目管理',
       icon: 'el-icon-eleme',
-      id: 4,
+      // id: 4,
       hidden: false,
     },
     children: [
@@ -107,7 +107,7 @@ const routes: Array<RouteRecordRaw> = [
           title: '项目列表',
           icon: 'el-icon-eleme',
           isRootLevel: false,
-          id: 4,
+          // id: 4,
           hidden: false,
         },
       },
@@ -121,7 +121,7 @@ const routes: Array<RouteRecordRaw> = [
           isRootLevel: false,
           hidden: true,
           activeMenu: '/project-management/project-list',
-          id: 4,
+          // id: 4,
         },
         props: true,
       },
@@ -136,7 +136,7 @@ const routes: Array<RouteRecordRaw> = [
       title: '服务管理',
       icon: 'el-icon-eleme',
       isRootLevel: true,
-      id: 16,
+      // id: 16,
     },
     children: [
       {
@@ -147,7 +147,7 @@ const routes: Array<RouteRecordRaw> = [
           title: '业务服务',
           icon: 'el-icon-eleme',
           isRootLevel: false,
-          id: 16,
+          // id: 16,
         },
       },
       {
@@ -160,7 +160,7 @@ const routes: Array<RouteRecordRaw> = [
           isRootLevel: false,
           hidden: true,
           activeMenu: '/service-management/service-list',
-          id: 16,
+          // id: 16,
         },
       },
       // {
@@ -184,7 +184,7 @@ const routes: Array<RouteRecordRaw> = [
       title: '应用编排',
       icon: 'el-icon-eleme',
       isRootLevel: true,
-      id: 9,
+      // id: 9,
     },
     children: [
       {
@@ -195,7 +195,7 @@ const routes: Array<RouteRecordRaw> = [
           title: '应用列表',
           icon: 'el-icon-eleme',
           isRootLevel: false,
-          id: 8,
+          // id: 8,
         },
       },
     ],
@@ -208,7 +208,7 @@ const routes: Array<RouteRecordRaw> = [
       title: '配置管理',
       icon: 'el-icon-eleme',
       isRootLevel: true,
-      id: 8,
+      // id: 8,
     },
     children: [
       {
@@ -219,7 +219,7 @@ const routes: Array<RouteRecordRaw> = [
           title: '分类信息',
           icon: 'el-icon-eleme',
           isRootLevel: false,
-          id: 17,
+          // id: 17,
         },
       },
       {
@@ -230,7 +230,7 @@ const routes: Array<RouteRecordRaw> = [
           title: '标签信息',
           icon: 'el-icon-eleme',
           isRootLevel: false,
-          id: 18,
+          // id: 18,
         },
       },
       {
@@ -241,7 +241,7 @@ const routes: Array<RouteRecordRaw> = [
           title: '数据类型',
           icon: 'el-icon-eleme',
           isRootLevel: false,
-          id: 19,
+          // id: 19,
         },
       },
       {
@@ -253,7 +253,7 @@ const routes: Array<RouteRecordRaw> = [
           icon: 'el-icon-eleme',
           hidden: true,
           isRootLevel: false,
-          id: 19,
+          // id: 19,
         },
       },
       {
@@ -264,7 +264,7 @@ const routes: Array<RouteRecordRaw> = [
           title: '通用配置',
           icon: 'el-icon-eleme',
           isRootLevel: false,
-          id: 20,
+          // id: 20,
         },
       },
     ],
@@ -287,7 +287,7 @@ const routes: Array<RouteRecordRaw> = [
           title: 'iframe传参管理',
           icon: 'el-icon-eleme',
           isRootLevel: false,
-          id: 12345,
+          // id: 12345,
         },
       },
     ],
@@ -300,7 +300,7 @@ const routes: Array<RouteRecordRaw> = [
       title: '公司管理',
       icon: 'el-icon-eleme',
       isRootLevel: true,
-      id: 11,
+      // id: 11,
     },
     children: [
       {
@@ -311,7 +311,7 @@ const routes: Array<RouteRecordRaw> = [
           title: '人员管理',
           icon: 'el-icon-eleme',
           isRootLevel: false,
-          id: 11,
+          // id: 11,
         },
       },
       // {
@@ -335,7 +335,7 @@ const routes: Array<RouteRecordRaw> = [
       title: '发布管理',
       icon: 'el-icon-eleme',
       isRootLevel: true,
-      id: 10,
+      // id: 10,
     },
     children: [
       {
@@ -346,7 +346,7 @@ const routes: Array<RouteRecordRaw> = [
           title: '发布申请',
           icon: 'el-icon-eleme',
           isRootLevel: false,
-          id: 9,
+          // id: 9,
         },
       },
       {
@@ -357,7 +357,7 @@ const routes: Array<RouteRecordRaw> = [
           title: '发布审核',
           icon: 'el-icon-eleme',
           isRootLevel: false,
-          id: 10,
+          // id: 10,
         },
       },
     ],
@@ -374,6 +374,7 @@ export const reCreateRouterMatcher = (routes: Array<RouteRecordRaw>): RouterMatc
 
 // eslint-disable-next-line
 let router = reCreateRouter([...baseRoutes]);
+console.log(router.getRoutes(), 222);
 
 export const resetRouter = (routes: Array<RouteRecordRaw>): void => {
   // router = reCreateRouter(routes);
@@ -397,5 +398,7 @@ resetPremissionRouter();
 
 export const alloverRouter = () => reCreateRouter([...baseRoutes, ...routes]);
 setRouterRef(router);
+
+console.log(router.getRoutes(), 111);
 
 export default router;

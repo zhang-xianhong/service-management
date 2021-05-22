@@ -1,7 +1,7 @@
 <template>
   <el-row class="login">
     <el-col class="login-sidebar" :span="8">
-      <div class="login-sidebar__nav">
+      <div class="login-sidebar__nav" @click="backToHead">
         <i class="el-icon-arrow-left"></i>
         返回到首页
       </div>
@@ -14,6 +14,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
+import { useRouter } from 'vue-router';
 import LoginForm from './components/LoginForm.vue';
 
 export default defineComponent({
@@ -22,13 +23,19 @@ export default defineComponent({
     LoginForm,
   },
   setup() {
-    return {};
+    const router = useRouter();
+    const backToHead = () => {
+      router.push('/');
+    };
+    return {
+      backToHead,
+    };
   },
 });
 </script>
 
 <style scoped lang="scss">
-$image: url(~@/assets/img/citybase-login.png);
+$image: url(~@/assets/img/citybase-login.jpg);
 .login {
   height: 100%;
   background: #fff;
@@ -37,7 +44,7 @@ $image: url(~@/assets/img/citybase-login.png);
     width: 524px;
     height: 100%;
     color: #fff;
-    background: $image no-repeat;
+    background: $image no-repeat #f0f0f0;
     background-size: cover;
     &__nav {
       display: inline-block;
@@ -46,6 +53,7 @@ $image: url(~@/assets/img/citybase-login.png);
       line-height: 24px;
       font-size: 18px;
       letter-spacing: 0;
+      cursor: pointer;
     }
   }
   &-main {
