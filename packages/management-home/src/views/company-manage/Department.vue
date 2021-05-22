@@ -289,6 +289,7 @@ export default defineComponent({
           parentNode._children = [...childrenUser, ...childrenDept];
         };
         setChildren(deptTree[0], data);
+        console.log('tree', deptTree);
         allDeptUser.value = deptTree;
         allUsers.value = data.users.map((user: any) => ({
           ...user,
@@ -409,7 +410,7 @@ export default defineComponent({
 
     // 上移
     const handleUpMove = async (data: any) => {
-      const { id, parent } = data;
+      const { parent } = data;
       const { code } = await updateDept({
         ...data,
         parentId: parent.id,
