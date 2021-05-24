@@ -25,7 +25,7 @@
         <el-table-column label="手机" prop="phoneNumber"></el-table-column>
         <el-table-column label="邮箱" prop="primaryMail"></el-table-column>
         <el-table-column label="账户状态" prop="status">
-          <template #default="scope">{{ USERSTATUS[scope.row.status] }}</template>
+          <template #default="scope">{{ UserStatus[scope.row.status] }}</template>
         </el-table-column>
         <el-table-column label="部门" prop="deptName"></el-table-column>
         <el-table-column label="操作" width="300">
@@ -81,17 +81,21 @@
 
 <script lang="ts">
 import { defineComponent, ref, reactive, toRefs, Ref, provide, getCurrentInstance } from 'vue';
+import { debounce } from 'lodash';
 import { ElMessageBox, ElMessage } from 'element-plus';
 import AddPerson from './components/AddPerson.vue';
 import PackagedPagination from '@/components/pagination/Index.vue';
-import { debounce } from 'lodash';
-import { getUserList, createUser, updateUser, delUser, updateUserStatus, resetPassWd } from '@/api/company/users';
 import { generatePasswd, copyFun } from './utils';
-
-const USERSTATUS: any = {
-  0: '启用',
-  '-1': '禁用',
-};
+import { getUserList, createUser, updateUser, delUser, updateUserStatus, resetPassWd } from '@/api/company/users';
+// 用户状态
+enum UserStatus {
+  禁用 = -1,
+  启用 = 0,
+}
+// 状态码
+enum ResCode {
+  Success,
+}
 interface TableState {
   tableData: Array<object>;
   loading: boolean;
@@ -108,16 +112,15 @@ interface RefAddDialog {
   openDialog: Function;
   [attr: string]: any;
 }
-
-const RES_CODE: any = {
-  Success: 0,
-};
-
+// 密码重置
+interface ResetFormState {
+  newPassword: any[];
+}
 const passwdMsg = '长度在 8 到 16 个字符,至少1个大写字母，1个小写字母，1个数字和1个特殊字符($@$!%*?&)';
 
 // 密码校验
 function checkPasswd(passwd: string): boolean {
-  const szReg = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@!^#%&])[A-Za-z\d$@$!%*?&]{8,16}/;
+  const szReg = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@!^#%&])[A-Za-z\d@$!%*?&]{8,16}/;
   return szReg.test(passwd);
 }
 const validatorPasswdPass = (rule: any, value: string, callback: Function) => {
@@ -126,7 +129,7 @@ const validatorPasswdPass = (rule: any, value: string, callback: Function) => {
   }
   callback();
 };
-const resetFormRules = {
+const resetFormRules: ResetFormState = {
   newPassword: [
     { required: true, message: '请输入新的密码', trigger: 'blur' },
     { validator: validatorPasswdPass, trigger: 'blur' },
@@ -195,7 +198,7 @@ export default defineComponent({
     const getList = async () => {
       tableState.loading = true;
       const { code, data } = await getUserList(tableState.searchProps);
-      if (code === RES_CODE.success) {
+      if (code === ResCode.Success) {
         tableState.total = data.count;
         tableState.tableData = data.rows || [];
         tableState.loading = false;
@@ -216,7 +219,7 @@ export default defineComponent({
     const handleUpdateStatus = async (status: number) => {
       const ids = tableState.multipleSelection.map((item) => item.id);
       const { code } = await updateUserStatus({ ids, status });
-      if (code === RES_CODE.success) {
+      if (code === ResCode.Success) {
         msgTips('success', '修改成功');
         getList();
       } else {
@@ -235,7 +238,7 @@ export default defineComponent({
           const ids = tableState.multipleSelection.map((item) => item.id);
           // 待传参
           const { code } = await delUser({ ids });
-          if (code === RES_CODE.success) {
+          if (code === ResCode.Success) {
             msgTips('success', '删除成功');
             getList();
           } else {
@@ -256,7 +259,7 @@ export default defineComponent({
         ...data,
         status: parseInt(data.status, 10),
       });
-      if (code === RES_CODE.success) {
+      if (code === ResCode.Success) {
         msgTips('success', '新建成功');
         initAddDialog();
         getList();
@@ -271,7 +274,7 @@ export default defineComponent({
         ...data,
         status: parseInt(data.status, 10),
       });
-      if (code === RES_CODE.success) {
+      if (code === ResCode.Success) {
         msgTips('success', '编辑成功');
         getList();
       } else {
@@ -315,7 +318,7 @@ export default defineComponent({
             userId,
             newPassword,
           });
-          if (code === RES_CODE.success) {
+          if (code === ResCode.Success) {
             copyFun(newPassword);
             // 复制到剪切板上
             msgTips('success', '密码重置成功,已复制到剪切板');
@@ -340,7 +343,7 @@ export default defineComponent({
       submitResetForm,
       filterAccount,
       refAddDialog,
-      USERSTATUS,
+      UserStatus,
       resetFormRules,
       resetDiagFormRef,
       passwdMsg,

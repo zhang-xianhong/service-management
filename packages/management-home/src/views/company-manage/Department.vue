@@ -171,17 +171,19 @@ interface TableDataType {
   };
   tableDataSource: any;
 }
-const userStatus = {
-  '-1': '冻结',
-  0: '启用',
-};
-const genderLabel = {
-  0: '男',
-  1: '女',
-};
-const RES_CODE: any = {
-  success: 0,
-};
+// 账户状态
+enum UserStatus {
+  禁用 = -1,
+  启用 = 0,
+}
+enum GenderLabel {
+  男,
+  女,
+}
+// 状态码
+enum ResCode {
+  Success,
+}
 
 // 中文校验
 function checkZNName(name: string): boolean {
@@ -199,7 +201,6 @@ const treeProps = {
   children: 'children',
   isLeaf: 'isLeaf',
 };
-// TreeSelector
 export default defineComponent({
   name: 'Department',
   components: { TreeSelector, PackagedPagination },
@@ -310,8 +311,8 @@ export default defineComponent({
         allDeptUser.value = deptTree;
         allUsers.value = data.users.map((user: any) => ({
           ...user,
-          status: userStatus[user.status as 0 | -1],
-          gender: genderLabel[user.gender as 0 | 1],
+          status: UserStatus[user.status as 0 | -1],
+          gender: GenderLabel[user.gender as 0 | 1],
         }));
         treeData.loading = false;
       }
@@ -344,7 +345,7 @@ export default defineComponent({
         .then(async () => {
           // 待传参
           const { code } = await delUser({ userIds: [data.id] });
-          if (code === RES_CODE.success) {
+          if (code === ResCode.Success) {
             msgTips('success', '删除成功');
             initDepartments();
             initTableData();
@@ -378,7 +379,7 @@ export default defineComponent({
             // 删除部门
             const { id } = treeData.currentNodeData;
             const { code } = await delDept({ id });
-            if (code === RES_CODE.success) {
+            if (code === ResCode.Success) {
               msgTips('success', '删除成功');
               initDepartments();
               initTableData();
@@ -405,7 +406,7 @@ export default defineComponent({
         page: 1,
         pageSize: 50000,
       });
-      if (code !== RES_CODE.success) {
+      if (code !== ResCode.Success) {
         msgTips('error', '获取人员列表失败');
       } else {
         const { rows } = data;
@@ -444,7 +445,7 @@ export default defineComponent({
         deptName: name,
         parentId: parent.parent.id,
       });
-      if (code === RES_CODE.success) {
+      if (code === ResCode.Success) {
         msgTips('success', '上移成功');
         initDepartments();
       } else {
@@ -533,7 +534,7 @@ export default defineComponent({
             });
           }
           const { code } = res;
-          if (code === RES_CODE.success) {
+          if (code === ResCode.Success) {
             msgTips('success', `${formData.isEdit ? '编辑' : '添加'}成功！`);
             initDepartments();
             closeDialog();
