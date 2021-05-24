@@ -51,6 +51,7 @@
 import { defineComponent, reactive, ref } from 'vue';
 import { userInfo } from '@/layout/messageCenter/user-info';
 import { getUserProfile, updateUserPassword, updateUserProfile } from '@/api/auth';
+import { ElMessage } from 'element-plus';
 
 export default defineComponent({
   name: 'UserManagement',
@@ -74,6 +75,9 @@ export default defineComponent({
     };
     const save = (id: number, prop: string) => {
       console.log(id, prop);
+      if (!userSetInfo[prop]) {
+        return ElMessage.error(`${labels[id]} 不得为空！`);
+      }
       const item = {} as any;
       item[prop] = userSetInfo[prop];
       updateUserProfile(item).then(() => {

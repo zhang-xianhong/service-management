@@ -31,12 +31,13 @@ router.beforeEach(async (to, from, next) => {
           return next(`/router-loading?redirect=${to.path}`);
         }
       }
-      if (to.matched.length > 1 || whiteList.includes(to.path)) {
+      if (to.matched.length >= 1 || whiteList.includes(to.path)) {
         next();
+        console.log('currentPathid', to.meta.id, to);
         localStorage.setItem('currentPathId', to.meta.id as any);
       } else {
         const { matched } = usefulRoutes.resolve(to);
-        if (matched.length > 1) {
+        if (matched.length >= 1) {
           next('/no-right');
         } else {
           next('/not-found');
