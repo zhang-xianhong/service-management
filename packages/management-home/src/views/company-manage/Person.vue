@@ -17,7 +17,7 @@
       </el-col>
     </el-row>
     <el-row style="background: #fff">
-      <el-table :data="tableData" style="width: 100%" @selection-change="selChange">
+      <el-table :data="tableData" style="width: 100%" @selection-change="selChange" v-loading="loading">
         <el-table-column type="selection" width="45" />
         <el-table-column type="index" label="序号" width="50" />
         <el-table-column label="登录账号" prop="userName"></el-table-column>
@@ -110,7 +110,7 @@ interface RefAddDialog {
 }
 
 const RES_CODE: any = {
-  success: 0,
+  Success: 0,
 };
 
 const passwdMsg = '长度在 8 到 16 个字符,至少1个大写字母，1个小写字母，1个数字和1个特殊字符($@$!%*?&)';
@@ -156,6 +156,14 @@ export default defineComponent({
     // 获取组件实例
     const instance = getCurrentInstance();
 
+    // 提示信息
+    function msgTips(type: string, content: string) {
+      (instance as any).proxy.$message({
+        type,
+        message: content,
+      });
+    }
+
     // 打开对话框
     const openAddDialog = (): void => {
       (refAddDialog.value as RefAddDialog).openDialog();
@@ -185,16 +193,14 @@ export default defineComponent({
     });
     // 获取列表
     const getList = async () => {
-      // tableState.loading = true;
+      tableState.loading = true;
       const { code, data } = await getUserList(tableState.searchProps);
       if (code === RES_CODE.success) {
         tableState.total = data.count;
         tableState.tableData = data.rows || [];
+        tableState.loading = false;
       } else {
-        (instance as any).proxy.$message({
-          type: 'error',
-          message: '获取人员列表失败',
-        });
+        msgTips('error', '获取人员列表失败');
       }
     };
     getList();
@@ -211,16 +217,10 @@ export default defineComponent({
       const ids = tableState.multipleSelection.map((item) => item.id);
       const { code } = await updateUserStatus({ ids, status });
       if (code === RES_CODE.success) {
-        (instance as any).proxy.$message({
-          type: 'success',
-          message: '修改成功',
-        });
+        msgTips('success', '修改成功');
         getList();
       } else {
-        (instance as any).proxy.$message({
-          type: 'error',
-          message: '修改失败',
-        });
+        msgTips('error', '修改失败');
       }
     };
 
@@ -236,16 +236,10 @@ export default defineComponent({
           // 待传参
           const { code } = await delUser({ ids });
           if (code === RES_CODE.success) {
-            (instance as any).proxy.$message({
-              type: 'success',
-              message: '删除成功',
-            });
+            msgTips('success', '删除成功');
             getList();
           } else {
-            (instance as any).proxy.$message({
-              type: 'error',
-              message: '删除失败',
-            });
+            msgTips('error', '删除失败');
           }
         })
         .catch(() => {
@@ -263,17 +257,11 @@ export default defineComponent({
         status: parseInt(data.status, 10),
       });
       if (code === RES_CODE.success) {
-        (instance as any).proxy.$message({
-          type: 'success',
-          message: '新建成功',
-        });
+        msgTips('success', '新建成功');
         initAddDialog();
         getList();
       } else {
-        (instance as any).proxy.$message({
-          type: 'error',
-          message: '添加失败',
-        });
+        msgTips('error', '新建失败');
       }
     };
 
@@ -284,16 +272,10 @@ export default defineComponent({
         status: parseInt(data.status, 10),
       });
       if (code === RES_CODE.success) {
-        (instance as any).proxy.$message({
-          type: 'success',
-          message: '编辑成功',
-        });
+        msgTips('success', '编辑成功');
         getList();
       } else {
-        (instance as any).proxy.$message({
-          type: 'error',
-          message: '编辑失败',
-        });
+        msgTips('error', '编辑失败');
       }
       closeDialog();
     };
@@ -336,15 +318,9 @@ export default defineComponent({
           if (code === RES_CODE.success) {
             copyFun(newPassword);
             // 复制到剪切板上
-            (instance as any).proxy.$message({
-              type: 'success',
-              message: '密码重置成功,已复制到剪切板',
-            });
+            msgTips('success', '密码重置成功,已复制到剪切板');
           } else {
-            (instance as any).proxy.$message({
-              type: 'error',
-              message: '密码重置失败',
-            });
+            msgTips('error', '密码重置失败');
           }
         }
       });
@@ -357,15 +333,15 @@ export default defineComponent({
       openEditDialog,
       handleDel,
       selChange,
-      filterAccount,
-      refAddDialog,
-      USERSTATUS,
       handlePageSizeChange,
       handlePageChange,
-      resetFormRules,
       handleResetPasswd,
       closeResetDialog,
       submitResetForm,
+      filterAccount,
+      refAddDialog,
+      USERSTATUS,
+      resetFormRules,
       resetDiagFormRef,
       passwdMsg,
     };
