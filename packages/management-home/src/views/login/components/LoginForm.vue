@@ -10,27 +10,29 @@
       placeholder="密码"
       minlength="8"
     ></el-input>
-    <el-input class="form-item" v-model="loginInfo.captchaCode" placeholder="验证码">
+    <el-input class="form-item" v-model="loginInfo.captchaCode" placeholder="验证码" @input="onInputCaptchaCode">
       <template #suffix>
+        <el-button id="success-btn" v-if="isPassed" type="success" circle>✔️</el-button>
         <img @click="getCaptchaUrl" :src="captchaUrl" />
       </template>
     </el-input>
-    <el-button class="form-item__btn" type="primary" @click="onLogin">登录</el-button>
+    <el-button class="form-item__btn" type="primary" @click="onLogin" :loading="loading">登录</el-button>
     <!-- TODO:后续版本开发 -->
     <!-- <div class="form-item__link" @click="goForgetPassword">忘记密码?</div> -->
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, ref } from 'vue';
-import { useRouter } from 'vue-router';
-import { getCaptcha, login } from '@/api/auth';
+import { defineComponent, reactive, ref, Ref } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
+import { getCaptcha, login, getCode, verifyCaptcha } from '@/api/auth';
 import { getUser } from '@/shared/userinfo';
 
 export default defineComponent({
   name: 'LoginForm',
   setup() {
     const router = useRouter();
+    const route = useRoute();
     const loginInfo = reactive({
       username: '',
       password: '',
@@ -48,25 +50,52 @@ export default defineComponent({
       router.push('/login/forget-password');
     };
 
+    const isPassed: Ref<boolean> = ref(false);
+
+    const onInputCaptchaCode = async (value: string) => {
+      const { data } = await verifyCaptcha({ captchaCode: value });
+      if (data) {
+        isPassed.value = true;
+      } else {
+        isPassed.value = false;
+      }
+    };
+
+    const loading: Ref<boolean> = ref(false);
+
     const onLogin = async () => {
       try {
-        const { code } = await login(loginInfo);
+        loading.value = true;
+        const { data } = await getCode();
+        const { code } = await login({ account: loginInfo.username, secret: `${loginInfo.password}.${data}` });
         if (code === 0) {
           await getUser();
-          console.log(router.getRoutes(), 'router');
+          loading.value = false;
+          if (route.params.redirect) {
+            router.push(route.params.redirect as string);
+          }
+          // window.location.href = '/';
+          // window.location.reload();
           router.push('/');
         } else {
+          loading.value = false;
+          loginInfo.captchaCode = '';
           getCaptchaUrl();
         }
       } catch {
+        loading.value = false;
+        loginInfo.captchaCode = '';
         getCaptchaUrl();
       }
     };
     return {
+      loading,
       loginInfo,
       captchaUrl,
       getCaptchaUrl,
       goForgetPassword,
+      isPassed,
+      onInputCaptchaCode,
       onLogin,
     };
   },
@@ -108,5 +137,16 @@ export default defineComponent({
       cursor: pointer;
     }
   }
+}
+#success-btn {
+  height: 20px;
+  width: 20px;
+  border-radius: 50%;
+  transform: translateY(-90%);
+  min-height: 0px;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  margin-right: 8px;
 }
 </style>

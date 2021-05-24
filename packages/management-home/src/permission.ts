@@ -29,16 +29,14 @@ router.beforeEach(async (to, from, next) => {
       } else {
         if (routerLoading.value) {
           NProgress.done();
-          return next(`/login?redirect=${to.path}`);
+          return next(`/router-loading?redirect=${to.path}`);
         }
       }
       if (to.matched.length > 1 || whiteList.includes(to.path)) {
         next();
         localStorage.setItem('currentPathId', to.meta.id as any);
       } else {
-        console.log(usefulRoutes, 'routes');
         const { matched } = usefulRoutes.resolve(to);
-        console.log(matched);
         if (matched.length >= 1) {
           next('/no-right');
         } else {
