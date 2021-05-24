@@ -26,7 +26,7 @@ export const getUser = async () => {
   userMenus.value = menuObj;
   userProjectList.value = projects;
   resetPremissionRouter();
-  routerLoading.value = false;
+  routerLoading.value = !routerLoading.value;
   if (projects.length) {
     const includes = localsid && projects.map((x: any) => x.id).includes(localsid);
     if (!includes) {
