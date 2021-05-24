@@ -148,7 +148,7 @@ export default {
     };
     const valueLabel = computed(() => {
       const { data } = props.role;
-      return `${props.option[0]?.name} - ${data._children ? data.name : data.parent.name}`;
+      return `${data._children ? data.name : data.parent.name}`;
     });
     const setChecked = (treeOption: Array<any>, ids: Array<number>, notAllowIds: Array<number>) => {
       treeOption.forEach((treeNode: any) => {
@@ -234,8 +234,10 @@ export default {
       }
     };
     const submit = async () => {
+      const { id } = props.role.data;
+      console.log('部门id', id);
       const { code } = await addUser({
-        id: props.role.id,
+        id,
         userIds: _.map('id')(selectedUser.value.concat(props.checked)),
       });
       if (code === 0) {

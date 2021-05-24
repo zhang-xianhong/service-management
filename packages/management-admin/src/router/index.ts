@@ -48,6 +48,28 @@ const routes: Array<RouteRecordRaw> = [
     redirect: '/tenant-management',
   },
   {
+    path: '/user-info',
+    redirect: '/',
+    component: Layout,
+    meta: {
+      isRootLevel: true,
+      hidden: true,
+      title: '用户信息',
+    },
+    children: [
+      {
+        path: '/',
+        component: () => import(/* webpackChunkName: "userinfo" */ '@/views/user-info/Index.vue'),
+        name: 'user',
+        meta: {
+          title: '用户信息',
+          icon: 'el-icon-eleme',
+          isRootLevel: false,
+        },
+      },
+    ],
+  },
+  {
     path: '/tenant-management',
     redirect: '/tenant-list',
     component: Layout,

@@ -2,7 +2,12 @@
   <div class="dept">
     <el-row>
       <el-col :span="10" style="text-align: left">
-        <el-button type="primary" style="width: 90px" @click="handleAddDept">添加子部门</el-button>
+        <el-button
+          type="primary"
+          style="width: 90px"
+          @click="handleAddDept"
+          :disabled="currentNodeData.id === 0 || !isSel"
+        >添加子部门</el-button>
         <el-button @click="handleDel" :disabled="!isSel">删除</el-button>
       </el-col>
       <el-col :offset="10" :span="4" style="text-align: right">
@@ -15,7 +20,7 @@
       </el-col>
     </el-row>
     <el-row>
-      <el-col :span="4" style="background: #fff">
+      <el-col :span="6" style="background: #fff">
         <div class="user-tree">
           <el-scrollbar>
             <el-tree
@@ -58,10 +63,14 @@
           </el-scrollbar>
         </div>
       </el-col>
-      <el-col :offset="1" :span="18">
+      <el-col :offset="1" :span="16">
         <el-row>
           {{
-            currentNodeData.name ? (currentNodeData._children ? currentNodeData.name : currentNodeData.parent.name) : '--'
+            currentNodeData.name
+              ? currentNodeData._children
+                ? currentNodeData.name
+                : currentNodeData.parent.name
+              : '--'
           }}
         </el-row>
         <el-row>
@@ -96,7 +105,7 @@
       </el-col>
     </el-row>
     <TreeSelector
-      :option="allDeptUser"
+      :option="queryUserListData"
       :checked="selectedUser"
       :not-allow="otherRoleUser"
       optionPlaceholder="请输入部门/人员名称"
@@ -134,6 +143,7 @@ import { defineComponent, reactive, toRefs, ref, Ref, getCurrentInstance, watchE
 import _ from 'lodash/fp';
 // import { getMemberList } from '@/api/project/project';
 import { getTenentDepartment, createDept, delDept, delUser, updateDept } from '@/api/company/dept';
+import { queryInTenant } from '@/api/tenant';
 import TreeSelector from './components/TreeSelector.vue';
 import { ElMessageBox, ElMessage } from 'element-plus';
 import { debounce } from 'lodash';
@@ -216,7 +226,7 @@ export default defineComponent({
       },
       tableDataSource: [],
     });
-
+    const queryUserListData: Ref<Array<any>> = ref([]);
     const treeSelectorDept: Ref<any> = ref(null);
     const editMode = ref(false);
     const selectedUser: Ref<Array<any>> = ref([]);
@@ -289,7 +299,6 @@ export default defineComponent({
           parentNode._children = [...childrenUser, ...childrenDept];
         };
         setChildren(deptTree[0], data);
-        console.log('tree', deptTree);
         allDeptUser.value = deptTree;
         allUsers.value = data.users.map((user: any) => ({
           ...user,
@@ -410,9 +419,10 @@ export default defineComponent({
 
     // 上移
     const handleUpMove = async (data: any) => {
-      const { parent } = data;
+      const { id, parent, name } = data;
       const { code } = await updateDept({
-        ...data,
+        id,
+        deptName: name,
         parentId: parent.id,
       });
       if (code === RES_CODE.success) {
@@ -449,14 +459,13 @@ export default defineComponent({
     };
 
     function nodeClickHandle(data: any, node: any): void {
+      console.log('当前节点', node);
+      console.log('当前节点数据', data);
       // 首节点不做选中
-      if (data.id === 0) {
-        return;
-      }
-      treeData.isSel = true;
+      treeData.isSel = data.id === 0 ? false : true;
       treeData.currentNodeData = data;
       treeData.currentNode = node;
-      if (!data._children) {
+      if (!data._children || data.id === 0) {
         return;
       }
       const { page, pageSize } = tableData.searchProps;
@@ -564,6 +573,32 @@ export default defineComponent({
       const { pageSize } = tableData.searchProps;
       getCurrentTableData(treeData.currentNodeUsers, data, pageSize);
     };
+
+    // 查询租户下所有的用户
+    const queryUserList = async () => {
+      const { code, data } = await queryInTenant({
+        keyword: '',
+        field: 'user',
+      });
+      if (code !== RES_CODE.success) {
+        (instance as any).proxy.$message({
+          type: 'error',
+          message: '获取人员列表失败',
+        });
+      } else {
+        const { users } = data;
+        queryUserListData.value = users.map((item: any) => {
+          const { id, displayName } = item;
+          return {
+            name: displayName,
+            id,
+            isLeaf: true,
+          };
+        });
+      }
+    };
+    queryUserList();
+
     return {
       ...toRefs(tableData),
       ...toRefs(treeData),
@@ -594,6 +629,7 @@ export default defineComponent({
       filterAccount,
       handlePageSizeChange,
       handlePageChange,
+      queryUserListData,
     };
   },
 });
