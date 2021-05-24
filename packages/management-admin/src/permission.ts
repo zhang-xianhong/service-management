@@ -10,7 +10,6 @@ NProgress.configure({ showSpinner: false });
 const whiteList = baseRoutes.map((x) => x.path);
 
 router.beforeEach(async (to, from, next) => {
-  console.log(to, 'to');
   NProgress.start();
   document.title = `${to.meta.title} city-base`;
 

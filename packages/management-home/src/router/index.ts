@@ -269,29 +269,29 @@ const routes: Array<RouteRecordRaw> = [
       },
     ],
   },
-  {
-    path: '/iframe-management',
-    redirect: '/iframe-detail',
-    name: 'IframeManagement',
-    component: Layout,
-    meta: {
-      isRootLevel: true,
-      hidden: true,
-    },
-    children: [
-      {
-        path: 'iframe-detail',
-        component: () => import(/* webpackChunkName: "tenant" */ '@/views/iframe-test/Index.vue'),
-        name: 'iframe',
-        meta: {
-          title: 'iframe传参管理',
-          icon: 'el-icon-eleme',
-          isRootLevel: false,
-          id: 12345,
-        },
-      },
-    ],
-  },
+  // {
+  //   path: '/iframe-management',
+  //   redirect: '/iframe-detail',
+  //   name: 'IframeManagement',
+  //   component: Layout,
+  //   meta: {
+  //     isRootLevel: true,
+  //     hidden: true,
+  //   },
+  //   children: [
+  //     {
+  //       path: 'iframe-detail',
+  //       component: () => import(/* webpackChunkName: "tenant" */ '@/views/iframe-test/Index.vue'),
+  //       name: 'iframe',
+  //       meta: {
+  //         title: 'iframe传参管理',
+  //         icon: 'el-icon-eleme',
+  //         isRootLevel: false,
+  //         id: 12345,
+  //       },
+  //     },
+  //   ],
+  // },
   {
     path: '/company-manage',
     name: 'Company',
@@ -300,7 +300,7 @@ const routes: Array<RouteRecordRaw> = [
       title: '公司管理',
       icon: 'el-icon-eleme',
       isRootLevel: true,
-      // id: 11,
+      id: 11,
     },
     children: [
       {
@@ -311,7 +311,7 @@ const routes: Array<RouteRecordRaw> = [
           title: '人员管理',
           icon: 'el-icon-eleme',
           isRootLevel: false,
-          // id: 11,
+          id: 11,
         },
       },
       {
@@ -322,7 +322,7 @@ const routes: Array<RouteRecordRaw> = [
           title: '部门管理',
           icon: 'el-icon-eleme',
           isRootLevel: false,
-          // id: 9,
+          id: 9,
         },
       },
     ],
@@ -374,7 +374,6 @@ export const reCreateRouterMatcher = (routes: Array<RouteRecordRaw>): RouterMatc
 
 // eslint-disable-next-line
 let router = reCreateRouter([...baseRoutes]);
-console.log(router.getRoutes(), 222);
 
 export const resetRouter = (routes: Array<RouteRecordRaw>): void => {
   // router = reCreateRouter(routes);
