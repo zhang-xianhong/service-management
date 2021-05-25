@@ -25,21 +25,21 @@
       </el-form>
     </div>
 
-    <el-dialog title="修改密码" v-model="dialogFormVisible" width="500px">
+    <el-dialog title="修改密码" v-model="dialogFormVisible" width="500px" destroy-on-close>
       <el-form :model="passForm" ref="formRef" :rules="formRules">
         <el-form-item label="原始密码" label-width="80px" prop="oldPassword">
-          <el-input v-model="passForm.oldPassword" autocomplete="off"></el-input>
+          <el-input v-model="passForm.oldPassword" autocomplete="off" type="password"></el-input>
         </el-form-item>
         <el-form-item label="新密码" label-width="80px" prop="newPassword">
-          <el-input v-model="passForm.newPassword" autocomplete="off"></el-input>
+          <el-input v-model="passForm.newPassword" autocomplete="off" type="password"></el-input>
         </el-form-item>
         <el-form-item label="确认密码" label-width="80px" prop="confirmPassword">
-          <el-input v-model="passForm.confirmPassword" autocomplete="off"></el-input>
+          <el-input v-model="passForm.confirmPassword" autocomplete="off" type="password"></el-input>
         </el-form-item>
       </el-form>
       <template #footer>
         <span class="dialog-footer" style="width: 100%; text-align: center; display: inline-block">
-          <el-button type="primary" @click="dialogFormVisible = false">保存</el-button>
+          <el-button type="primary" @click="sendPass">保存</el-button>
           <el-button @click="dialogFormVisible = false">返回</el-button>
         </span>
       </template>
@@ -80,8 +80,10 @@ export default defineComponent({
       }
       const item = {} as any;
       item[prop] = userSetInfo[prop];
-      updateUserProfile(item).then(() => {
-        checkStatus(id);
+      updateUserProfile(item).then((res) => {
+        if (res.code === 0) {
+          checkStatus(id);
+        }
       });
     };
     const cancel = (id: number, prop?: string) => {
@@ -99,6 +101,7 @@ export default defineComponent({
 
     const sendPass = () => {
       updateUserPassword({ ...passForm }).then((res) => {
+        dialogFormVisible.value = false;
         console.log(res);
       });
     };
