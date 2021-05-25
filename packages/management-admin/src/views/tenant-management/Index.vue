@@ -156,7 +156,7 @@ export default {
     const handleComputerNameInput = debounce(getTableData, 1000);
 
     const onAdd = () => {
-      router.push('tenant-list/edit/0');
+      router.push('/tenant-list/edit/0');
     };
 
     // 批量冻结
