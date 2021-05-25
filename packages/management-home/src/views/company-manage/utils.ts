@@ -47,7 +47,7 @@ export function copyFun(content: string) {
     document.execCommand('copy');
     ElMessage({
       type: 'success',
-      message: '复制成功!',
+      message: '新密码已复制在剪贴板中，请及时粘贴',
     });
   }
   document.body.removeChild(input);
