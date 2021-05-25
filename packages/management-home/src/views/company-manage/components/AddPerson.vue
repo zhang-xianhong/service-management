@@ -29,7 +29,7 @@
           </el-radio-group>
         </el-form-item>
         <el-form-item label="初始密码" :label-width="labelWidth" v-if="!isEdit">
-          <el-tooltip content="复制密码，保存后可用密码登录" placement="top" effect="light" style="margin-right: 5px">
+          <el-tooltip content="复制密码，保存后可用新密码登录" placement="top" effect="light" style="margin-right: 5px">
             <svg-icon icon-name="wenhao" icon-class="detail-icons__item"></svg-icon>
           </el-tooltip>
           <el-input v-model.trim="formData.password" disabled style="width: 280px" show-password></el-input>
@@ -39,7 +39,7 @@
     </div>
     <template #footer>
       <span class="dialog-footer" v-if="!isEdit">
-        <el-button type="primary" @click="submitConfigForm">保存&继续添加</el-button>
+        <el-button type="primary" @click="submitConfigForm">保存</el-button>
         <el-button @click="closeDialog">返回</el-button>
       </span>
       <span class="dialog-footer" v-else>
@@ -84,7 +84,7 @@ const validatorMailPass = (rule: any, value: string, callback: Function) => {
 // 中文姓名校验
 const validatorZNNamePass = (rule: any, value: string, callback: Function) => {
   if (!checkZNName(value)) {
-    callback(new Error('请输入长度至少2个字的中文格式名称'));
+    callback(new Error('请输入长度至少2个最大16个字的中文格式名称'));
   }
   callback();
 };
@@ -187,8 +187,8 @@ export default defineComponent({
           } else {
             delete dialogContent.formData.password;
             handleEdit(dialogContent.formData);
-            closeDialog();
           }
+          closeDialog();
         }
       });
     }

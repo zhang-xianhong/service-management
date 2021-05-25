@@ -56,7 +56,7 @@
     >
       <div>
         <el-form :model="resetFormData" ref="resetDiagFormRef" :rules="resetFormRules">
-          <el-form-item label="密码" prop="newPassword" label-width="100px">
+          <el-form-item label="新密码" prop="newPassword" label-width="100px">
             <el-tooltip :content="passwdMsg" placement="top" effect="light" style="margin-right: 5px">
               <svg-icon icon-name="wenhao" icon-class="detail-icons__item"></svg-icon>
             </el-tooltip>
@@ -66,6 +66,7 @@
               show-password
               style="width: 280px"
             ></el-input>
+            <el-button type="text" style="margin-left: 20px" @click="handleCopy">复制</el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -319,14 +320,18 @@ export default defineComponent({
             newPassword,
           });
           if (code === ResCode.Success) {
-            copyFun(newPassword);
             // 复制到剪切板上
-            msgTips('success', '密码重置成功,已复制到剪切板');
+            msgTips('success', '密码重置成功');
           } else {
             msgTips('error', '密码重置失败');
           }
         }
       });
+    };
+    // 复制密码
+    const handleCopy = () => {
+      const { newPassword } = resetDialog.resetFormData;
+      copyFun(newPassword);
     };
     return {
       ...toRefs(tableState),
@@ -347,6 +352,7 @@ export default defineComponent({
       resetFormRules,
       resetDiagFormRef,
       passwdMsg,
+      handleCopy,
     };
   },
 });
