@@ -1,0 +1,12 @@
+{
+    "code": 0,
+    "data": {
+        "account": "kekakk",
+        "displayName": "孟晓文",
+        "phoneNumber": "124783455",
+        "primaryMail": "24566@qq.com"
+    },
+    "message": "successful",
+    "httpStatus": 200,
+    "timestamp": 1620282714076
+}

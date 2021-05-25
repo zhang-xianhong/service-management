@@ -5,12 +5,20 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent, watch } from 'vue';
 import { getUser } from '@/shared/userinfo';
+import { routerLoading } from '@/layout/messageCenter/routerRef';
+import { useRouter, useRoute } from 'vue-router';
 
 export default defineComponent({
   setup() {
     getUser();
+    const router = useRouter();
+    const route = useRoute();
+
+    watch(routerLoading, () => {
+      router.push(route.redirectedFrom?.path || '/');
+    });
   },
 });
 </script>

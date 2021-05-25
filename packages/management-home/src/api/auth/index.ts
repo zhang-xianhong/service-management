@@ -25,3 +25,8 @@ export const updateUserProfile: (payload: any) => Promise<SuccessResponse<any>> 
 
 export const updateUserPassword: (payload: any) => Promise<SuccessResponse<any>> = (payload: any) =>
   request.post(getUrl(URL.auth.UPDATE_PASSWORD), payload);
+
+export const getCode: () => Promise<SuccessResponse<any>> = () => request.get(getUrl(URL.auth.CODE));
+
+export const verifyCaptcha: (payload: any) => Promise<SuccessResponse<any>> = (payload: any) =>
+  request.post(getUrl(URL.auth.VERIFY_CAPTCHA), payload);

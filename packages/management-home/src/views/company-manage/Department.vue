@@ -2,7 +2,13 @@
   <div class="dept">
     <el-row>
       <el-col :span="10" style="text-align: left">
-        <el-button type="primary" style="width: 90px" @click="handleAddDept">添加子部门</el-button>
+        <el-button
+          type="primary"
+          style="width: 90px"
+          @click="handleAddDept"
+          :disabled="currentNodeData.id === 0 || !isSel"
+          >添加子部门</el-button
+        >
         <el-button @click="handleDel" :disabled="!isSel">删除</el-button>
       </el-col>
       <el-col :offset="10" :span="4" style="text-align: right">
@@ -15,8 +21,8 @@
       </el-col>
     </el-row>
     <el-row>
-      <el-col :span="4" style="background: #fff">
-        <div class="user-tree">
+      <el-col :span="6" style="background: #fff">
+        <div class="user-tree" v-loading="loading">
           <el-scrollbar>
             <el-tree
               ref="userTreeRef"
@@ -32,7 +38,7 @@
               :props="treeProps"
             >
               <template #default="{ data }">
-                <div :class="data.id === 0 ? 'disable' : ''">
+                <div>
                   <svg-icon v-if="data._children" icon-name="folder" icon-class="tree-node-folder"></svg-icon>
                   <svg-icon v-else icon-name="person" icon-class="tree-node-folder"></svg-icon>
                   <span style="z-index: 1; background: transparent; margin-right: 5px">{{ data.name }}</span>
@@ -57,10 +63,16 @@
           </el-scrollbar>
         </div>
       </el-col>
-      <el-col :offset="1" :span="18">
-        <el-row>{{
-          currentNodeData.name ? (currentNodeData._children ? currentNodeData.name : currentNodeData.parent.name) : '--'
-        }}</el-row>
+      <el-col :offset="1" :span="16">
+        <el-row>
+          {{
+            currentNodeData.name
+              ? currentNodeData._children
+                ? currentNodeData.name
+                : currentNodeData.parent.name
+              : '--'
+          }}
+        </el-row>
         <el-row>
           <el-button @click="handleAddPerson" :disabled="!isSel">添加成员</el-button>
         </el-row>
@@ -93,10 +105,10 @@
       </el-col>
     </el-row>
     <TreeSelector
-      :option="allDeptUser"
+      :option="queryUserListData"
       :checked="selectedUser"
       :not-allow="otherRoleUser"
-      optionPlaceholder="请输入部门/人员名称"
+      optionPlaceholder="请输入人员名称"
       optionLabel="选择人员"
       :role="treeSelectorRole"
       ref="treeSelectorDept"
@@ -129,8 +141,8 @@
 <script lang="ts">
 import { defineComponent, reactive, toRefs, ref, Ref, getCurrentInstance, watchEffect, nextTick } from 'vue';
 import _ from 'lodash/fp';
-// import { getMemberList } from '@/api/project/project';
 import { getTenentDepartment, createDept, delDept, delUser, updateDept } from '@/api/company/dept';
+import { getUserList } from '@/api/company/users';
 import TreeSelector from './components/TreeSelector.vue';
 import { ElMessageBox, ElMessage } from 'element-plus';
 import { debounce } from 'lodash';
@@ -142,6 +154,7 @@ interface TreeDataSourceType {
 }
 
 interface TreeDataType {
+  loading: boolean;
   treeDataSource: Array<TreeDataSourceType>;
   isSel: boolean;
   currentNodeData: any;
@@ -158,17 +171,19 @@ interface TableDataType {
   };
   tableDataSource: any;
 }
-const userStatus = {
-  '-1': '冻结',
-  0: '启用',
-};
-const genderLabel = {
-  0: '男',
-  1: '女',
-};
-const RES_CODE: any = {
-  success: 0,
-};
+// 账户状态
+enum UserStatus {
+  禁用 = -1,
+  启用 = 0,
+}
+enum GenderLabel {
+  男,
+  女,
+}
+// 状态码
+enum ResCode {
+  Success,
+}
 
 // 中文校验
 function checkZNName(name: string): boolean {
@@ -186,12 +201,12 @@ const treeProps = {
   children: 'children',
   isLeaf: 'isLeaf',
 };
-// TreeSelector
 export default defineComponent({
   name: 'Department',
   components: { TreeSelector, PackagedPagination },
   setup() {
     const treeData: TreeDataType = reactive({
+      loading: false,
       currentNodeData: {},
       currentNode: {},
       currentNodeUsers: [],
@@ -213,7 +228,7 @@ export default defineComponent({
       },
       tableDataSource: [],
     });
-
+    const queryUserListData: Ref<Array<any>> = ref([]);
     const treeSelectorDept: Ref<any> = ref(null);
     const editMode = ref(false);
     const selectedUser: Ref<Array<any>> = ref([]);
@@ -245,9 +260,16 @@ export default defineComponent({
         { validator: validatorZNNamePass, trigger: 'blur' },
       ],
     };
-
+    // 提示信息
+    function msgTips(type: string, content: string) {
+      (instance as any).proxy.$message({
+        type,
+        message: content,
+      });
+    }
     // 获取部门数据
     const initDepartments = async () => {
+      treeData.loading = true;
       const { code, data } = await getTenentDepartment({ deptId: 0, level: 9 });
       if (code === 0) {
         const deptTree = [
@@ -289,9 +311,10 @@ export default defineComponent({
         allDeptUser.value = deptTree;
         allUsers.value = data.users.map((user: any) => ({
           ...user,
-          status: userStatus[user.status as 0 | -1],
-          gender: genderLabel[user.gender as 0 | 1],
+          status: UserStatus[user.status as 0 | -1],
+          gender: GenderLabel[user.gender as 0 | 1],
         }));
+        treeData.loading = false;
       }
     };
 
@@ -303,6 +326,7 @@ export default defineComponent({
         pageSize: 10,
         keyword: '',
       };
+      treeData.currentNodeData = {};
       tableData.tableDataSource = [];
     };
 
@@ -321,18 +345,12 @@ export default defineComponent({
         .then(async () => {
           // 待传参
           const { code } = await delUser({ userIds: [data.id] });
-          if (code === RES_CODE.success) {
-            (instance as any).proxy.$message({
-              type: 'success',
-              message: '删除成功',
-            });
+          if (code === ResCode.Success) {
+            msgTips('success', '删除成功');
             initDepartments();
             initTableData();
           } else {
-            (instance as any).proxy.$message({
-              type: 'error',
-              message: '删除失败',
-            });
+            msgTips('error', '删除失败');
           }
         })
         .catch(() => {
@@ -347,10 +365,7 @@ export default defineComponent({
     const handleDel = () => {
       if (treeData.currentNodeData._children) {
         if (treeData.currentNodeData._children.length) {
-          (instance as any).proxy.$message({
-            type: 'warning',
-            message: '该部门下有子节点，无法删除！',
-          });
+          msgTips('warning', '该部门下有子节点，无法删除！');
           return;
         }
         // 判断部门中是否有人员
@@ -364,17 +379,12 @@ export default defineComponent({
             // 删除部门
             const { id } = treeData.currentNodeData;
             const { code } = await delDept({ id });
-            if (code === RES_CODE.success) {
-              (instance as any).proxy.$message({
-                type: 'success',
-                message: '删除成功',
-              });
+            if (code === ResCode.Success) {
+              msgTips('success', '删除成功');
               initDepartments();
+              initTableData();
             } else {
-              (instance as any).proxy.$message({
-                type: 'error',
-                message: '删除失败',
-              });
+              msgTips('error', '删除失败');
             }
           })
           .catch(() => {
@@ -389,11 +399,34 @@ export default defineComponent({
       }
     };
 
+    // 查询租户下所有的用户
+    const queryUserList = async () => {
+      const { code, data } = await getUserList({
+        keyword: '',
+        page: 1,
+        pageSize: 50000,
+      });
+      if (code !== ResCode.Success) {
+        msgTips('error', '获取人员列表失败');
+      } else {
+        const { rows } = data;
+        queryUserListData.value = rows.map((item: any) => {
+          const { id, displayName } = item;
+          return {
+            name: displayName,
+            id,
+            isLeaf: true,
+          };
+        });
+      }
+    };
+
     // 添加人员
     const handleAddPerson = (): void => {
       // 获取当前选中部门的节点id
       treeSelectorRole.value = treeData.currentNode;
       treeSelectorDept.value.show();
+      queryUserList();
     };
 
     // 重命名
@@ -406,26 +439,20 @@ export default defineComponent({
 
     // 上移
     const handleUpMove = async (data: any) => {
-      const { id, parent } = data;
+      const { id, parent, name } = data;
       const { code } = await updateDept({
-        parentId: parent.id,
         id,
+        deptName: name,
+        parentId: parent.parent.id,
       });
-      if (code === RES_CODE.success) {
-        (instance as any).proxy.$message({
-          type: 'success',
-          message: '上移成功',
-        });
+      if (code === ResCode.Success) {
+        msgTips('success', '上移成功');
         initDepartments();
       } else {
-        (instance as any).proxy.$message({
-          type: 'error',
-          message: '上移失败',
-        });
+        msgTips('error', '上移失败');
       }
     };
 
-    // const userList: Ref<any[]> = ref([]);
     const reloadUserList = async () => {
       initDepartments();
       initTableData();
@@ -445,17 +472,21 @@ export default defineComponent({
     };
 
     function nodeClickHandle(data: any, node: any): void {
+      console.log('当前节点', node);
+      console.log('当前节点数据', data);
       // 首节点不做选中
-      if (data.id === 0) {
-        return;
-      }
-      treeData.isSel = true;
+      treeData.isSel = data.id !== 0;
       treeData.currentNodeData = data;
       treeData.currentNode = node;
+      const { page, pageSize } = tableData.searchProps;
       if (!data._children) {
         return;
       }
-      const { page, pageSize } = tableData.searchProps;
+      if (data.id === 0) {
+        // 表格数据清空
+        getCurrentTableData([], page, pageSize);
+        return;
+      }
       const resData = _.intersectionWith((node: any, user: any) => node.id === user.id)(allUsers.value)(
         node.data._children,
       );
@@ -467,14 +498,12 @@ export default defineComponent({
       formData.isEdit = false;
       formData.deptName = '';
     };
+
     // 添加子部门
     const handleAddDept = (): void => {
       // 判断当前选中的是不是部门
       if (!treeData.currentNodeData._children) {
-        (instance as any).proxy.$message({
-          type: 'warning',
-          message: '请选中一个部门！',
-        });
+        msgTips('warning', '请选中一个部门！');
       } else {
         dialogVisible.value = true;
       }
@@ -491,8 +520,9 @@ export default defineComponent({
         if (valid) {
           let res;
           if (formData.isEdit) {
-            const { id } = editFormData.value;
+            const { id, parent } = editFormData.value;
             res = await updateDept({
+              parentId: parent ? parent.id : 0,
               deptName: formData.deptName,
               id,
             });
@@ -504,17 +534,12 @@ export default defineComponent({
             });
           }
           const { code } = res;
-          if (code === RES_CODE.success) {
-            (instance as any).proxy.$message({
-              type: 'success',
-              message: `${formData.isEdit ? '编辑' : '添加'}成功！`,
-            });
+          if (code === ResCode.Success) {
+            msgTips('success', `${formData.isEdit ? '编辑' : '添加'}成功！`);
+            initDepartments();
             closeDialog();
           } else {
-            (instance as any).proxy.$message({
-              type: 'error',
-              message: `${formData.isEdit ? '编辑' : '添加'}失败！`,
-            });
+            msgTips('error', `${formData.isEdit ? '编辑' : '添加'}失败！`);
           }
         }
       });
@@ -562,13 +587,6 @@ export default defineComponent({
     return {
       ...toRefs(tableData),
       ...toRefs(treeData),
-      handleAddDept,
-      handleDelPerson,
-      handleDel,
-      handleAddPerson,
-      handleRename,
-      handleUpMove,
-      nodeClickHandle,
       allDeptUser,
       treeSelectorDept,
       editMode,
@@ -576,17 +594,25 @@ export default defineComponent({
       treeSelectorRole,
       selectedUser,
       otherRoleUser,
-      reloadUserList,
-      closeDialog,
       dialogVisible,
       formData,
       formRules,
-      submitConfigForm,
       deptDiagFormRef,
       treeProps,
-      loadNode,
       dataDone,
       filterAccount,
+      queryUserListData,
+      handleAddDept,
+      handleDelPerson,
+      handleDel,
+      handleAddPerson,
+      handleRename,
+      handleUpMove,
+      nodeClickHandle,
+      reloadUserList,
+      closeDialog,
+      submitConfigForm,
+      loadNode,
       handlePageSizeChange,
       handlePageChange,
     };
@@ -635,9 +661,5 @@ export default defineComponent({
   &.tree-node-folder {
     color: #66bbff;
   }
-}
-.disable {
-  pointer-events: none;
-  // background: #fff !important;
 }
 </style>

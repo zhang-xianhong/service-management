@@ -25,7 +25,7 @@ router.beforeEach(async (to, from, next) => {
         next();
       } else {
         const { matched } = usefulRoutes.resolve(to);
-        if (matched.length > 1) {
+        if (matched.length >= 1) {
           next('/no-right');
         } else {
           next('/not-found');
