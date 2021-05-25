@@ -8,9 +8,8 @@ const ownerMap: Map<number, any> = new Map();
  * @param field 内容筛选
  */
 async function getOwnerList(keyword = '', owners: Array<any> = [], field: 'user' | 'department' | 'all' = 'user') {
-  let {
-    data: { users },
-  } = await queryInTenant({ keyword, field });
+  const { data } = await queryInTenant({ keyword, field });
+  let users = data;
   Object.assign(users, owners);
   const userIds = Array.from(new Set(users.map((item: any) => item.id)));
   users = users.filter((item: any, index: number) => {
