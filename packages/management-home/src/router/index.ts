@@ -362,6 +362,29 @@ const routes: Array<RouteRecordRaw> = [
       },
     ],
   },
+  {
+    path: '/user-management',
+    redirect: '/user-center',
+    name: 'UserManagement',
+    component: Layout,
+    meta: {
+      isRootLevel: true,
+      hidden: true,
+    },
+    children: [
+      {
+        path: 'user-detail',
+        component: () => import(/* webpackChunkName: "tenant" */ '@/views/user-management/Index.vue'),
+        name: 'UserCenter',
+        meta: {
+          title: '个人中心',
+          icon: 'el-icon-eleme',
+          isRootLevel: false,
+          hidden: true,
+        },
+      },
+    ],
+  },
 ];
 
 export const reCreateRouter = (routes: Array<RouteRecordRaw>): Router =>
