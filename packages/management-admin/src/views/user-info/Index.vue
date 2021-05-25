@@ -2,7 +2,7 @@
   <div class="user-management">
     <div class="user-headers">
       当前所在企业:（{{ companyName }}）
-      <span>管理员帐号</span>
+      <span>超级管理员帐号</span>
     </div>
     <item
       v-for="(item, index) in Object.keys(managerInfo)"
@@ -10,6 +10,7 @@
       :prop="item"
       :title="fieldTitleConfiguration[item]"
       :value="managerInfo[item]"
+      :changable="item === 'userName' ? false : true"
     ></item>
     <item prop="password" title="登录密码" value="*********" @modify="onModifyPassword"></item>
   </div>
@@ -51,7 +52,7 @@ import { getProfile, updateProfilePassword } from '@/api/user';
 import Item from './components/Item.vue';
 
 interface ManagerInfoInterface {
-  account: string;
+  userName: string;
   displayName: string;
   phoneNumber: string;
   primaryMail: string;
@@ -64,24 +65,26 @@ export default defineComponent({
   },
   setup() {
     const instance = getCurrentInstance();
-    const companyName: Ref<string> = ref('企业名称');
+    const companyName: Ref<string> = ref('腾讯云计算（北京）有限责任公司');
     const managerInfo: Ref<ManagerInfoInterface> = ref({
-      account: '',
+      userName: '',
       displayName: '',
       phoneNumber: '',
       primaryMail: '',
     });
 
     const fieldTitleConfiguration = {
-      account: '管理员帐号',
+      userName: '管理员帐号',
       displayName: '管理员姓名',
       phoneNumber: '管理员电话',
       primaryMail: '管理员邮箱',
     };
 
     const getManagerInfo = async () => {
-      const { data } = await getProfile();
-      managerInfo.value = data;
+      const {
+        data: { userName, displayName, phoneNumber, primaryMail },
+      } = await getProfile();
+      managerInfo.value = { userName, displayName, phoneNumber, primaryMail };
     };
     getManagerInfo();
 
