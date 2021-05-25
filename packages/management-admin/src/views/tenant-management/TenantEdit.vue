@@ -1,7 +1,7 @@
 <template>
   <div style="background: #fff; padding: 30px">
     <company-info ref="companyRef" :isEdit="isEditMode" v-model="tenantDetail"></company-info>
-    <user-info ref="userRef" :isEdit="isEditMode" v-model="tenantDetail.concat"></user-info>
+    <user-info ref="userRef" :isEdit="isEditMode" v-model="tenantDetail.contact"></user-info>
     <manager-info ref="managerRef" :isEdit="isEditMode" v-model="tenantDetail.manager"></manager-info>
     <el-row>
       <el-button type="primary" @click="onSubmit">保存</el-button>
