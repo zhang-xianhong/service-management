@@ -1,7 +1,7 @@
 <template>
   <el-row class="login">
     <el-col class="login-sidebar" :span="8">
-      <div class="login-sidebar__nav">
+      <div class="login-sidebar__nav" @click="backToHead">
         <i class="el-icon-arrow-left"></i>
         返回到首页
       </div>
@@ -22,7 +22,13 @@ export default defineComponent({
     LoginForm,
   },
   setup() {
-    return {};
+    const backToHead = () => {
+      window.location.href = 'https://citybase.qq.com';
+      window.location.reload();
+    };
+    return {
+      backToHead,
+    };
   },
 });
 </script>

@@ -14,7 +14,6 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import { useRouter } from 'vue-router';
 import LoginForm from './components/LoginForm.vue';
 
 export default defineComponent({
@@ -23,9 +22,9 @@ export default defineComponent({
     LoginForm,
   },
   setup() {
-    const router = useRouter();
     const backToHead = () => {
-      router.push('/');
+      window.location.href = 'https://citybase.qq.com';
+      window.location.reload();
     };
     return {
       backToHead,

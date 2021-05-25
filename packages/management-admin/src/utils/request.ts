@@ -1,5 +1,5 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
-import { getToken, removeToken, getCookies } from '@/utils/todoToken';
+import { getToken, getCookies } from '@/utils/todoToken';
 import { ElMessage } from 'element-plus';
 import router from '@/router';
 import { useRoute } from 'vue-router';
@@ -20,13 +20,13 @@ service.interceptors.request.use(
     if (getToken()) {
       newConfig.headers[TOKEN] = getToken();
     }
-    newConfig.headers[PROJECT_ID] = localStorage.getItem('projectId') || '';
+    newConfig.headers[PROJECT_ID] = -1;
     if (process.env.NODE_ENV === 'development') {
-      newConfig.headers[TENANT_ID] = 1;
-      newConfig.headers[USER_ID] = 83;
+      newConfig.headers[TENANT_ID] = -1;
+      newConfig.headers[USER_ID] = 201;
     }
     const item = {} as any;
-    item[PROJECT_ID] = localStorage.getItem('projectId') || '';
+    item[PROJECT_ID] = -1;
     item.Cookie = getCookies();
     localStorage.setItem('HEADERS', JSON.stringify([item]));
     return newConfig;
@@ -48,28 +48,20 @@ service.interceptors.response.use(
     }
     if (error.response.status === 401) {
       const route = useRoute();
-      const currentPath = route.path;
-      router.push(`/login?redirect=${currentPath}`);
-    }
-    const { data } = error.response; // status
-    const { httpStatus, message } = data;
-    // 错误状态处理
-    if (httpStatus) {
+      console.log(route, 'route');
+      if (route?.path) {
+        router.push(`/login?redirect=${route.path}`);
+      } else {
+        router.push('/login');
+      }
+    } else if (error.response.status === 422) {
+      const { data } = error.response; // status
+      // 错误状态处理
       ElMessage({
-        message,
+        message: data.message || '接口异常',
         type: 'error',
         duration: 5 * 1000,
-        onClose() {
-          // 登录失效处理
-          if (httpStatus === 401) {
-            removeToken();
-            window.location.href = '/login';
-            location.reload();
-          }
-        },
       });
-    } else {
-      return Promise.reject(data);
     }
   },
 );

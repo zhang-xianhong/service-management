@@ -12,7 +12,7 @@ export const updateUserInfo: (payload?: object) => Promise<SuccessResponse<any>>
 export const getProfile: () => Promise<SuccessResponse<any>> = () => request.get(getUrl(URL.user.GET_PROFILE));
 
 export const updateProfile: (payload: any) => Promise<SuccessResponse<any>> = (payload: any) =>
-  request.post(getUrl(URL.user.UPDATE_PROFILE, payload));
+  request.post(getUrl(URL.user.UPDATE_PROFILE), payload);
 
 export const updateProfilePassword: (payload: any) => Promise<SuccessResponse<any>> = (payload: any) =>
-  request.post(getUrl(URL.user.UPDATE_PROFILE_PASSWORD, payload));
+  request.post(getUrl(URL.user.UPDATE_PROFILE_PASSWORD), payload);

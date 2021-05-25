@@ -4,12 +4,12 @@
     <span class="item-value">
       <el-input
         :class="{ 'item-value__input--show': !isModifyMode }"
-        :readonly="isModifyMode"
+        :readonly="!isModifyMode"
         :placeholder="isModifyMode ? `请输入${title}` : ''"
         v-model="recentValue"
       ></el-input>
     </span>
-    <span class="item-operation">
+    <span v-show="changable" class="item-operation">
       <template v-if="isModifyMode">
         <a @click="onSave">保存</a>
         <a @click="onCancel">取消</a>
@@ -40,6 +40,10 @@ export default defineComponent({
       type: String,
       default: '',
     },
+    changable: {
+      type: Boolean,
+      default: true,
+    },
   },
   setup(props: { title: string; prop: string; value: string }, ctx: SetupContext) {
     const instance = getCurrentInstance();
@@ -62,7 +66,7 @@ export default defineComponent({
     });
 
     const onSave = async () => {
-      const { code } = await updateProfile({ [props.prop]: recentValue });
+      const { code } = await updateProfile({ [props.prop]: recentValue.value });
       if (code === 0) {
         (instance as any).proxy.$message({
           type: 'success',

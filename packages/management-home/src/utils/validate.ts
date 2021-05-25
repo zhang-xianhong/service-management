@@ -7,9 +7,9 @@ export function checkMail(szMail: string): boolean {
   const szReg = /^\w+((.\w+)|(-\w+))@[A-Za-z0-9]+((.|-)[A-Za-z0-9]+).[A-Za-z0-9]+$/;
   return szReg.test(szMail);
 }
-// 中文姓名校验2个字以上
+// 中文姓名校验2-16字以上
 export function checkZNName(name: string): boolean {
-  const szReg = /[\u4e00-\u9fa5]{2,}/;
+  const szReg = /[\u4e00-\u9fa5]{2,16}/;
   return szReg.test(name);
 }
 // 英文名称校验2个字符以上
