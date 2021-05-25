@@ -123,12 +123,14 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
-.form-item {
-  .el-input__inner {
-    height: 48px;
-  }
-  .el-input__suffix {
-    right: 0px;
+.form {
+  .form-item {
+    .el-input__inner {
+      height: 48px;
+    }
+    .el-input__suffix {
+      right: 0px;
+    }
   }
 }
 </style>
