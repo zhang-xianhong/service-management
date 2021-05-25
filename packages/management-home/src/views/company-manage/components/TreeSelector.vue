@@ -235,14 +235,14 @@ export default {
     };
     const submit = async () => {
       const { id } = props.role.data;
-      console.log('部门id', id);
       const { code } = await addUser({
         id,
         userIds: _.map('id')(selectedUser.value.concat(props.checked)),
       });
       if (code === 0) {
+        console.log('selectedUser.value', selectedUser.value);
         dialogVisible.value = false;
-        context.emit('userChanged', props.role);
+        context.emit('userChanged', { parentData: props.role.data, users: selectedUser.value });
       }
     };
     const cancel = () => {

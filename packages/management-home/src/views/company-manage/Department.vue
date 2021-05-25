@@ -81,7 +81,7 @@
             <el-table-column type="index" label="序号" width="50" />
             <el-table-column label="登录账号" prop="userName"></el-table-column>
             <el-table-column label="姓名" prop="displayName"></el-table-column>
-            <el-table-column label="性别" prop="gender" width="50"></el-table-column>
+            <!-- <el-table-column label="性别" prop="gender" width="50"></el-table-column> -->
             <el-table-column label="手机" prop="phoneNumber" width="200"></el-table-column>
             <el-table-column label="邮箱" prop="primaryMail"></el-table-column>
             <el-table-column label="状态" prop="status" width="100"></el-table-column>
@@ -211,12 +211,7 @@ export default defineComponent({
       currentNode: {},
       currentNodeUsers: [],
       isSel: false,
-      treeDataSource: [
-        {
-          label: '云智中心',
-          _children: [],
-        },
-      ],
+      treeDataSource: [],
     });
 
     const tableData: TableDataType = reactive({
@@ -332,6 +327,39 @@ export default defineComponent({
 
     initDepartments();
 
+    // 获取当前table列表数据
+    const getCurrentTableData = (data: any, page: number, pageSize: number) => {
+      tableData.total = data.length;
+      const pageMaxCount = page * pageSize;
+      const startIndex = (page - 1) * pageSize;
+      const endIndex = page * pageSize - 1;
+      if (pageMaxCount < tableData.total) {
+        tableData.tableDataSource = data.slice(startIndex, endIndex);
+      } else {
+        tableData.tableDataSource = data.slice(startIndex, pageMaxCount - 1);
+      }
+    };
+    // 更新节点数据
+    const updateKeyChildren = (data: any) => {
+      userTreeRef.value.updateKeyChildren(data);
+    };
+    // 移除节点
+    const removeNode = (data: any) => {
+      userTreeRef.value.remove(data);
+    };
+    // 添加子节点
+    const append = (data: any, parentData: any) => {
+      userTreeRef.value.append(data, parentData);
+    };
+    // 移除table表中的某行数据
+    const removeTableRow = (data: any) => {
+      // 过滤
+      allUsers.value = allUsers.value.filter((item: any) => item.id !== data.id);
+      treeData.currentNodeUsers = treeData.currentNodeUsers.filter((item: any) => item.id !== data.id);
+      const { page, pageSize } = tableData.searchProps;
+      getCurrentTableData(treeData.currentNodeUsers, page, pageSize);
+    };
+
     // 删除人员
     const handleDelPerson = (data: any): void => {
       const currentDept = treeData.currentNodeData._children
@@ -346,9 +374,9 @@ export default defineComponent({
           // 待传参
           const { code } = await delUser({ userIds: [data.id] });
           if (code === ResCode.Success) {
+            removeNode(data);
+            removeTableRow(data);
             msgTips('success', '删除成功');
-            initDepartments();
-            initTableData();
           } else {
             msgTips('error', '删除失败');
           }
@@ -381,7 +409,7 @@ export default defineComponent({
             const { code } = await delDept({ id });
             if (code === ResCode.Success) {
               msgTips('success', '删除成功');
-              initDepartments();
+              removeNode(treeData.currentNodeData);
               initTableData();
             } else {
               msgTips('error', '删除失败');
@@ -431,7 +459,7 @@ export default defineComponent({
 
     // 重命名
     const handleRename = (data: any): void => {
-      editFormData.value = { ...data };
+      editFormData.value = data;
       formData.isEdit = true;
       formData.deptName = data.name;
       dialogVisible.value = true;
@@ -447,32 +475,20 @@ export default defineComponent({
       });
       if (code === ResCode.Success) {
         msgTips('success', '上移成功');
-        initDepartments();
+        removeNode(data);
+        append({ ...data }, data.parent.parent);
       } else {
         msgTips('error', '上移失败');
       }
     };
 
-    const reloadUserList = async () => {
-      initDepartments();
-      initTableData();
-    };
-
-    // 获取当前table列表数据
-    const getCurrentTableData = (data: any, page: number, pageSize: number) => {
-      tableData.total = data.length;
-      const pageMaxCount = page * pageSize;
-      const startIndex = (page - 1) * pageSize;
-      const endIndex = page * pageSize - 1;
-      if (pageMaxCount < tableData.total) {
-        tableData.tableDataSource = data.slice(startIndex, endIndex);
-      } else {
-        tableData.tableDataSource = data.slice(startIndex, pageMaxCount - 1);
-      }
+    const reloadUserList = async (data: any) => {
+      data.users.forEach((item: any) => {
+        append(item, data.parentData);
+      });
     };
 
     function nodeClickHandle(data: any, node: any): void {
-      console.log('当前节点', node);
       console.log('当前节点数据', data);
       // 首节点不做选中
       treeData.isSel = data.id !== 0;
@@ -533,10 +549,23 @@ export default defineComponent({
               parentId: id,
             });
           }
-          const { code } = res;
+          const { code, data } = res;
           if (code === ResCode.Success) {
+            if (formData.isEdit) {
+              editFormData.value.name = formData.deptName;
+              updateKeyChildren(editFormData.value);
+            } else {
+              append(
+                {
+                  id: data.deptId,
+                  name: formData.deptName,
+                  _children: [],
+                  isLeaf: false,
+                },
+                treeData.currentNodeData,
+              );
+            }
             msgTips('success', `${formData.isEdit ? '编辑' : '添加'}成功！`);
-            initDepartments();
             closeDialog();
           } else {
             msgTips('error', `${formData.isEdit ? '编辑' : '添加'}失败！`);
@@ -584,6 +613,7 @@ export default defineComponent({
       const { pageSize } = tableData.searchProps;
       getCurrentTableData(treeData.currentNodeUsers, data, pageSize);
     };
+
     return {
       ...toRefs(tableData),
       ...toRefs(treeData),
