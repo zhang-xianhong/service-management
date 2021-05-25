@@ -6,6 +6,9 @@ export default {
   LOGOUT: ['/logout'],
   GET_CAPTCHA: ['/auth/captcha', 'mock/auth/captcha.json'],
   LOGIN: ['/login', 'mock/auth/login.json'],
+  GET_PROFILE: ['/users/profile', 'mock/auth/user-profile.json'],
+  UPDATE_PROFILE: ['/users/update/profile', 'mock/auth/update-profile.json'],
+  UPDATE_PASSWORD: ['/users/update/profile/password', 'mock/auth/update-password.json'],
   CODE: ['auth/login/code', 'mock/auth/code.json'],
   VERIFY_CAPTCHA: ['/auth/captcha/verify', 'mock/auth/verify.json'],
 };

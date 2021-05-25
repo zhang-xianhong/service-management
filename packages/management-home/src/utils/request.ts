@@ -53,6 +53,9 @@ service.interceptors.response.use(
       }
       router.push(`/login?redirect=${currentPath}`);
     }
+    if (error.response.status === 401) {
+      ElMessage.error('暂无此权限，请联系管理员添加权限');
+    }
     const { data } = error.response; // status
     const { httpStatus, message } = data;
     // 错误状态处理
