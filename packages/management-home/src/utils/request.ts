@@ -2,7 +2,6 @@ import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { getToken, removeToken, getCookies } from '@/utils/todoToken';
 import { ElMessage } from 'element-plus';
 import router from '@/router';
-import { useRoute } from 'vue-router';
 
 const service = axios.create({
   baseURL: process.env.VUE_APP_BASE_API,
@@ -47,8 +46,7 @@ service.interceptors.response.use(
       return Promise.reject(error);
     }
     if (error.response.status === 401) {
-      const route = useRoute();
-      const currentPath = route.path;
+      const currentPath = router?.currentRoute?.value?.fullPath || '/';
       router.push(`/login?redirect=${currentPath}`);
     }
     const { data } = error.response; // status
