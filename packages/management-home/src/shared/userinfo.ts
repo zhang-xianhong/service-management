@@ -41,5 +41,7 @@ export const getUser = async () => {
         }
       });
     }
+  } else {
+    localStorage.setItem('projectId', '0');
   }
 };
