@@ -1,7 +1,7 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { getToken, removeToken, getCookies } from '@/utils/todoToken';
 import { ElMessage } from 'element-plus';
-import router from '@/router';
+import router, { baseRoutes } from '@/router';
 
 const service = axios.create({
   baseURL: process.env.VUE_APP_BASE_API,
@@ -46,7 +46,11 @@ service.interceptors.response.use(
       return Promise.reject(error);
     }
     if (error.response.status === 401) {
-      const currentPath = router?.currentRoute?.value?.fullPath || '/';
+      let currentPath = router?.currentRoute?.value?.fullPath || '/';
+      const whiteList = baseRoutes.map((x) => x.path);
+      if (whiteList.includes(currentPath)) {
+        currentPath = '/';
+      }
       router.push(`/login?redirect=${currentPath}`);
     }
     const { data } = error.response; // status
