@@ -26,7 +26,7 @@ module.exports = {
       '/api': {
         // 后端rest服务
         // target: 'http://10.91.22.33:3000',
-        target: 'http://tenant1.dev-citybase.oa.com',
+        target: 'http://admin.dev-citybase.oa.com',
         ws: true,
         changeOrigin: true
         // 添加所有请求路径前缀/api/

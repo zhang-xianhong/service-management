@@ -16,7 +16,13 @@
         <el-input v-model="companyInfo.nameShort" style="width: 400px" placeholder="请输入企业简称"></el-input>
       </el-form-item>
       <el-form-item prop="tenantEngAbbr" class="form-item" label="企业英文简称">
-        <el-input v-model="companyInfo.tenantEngAbbr" style="width: 400px" placeholder="请输入企业英文简称"></el-input>
+        <template v-if="isEdit">{{ companyInfo.tenantEngAbbr }}</template>
+        <el-input
+          v-else
+          v-model="companyInfo.tenantEngAbbr"
+          style="width: 400px"
+          placeholder="请输入企业英文简称"
+        ></el-input>
       </el-form-item>
       <el-form-item prop="addr" class="form-item" label="企业地址">
         <el-select v-model="companyInfo.addr" style="width: 400px" placeholder="请选择省份">
@@ -169,8 +175,12 @@ export default {
       () => companyInfo.value.licenseUrl,
       async () => {
         if (!licenseUrl.value) {
-          const url = await getFileUrl('licenseUrl');
-          licenseUrl.value = url;
+          if (props.modelValue.sourceUrl?.licenseUrl) {
+            licenseUrl.value = props.modelValue.sourceUrl.licenseUrl;
+          } else {
+            const url = await getFileUrl('licenseUrl');
+            licenseUrl.value = url;
+          }
         }
       },
     );
@@ -179,8 +189,12 @@ export default {
       () => companyInfo.value.logoUrl,
       async () => {
         if (!logoUrl.value) {
-          const url = await getFileUrl('logoUrl');
-          logoUrl.value = url;
+          if (props.modelValue.sourceUrl?.logoUrl) {
+            logoUrl.value = props.modelValue.sourceUrl.logoUrl;
+          } else {
+            const url = await getFileUrl('logoUrl');
+            logoUrl.value = url;
+          }
         }
       },
     );

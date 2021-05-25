@@ -300,7 +300,7 @@ const routes: Array<RouteRecordRaw> = [
       title: '公司管理',
       icon: 'el-icon-eleme',
       isRootLevel: true,
-      id: 11,
+      id: 3,
     },
     children: [
       {
@@ -322,7 +322,7 @@ const routes: Array<RouteRecordRaw> = [
           title: '部门管理',
           icon: 'el-icon-eleme',
           isRootLevel: false,
-          id: 9,
+          id: 12,
         },
       },
     ],
@@ -335,7 +335,7 @@ const routes: Array<RouteRecordRaw> = [
       title: '发布管理',
       icon: 'el-icon-eleme',
       isRootLevel: true,
-      id: 10,
+      id: 6,
     },
     children: [
       {
@@ -346,7 +346,7 @@ const routes: Array<RouteRecordRaw> = [
           title: '发布申请',
           icon: 'el-icon-eleme',
           isRootLevel: false,
-          id: 9,
+          id: 14,
         },
       },
       {
@@ -357,7 +357,30 @@ const routes: Array<RouteRecordRaw> = [
           title: '发布审核',
           icon: 'el-icon-eleme',
           isRootLevel: false,
-          id: 10,
+          id: 15,
+        },
+      },
+    ],
+  },
+  {
+    path: '/user-management',
+    redirect: '/user-center',
+    name: 'UserManagement',
+    component: Layout,
+    meta: {
+      isRootLevel: true,
+      hidden: true,
+    },
+    children: [
+      {
+        path: 'user-detail',
+        component: () => import(/* webpackChunkName: "tenant" */ '@/views/user-management/Index.vue'),
+        name: 'UserCenter',
+        meta: {
+          title: '个人中心',
+          icon: 'el-icon-eleme',
+          isRootLevel: false,
+          hidden: true,
         },
       },
     ],

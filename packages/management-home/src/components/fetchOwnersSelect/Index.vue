@@ -26,10 +26,11 @@ export default defineComponent({
     const loading = ref(false);
     const options = ref([]);
     const remoteMethod = (keyword: string) => {
-      queryInTenant({ keyword }).then((res) => {
+      const projectId = localStorage.getItem('projectId');
+      queryInTenant({ keyword, projectId }).then((res) => {
         console.log(res, 'this is owners');
-        const { users } = res.data || { users: [] };
-        options.value = users;
+        // const { users } = res.data || { users: [] };
+        options.value = res.data || [];
       });
     };
     const changeOwners = (res: any) => {

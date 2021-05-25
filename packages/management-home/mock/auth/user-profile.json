@@ -1,0 +1,12 @@
+{
+  "code": 0,
+  "data": {
+    "id": "1",
+    "userName": "andu",
+    "displayName": "张三",
+    "phoneNumber": "188092261777",
+    "primaryMail": "www@qq.com",
+    "status": 0,
+    "dept": "微瓴平台"
+  }
+}
