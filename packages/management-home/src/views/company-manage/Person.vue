@@ -53,6 +53,7 @@
       width="500px"
       @closed="closeResetDialog"
       :close-on-click-modal="false"
+      :destroy-on-close="true"
     >
       <div>
         <el-form :model="resetFormData" ref="resetDiagFormRef" :rules="resetFormRules">

@@ -68,7 +68,7 @@ const routes: Array<RouteRecordRaw> = [
     component: Layout,
     meta: {
       isRootLevel: true,
-      id: 2,
+      id: 10,
       hidden: false,
     },
     children: [
@@ -97,6 +97,7 @@ const routes: Array<RouteRecordRaw> = [
       icon: 'el-icon-eleme',
       id: 4,
       hidden: false,
+      node: true,
     },
     children: [
       {
@@ -137,6 +138,7 @@ const routes: Array<RouteRecordRaw> = [
       icon: 'el-icon-eleme',
       isRootLevel: true,
       id: 16,
+      node: true,
     },
     children: [
       {
@@ -185,6 +187,7 @@ const routes: Array<RouteRecordRaw> = [
       icon: 'el-icon-eleme',
       isRootLevel: true,
       id: 9,
+      node: true,
     },
     children: [
       {
@@ -209,6 +212,7 @@ const routes: Array<RouteRecordRaw> = [
       icon: 'el-icon-eleme',
       isRootLevel: true,
       id: 8,
+      node: true,
     },
     children: [
       {
@@ -301,6 +305,7 @@ const routes: Array<RouteRecordRaw> = [
       icon: 'el-icon-eleme',
       isRootLevel: true,
       id: 3,
+      node: true,
     },
     children: [
       {
@@ -336,6 +341,7 @@ const routes: Array<RouteRecordRaw> = [
       icon: 'el-icon-eleme',
       isRootLevel: true,
       id: 6,
+      node: true,
     },
     children: [
       {
@@ -370,6 +376,7 @@ const routes: Array<RouteRecordRaw> = [
     meta: {
       isRootLevel: true,
       hidden: true,
+      node: true,
     },
     children: [
       {
@@ -420,7 +427,5 @@ resetPremissionRouter();
 
 export const alloverRouter = () => reCreateRouter([...baseRoutes, ...routes]);
 setRouterRef(router);
-
-console.log(router.getRoutes(), 111);
 
 export default router;
