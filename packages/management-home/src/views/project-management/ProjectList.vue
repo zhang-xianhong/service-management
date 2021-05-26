@@ -92,7 +92,7 @@
             </el-select>
           </el-form-item>
           <el-form-item label="负责人" :label-width="labelWidth">
-            <fetch-owners-select @get-owners="setOwner"></fetch-owners-select>
+            <fetch-owners-select @get-owners="setOwner" :use-project="false"></fetch-owners-select>
           </el-form-item>
           <el-form-item
             label="项目级别"
