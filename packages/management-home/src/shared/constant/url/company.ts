@@ -11,5 +11,5 @@ export default {
   ADD_USER: ['/departments/_/members', '/mock/company/create.json'],
   UPDATE_USER_PASSWD: ['/users/update/password', '/mock/company/create.json'],
   DEL_DEPT_USER: ['/departments/delete/members', '/mock/company/create.json'],
-  CHECK_INPUT: ['/users/useable', '/mock/company/able.json']
+  CHECK_INPUT: ['/users/useable', '/mock/company/able.json'],
 };
