@@ -68,7 +68,7 @@ const routes: Array<RouteRecordRaw> = [
     component: Layout,
     meta: {
       isRootLevel: true,
-      id: 2,
+      id: 10,
       hidden: false,
     },
     children: [
@@ -80,7 +80,7 @@ const routes: Array<RouteRecordRaw> = [
           title: '租户管理',
           icon: 'el-icon-eleme',
           isRootLevel: false,
-          id: 2,
+          id: 10,
           hidden: false,
         },
       },
@@ -427,7 +427,5 @@ resetPremissionRouter();
 
 export const alloverRouter = () => reCreateRouter([...baseRoutes, ...routes]);
 setRouterRef(router);
-
-console.log(router.getRoutes(), 111);
 
 export default router;
