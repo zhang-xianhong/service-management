@@ -7,7 +7,8 @@
           style="width: 90px"
           @click="handleAddDept"
           :disabled="currentNodeData.id === 0 || !isSel"
-        >添加子部门</el-button>
+          >添加子部门</el-button
+        >
         <el-button @click="handleDel" :disabled="!isSel">删除</el-button>
       </el-col>
       <el-col :offset="10" :span="4" style="text-align: right">
@@ -40,9 +41,7 @@
                 <div>
                   <svg-icon v-if="data._children" icon-name="folder" icon-class="tree-node-folder"></svg-icon>
                   <svg-icon v-else icon-name="person" icon-class="tree-node-folder"></svg-icon>
-                  <span
-                    style="z-index: 1; background: transparent; margin-right: 5px"
-                  >{{ data.name }}</span>
+                  <span style="z-index: 1; background: transparent; margin-right: 5px">{{ data.name }}</span>
                   <el-dropdown v-if="data._children && data.id !== 0">
                     <span class="el-dropdown-link">
                       <i class="el-icon-more" style="transform: rotate(90deg)"></i>
@@ -53,7 +52,8 @@
                         <el-dropdown-item
                           @click="handleUpMove(data)"
                           v-if="data.id !== 0 && data.parent && data.parent.id !== 0"
-                        >上移一层</el-dropdown-item>
+                          >上移一层</el-dropdown-item
+                        >
                       </el-dropdown-menu>
                     </template>
                   </el-dropdown>

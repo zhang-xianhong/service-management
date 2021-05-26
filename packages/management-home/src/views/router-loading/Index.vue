@@ -3,7 +3,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent, onBeforeUnmount } from 'vue';
 import { routerLoading } from '@/layout/messageCenter/routerRef';
 import { useRouter, useRoute } from 'vue-router';
 
@@ -15,6 +15,15 @@ export default defineComponent({
     if (!routerLoading.value) {
       router.push(route.redirectedFrom?.path || '/');
     }
+
+    let timeout: any = setInterval(() => {
+      window.location.reload();
+    }, 3000);
+
+    onBeforeUnmount(() => {
+      clearInterval(timeout);
+      timeout = null;
+    });
   },
 });
 </script>
