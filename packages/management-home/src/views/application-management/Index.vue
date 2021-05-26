@@ -17,8 +17,8 @@
     <div style="background: #fff; width: 100%" v-loading="loading" element-loading-text="数据加载中...">
       <div class="application-list_content">
         <application-card
-          v-for="(item, index) in applicationList"
-          :key="index"
+          v-for="item in applicationList"
+          :key="item.id"
           :data="item"
           @update="onUpdate"
         ></application-card>
