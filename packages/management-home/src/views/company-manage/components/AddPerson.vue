@@ -1,5 +1,12 @@
 <template>
-  <el-dialog :title="title" v-model="dialogVisible" width="500px" @closed="closeDialog" :close-on-click-modal="false">
+  <el-dialog
+    :title="title"
+    v-model="dialogVisible"
+    width="500px"
+    @closed="closeDialog"
+    :close-on-click-modal="false"
+    :destroy-on-close="true"
+  >
     <div>
       <el-form :model="formData" ref="diagFormRef" :rules="formRules">
         <el-form-item label="登记账号" prop="username" :label-width="labelWidth">
@@ -29,7 +36,12 @@
           </el-radio-group>
         </el-form-item>
         <el-form-item label="初始密码" :label-width="labelWidth" v-if="!isEdit">
-          <el-tooltip content="复制密码，保存后可用新密码登录" placement="top" effect="light" style="margin-right: 5px">
+          <el-tooltip
+            content="复制密码，保存后可用新密码登录"
+            placement="top"
+            effect="light"
+            style="margin-right: 5px"
+          >
             <svg-icon icon-name="wenhao" icon-class="detail-icons__item"></svg-icon>
           </el-tooltip>
           <el-input v-model.trim="formData.password" disabled style="width: 280px" show-password></el-input>

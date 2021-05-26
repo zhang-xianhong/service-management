@@ -1,5 +1,5 @@
 <template>
-  <el-dialog v-model="dialogVisible" width="800px">
+  <el-dialog v-model="dialogVisible" width="800px" :destroy-on-close="true">
     <el-row>
       <el-col :span="10" :offset="1">
         <div class="title">添加人员</div>
