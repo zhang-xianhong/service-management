@@ -43,6 +43,9 @@ export const getPermissionRoutes = function(config = getComputedRoutes() as any)
         if (item.children && item.children.length > 0) {
           obj.children = Object.assign([], getPermissionRoutes(item.children));
         }
+        if (obj.meta.node && obj.children.length === 0) {
+          obj.meta.hidden = true;
+        }
         // 路由为重定向路由且子集长度大于0时，修改重定向路由为第一个子路由
         if (obj.redirect && obj.children && (obj.children as Array<RouteRecordRaw>).length > 0) {
           obj.redirect =
