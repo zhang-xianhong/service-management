@@ -31,13 +31,14 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, ref, Ref } from 'vue';
+import { defineComponent, reactive, ref, Ref, getCurrentInstance } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { getCaptcha, login, getCode, verifyCaptcha } from '@/api/auth';
 
 export default defineComponent({
   name: 'LoginForm',
   setup() {
+    const instance = getCurrentInstance();
     const formRef: Ref<any> = ref(null);
     const router = useRouter();
     const route = useRoute();
@@ -97,6 +98,10 @@ export default defineComponent({
               loading.value = false;
               loginInfo.captchaCode = '';
               getCaptchaUrl();
+              (instance as any).proxy.$message({
+                type: 'error',
+                message: '帐号或密码错误，请重新输入！',
+              });
             }
           } catch {
             loading.value = false;

@@ -28,11 +28,11 @@
           icon-class="application-operation__icon"
           @click="isDetailVisable = !isDetailVisable"
         ></svg-icon>
-        <i class="el-icon-close application-operation__close"></i>
+        <i class="el-icon-close application-operation__close" @click="onClose"></i>
       </div>
     </div>
   </div>
-  <application-detail :visable="isDetailVisable" :detail="computedDetail" @close="onClose"></application-detail>
+  <application-detail :visable="isDetailVisable" :detail="computedDetail" @close="onCloseDetail"></application-detail>
 </template>
 
 <script lang="ts">
@@ -40,7 +40,7 @@ import { defineComponent, ref, PropType, Ref, computed, SetupContext, getCurrent
 import { IMAGE_UPLOAD } from '@/shared/constant/file';
 import ApplicationDetail from './ApplicationDetail.vue';
 import { SuccessResponse } from '@/types/response';
-import { updateAppById } from '@/api/app';
+import { updateAppById, deleteAppById } from '@/api/app';
 
 interface PropsInterface {
   id: string;
@@ -80,9 +80,19 @@ export default defineComponent({
 
     const computedDetail = computed(() => ({ ...detailInfo.value, imageUrl }));
 
-    const onClose = () => {
+    const onCloseDetail = () => {
       isDetailVisable.value = false;
       ctx.emit('update');
+    };
+
+    const onClose = async () => {
+      const { code } = await deleteAppById(detailInfo.value.id);
+      if (code === 0) {
+        (instance as any).proxy.$message({
+          type: 'success',
+          message: '应用删除成功！',
+        });
+      }
     };
 
     const beforeUpload = (file: { size: number }) => {
@@ -118,6 +128,7 @@ export default defineComponent({
       detailInfo,
       imageUrl,
       computedDetail,
+      onCloseDetail,
       onClose,
       beforeUpload,
       logoUploadSuccess,
