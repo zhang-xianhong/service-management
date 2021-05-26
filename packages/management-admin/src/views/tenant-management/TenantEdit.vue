@@ -49,41 +49,29 @@ export default defineComponent({
     }
 
     // 校验表单输入
-    const validate: () => Promise<unknown> = async () =>
+    const validate = () =>
       Promise.all([
-        new Promise((resolve) =>
-          companyRef.value.formRef.validate(async (validator: boolean) => {
-            if (validator) {
-              resolve(true);
-            } else {
-              resolve(false);
-            }
-          }),
-        ),
-        new Promise((resolve) =>
-          userRef.value.formRef.validate(async (validator: boolean) => {
-            if (validator) {
-              resolve(true);
-            } else {
-              resolve(false);
-            }
-          }),
-        ),
-        new Promise((resolve) =>
-          managerRef.value.formRef.validate(async (validator: boolean) => {
-            if (validator) {
-              resolve(true);
-            } else {
-              resolve(false);
-            }
-          }),
-        ),
+        new Promise((resolve) => {
+          companyRef.value.formRef.validate((validator: boolean) => {
+            resolve(validator);
+          });
+        }),
+        new Promise((resolve) => {
+          userRef.value.formRef.validate((validator: boolean) => {
+            resolve(validator);
+          });
+        }),
+        new Promise((resolve) => {
+          managerRef.value.formRef.validate((validator: boolean) => {
+            resolve(validator);
+          });
+        }),
       ]);
 
     const onSubmit = async () => {
       const validator = await validate();
-      if (!validator) {
-        return;
+      if (validator.some((item: any) => !item)) {
+        return false;
       }
       if (isEditMode) {
         const { code } = await updateTenant(tenantId, {
@@ -107,6 +95,34 @@ export default defineComponent({
           router.back();
         }
       }
+      // validate().then((res: [unknown, unknown, unknown]) => {
+      //   if (res.every((item: unknown) => item)) {
+      //     if (isEditMode) {
+      //       updateTenant(tenantId, {
+      //         ...tenantDetail.value,
+      //         ...{ contact: undefined, manager: undefined },
+      //       }).then((res: any) => {
+      //         if (res.code === 0) {
+      //           (instance as any).proxy.$message({
+      //             type: 'success',
+      //             message: '更新成功',
+      //           });
+      //           router.back();
+      //         }
+      //       })
+      //     } else {
+      //       createTenant(tenantDetail.value).then((res: any) => {
+      //         if (res.code === 0) {
+      //           (instance as any).proxy.$message({
+      //             type: 'success',
+      //             message: '新建成功',
+      //           });
+      //           router.back();
+      //         }
+      //       })
+      //     }
+      //   }
+      // });
     };
 
     const onCancel = async () => {
@@ -130,6 +146,11 @@ export default defineComponent({
 .tenant-steps {
   width: 70%;
   padding-bottom: 18px;
+}
+.form-item {
+  .el-input__inner {
+    height: 32px;
+  }
 }
 </style>
 <style lang="scss">
