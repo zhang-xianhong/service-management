@@ -1,8 +1,8 @@
 <template>
   <el-row style="font-weight:bolder">企业信息</el-row>
-  <el-row style="padding:0px 20px;font-size: 12px">
+  <el-row style="font-size: 12px">
     <el-form ref="formRef" :model="companyInfo" :rules="rules" inline label-width="140px" label-position="left">
-      <el-form-item prop="name" class="form-item" label="企业名称" required>
+      <el-form-item prop="name" class="form-item" label="企业名称">
         <template v-if="isEdit">{{ companyInfo.name }}</template>
         <el-input
           v-else
@@ -34,7 +34,7 @@
           ></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item prop="industryId" class="form-item" label="所属行业" required>
+      <el-form-item prop="industryId" class="form-item" label="所属行业">
         <template v-if="isEdit">{{ computedIndustryName || companyInfo.industryId }}</template>
         <el-select v-else v-model="companyInfo.industryId" style="width: 400px" placeholder="请选择所属行业">
           <el-option
@@ -48,7 +48,7 @@
       <el-form-item prop="addrDetail" class="form-item" label="详细地址">
         <el-input v-model="companyInfo.addrDetail" style="width: 400px" placeholder="请输入详细地址"></el-input>
       </el-form-item>
-      <el-form-item prop="natureId" class="form-item" label="企业性质" required>
+      <el-form-item prop="natureId" class="form-item" label="企业性质">
         <template v-if="isEdit">{{ computedNature || companyInfo.natureId }}</template>
         <el-select v-else v-model="companyInfo.natureId" style="width: 400px" placeholder="请选择企业性质">
           <el-option
@@ -69,7 +69,7 @@
           show-word-limit
         ></el-input>
       </el-form-item>
-      <el-form-item prop="scaleId" class="form-item" label="企业规模" required>
+      <el-form-item prop="scaleId" class="form-item" label="企业规模">
         <template v-if="isEdit">{{ computedScale || companyInfo.scaleId }}</template>
         <el-select v-else v-model="companyInfo.scaleId" style="width: 400px" placeholder="请选择企业规模">
           <el-option
@@ -80,7 +80,7 @@
           ></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item prop="license" label="营业执照号" required style="display:block;">
+      <el-form-item prop="license" label="营业执照号" style="display:block;">
         <template v-if="isEdit">{{ companyInfo.license }}</template>
         <el-input
           v-else
@@ -90,7 +90,7 @@
           @blur="validateLicenseId"
         ></el-input>
       </el-form-item>
-      <el-form-item prop="licenseUrl" class="form-item" label="营业执照" required>
+      <el-form-item prop="licenseUrl" class="form-item" label="营业执照">
         <template v-slot:label>营业执照<i class="el-icon-question info-icon"></i></template>
         <img v-if="isEdit" :src="licenseUrl" class="avatar" />
         <el-upload
@@ -224,11 +224,11 @@ export default {
         },
         { pattern: /^[a-zA-Z]+$/g, message: '该企业英文简称包含非法字符，请重新输入', trigger: 'blur' },
       ],
-      industryId: [{ required: true, message: '请选择所属行业', trigger: 'blur' }],
-      natureId: [{ required: true, message: '请选择企业性质', trigger: 'blur' }],
-      scaleId: [{ required: true, message: '请选择企业规模', trigger: 'blur' }],
+      industryId: [{ required: true, message: '请选择所属行业' }],
+      natureId: [{ required: true, message: '请选择企业性质' }],
+      scaleId: [{ required: true, message: '请选择企业规模' }],
       license: [{ required: true, message: '请输入营业执照号', trigger: 'blur' }],
-      licenseUrl: [{ required: true, message: '请上传营业执照', trigger: 'blur' }],
+      licenseUrl: [{ required: true, message: '请上传营业执照' }],
     };
 
     // 行业选项信息
@@ -319,6 +319,9 @@ export default {
 
     // 企业名称校验
     const validateName = async (el: any) => {
+      if (el.target.value === '') {
+        return;
+      }
       const { data } = await validateCompanyName(el.target.value);
       if (!data.usable) {
         (instance as any).proxy.$message({
@@ -330,6 +333,9 @@ export default {
 
     // 营业执照号校验
     const validateLicenseId = async (el: any) => {
+      if (el.target.value) {
+        return;
+      }
       const { data } = await validateLicense(el.target.value);
       if (!data.usable) {
         (instance as any).proxy.$message({

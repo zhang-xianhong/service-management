@@ -595,12 +595,10 @@ export default defineComponent({
 
     // 查询
     const serchUserList = (keyword: string) => {
-      console.log('查询', keyword);
       const { pageSize, page } = tableData.searchProps;
       // 获取当前的所有人员数据
-      const filterRes = treeData.currentNodeUsers.filter((subItem: any) => {
-        return subItem.displayName.includes(keyword);
-      });
+      const filterRes = treeData.currentNodeUsers.filter((subItem: any) => subItem.displayName.includes(keyword));
+      // treeData.currentNodeUsers = filterRes;
       getCurrentTableData(filterRes, page, pageSize);
     };
     const filterAccount = debounce(serchUserList, 500);
