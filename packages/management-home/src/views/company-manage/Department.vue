@@ -120,6 +120,7 @@
       width="500px"
       @closed="closeDialog"
       :close-on-click-modal="false"
+      :destroy-on-close="true"
     >
       <div>
         <el-form :model="formData" ref="deptDiagFormRef" :rules="formRules">

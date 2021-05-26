@@ -1,5 +1,12 @@
 <template>
-  <el-dialog :title="title" v-model="dialogVisible" width="500px" @closed="closeDialog" :close-on-click-modal="false">
+  <el-dialog
+    :title="title"
+    v-model="dialogVisible"
+    width="500px"
+    @closed="closeDialog"
+    :close-on-click-modal="false"
+    :destroy-on-close="true"
+  >
     <div>
       <el-form :model="formData" ref="diagFormRef" :rules="formRules">
         <el-form-item label="登记账号" prop="username" :label-width="labelWidth">
@@ -55,6 +62,7 @@
 import { defineComponent, reactive, toRefs, Ref, ref, inject } from 'vue';
 import { checkMail, checkZNName, checkEnName, checkMobile } from '@/utils/validate';
 import { generatePasswd, copyFun } from '../utils';
+import { checkUserInfo } from '@/api/company/users';
 
 // 定义数据type
 interface DialogState {
@@ -66,19 +74,37 @@ interface DialogState {
 const labelWidth = '100px';
 
 // 手机号校验
-const validatorMobilePass = (rule: any, value: string, callback: Function) => {
+const validatorMobilePass = async (rule: any, value: string, callback: Function) => {
   if (!checkMobile(value)) {
     callback(new Error('请输入正确的手机号码'));
   }
-  callback();
+  // 继续后台校验
+  const { code, data } = await checkUserInfo({
+    key: 'phoneNumber',
+    value,
+  });
+  if (code === 0 && data.exist) {
+    callback(new Error('手机号已存在'));
+  } else {
+    callback();
+  }
 };
 
 // 邮箱校验
-const validatorMailPass = (rule: any, value: string, callback: Function) => {
+const validatorMailPass = async (rule: any, value: string, callback: Function) => {
   if (!checkMail(value)) {
     callback(new Error('请输入正确的邮箱格式'));
   }
-  callback();
+  // 继续后台校验
+  const { code, data } = await checkUserInfo({
+    key: 'primaryMail',
+    value,
+  });
+  if (code === 0 && data.exist) {
+    callback(new Error('邮箱已存在'));
+  } else {
+    callback();
+  }
 };
 
 // 中文姓名校验
@@ -90,11 +116,20 @@ const validatorZNNamePass = (rule: any, value: string, callback: Function) => {
 };
 
 // 英文名称校验
-const validatorEnPass = (rule: any, value: string, callback: Function) => {
+const validatorEnPass = async (rule: any, value: string, callback: Function) => {
   if (!checkEnName(value)) {
     callback(new Error('请输入长度至少2个英文字母的账户名称'));
   }
-  callback();
+  // 继续后台校验
+  const { code, data } = await checkUserInfo({
+    key: 'username',
+    value,
+  });
+  if (code === 0 && data.exist) {
+    callback(new Error('账号已存在'));
+  } else {
+    callback();
+  }
 };
 
 export default defineComponent({
@@ -206,6 +241,7 @@ export default defineComponent({
       dialogContent.disable = false;
       dialogContent.title = '编辑人员';
     };
+
     return {
       ...toRefs(dialogContent),
       closeDialog,
