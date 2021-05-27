@@ -2,14 +2,8 @@
   <div class="dept">
     <el-row>
       <el-col :span="10" style="text-align: left">
-        <el-button
-          type="primary"
-          style="width: 90px"
-          @click="handleAddDept"
-          :disabled="currentNodeData.id === 0 || !isSel"
-          >添加子部门</el-button
-        >
-        <el-button @click="handleDel" :disabled="!isSel">删除</el-button>
+        <el-button type="primary" style="width: 90px" @click="handleAddDept" :disabled="!isSel">添加子部门</el-button>
+        <el-button @click="handleDel" :disabled="currentNodeData.id === 0 ? true : !isSel">删除</el-button>
       </el-col>
       <el-col :offset="10" :span="4" style="text-align: right">
         <el-input
@@ -243,7 +237,6 @@ export default defineComponent({
     });
     // 编辑的数据
     const editFormData = ref();
-
     // 所有的人员
     const allUsers = ref([]);
     // 当前node节点下的人
@@ -492,7 +485,7 @@ export default defineComponent({
     function nodeClickHandle(data: any, node: any): void {
       console.log('当前节点数据', data);
       // 首节点不做选中
-      treeData.isSel = data.id !== 0;
+      treeData.isSel = true;
       treeData.currentNodeData = data;
       treeData.currentNode = node;
       const { page, pageSize } = tableData.searchProps;
