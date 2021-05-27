@@ -8,7 +8,7 @@
           @click="handleAddDept"
           :disabled="!isSel"
         >添加子部门</el-button>
-        <el-button @click="handleDel" :disabled="!isSel">删除</el-button>
+        <el-button @click="handleDel" :disabled="currentNodeData.id === 0 ? true : !isSel">删除</el-button>
       </el-col>
       <el-col :offset="10" :span="4" style="text-align: right">
         <el-input
@@ -491,7 +491,7 @@ export default defineComponent({
     function nodeClickHandle(data: any, node: any): void {
       console.log('当前节点数据', data);
       // 首节点不做选中
-      treeData.isSel = data.id !== 0;
+      treeData.isSel = true;
       treeData.currentNodeData = data;
       treeData.currentNode = node;
       const { page, pageSize } = tableData.searchProps;
