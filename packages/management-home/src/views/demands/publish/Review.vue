@@ -42,7 +42,9 @@
           </template>
         </el-table-column>
         <el-table-column label="发布描述" prop="description"></el-table-column>
-        <el-table-column label="申请时间" prop="createTime"></el-table-column>
+        <el-table-column label="申请时间" prop="createTime">
+          <template #default="scope">{{ dateFormat(scope.row.createTime) }}</template>
+        </el-table-column>
         <el-table-column label="审核结果" prop="auditResults">
           <template #default="scope">
             <span>{{ getNameByCode(scope.row.auditResults, 'auditResults') }}</span>
@@ -96,7 +98,9 @@
             </el-popover>
           </template>
         </el-table-column>
-        <el-table-column label="发布时间" prop="publishTime"></el-table-column>
+        <el-table-column label="发布时间" prop="publishTime">
+          <template #default="scope">{{ dateFormat(scope.row.publishTime) }}</template>
+        </el-table-column>
         <el-table-column label="操作" width="300">
           <template #default="scope">
             <el-button type="primary" size="mini" :disabled="scope.row.auditResults !== 0" @click="onReview(scope.row)"
@@ -138,11 +142,12 @@
         </span>
       </template>
     </el-dialog>
+    <div class="black-hovers" @click="blackHoverclick()" v-if="blackHoverVisible"></div>
   </div>
 </template>
 
 <script lang="ts">
-import { reactive, toRefs, ref } from 'vue';
+import { reactive, toRefs, ref, onBeforeUnmount } from 'vue';
 import { getPublishReviewList, reviewPublish, findUserByName } from '@/api/demands/publish';
 import PackagedPagination from '@/components/pagination/Index.vue';
 import { debounce } from 'lodash';
@@ -335,33 +340,41 @@ export default {
       getTableData();
     };
 
+    // 筛选
+    const blackHoverVisible = ref(false);
     const auditResultsTitleVisiable = ref(false);
     function auditResultsTitleClick() {
       auditResultsTitleVisiable.value = true;
+      blackHoverVisible.value = true;
     }
 
     async function auditResultsChange() {
       auditResultsTitleVisiable.value = false;
+      blackHoverVisible.value = false;
       await getTableData();
     }
 
     const reviewerTitleVisiable = ref(false);
     function reviewerTitleClick() {
       reviewerTitleVisiable.value = true;
+      blackHoverVisible.value = true;
     }
 
     async function reviewerChange() {
       reviewerTitleVisiable.value = false;
+      blackHoverVisible.value = false;
       await getTableData();
     }
 
     const applicantTitleVisiable = ref(false);
     function applicantTitleClick() {
       applicantTitleVisiable.value = true;
+      blackHoverVisible.value = true;
     }
 
     async function applicantChange() {
       applicantTitleVisiable.value = false;
+      blackHoverVisible.value = false;
       await getTableData();
     }
     async function remoteMethod(keyword: string) {
@@ -377,6 +390,15 @@ export default {
         tableState.applicantFilters = [];
       }
     }
+    function blackHoverclick() {
+      auditResultsTitleVisiable.value = false;
+      reviewerTitleVisiable.value = false;
+      applicantTitleVisiable.value = false;
+      blackHoverVisible.value = false;
+    }
+    onBeforeUnmount(() => {
+      blackHoverclick();
+    });
 
     return {
       ...toRefs(tableState),
@@ -404,6 +426,8 @@ export default {
       applicantTitleClick,
       applicantChange,
       remoteMethod,
+      blackHoverVisible,
+      blackHoverclick,
     };
   },
 };
@@ -422,5 +446,14 @@ export default {
   display: block;
   text-align: center;
   margin-bottom: 20px;
+}
+.black-hovers {
+  width: 100vw;
+  height: 100vh;
+  position: absolute;
+  left: 0;
+  top: 0;
+  background-color: rgba(0, 0, 0, 0.2);
+  z-index: 40;
 }
 </style>

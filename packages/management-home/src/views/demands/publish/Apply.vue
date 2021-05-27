@@ -19,7 +19,9 @@
         <el-table-column label="发布名称" prop="name"></el-table-column>
         <el-table-column label="申请账号" prop="applicantName"></el-table-column>
         <el-table-column label="发布描述" prop="description"></el-table-column>
-        <el-table-column label="申请时间" prop="createTime"></el-table-column>
+        <el-table-column label="申请时间" prop="createTime">
+          <template #default="scope">{{ dateFormat(scope.row.createTime) }}</template>
+        </el-table-column>
         <el-table-column label="审核结果">
           <template #default="scope">
             <span>{{ getNameByCode(scope.row.auditResults, 'auditResults') }}</span>
@@ -67,7 +69,9 @@
             </el-popover>
           </template>
         </el-table-column>
-        <el-table-column label="发布时间" prop="publishTime"></el-table-column>
+        <el-table-column label="发布时间" prop="publishTime">
+          <template #default="scope">{{ dateFormat(scope.row.publishTime) }}</template>
+        </el-table-column>
         <el-table-column label="操作" width="300">
           <template #default="scope">
             <el-button type="primary" size="mini" @click="onEdit(scope.row)" :disabled="scope.row.status !== 0"
@@ -167,11 +171,12 @@
         </span>
       </template>
     </el-dialog>
+    <div class="black-hovers" @click="blackHoverclick()" v-if="blackHoverVisible"></div>
   </div>
 </template>
 
 <script lang="ts">
-import { reactive, toRefs, ref } from 'vue';
+import { reactive, toRefs, ref, onBeforeUnmount } from 'vue';
 import { getPublishList, addPublish, updatePublish, deletePublish, getServiceList } from '@/api/demands/publish';
 import PackagedPagination from '@/components/pagination/Index.vue';
 import { debounce } from 'lodash';
@@ -474,24 +479,40 @@ export default {
       tableState.searchProps.page = pageNum;
       getTableData();
     };
+
+    // 筛选
+    const blackHoverVisible = ref(false);
     const statusTitleVisiable = ref(false);
     function statusTitleClick() {
       statusTitleVisiable.value = true;
+      blackHoverVisible.value = true;
     }
 
     const auditResultsTitleVisiable = ref(false);
     function auditResultsTitleClick() {
       auditResultsTitleVisiable.value = true;
+      blackHoverVisible.value = true;
     }
 
     async function statusChange() {
       statusTitleVisiable.value = false;
+      blackHoverVisible.value = false;
       await getTableData();
     }
     async function auditResultsChange() {
       auditResultsTitleVisiable.value = false;
+      blackHoverVisible.value = false;
       await getTableData();
     }
+
+    function blackHoverclick() {
+      auditResultsTitleVisiable.value = false;
+      statusTitleVisiable.value = false;
+      blackHoverVisible.value = false;
+    }
+    onBeforeUnmount(() => {
+      blackHoverclick();
+    });
 
     return {
       ...toRefs(tableState),
@@ -520,6 +541,8 @@ export default {
       auditResultsTitleVisiable,
       auditResultsTitleClick,
       auditResultsChange,
+      blackHoverVisible,
+      blackHoverclick,
     };
   },
 };
@@ -538,5 +561,14 @@ export default {
   display: block;
   text-align: center;
   margin-bottom: 20px;
+}
+.black-hovers {
+  width: 100vw;
+  height: 100vh;
+  position: absolute;
+  left: 0;
+  top: 0;
+  background-color: rgba(0, 0, 0, 0.2);
+  z-index: 40;
 }
 </style>

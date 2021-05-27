@@ -34,10 +34,12 @@ export default defineComponent({
     const companyRef: Ref<any> = ref(null);
     const userRef: Ref<any> = ref(null);
     const managerRef: Ref<any> = ref(null);
+    
+    // 租户详情
     const tenantDetail = ref({
       contact: {},
       manager: {},
-    });
+    } as any);
 
     const getDetail = async () => {
       const { data } = await getTenantDetail(tenantId);
@@ -74,10 +76,20 @@ export default defineComponent({
         return false;
       }
       if (isEditMode) {
-        const { code } = await updateTenant(tenantId, {
-          ...tenantDetail.value,
-          ...{ contact: undefined, manager: undefined },
+        const { nameShort, addr, addrDetail, logoUrl, intro } = tenantDetail.value;
+        const updateData: any = {
+          nameShort,
+          addr,
+          addrDetail,
+          logoUrl,
+          intro,
+        };
+        Object.keys(updateData).forEach((key: string) => {
+          if (updateData[key] === '') {
+            delete updateData[key];
+          }
         });
+        const { code } = await updateTenant(tenantId, updateData);
         if (code === 0) {
           (instance as any).proxy.$message({
             type: 'success',
