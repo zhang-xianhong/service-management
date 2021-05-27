@@ -74,7 +74,10 @@
           }}
         </el-row>
         <el-row>
-          <el-button @click="handleAddPerson" :disabled="!isSel">添加成员</el-button>
+          <el-button
+            @click="handleAddPerson"
+            :disabled="currentNodeData.id === 0 ? true : !isSel"
+          >添加成员</el-button>
         </el-row>
         <el-row width="100%">
           <el-table :data="tableDataSource" style="width: 100%">

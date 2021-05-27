@@ -91,13 +91,16 @@
         ></el-input>
       </el-form-item>
       <el-form-item prop="licenseUrl" class="form-item" label="营业执照">
-        <template v-slot:label>营业执照<i class="el-icon-question info-icon"></i></template>
+        <template v-slot:label>
+          营业执照
+          <i class="el-icon-question info-icon"></i>
+        </template>
         <img v-if="isEdit" :src="licenseUrl" class="avatar" />
         <el-upload
           v-else
           class="avatar-uploader"
           :action="IMAGE_UPLOAD"
-          accept=".jpg,.bmp,.png,jpeg"
+          accept=".jpg, .bmp, .png, jpeg"
           :show-file-list="false"
           :before-upload="beforeUpload"
           @error="uploadFailed"
@@ -108,11 +111,14 @@
         </el-upload>
       </el-form-item>
       <el-form-item prop="logoUrl" class="form-item">
-        <template v-slot:label>企业logo<i class="el-icon-question info-icon"></i></template>
+        <template v-slot:label>
+          企业logo
+          <i class="el-icon-question info-icon"></i>
+        </template>
         <el-upload
           class="avatar-uploader"
           :action="IMAGE_UPLOAD"
-          accept=".jpg,.bmp,.png,jpeg"
+          accept=".jpg, .bmp, .png, jpeg"
           :show-file-list="false"
           :before-upload="beforeUpload"
           @error="uploadFailed"
@@ -166,7 +172,9 @@ export default {
     // 根据fileKey获取文件url
     const getFileUrl = async (type: 'licenseUrl' | 'logoUrl') => {
       if (companyInfo.value[type]) {
-        const { data } = await getImageUrl({ fileKey: companyInfo.value[type] });
+        const { data } = await getImageUrl({
+          fileKey: companyInfo.value[type],
+        });
         return data;
       }
     };
@@ -203,7 +211,12 @@ export default {
     const rules = {
       name: [
         { required: true, message: '请输入企业名称', trigger: 'blur' },
-        { min: 2, max: 40, message: '企业名称长度在2到40个字符之间', trigger: 'blur' },
+        {
+          min: 2,
+          max: 40,
+          message: '企业名称长度在2到40个字符之间',
+          trigger: 'blur',
+        },
         {
           pattern: /^[\u4e00-\u9fa5|a-zA-Z|()]+$/g,
           message: '包含非法字符，只能输入中文、大小写字母及()',
@@ -211,8 +224,17 @@ export default {
         },
       ],
       nameShort: [
-        { min: 2, max: 40, message: '企业别称长度在2到40个字符之间', trigger: 'blur' },
-        { pattern: /^[\u4e00-\u9fa5|a-zA-Z|()]+$/g, message: '该企业简称包含非法字符，请重新输入', trigger: 'blur' },
+        {
+          min: 2,
+          max: 40,
+          message: '企业别称长度在2到40个字符之间',
+          trigger: 'blur',
+        },
+        {
+          pattern: /^[\u4e00-\u9fa5|a-zA-Z|()]+$/g,
+          message: '该企业简称包含非法字符，请重新输入',
+          trigger: 'blur',
+        },
       ],
       tenantEngAbbr: [
         { required: true, message: '请输入企业英文简称', trigger: 'blur' },
@@ -222,7 +244,11 @@ export default {
           message: '企业英文简称长度在6到16个字符之间',
           trigger: 'blur',
         },
-        { pattern: /^[a-zA-Z]+$/g, message: '该企业英文简称包含非法字符，请重新输入', trigger: 'blur' },
+        {
+          pattern: /^[a-zA-Z]+$/g,
+          message: '该企业英文简称包含非法字符，请重新输入',
+          trigger: 'blur',
+        },
       ],
       industryId: [{ required: true, message: '请选择所属行业' }],
       natureId: [{ required: true, message: '请选择企业性质' }],
@@ -333,7 +359,7 @@ export default {
 
     // 营业执照号校验
     const validateLicenseId = async (el: any) => {
-      if (el.target.value) {
+      if (el.target.value === '') {
         return;
       }
       const { data } = await validateLicense(el.target.value);

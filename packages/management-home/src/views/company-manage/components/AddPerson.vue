@@ -39,7 +39,7 @@
           <el-tooltip content="复制密码，保存后可用新密码登录" placement="top" effect="light" style="margin-right: 5px">
             <svg-icon icon-name="wenhao" icon-class="detail-icons__item"></svg-icon>
           </el-tooltip>
-          <el-input v-model.trim="formData.password" disabled style="width: 280px" show-password></el-input>
+          <el-input v-model.trim="formData.password" style="width: 280px" show-password></el-input>
           <el-button type="text" style="margin-left: 20px" @click="handleCopy">复制</el-button>
         </el-form-item>
       </el-form>
