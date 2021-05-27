@@ -48,7 +48,7 @@ export default defineComponent({
       getDetail();
     }
 
-    // 校验表单输入
+    // 并行校验表单输入
     const validate = () =>
       Promise.all([
         new Promise((resolve) => {
@@ -68,8 +68,10 @@ export default defineComponent({
         }),
       ]);
 
+    // 租户更新或新建
     const onSubmit = async () => {
       const validator = await validate();
+      // 所有表单都校验通过则继续向下，否则直接返回false
       if (validator.some((item: any) => !item)) {
         return false;
       }
@@ -95,34 +97,6 @@ export default defineComponent({
           router.back();
         }
       }
-      // validate().then((res: [unknown, unknown, unknown]) => {
-      //   if (res.every((item: unknown) => item)) {
-      //     if (isEditMode) {
-      //       updateTenant(tenantId, {
-      //         ...tenantDetail.value,
-      //         ...{ contact: undefined, manager: undefined },
-      //       }).then((res: any) => {
-      //         if (res.code === 0) {
-      //           (instance as any).proxy.$message({
-      //             type: 'success',
-      //             message: '更新成功',
-      //           });
-      //           router.back();
-      //         }
-      //       })
-      //     } else {
-      //       createTenant(tenantDetail.value).then((res: any) => {
-      //         if (res.code === 0) {
-      //           (instance as any).proxy.$message({
-      //             type: 'success',
-      //             message: '新建成功',
-      //           });
-      //           router.back();
-      //         }
-      //       })
-      //     }
-      //   }
-      // });
     };
 
     const onCancel = async () => {
