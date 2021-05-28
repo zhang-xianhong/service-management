@@ -1,7 +1,7 @@
 <template>
   <el-row class="login">
     <el-col class="login-sidebar" :span="8">
-      <div class="login-sidebar__nav">
+      <div class="login-sidebar__nav" @click="backToHead">
         <i class="el-icon-arrow-left"></i>
         返回到首页
       </div>
@@ -22,13 +22,19 @@ export default defineComponent({
     LoginForm,
   },
   setup() {
-    return {};
+    const backToHead = () => {
+      window.location.href = 'https://citybase.qq.com';
+      window.location.reload();
+    };
+    return {
+      backToHead,
+    };
   },
 });
 </script>
 
 <style scoped lang="scss">
-$image: url(~@/assets/img/citybase-login.png);
+$image: url(~@/assets/img/citybase-login.jpg);
 .login {
   height: 100%;
   background: #fff;
@@ -37,7 +43,7 @@ $image: url(~@/assets/img/citybase-login.png);
     width: 524px;
     height: 100%;
     color: #fff;
-    background: $image no-repeat;
+    background: $image no-repeat #f0f0f0;
     background-size: cover;
     &__nav {
       display: inline-block;

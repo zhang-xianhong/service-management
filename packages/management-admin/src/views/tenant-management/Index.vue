@@ -23,7 +23,7 @@
       <el-table-column type="index" label="序号" width="50" />
       <el-table-column property="name" label="企业名称">
         <template #default="scope">
-          <router-link :to="{ path: `tenant-list/edit/${scope.row.id}` }">{{ scope.row.name }}</router-link>
+          <router-link :to="{ path: `/tenant-list/edit/${scope.row.id}` }">{{ scope.row.name }}</router-link>
         </template>
       </el-table-column>
       <el-table-column property="contactName" label="联系人"></el-table-column>
@@ -156,7 +156,7 @@ export default {
     const handleComputerNameInput = debounce(getTableData, 1000);
 
     const onAdd = () => {
-      router.push('tenant-list/edit/0');
+      router.push('/tenant-list/edit/0');
     };
 
     // 批量冻结

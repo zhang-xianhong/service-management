@@ -68,7 +68,7 @@ const routes: Array<RouteRecordRaw> = [
     component: Layout,
     meta: {
       isRootLevel: true,
-      id: 2,
+      id: 10,
       hidden: false,
     },
     children: [
@@ -80,7 +80,7 @@ const routes: Array<RouteRecordRaw> = [
           title: '租户管理',
           icon: 'el-icon-eleme',
           isRootLevel: false,
-          id: 2,
+          id: 10,
           hidden: false,
         },
       },
@@ -97,6 +97,7 @@ const routes: Array<RouteRecordRaw> = [
       icon: 'el-icon-eleme',
       id: 4,
       hidden: false,
+      node: true,
     },
     children: [
       {
@@ -107,7 +108,7 @@ const routes: Array<RouteRecordRaw> = [
           title: '项目列表',
           icon: 'el-icon-eleme',
           isRootLevel: false,
-          id: 4,
+          id: 13,
           hidden: false,
         },
       },
@@ -121,7 +122,7 @@ const routes: Array<RouteRecordRaw> = [
           isRootLevel: false,
           hidden: true,
           activeMenu: '/project-management/project-list',
-          id: 4,
+          id: 21,
         },
         props: true,
       },
@@ -137,6 +138,7 @@ const routes: Array<RouteRecordRaw> = [
       icon: 'el-icon-eleme',
       isRootLevel: true,
       id: 16,
+      node: true,
     },
     children: [
       {
@@ -185,6 +187,7 @@ const routes: Array<RouteRecordRaw> = [
       icon: 'el-icon-eleme',
       isRootLevel: true,
       id: 9,
+      node: true,
     },
     children: [
       {
@@ -209,6 +212,7 @@ const routes: Array<RouteRecordRaw> = [
       icon: 'el-icon-eleme',
       isRootLevel: true,
       id: 8,
+      node: true,
     },
     children: [
       {
@@ -269,29 +273,29 @@ const routes: Array<RouteRecordRaw> = [
       },
     ],
   },
-  {
-    path: '/iframe-management',
-    redirect: '/iframe-detail',
-    name: 'IframeManagement',
-    component: Layout,
-    meta: {
-      isRootLevel: true,
-      hidden: true,
-    },
-    children: [
-      {
-        path: 'iframe-detail',
-        component: () => import(/* webpackChunkName: "tenant" */ '@/views/iframe-test/Index.vue'),
-        name: 'iframe',
-        meta: {
-          title: 'iframe传参管理',
-          icon: 'el-icon-eleme',
-          isRootLevel: false,
-          id: 12345,
-        },
-      },
-    ],
-  },
+  // {
+  //   path: '/iframe-management',
+  //   redirect: '/iframe-detail',
+  //   name: 'IframeManagement',
+  //   component: Layout,
+  //   meta: {
+  //     isRootLevel: true,
+  //     hidden: true,
+  //   },
+  //   children: [
+  //     {
+  //       path: 'iframe-detail',
+  //       component: () => import(/* webpackChunkName: "tenant" */ '@/views/iframe-test/Index.vue'),
+  //       name: 'iframe',
+  //       meta: {
+  //         title: 'iframe传参管理',
+  //         icon: 'el-icon-eleme',
+  //         isRootLevel: false,
+  //         id: 12345,
+  //       },
+  //     },
+  //   ],
+  // },
   {
     path: '/company-manage',
     name: 'Company',
@@ -300,7 +304,8 @@ const routes: Array<RouteRecordRaw> = [
       title: '公司管理',
       icon: 'el-icon-eleme',
       isRootLevel: true,
-      id: 11,
+      id: 3,
+      node: true,
     },
     children: [
       {
@@ -314,17 +319,17 @@ const routes: Array<RouteRecordRaw> = [
           id: 11,
         },
       },
-      // {
-      //   path: 'departmentdepartment',
-      //   component: () => import(/* webpackChunkName: "tenant" */ '@/views/company-manage/Department.vue'),
-      //   name: 'Department',
-      //   meta: {
-      //     title: '部门管理',
-      //     icon: 'el-icon-eleme',
-      //     isRootLevel: false,
-      //     id: 9,
-      //   },
-      // }
+      {
+        path: 'department',
+        component: () => import(/* webpackChunkName: "tenant" */ '@/views/company-manage/Department.vue'),
+        name: 'Department',
+        meta: {
+          title: '部门管理',
+          icon: 'el-icon-eleme',
+          isRootLevel: false,
+          id: 12,
+        },
+      },
     ],
   },
   {
@@ -335,7 +340,8 @@ const routes: Array<RouteRecordRaw> = [
       title: '发布管理',
       icon: 'el-icon-eleme',
       isRootLevel: true,
-      id: 10,
+      id: 6,
+      node: true,
     },
     children: [
       {
@@ -346,7 +352,7 @@ const routes: Array<RouteRecordRaw> = [
           title: '发布申请',
           icon: 'el-icon-eleme',
           isRootLevel: false,
-          id: 9,
+          id: 14,
         },
       },
       {
@@ -357,7 +363,31 @@ const routes: Array<RouteRecordRaw> = [
           title: '发布审核',
           icon: 'el-icon-eleme',
           isRootLevel: false,
-          id: 10,
+          id: 15,
+        },
+      },
+    ],
+  },
+  {
+    path: '/user-management',
+    redirect: '/user-center',
+    name: 'UserManagement',
+    component: Layout,
+    meta: {
+      isRootLevel: true,
+      hidden: true,
+      node: true,
+    },
+    children: [
+      {
+        path: 'user-detail',
+        component: () => import(/* webpackChunkName: "tenant" */ '@/views/user-management/Index.vue'),
+        name: 'UserCenter',
+        meta: {
+          title: '个人中心',
+          icon: 'el-icon-eleme',
+          isRootLevel: false,
+          hidden: true,
         },
       },
     ],

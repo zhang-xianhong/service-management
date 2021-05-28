@@ -27,7 +27,7 @@ export const getComputedRoutes = () =>
     })
     .filter((x: any) => x);
 
-export const getPermissionRoutes = function (config = getComputedRoutes() as any) {
+export const getPermissionRoutes = function(config = getComputedRoutes() as any) {
   const route: Array<RouteRecordRaw> = [];
   const arr = Object.keys(userMenus.value);
   // const permissionArr = localStorage.permissionArr ? JSON.parse(localStorage.permissionArr) : []; // 权限
@@ -42,6 +42,9 @@ export const getPermissionRoutes = function (config = getComputedRoutes() as any
         obj = Object.assign({}, item);
         if (item.children && item.children.length > 0) {
           obj.children = Object.assign([], getPermissionRoutes(item.children));
+        }
+        if (obj.meta.node && obj.children.length === 0) {
+          obj.meta.hidden = true;
         }
         // 路由为重定向路由且子集长度大于0时，修改重定向路由为第一个子路由
         if (obj.redirect && obj.children && (obj.children as Array<RouteRecordRaw>).length > 0) {

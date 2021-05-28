@@ -17,3 +17,16 @@ export const getCaptcha: () => Promise<SuccessResponse<any>> = () => request.get
 
 export const login: (payload: any) => Promise<SuccessResponse<any>> = (payload: any) =>
   request.post(getUrl(URL.auth.LOGIN), payload);
+
+export const getUserProfile: () => Promise<SuccessResponse<any>> = () => request.get(getUrl(URL.auth.GET_PROFILE));
+
+export const updateUserProfile: (payload: any) => Promise<SuccessResponse<any>> = (payload: any) =>
+  request.post(getUrl(URL.auth.UPDATE_PROFILE), payload);
+
+export const updateUserPassword: (payload: any) => Promise<SuccessResponse<any>> = (payload: any) =>
+  request.post(getUrl(URL.auth.UPDATE_PASSWORD), payload);
+
+export const getCode: () => Promise<SuccessResponse<any>> = () => request.get(getUrl(URL.auth.CODE));
+
+export const verifyCaptcha: (payload: any) => Promise<SuccessResponse<any>> = (payload: any) =>
+  request.post(getUrl(URL.auth.VERIFY_CAPTCHA), payload);

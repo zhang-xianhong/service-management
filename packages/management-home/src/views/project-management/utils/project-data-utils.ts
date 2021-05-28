@@ -52,7 +52,8 @@ export const deleteProject = (id: number) => {
     .then(() => {
       deleteProjects([id]).then((res) => {
         console.log(res);
-        getProjectListData();
+        // getProjectListData();
+        window.location.reload();
       });
     })
     .catch(() => {

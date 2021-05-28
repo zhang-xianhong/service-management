@@ -21,3 +21,6 @@ export const updateUserStatus: (payload?: object) => Promise<SuccessResponse<any
 // 修改密码
 export const resetPassWd: (payload?: object) => Promise<SuccessResponse<any>> = (payload: any) =>
   request.post(getUrl(URL.company.UPDATE_USER_PASSWD), payload);
+// 输入信息校验
+export const checkUserInfo: (payload?: object) => Promise<SuccessResponse<any>> = (payload: any) =>
+  request.post(getUrl(URL.company.CHECK_INPUT), payload);

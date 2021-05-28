@@ -36,8 +36,10 @@
         <template v-else>{{ detailInfo.remark }}</template>
       </el-form-item>
       <el-form-item label="关联服务">
-        <el-select v-if="isEditable" v-model="relatedServices" multiple></el-select>
-        <template v-else>{{ detailInfo.relatedServices }}</template>
+        <el-select v-if="isEditable" v-model="serviceIds" multiple>
+          <el-option v-for="(item, index) in allService" :key="index" :value="item.id" :label="item.name"></el-option>
+        </el-select>
+        <template v-else>{{ computedServicesName }}</template>
       </el-form-item>
     </el-form>
     <div class="dialog-footer">
@@ -50,8 +52,10 @@
 
 <script lang="ts">
 import { defineComponent, getCurrentInstance, PropType, Ref, ref, computed, SetupContext } from 'vue';
+import { IMAGE_UPLOAD } from '@/shared/constant/file';
 import { SuccessResponse } from '@/types/response';
 import { updateAppById } from '@/api/app';
+import { getAllService, allService } from '@/views/service-management/business-service/utils/service-data-utils';
 
 interface DetailInterface {
   id: string;
@@ -59,7 +63,7 @@ interface DetailInterface {
   description: string;
   remark: string;
   thumbnail: string;
-  services: number[];
+  services: any[];
   imageUrl: string;
 }
 
@@ -83,6 +87,15 @@ export default defineComponent({
     const isEditable: Ref<boolean> = ref(false);
 
     const isVisable = computed(() => props.visable);
+
+    getAllService();
+
+    const serviceIds = ref(props.detail.services.map((item: any) => item.serviceId));
+
+    const computedServicesName = computed(() => {
+      const services = allService.value.filter((item: any) => serviceIds.value.includes(item.id));
+      return services.map((service: any) => service.name).join(',');
+    });
 
     const logoUploadError = () => {
       (instance as any).proxy.$message({
@@ -111,17 +124,25 @@ export default defineComponent({
     };
 
     const updateAppDetail = async () => {
-      const { code } = await updateAppById(detailInfo.value.id, detailInfo.value);
+      const { code } = await updateAppById(detailInfo.value.id, {
+        ...detailInfo.value,
+        ...{ services: serviceIds.value },
+      });
       if (code === 0) {
         (instance as any).proxy.$message({
           type: 'success',
           message: '应用更新成功',
         });
+        isEditable.value = false;
         ctx.emit('close');
       }
     };
 
     return {
+      IMAGE_UPLOAD,
+      allService,
+      serviceIds,
+      computedServicesName,
       isVisable,
       isEditable,
       detailInfo,

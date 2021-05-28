@@ -17,7 +17,7 @@
       </el-col>
     </el-row>
     <el-row style="background: #fff">
-      <el-table :data="tableData" style="width: 100%" @selection-change="selChange">
+      <el-table :data="tableData" style="width: 100%" @selection-change="selChange" v-loading="loading">
         <el-table-column type="selection" width="45" />
         <el-table-column type="index" label="序号" width="50" />
         <el-table-column label="登录账号" prop="userName"></el-table-column>
@@ -25,7 +25,7 @@
         <el-table-column label="手机" prop="phoneNumber"></el-table-column>
         <el-table-column label="邮箱" prop="primaryMail"></el-table-column>
         <el-table-column label="账户状态" prop="status">
-          <template #default="scope">{{ USERSTATUS[scope.row.status] }}</template>
+          <template #default="scope">{{ UserStatus[scope.row.status] }}</template>
         </el-table-column>
         <el-table-column label="部门" prop="deptName"></el-table-column>
         <el-table-column label="操作" width="300">
@@ -53,10 +53,11 @@
       width="500px"
       @closed="closeResetDialog"
       :close-on-click-modal="false"
+      :destroy-on-close="true"
     >
       <div>
         <el-form :model="resetFormData" ref="resetDiagFormRef" :rules="resetFormRules">
-          <el-form-item label="密码" prop="newPassword" label-width="100px">
+          <el-form-item label="新密码" prop="newPassword" label-width="100px">
             <el-tooltip :content="passwdMsg" placement="top" effect="light" style="margin-right: 5px">
               <svg-icon icon-name="wenhao" icon-class="detail-icons__item"></svg-icon>
             </el-tooltip>
@@ -66,6 +67,7 @@
               show-password
               style="width: 280px"
             ></el-input>
+            <el-button type="text" style="margin-left: 20px" @click="handleCopy">复制</el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -81,16 +83,21 @@
 
 <script lang="ts">
 import { defineComponent, ref, reactive, toRefs, Ref, provide, getCurrentInstance } from 'vue';
+import { debounce } from 'lodash';
 import { ElMessageBox, ElMessage } from 'element-plus';
 import AddPerson from './components/AddPerson.vue';
 import PackagedPagination from '@/components/pagination/Index.vue';
-import { debounce } from 'lodash';
+import { generatePasswd, copyFun } from './utils';
 import { getUserList, createUser, updateUser, delUser, updateUserStatus, resetPassWd } from '@/api/company/users';
-
-const USERSTATUS: any = {
-  0: '启用',
-  '-1': '禁用',
-};
+// 用户状态
+enum UserStatus {
+  禁用 = -1,
+  启用 = 0,
+}
+// 状态码
+enum ResCode {
+  Success,
+}
 interface TableState {
   tableData: Array<object>;
   loading: boolean;
@@ -107,16 +114,15 @@ interface RefAddDialog {
   openDialog: Function;
   [attr: string]: any;
 }
-
-const RES_CODE: any = {
-  success: 0,
-};
-
+// 密码重置
+interface ResetFormState {
+  newPassword: any[];
+}
 const passwdMsg = '长度在 8 到 16 个字符,至少1个大写字母，1个小写字母，1个数字和1个特殊字符($@$!%*?&)';
 
 // 密码校验
 function checkPasswd(passwd: string): boolean {
-  const szReg = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@!^#%&])[A-Za-z\d$@$!%*?&]{8,16}/;
+  const szReg = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@!^#%&])[A-Za-z\d@$!%*?&]{8,16}/;
   return szReg.test(passwd);
 }
 const validatorPasswdPass = (rule: any, value: string, callback: Function) => {
@@ -125,66 +131,13 @@ const validatorPasswdPass = (rule: any, value: string, callback: Function) => {
   }
   callback();
 };
-const resetFormRules = {
+const resetFormRules: ResetFormState = {
   newPassword: [
     { required: true, message: '请输入新的密码', trigger: 'blur' },
     { validator: validatorPasswdPass, trigger: 'blur' },
   ],
 };
 
-// 初始密码生成
-function generatePasswd(len: number): string {
-  let length = Number(len);
-  // Limit length
-  if (length < 6) {
-    length = 6;
-  } else if (length > 16) {
-    length = 16;
-  }
-  const passwordArray = ['ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz', '1234567890', '@$!%*?&'];
-  const password = [];
-  let n = 0;
-  for (let i = 0; i < length; i++) {
-    // If password length less than 9, all value random
-    if (password.length < length - 4) {
-      // Get random passwordArray index
-      const arrayRandom = Math.floor(Math.random() * 4);
-      // Get password array value
-      const passwordItem = passwordArray[arrayRandom];
-      // Get password array value random index
-      // Get random real value
-      const item = passwordItem[Math.floor(Math.random() * passwordItem.length)];
-      password.push(item);
-    } else {
-      // If password large then 9, lastest 4 password will push in according to the random password index
-      // Get the array values sequentially
-      const newItem = passwordArray[n];
-      const lastItem = newItem[Math.floor(Math.random() * newItem.length)];
-      // Get array splice index
-      const spliceIndex = Math.floor(Math.random() * password.length);
-      password.splice(spliceIndex, 0, lastItem);
-      n = n + 1;
-    }
-  }
-  return password.join('');
-}
-
-// 复制功能
-function copyFun(content: string) {
-  const input = document.createElement('input');
-  input.setAttribute('readonly', 'readonly');
-  document.body.appendChild(input);
-  input.setAttribute('value', content);
-  input.select();
-  if (document.execCommand('copy')) {
-    document.execCommand('copy');
-    ElMessage({
-      type: 'success',
-      message: '复制成功!',
-    });
-  }
-  document.body.removeChild(input);
-}
 export default defineComponent({
   name: 'Person',
   components: { AddPerson, PackagedPagination },
@@ -207,6 +160,14 @@ export default defineComponent({
 
     // 获取组件实例
     const instance = getCurrentInstance();
+
+    // 提示信息
+    function msgTips(type: string, content: string) {
+      (instance as any).proxy.$message({
+        type,
+        message: content,
+      });
+    }
 
     // 打开对话框
     const openAddDialog = (): void => {
@@ -237,16 +198,14 @@ export default defineComponent({
     });
     // 获取列表
     const getList = async () => {
-      // tableState.loading = true;
+      tableState.loading = true;
       const { code, data } = await getUserList(tableState.searchProps);
-      if (code === RES_CODE.success) {
+      if (code === ResCode.Success) {
         tableState.total = data.count;
         tableState.tableData = data.rows || [];
+        tableState.loading = false;
       } else {
-        (instance as any).proxy.$message({
-          type: 'error',
-          message: '获取人员列表失败',
-        });
+        msgTips('error', '获取人员列表失败');
       }
     };
     getList();
@@ -262,17 +221,11 @@ export default defineComponent({
     const handleUpdateStatus = async (status: number) => {
       const ids = tableState.multipleSelection.map((item) => item.id);
       const { code } = await updateUserStatus({ ids, status });
-      if (code === RES_CODE.success) {
-        (instance as any).proxy.$message({
-          type: 'success',
-          message: '修改成功',
-        });
+      if (code === ResCode.Success) {
+        msgTips('success', '修改成功');
         getList();
       } else {
-        (instance as any).proxy.$message({
-          type: 'error',
-          message: '修改失败',
-        });
+        msgTips('error', '修改失败');
       }
     };
 
@@ -287,17 +240,11 @@ export default defineComponent({
           const ids = tableState.multipleSelection.map((item) => item.id);
           // 待传参
           const { code } = await delUser({ ids });
-          if (code === RES_CODE.success) {
-            (instance as any).proxy.$message({
-              type: 'success',
-              message: '删除成功',
-            });
+          if (code === ResCode.Success) {
+            msgTips('success', '删除成功');
             getList();
           } else {
-            (instance as any).proxy.$message({
-              type: 'error',
-              message: '删除失败',
-            });
+            msgTips('error', '删除失败');
           }
         })
         .catch(() => {
@@ -314,18 +261,12 @@ export default defineComponent({
         ...data,
         status: parseInt(data.status, 10),
       });
-      if (code === RES_CODE.success) {
-        (instance as any).proxy.$message({
-          type: 'success',
-          message: '新建成功',
-        });
+      if (code === ResCode.Success) {
+        msgTips('success', '新建成功');
         initAddDialog();
         getList();
       } else {
-        (instance as any).proxy.$message({
-          type: 'error',
-          message: '添加失败',
-        });
+        msgTips('error', '新建失败');
       }
     };
 
@@ -335,17 +276,11 @@ export default defineComponent({
         ...data,
         status: parseInt(data.status, 10),
       });
-      if (code === RES_CODE.success) {
-        (instance as any).proxy.$message({
-          type: 'success',
-          message: '编辑成功',
-        });
+      if (code === ResCode.Success) {
+        msgTips('success', '编辑成功');
         getList();
       } else {
-        (instance as any).proxy.$message({
-          type: 'error',
-          message: '编辑失败',
-        });
+        msgTips('error', '编辑失败');
       }
       closeDialog();
     };
@@ -385,21 +320,19 @@ export default defineComponent({
             userId,
             newPassword,
           });
-          if (code === RES_CODE.success) {
-            copyFun(newPassword);
+          if (code === ResCode.Success) {
             // 复制到剪切板上
-            (instance as any).proxy.$message({
-              type: 'success',
-              message: '密码重置成功,已复制到剪切板',
-            });
+            msgTips('success', '密码重置成功');
           } else {
-            (instance as any).proxy.$message({
-              type: 'error',
-              message: '密码重置失败',
-            });
+            msgTips('error', '密码重置失败');
           }
         }
       });
+    };
+    // 复制密码
+    const handleCopy = () => {
+      const { newPassword } = resetDialog.resetFormData;
+      copyFun(newPassword);
     };
     return {
       ...toRefs(tableState),
@@ -409,17 +342,18 @@ export default defineComponent({
       openEditDialog,
       handleDel,
       selChange,
-      filterAccount,
-      refAddDialog,
-      USERSTATUS,
       handlePageSizeChange,
       handlePageChange,
-      resetFormRules,
       handleResetPasswd,
       closeResetDialog,
       submitResetForm,
+      filterAccount,
+      refAddDialog,
+      UserStatus,
+      resetFormRules,
       resetDiagFormRef,
       passwdMsg,
+      handleCopy,
     };
   },
 });

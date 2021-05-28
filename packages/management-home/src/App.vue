@@ -5,59 +5,20 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue';
-import { getUserInfo } from '@/api/auth';
-import { userCurrentProject, userInfo, userMenus, userProjectList } from '@/layout/messageCenter/user-info';
-import { resetPremissionRouter } from '@/router';
+import { defineComponent, watch } from 'vue';
+import { getUser } from '@/shared/userinfo';
 import { routerLoading } from '@/layout/messageCenter/routerRef';
+import { useRouter, useRoute } from 'vue-router';
 
 export default defineComponent({
   setup() {
-    const loadings = ref(true);
-    let localsid = localStorage.getItem('projectId') as any;
-    localsid = Number.isNaN(Number(localsid)) ? 0 : Number(localsid);
-    getUserInfo({ projectId: localsid }).then((res) => {
-      const { info, projects } = res.data;
-      const { userAuth } = info;
-      userInfo.value = info;
-      const menuObj = {} as any;
-      userAuth.forEach((x: any) => {
-        menuObj[x.id] = [];
-        if (x.modules) {
-          x.modules.forEach((y: any) => {
-            if (y.code) {
-              menuObj[x.id] = [...y.code.split('-'), ...menuObj[x.id]];
-            }
-          });
-        }
-        menuObj[x.id] = [...new Set(menuObj[x.id])];
-      });
-      userMenus.value = menuObj;
-      userProjectList.value = projects;
-      resetPremissionRouter();
-      loadings.value = false;
-      routerLoading.value = false;
-      if (projects.length) {
-        const includes = localsid && projects.map((x: any) => x.id).includes(localsid);
-        if (!includes) {
-          // eslint-disable-next-line prefer-destructuring
-          userCurrentProject.value = projects[0];
-          localStorage.setItem('projectId', projects[0].id);
-          window.location.href = '/';
-        } else {
-          projects.forEach((x: any) => {
-            if (localsid === x.id) {
-              userCurrentProject.value = x;
-            }
-          });
-        }
-      }
-    });
+    getUser();
+    const router = useRouter();
+    const route = useRoute();
 
-    return {
-      userInfo,
-      loadings,
-    };
+    watch(routerLoading, () => {
+      router.push(route.redirectedFrom?.path || '/');
+    });
   },
 });
 </script>

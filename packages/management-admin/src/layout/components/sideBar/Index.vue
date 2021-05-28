@@ -39,7 +39,6 @@ export default defineComponent({
       // eslint-disable-next-line
       // @ts-ignore
       const route = proxy.$route;
-      console.log(proxy, route);
       const { meta, path } = route;
       if (meta.activeMenu) {
         return meta.activeMenu;
@@ -47,7 +46,7 @@ export default defineComponent({
       return path;
     });
     const permissionRoutes = getComputedRoutes();
-    console.log(permissionRoutes);
+    console.log(permissionRoutes, '555');
     return {
       menuVariables,
       isCollapse,

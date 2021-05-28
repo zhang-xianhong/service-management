@@ -3,7 +3,7 @@
     <company-info :isEdit="isEdit" v-model="tenantDetail"></company-info>
     <user-info :isEdit="isEdit" v-model="tenantDetail"></user-info>
     <manager-info :isEdit="isEdit" v-model="tenantDetail"></manager-info>
-    <el-row>
+    <el-row v-if="getShowBool('update')">
       <el-button v-if="!isEdit" type="primary" @click="isEdit = true">修改</el-button>
       <el-button v-else type="primary" @click="onSave">保存</el-button>
     </el-row>
@@ -17,6 +17,7 @@ import UserInfo from './components/UserInfo.vue';
 import ManagerInfo from './components/ManagerInfo.vue';
 import { getTenantDetail, updateTenant } from '@/api/tenant';
 import { userInfo } from '@/layout/messageCenter/user-info';
+import { getShowBool } from '@/utils/permission-show-module';
 
 export default {
   name: 'TenantEdit',
@@ -62,6 +63,7 @@ export default {
       isEdit,
       tenantDetail,
       onSave,
+      getShowBool,
     };
   },
 };

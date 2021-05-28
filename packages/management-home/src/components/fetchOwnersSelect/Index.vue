@@ -21,15 +21,23 @@ import { queryInTenant } from '@/api/tenant';
 
 export default defineComponent({
   name: 'fetchOwnersSelect',
+  props: {
+    useProject: {
+      type: Boolean,
+      default: () => false,
+    },
+  },
   setup(props, ctx) {
     const value = ref('' as any);
     const loading = ref(false);
     const options = ref([]);
     const remoteMethod = (keyword: string) => {
-      queryInTenant({ keyword }).then((res) => {
+      const projectId = localStorage.getItem('projectId');
+      const payload = props.useProject ? { keyword, projectId } : { keyword };
+      queryInTenant(payload).then((res) => {
         console.log(res, 'this is owners');
-        const { users } = res.data || { users: [] };
-        options.value = users;
+        // const { users } = res.data || { users: [] };
+        options.value = res.data || [];
       });
     };
     const changeOwners = (res: any) => {

@@ -1,9 +1,7 @@
 <template>
   <div class="application-card">
     <div class="application-info">
-      <img v-if="imageUrl" class="application-info__image" :src="imageUrl" alt="" />
       <el-upload
-        v-else
         class="application-info__image"
         :action="IMAGE_UPLOAD"
         accept=".jpg,.png,.jpeg"
@@ -12,7 +10,8 @@
         @success="logoUploadSuccess"
         @error="logoUploadError"
       >
-        <div class="application-info__content">
+        <img v-if="imageUrl" class="application-info__image" :src="imageUrl" alt="" />
+        <div v-else class="application-info__content">
           <i class="el-icon-plus"></i>
           <div style="font-size: 12px">上传Logo</div>
         </div>
@@ -22,25 +21,26 @@
         <div class="application-detail__desc">{{ detailInfo.remark }}</div>
       </div>
       <div class="application-operation">
-        <div class="application-operation__status"></div>
+        <!-- TODO:应用状态暂时屏蔽，后续开发 -->
+        <!-- <div class="application-operation__status"></div> -->
         <svg-icon
           :icon-name="isDetailVisable ? 'list-hover' : 'list'"
           icon-class="application-operation__icon"
           @click="isDetailVisable = !isDetailVisable"
         ></svg-icon>
-        <i class="el-icon-close application-operation__close"></i>
+        <i class="el-icon-close application-operation__close" @click="onClose"></i>
       </div>
     </div>
   </div>
-  <application-detail :visable="isDetailVisable" :detail="computedDetail" @close="onClose"></application-detail>
+  <application-detail :visable="isDetailVisable" :detail="computedDetail" @close="onCloseDetail"></application-detail>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, PropType, Ref, computed, SetupContext, getCurrentInstance } from 'vue';
+import { defineComponent, ref, PropType, Ref, computed, SetupContext, getCurrentInstance, watch } from 'vue';
 import { IMAGE_UPLOAD } from '@/shared/constant/file';
-import { getImageUrl } from '@/api/files';
 import ApplicationDetail from './ApplicationDetail.vue';
 import { SuccessResponse } from '@/types/response';
+import { updateAppById, deleteAppById } from '@/api/app';
 
 interface PropsInterface {
   id: string;
@@ -67,18 +67,32 @@ export default defineComponent({
     const imageUrl: Ref<string> = ref('');
     const instance = getCurrentInstance();
 
+    if (props.data.thumbnail) {
+      imageUrl.value = detailInfo.value.thumbnail;
+    }
+
+    watch(
+      () => props.data,
+      (value: PropsInterface) => {
+        detailInfo.value = value;
+      },
+    );
+
     const computedDetail = computed(() => ({ ...detailInfo.value, imageUrl }));
 
-    const initializeImageUrl = async () => {
-      const { data } = await getImageUrl({ fileKey: detailInfo.value.thumbnail });
-      imageUrl.value = data;
-    };
-
-    initializeImageUrl();
-
-    const onClose = () => {
+    const onCloseDetail = () => {
       isDetailVisable.value = false;
       ctx.emit('update');
+    };
+
+    const onClose = async () => {
+      const { code } = await deleteAppById(detailInfo.value.id);
+      if (code === 0) {
+        (instance as any).proxy.$message({
+          type: 'success',
+          message: '应用删除成功！',
+        });
+      }
     };
 
     const beforeUpload = (file: { size: number }) => {
@@ -98,10 +112,11 @@ export default defineComponent({
       });
     };
 
-    const logoUploadSuccess = (res: SuccessResponse<any>, file: { raw: unknown }) => {
+    const logoUploadSuccess = async (res: SuccessResponse<any>, file: { raw: unknown }) => {
       if (res.code === 0 && res.data?.fileKey) {
         detailInfo.value.thumbnail = res.data.fileKey;
         imageUrl.value = URL.createObjectURL(file.raw);
+        updateAppById(detailInfo.value.id, detailInfo.value);
       } else {
         logoUploadError();
       }
@@ -113,6 +128,7 @@ export default defineComponent({
       detailInfo,
       imageUrl,
       computedDetail,
+      onCloseDetail,
       onClose,
       beforeUpload,
       logoUploadSuccess,
@@ -176,6 +192,7 @@ export default defineComponent({
       &__desc {
         font-size: 12px;
         width: 100%;
+        height: 17px;
         overflow: hidden;
         word-break: break-all;
         white-space: nowrap;
