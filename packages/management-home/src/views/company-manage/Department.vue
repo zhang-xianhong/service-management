@@ -22,45 +22,43 @@
     <el-row>
       <el-col :span="6" style="background: #fff">
         <div class="user-tree" v-loading="loading">
-          <el-scrollbar>
-            <el-tree
-              ref="userTreeRef"
-              node-key="id"
-              v-if="dataDone"
-              :highlight-current="true"
-              :expand-on-click-node="false"
-              :default-expand-all="false"
-              :load="loadNode"
-              draggable
-              lazy
-              @node-click="nodeClickHandle"
-              :props="treeProps"
-            >
-              <template #default="{ data }">
-                <div>
-                  <svg-icon v-if="data._children" icon-name="folder" icon-class="tree-node-folder"></svg-icon>
-                  <svg-icon v-else icon-name="person" icon-class="tree-node-folder"></svg-icon>
-                  <span
-                    style="z-index: 1; background: transparent; margin-right: 5px"
-                  >{{ data.name }}</span>
-                  <el-dropdown v-if="data._children && data.id !== 0">
-                    <span class="el-dropdown-link">
-                      <i class="el-icon-more" style="transform: rotate(90deg)"></i>
-                    </span>
-                    <template #dropdown>
-                      <el-dropdown-menu icon="el-icon-plus">
-                        <el-dropdown-item @click="handleRename(data)">重命名</el-dropdown-item>
-                        <el-dropdown-item
-                          @click="handleUpMove(data)"
-                          v-if="data.id !== 0 && data.parent && data.parent.id !== 0"
-                        >上移一层</el-dropdown-item>
-                      </el-dropdown-menu>
-                    </template>
-                  </el-dropdown>
-                </div>
-              </template>
-            </el-tree>
-          </el-scrollbar>
+          <!-- <el-scrollbar> -->
+          <el-tree
+            ref="userTreeRef"
+            node-key="id"
+            v-if="dataDone"
+            :highlight-current="true"
+            :expand-on-click-node="false"
+            :default-expand-all="false"
+            :load="loadNode"
+            draggable
+            lazy
+            @node-click="nodeClickHandle"
+            :props="treeProps"
+          >
+            <template #default="{ data }">
+              <div>
+                <svg-icon v-if="data._children" icon-name="folder" icon-class="tree-node-folder"></svg-icon>
+                <svg-icon v-else icon-name="person" icon-class="tree-node-folder"></svg-icon>
+                <span style="z-index: 1; background: transparent; margin-right: 5px">{{ data.name }}</span>
+                <el-dropdown v-if="data._children && data.id !== 0">
+                  <span class="el-dropdown-link">
+                    <i class="el-icon-more" style="transform: rotate(90deg)"></i>
+                  </span>
+                  <template #dropdown>
+                    <el-dropdown-menu icon="el-icon-plus">
+                      <el-dropdown-item @click="handleRename(data)">重命名</el-dropdown-item>
+                      <el-dropdown-item
+                        @click="handleUpMove(data)"
+                        v-if="data.id !== 0 && data.parent && data.parent.id !== 0"
+                      >上移一层</el-dropdown-item>
+                    </el-dropdown-menu>
+                  </template>
+                </el-dropdown>
+              </div>
+            </template>
+          </el-tree>
+          <!-- </el-scrollbar> -->
         </div>
       </el-col>
       <el-col :offset="1" :span="16">
@@ -129,6 +127,7 @@
         <el-form :model="formData" ref="deptDiagFormRef" :rules="formRules">
           <el-form-item label="部门名称" prop="deptName" label-width="100px">
             <el-input v-model.trim="formData.deptName" placeholder="请输入部门中文名称"></el-input>
+            <el-input style="margin-bottom:0;display:none;"></el-input>
           </el-form-item>
         </el-form>
       </div>

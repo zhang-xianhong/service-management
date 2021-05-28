@@ -28,4 +28,5 @@ export default {
   DELETE_CONFIG: ['/settings/config/delete/_', 'mock/settings/config-delete.json'],
   GET_CONFIG_HISTORY: ['/settings/config/history/_', 'mock/settings/config-history.json'],
   DELIVERY_CONFIG: ['/settings/config/publish/_', 'mock/settings/config-delete.json'],
+  CHECK_KEY_RULE: ['/settings/config/usable', 'mock/settings/check-rule.json']
 };

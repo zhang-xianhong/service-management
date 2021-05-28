@@ -136,7 +136,7 @@
 
 <script lang="ts">
 import { reactive, getCurrentInstance, toRefs, ref, defineComponent } from 'vue';
-import { getConfig, addConfig, updateConfig, deleteConfig, getHistory, deliveryConfig } from '@/api/settings/config';
+import { getConfig, addConfig, updateConfig, deleteConfig, getHistory, deliveryConfig, checkKeyRule } from '@/api/settings/config';
 import PackagedPagination from '@/components/pagination/Index.vue';
 import { debounce } from 'lodash';
 import { ElMessageBox, ElMessage } from 'element-plus';
@@ -169,6 +169,24 @@ interface ConfigFormState {
     description: string;
   };
 }
+
+// // 服务key校验
+const validatorKeyPass = async (rule: any, value: string, callback: Function) => {
+  // 校验规则
+  const szReg = /^[a-zA-Z][A-Za-z0-9-_.]+$/;
+  if (!szReg.test(value)) {
+    callback(new Error('字母、中划线、下划线、小数点包含数字，不能只输入数字不能以数字开头'));
+  }
+  // 后台校验
+  const { code } = await checkKeyRule({
+    name: value,
+    scope: 2
+  });
+  if (code !== 0) {
+    callback(new Error('键已存在！'));
+  }
+  callback();
+};
 export default defineComponent(
   {
     name: 'Config',
@@ -205,7 +223,11 @@ export default defineComponent(
         },
       });
       const configRules = {
-        name: [{ required: true, message: '请输入键（Key）', trigger: 'blur' }],
+        name: [
+          { required: true, message: '请输入键（Key）', trigger: 'blur' },
+          { min: 1, max: 255, message: '长度在 1 到 255 个字符', trigger: 'blur' },
+          { validator: validatorKeyPass, trigger: 'blur' }
+        ],
         value: [{ required: true, message: '请输入值（Value）', trigger: 'blur' }],
         defaultValue: [{ required: true, message: '请输入值（DefaultValue）', trigger: 'blur' }],
         type: [{ required: true, message: '请选则类型', trigger: 'change' }],
