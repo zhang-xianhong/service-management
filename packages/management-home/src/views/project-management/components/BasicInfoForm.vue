@@ -52,6 +52,16 @@
           placeholder="请输入中文项目简介，最多支持255个字"
         ></el-input>
       </el-form-item>
+      <el-form-item label="许可类型" prop="license">
+        <div v-if="!editMode" class="form-content">
+          {{ getLabel(detailInfo.license)(licenseTypes) }}
+        </div>
+        <el-radio-group class="form-content" v-if="editMode" v-model="formData.license">
+          <el-radio v-for="license in licenseTypes" :key="license.value" :label="license.value">{{
+            license.label
+          }}</el-radio>
+        </el-radio-group>
+      </el-form-item>
       <el-form-item label="项目状态" prop="status">
         <div v-if="!editMode" class="form-content">
           {{ getLabel(detailInfo.status)(statusOptions) }}
@@ -76,6 +86,9 @@ import { reactive, ref, Ref, watchEffect, watch } from 'vue';
 import { updateProject } from '@/api/project/project';
 import { getAllTemplates } from '@/api/settings/templates';
 import OwnerSelect from '@/components/owners-select/Index.vue';
+// import ElMessage from "element-plus";
+import Message from 'element-plus/es/el-message';
+
 export default {
   name: 'BasicInfoForm',
   props: {
@@ -100,6 +113,7 @@ export default {
       level: 0,
       remark: '',
       status: 0,
+      license: 1,
     });
     const formData = reactive({
       name: '',
@@ -111,6 +125,7 @@ export default {
       level: 0,
       remark: '',
       status: 0,
+      license: 1,
     });
     let projectDetail = {};
     watchEffect(() => {
@@ -130,6 +145,16 @@ export default {
       {
         value: 3,
         label: '租户级',
+      },
+    ];
+    const licenseTypes = [
+      {
+        value: 1,
+        label: '租户',
+      },
+      {
+        value: 0,
+        label: '永久',
       },
     ];
     const statusOptions = [
@@ -161,10 +186,18 @@ export default {
     watch(
       () => formData.owners,
       (newValue: Array<{ userId: number }>) => {
-        newValue.forEach((item: { userId: number }) => {
-          const target: any = formData.ownerUsers.filter((user: any) => user.id === item.userId)[0] || {};
-          ownersName.value = ownersName.value === '' ? target.displayName : `${ownersName.value},${target.displayName}`;
+        // newValue.forEach((item: { userId: number }) => {
+        //   const target: any = formData.ownerUsers.filter((user: any) => user.id === item.userId)[0] || {};
+        //   ownersName.value = ownersName.value === '' ? target.displayName : `${ownersName.value},${target.displayName}`;
+        // });
+        let newValueStr = '';
+        if (newValue.length === 0) {
+          return (ownersName.value = newValueStr);
+        }
+        formData.ownerUsers.forEach((element: any) => {
+          newValueStr += `${element.displayName},`;
         });
+        ownersName.value = newValueStr.slice(0, newValueStr.length - 1);
       },
     );
 
@@ -177,6 +210,10 @@ export default {
 
     // 表单操作
     const save = async () => {
+      const ownersNameArr = ownersName.value.split(',');
+      if (ownersNameArr.length > 10) {
+        return Message.warning('最多支持10个负责人');
+      }
       const { code } = await updateProject((projectDetail as any).id, formData);
       if (code === 0) {
         Object.assign(detailInfo, formData);
@@ -204,6 +241,7 @@ export default {
       selectOwners,
       getLabel,
       projectLevels,
+      licenseTypes,
       statusOptions,
       templates,
       save,

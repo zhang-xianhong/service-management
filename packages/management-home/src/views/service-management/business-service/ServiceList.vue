@@ -127,7 +127,11 @@
               },
             ]"
           >
-            <el-input v-model.trim="serviceDetail.name" @blur="checkEnglishName">
+            <el-input
+              v-model.trim="serviceDetail.name"
+              placeholder='请输入英文名称，如"project1"，创建后无法修改'
+              @blur="checkEnglishName"
+            >
               <template #prepend>srv-</template>
             </el-input>
           </el-form-item>
@@ -140,7 +144,10 @@
               { min: 1, max: 60, message: '最大不能超过 60 个字符', trigger: 'blur' },
             ]"
           >
-            <el-input v-model.trim="serviceDetail.description"></el-input>
+            <el-input
+              v-model.trim="serviceDetail.description"
+              placeholder='请输入中文服务描述，如"项目管理服务"，创建后无法修改'
+            ></el-input>
           </el-form-item>
           <el-form-item label="负责人" :label-width="labelWidth">
             <fetch-owners-select @get-owners="setOwner"></fetch-owners-select>
@@ -162,7 +169,12 @@
             </el-select>
           </el-form-item>
           <el-form-item label="服务详情" :label-width="labelWidth">
-            <el-input v-model="serviceDetail.detail" type="textarea" :rows="5"></el-input>
+            <el-input
+              v-model="serviceDetail.detail"
+              placeholder="请输入服务详情，最多支持255个字符"
+              type="textarea"
+              :rows="5"
+            ></el-input>
           </el-form-item>
           <el-form-item label="服务依赖" :label-width="labelWidth" prop="dependencies">
             <el-select v-model="serviceDetail.dependencies" clearable multiple>
@@ -350,6 +362,15 @@ export default defineComponent({
         return ElMessage({
           showClose: true,
           message: '请输入服务名称',
+          type: 'error',
+        });
+      }
+
+      let regux = /^srv-[a-z0-9-]+(?<!-)$/;
+      if(!regux.test(serviceDetail.name)){
+        return ElMessage({
+          showClose: true,
+          message: '服务名称不符合命名规范',
           type: 'error',
         });
       }
