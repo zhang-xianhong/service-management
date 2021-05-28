@@ -167,11 +167,12 @@ export default {
           status: userStatus[user.status as 0 | -1],
           gender: genderLabel[user.gender as 0 | 1],
         }));
+        const noPaRoles = data.roles.filter((x: any) => x.code !== 'PA');
         treeData.value[0].children = _.flow(
           _.reject({ isOwnerRole: true }),
           _.map((role: any) => ({
             id: role.id,
-            label: role.role.name,
+            label: role.name,
             children: _.map((member: any) => {
               const user: any = _.find({ id: member.userId })(data.users);
               return {
@@ -180,7 +181,7 @@ export default {
               };
             })(role.members),
           })),
-        )(data.roles);
+        )(noPaRoles);
         userList.value = [];
       }
     };
@@ -202,7 +203,7 @@ export default {
       }).then(async () => {
         const { code } = await deleteMember({
           projectId: Number(props.id),
-          projectRoleId: userTreeRef.value.getCurrentKey(),
+          roleId: userTreeRef.value.getCurrentKey(),
           ids: [row.id],
         });
         if (code === 0) reloadUserList({ id: userTreeRef.value.getCurrentKey() });

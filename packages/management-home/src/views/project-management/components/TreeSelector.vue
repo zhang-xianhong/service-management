@@ -233,7 +233,7 @@ export default {
     const submit = async () => {
       const { code } = await updateMembers({
         projectId,
-        projectRoleId: props.role.id,
+        roleId: props.role.id,
         members: _.map('id')(selectedUser.value.concat(props.checked)),
       });
       if (code === 0) {
