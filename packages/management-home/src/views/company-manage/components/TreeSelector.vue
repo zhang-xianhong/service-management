@@ -240,7 +240,6 @@ export default {
         userIds: _.map('id')(selectedUser.value.concat(props.checked)),
       });
       if (code === 0) {
-        console.log('selectedUser.value', selectedUser.value);
         dialogVisible.value = false;
         context.emit('userChanged', { parentData: props.role.data, users: selectedUser.value });
       }

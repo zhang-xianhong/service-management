@@ -396,7 +396,7 @@ export default defineComponent({
     const handleDel = () => {
       if (treeData.currentNodeData._children) {
         if (treeData.currentNodeData._children.length) {
-          msgTips('warning', '该部门下有子节点，无法删除！');
+          msgTips('warning', '该部门下有人员，无法删除！');
           return;
         }
         // 判断部门中是否有人员
@@ -478,6 +478,9 @@ export default defineComponent({
       });
       if (code === ResCode.Success) {
         msgTips('success', '上移成功');
+        data.parent._children = data.parent._children.filter((item: any) => {
+          return item.id !== data.id;
+        });
         removeNode(data);
         append({ ...data }, data.parent.parent);
       } else {
@@ -486,7 +489,16 @@ export default defineComponent({
     };
 
     const reloadUserList = async (data: any) => {
-      data.users.forEach((item: any) => {
+      // 当前部门下的人员
+      const { parentData, users } = data;
+      const newUserList = users.filter((item: any) => {
+        const oldList = parentData.children || parentData._children;
+        return !(oldList.find((subItem: any) => {
+          return subItem.id === item.id;
+        }));
+      });
+      // 过滤当前组织下已存在的人员
+      newUserList.forEach((item: any) => {
         append(item, data.parentData);
       });
     };
@@ -558,13 +570,17 @@ export default defineComponent({
               editFormData.value.name = formData.deptName;
               updateKeyChildren(editFormData.value);
             } else {
+              const newNodeData = {
+                id: data.deptId,
+                name: formData.deptName,
+                _children: [],
+                isLeaf: false,
+              };
+              treeData.currentNodeData._children.push(
+                newNodeData
+              );
               append(
-                {
-                  id: data.deptId,
-                  name: formData.deptName,
-                  _children: [],
-                  isLeaf: false,
-                },
+                newNodeData,
                 treeData.currentNodeData,
               );
             }

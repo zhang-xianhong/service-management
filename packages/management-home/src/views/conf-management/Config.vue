@@ -14,7 +14,12 @@
       </el-col>
     </el-row>
     <el-row style="background: #fff">
-      <el-table :data="tableData" v-loading="loading" style="width: 100%" @selection-change="handleSelectionChange">
+      <el-table
+        :data="tableData"
+        v-loading="loading"
+        style="width: 100%"
+        @selection-change="handleSelectionChange"
+      >
         <el-table-column type="selection" width="45" />
         <el-table-column type="index" label="序号" width="50" />
         <el-table-column label="键" prop="name"></el-table-column>
@@ -28,12 +33,18 @@
         <el-table-column label="配置版本" prop="version" width="100"></el-table-column>
         <el-table-column label="操作" width="300">
           <template #default="scope">
-            <el-button type="primary" size="mini" @click="onEdit(scope.row)" v-if="getShowBool('update')"
-              >编辑</el-button
-            >
-            <el-button type="primary" size="mini" @click="changeHistory(scope.row)" v-if="getShowBool('selectDetail')"
-              >变更历史</el-button
-            >
+            <el-button
+              type="primary"
+              size="mini"
+              @click="onEdit(scope.row)"
+              v-if="getShowBool('update')"
+            >编辑</el-button>
+            <el-button
+              type="primary"
+              size="mini"
+              @click="changeHistory(scope.row)"
+              v-if="getShowBool('selectDetail')"
+            >变更历史</el-button>
             <el-button size="mini" @click="onDelete(scope.row)" v-if="getShowBool('delete')">删除</el-button>
           </template>
         </el-table-column>
@@ -64,7 +75,10 @@
             <el-input v-model.trim="configForm.formData.value" :disabled="configForm.disabled"></el-input>
           </el-form-item>
           <el-form-item label="默认值" prop="defaultValue" :label-width="labelWidth">
-            <el-input v-model.trim="configForm.formData.defaultValue" :disabled="configForm.disabled"></el-input>
+            <el-input
+              v-model.trim="configForm.formData.defaultValue"
+              :disabled="configForm.disabled"
+            ></el-input>
           </el-form-item>
           <el-form-item label="类型" prop="type" :label-width="labelWidth">
             <el-radio-group v-model="configForm.formData.type" :disabled="configForm.disabled">
@@ -73,7 +87,10 @@
             </el-radio-group>
           </el-form-item>
           <el-form-item label="配置描述" :label-width="labelWidth" prop="description">
-            <el-input v-model.trim="configForm.formData.description" :disabled="configForm.disabled"></el-input>
+            <el-input
+              v-model.trim="configForm.formData.description"
+              :disabled="configForm.disabled"
+            ></el-input>
           </el-form-item>
         </el-form>
       </div>
@@ -118,7 +135,7 @@
 </template>
 
 <script lang="ts">
-import { reactive, getCurrentInstance, toRefs, ref } from 'vue';
+import { reactive, getCurrentInstance, toRefs, ref, defineComponent } from 'vue';
 import { getConfig, addConfig, updateConfig, deleteConfig, getHistory, deliveryConfig } from '@/api/settings/config';
 import PackagedPagination from '@/components/pagination/Index.vue';
 import { debounce } from 'lodash';
@@ -152,261 +169,263 @@ interface ConfigFormState {
     description: string;
   };
 }
-export default {
-  name: 'Config',
-  components: {
-    PackagedPagination,
-  },
-  setup() {
-    // 表单相关状态
-    const tableState: TableState = reactive({
-      tableData: [],
-      loading: false,
-      multipleSelection: [],
-      total: 0,
-      historyData: [],
-      searchProps: {
-        keyword: '',
-        page: 1,
-        pageSize: 10,
-        sortField: 'createTime',
-        sortType: 'ascending',
-      },
-    });
-    // 新增配置表单数据
-    const configForm: ConfigFormState = reactive({
-      disabled: false,
-      isEdit: false,
-      id: '',
-      formData: {
-        name: '',
-        value: '',
-        defaultValue: '',
-        type: '1',
-        description: '',
-      },
-    });
-    const configRules = {
-      name: [{ required: true, message: '请输入键（Key）', trigger: 'blur' }],
-      value: [{ required: true, message: '请输入值（Value）', trigger: 'blur' }],
-      defaultValue: [{ required: true, message: '请输入值（DefaultValue）', trigger: 'blur' }],
-      type: [{ required: true, message: '请选则类型', trigger: 'change' }],
-    };
+export default defineComponent(
+  {
+    name: 'Config',
+    components: {
+      PackagedPagination,
+    },
+    setup() {
+      // 表单相关状态
+      const tableState: TableState = reactive({
+        tableData: [],
+        loading: false,
+        multipleSelection: [],
+        total: 0,
+        historyData: [],
+        searchProps: {
+          keyword: '',
+          page: 1,
+          pageSize: 10,
+          sortField: 'createTime',
+          sortType: 'ascending',
+        },
+      });
+      // 新增配置表单数据
+      const configForm: ConfigFormState = reactive({
+        disabled: false,
+        isEdit: false,
+        id: '',
+        formData: {
+          name: '',
+          value: '',
+          defaultValue: '',
+          type: '1',
+          description: '',
+        },
+      });
+      const configRules = {
+        name: [{ required: true, message: '请输入键（Key）', trigger: 'blur' }],
+        value: [{ required: true, message: '请输入值（Value）', trigger: 'blur' }],
+        defaultValue: [{ required: true, message: '请输入值（DefaultValue）', trigger: 'blur' }],
+        type: [{ required: true, message: '请选则类型', trigger: 'change' }],
+      };
 
-    // 获取组件实例
-    const instance = getCurrentInstance();
+      // 获取组件实例
+      const instance = getCurrentInstance();
 
-    // 初始化configForm
-    function initConfigForm() {
-      configForm.isEdit = false;
-      configForm.disabled = false;
-      configForm.id = '';
-      configForm.formData = {
-        name: '',
-        value: '',
-        defaultValue: '',
-        type: '1',
-        description: '',
+      // 初始化configForm
+      function initConfigForm() {
+        configForm.isEdit = false;
+        configForm.disabled = false;
+        configForm.id = '';
+        configForm.formData = {
+          name: '',
+          value: '',
+          defaultValue: '',
+          type: '1',
+          description: '',
+        };
+      }
+
+      // 获取通用配置数据
+      async function getTableData() {
+        tableState.loading = true;
+        const { data } = await getConfig(tableState.searchProps);
+        tableState.loading = false;
+        tableState.total = data.count;
+        tableState.tableData = data.rows || [];
+      }
+      getTableData();
+      const labelWidth = ref('100px');
+      const addConfigDialog = ref(false);
+
+      const changeHistoryDialog = ref(false);
+
+      const toggleConfigDialog = () => {
+        addConfigDialog.value = !addConfigDialog.value;
+      };
+
+      // 表单引用
+      const configFormRef: any = ref(null);
+
+      // 关闭新增dialog
+      function closeConfigForm() {
+        initConfigForm();
+        toggleConfigDialog();
+      }
+
+      // 提交通用配置
+      async function submitConfigForm() {
+        configFormRef.value.validate(async (valid: boolean) => {
+          if (valid) {
+            // 添加
+            if (!configForm.isEdit) {
+              const { code } = await addConfig({
+                ...configForm.formData,
+                type: parseInt(configForm.formData.type, 10),
+              });
+              if (code === 0) {
+                getTableData();
+              } else {
+                (instance as any).proxy.$message({
+                  type: 'error',
+                  message: '添加失败',
+                });
+              }
+              closeConfigForm();
+            } else {
+              // 编辑
+              const { code } = await updateConfig(configForm.id, {
+                ...configForm.formData,
+                type: parseInt(configForm.formData.type, 10),
+              });
+              if (code === 0) {
+                getTableData();
+              } else {
+                (instance as any).proxy.$message({
+                  type: 'error',
+                  message: '编辑失败',
+                });
+              }
+              closeConfigForm();
+            }
+          }
+        });
+      }
+
+      // 新建配置
+      function addNewConfig() {
+        toggleConfigDialog();
+      }
+
+      // 配置下发
+      const issueConfig = async () => {
+        const { code } = await deliveryConfig();
+        if (code === 0) {
+          (instance as any).proxy.$message({
+            type: 'success',
+            message: '下发配置参数成功',
+          });
+        } else {
+          (instance as any).proxy.$message({
+            type: 'error',
+            message: '下发参数配置失败',
+          });
+        }
+      };
+
+      // 开启编辑
+      function ableEdit() {
+        configForm.disabled = false;
+      }
+
+      // 编辑配置
+      const onEdit = async (rowData: any) => {
+        configForm.isEdit = true;
+        configForm.disabled = true;
+        configForm.id = rowData.id;
+        configForm.formData = { ...configForm.formData, ...rowData, type: String(rowData.type) };
+        toggleConfigDialog();
+      };
+
+      // 变更历史
+      const changeHistory = async (rowData: any) => {
+        const { code, data } = await getHistory(rowData.id);
+        if (code === 0) {
+          tableState.historyData = data.rows || [];
+          console.log('data.rows', data.rows);
+          changeHistoryDialog.value = true;
+        } else {
+          (instance as any).proxy.$message({
+            type: 'error',
+            message: '获取变更历史失败',
+          });
+        }
+      };
+
+      // 关闭变更历史
+      function closeChangeHistory() {
+        changeHistoryDialog.value = false;
+      }
+
+      // 删除配置
+      const onDelete = async (rowData: any) => {
+        ElMessageBox.confirm(`是否删除已选服务?`, '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning',
+        })
+          .then(async () => {
+            const { code }: any = await deleteConfig(rowData.id);
+            if (code === 0) {
+              (instance as any).proxy.$message({
+                type: 'success',
+                message: '删除成功',
+              });
+              getTableData();
+            } else {
+              (instance as any).proxy.$message({
+                type: 'error',
+                message: '删除失败',
+              });
+            }
+          })
+          .catch(() => {
+            ElMessage({
+              type: 'info',
+              message: '已取消操作',
+            });
+          });
+      };
+
+      // 通用配置筛选
+      const filterConfig = debounce(getTableData, 1000);
+
+      // 数据类型勾选
+      const handleSelectionChange = (val: Array<object>) => {
+        tableState.multipleSelection = val;
+      };
+
+      // 每页条数改变
+      const handlePageSizeChange = (pageSize: number) => {
+        tableState.searchProps.pageSize = pageSize;
+        getTableData();
+      };
+
+      // 页数切换
+      const handlePageChange = (pageNum: number) => {
+        tableState.searchProps.page = pageNum;
+        getTableData();
+      };
+
+      return {
+        ...toRefs(tableState),
+        addNewConfig,
+        issueConfig,
+        labelWidth,
+        configForm,
+        configRules,
+        addConfigDialog,
+        changeHistoryDialog,
+        configFormRef,
+        submitConfigForm,
+        closeConfigForm,
+        closeChangeHistory,
+        ableEdit,
+        onEdit,
+        changeHistory,
+        onDelete,
+        filterConfig,
+        handleSelectionChange,
+        handlePageSizeChange,
+        handlePageChange,
+        dateFormat,
+        getShowBool,
       };
     }
-
-    // 获取通用配置数据
-    async function getTableData() {
-      tableState.loading = true;
-      const { data } = await getConfig(tableState.searchProps);
-      tableState.loading = false;
-      tableState.total = data.count;
-      tableState.tableData = data.rows || [];
-    }
-    getTableData();
-    const labelWidth = ref('100px');
-    const addConfigDialog = ref(false);
-
-    const changeHistoryDialog = ref(false);
-
-    const toggleConfigDialog = () => {
-      addConfigDialog.value = !addConfigDialog.value;
-    };
-
-    // 表单引用
-    const configFormRef: any = ref(null);
-
-    // 关闭新增dialog
-    function closeConfigForm() {
-      initConfigForm();
-      toggleConfigDialog();
-    }
-
-    // 提交通用配置
-    async function submitConfigForm() {
-      configFormRef.value.validate(async (valid: boolean) => {
-        if (valid) {
-          // 添加
-          if (!configForm.isEdit) {
-            const { code } = await addConfig({
-              ...configForm.formData,
-              type: parseInt(configForm.formData.type, 10),
-            });
-            if (code === 0) {
-              getTableData();
-            } else {
-              (instance as any).proxy.$message({
-                type: 'error',
-                message: '添加失败',
-              });
-            }
-            closeConfigForm();
-          } else {
-            // 编辑
-            const { code } = await updateConfig(configForm.id, {
-              ...configForm.formData,
-              type: parseInt(configForm.formData.type, 10),
-            });
-            if (code === 0) {
-              getTableData();
-            } else {
-              (instance as any).proxy.$message({
-                type: 'error',
-                message: '编辑失败',
-              });
-            }
-            closeConfigForm();
-          }
-        }
-      });
-    }
-
-    // 新建配置
-    function addNewConfig() {
-      toggleConfigDialog();
-    }
-
-    // 配置下发
-    const issueConfig = async () => {
-      const { code } = await deliveryConfig();
-      if (code === 0) {
-        (instance as any).proxy.$message({
-          type: 'success',
-          message: '下发配置参数成功',
-        });
-      } else {
-        (instance as any).proxy.$message({
-          type: 'error',
-          message: '下发参数配置失败',
-        });
-      }
-    };
-
-    // 开启编辑
-    function ableEdit() {
-      configForm.disabled = false;
-    }
-
-    // 编辑配置
-    const onEdit = async (rowData: any) => {
-      configForm.isEdit = true;
-      configForm.disabled = true;
-      configForm.id = rowData.id;
-      configForm.formData = { ...configForm.formData, ...rowData, type: String(rowData.type) };
-      toggleConfigDialog();
-    };
-
-    // 变更历史
-    const changeHistory = async (rowData: any) => {
-      const { code, data } = await getHistory(rowData.id);
-      if (code === 0) {
-        tableState.historyData = data.rows || [];
-        console.log('data.rows', data.rows);
-        changeHistoryDialog.value = true;
-      } else {
-        (instance as any).proxy.$message({
-          type: 'error',
-          message: '获取变更历史失败',
-        });
-      }
-    };
-
-    // 关闭变更历史
-    function closeChangeHistory() {
-      changeHistoryDialog.value = false;
-    }
-
-    // 删除配置
-    const onDelete = async (rowData: any) => {
-      ElMessageBox.confirm(`是否删除已选服务?`, '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning',
-      })
-        .then(async () => {
-          const { code }: any = await deleteConfig(rowData.id);
-          if (code === 0) {
-            (instance as any).proxy.$message({
-              type: 'success',
-              message: '删除成功',
-            });
-            getTableData();
-          } else {
-            (instance as any).proxy.$message({
-              type: 'error',
-              message: '删除失败',
-            });
-          }
-        })
-        .catch(() => {
-          ElMessage({
-            type: 'info',
-            message: '已取消操作',
-          });
-        });
-    };
-
-    // 通用配置筛选
-    const filterConfig = debounce(getTableData, 1000);
-
-    // 数据类型勾选
-    const handleSelectionChange = (val: Array<object>) => {
-      tableState.multipleSelection = val;
-    };
-
-    // 每页条数改变
-    const handlePageSizeChange = (pageSize: number) => {
-      tableState.searchProps.pageSize = pageSize;
-      getTableData();
-    };
-
-    // 页数切换
-    const handlePageChange = (pageNum: number) => {
-      tableState.searchProps.page = pageNum;
-      getTableData();
-    };
-
-    return {
-      ...toRefs(tableState),
-      addNewConfig,
-      issueConfig,
-      labelWidth,
-      configForm,
-      configRules,
-      addConfigDialog,
-      changeHistoryDialog,
-      configFormRef,
-      submitConfigForm,
-      closeConfigForm,
-      closeChangeHistory,
-      ableEdit,
-      onEdit,
-      changeHistory,
-      onDelete,
-      filterConfig,
-      handleSelectionChange,
-      handlePageSizeChange,
-      handlePageChange,
-      dateFormat,
-      getShowBool,
-    };
-  },
-};
+  }
+);
 </script>
 
 <style scoped>
