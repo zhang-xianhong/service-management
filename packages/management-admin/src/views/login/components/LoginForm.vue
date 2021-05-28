@@ -35,6 +35,13 @@ import { defineComponent, reactive, ref, Ref, getCurrentInstance } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { getCaptcha, login, getCode, verifyCaptcha } from '@/api/auth';
 
+// 登录相关信息接口
+interface LoginInfoInterface {
+  username: string;
+  password: string;
+  captchaCode: string;
+}
+
 export default defineComponent({
   name: 'LoginForm',
   setup() {
@@ -42,13 +49,14 @@ export default defineComponent({
     const formRef: Ref<any> = ref(null);
     const router = useRouter();
     const route = useRoute();
-    const loginInfo = reactive({
+    const loginInfo: LoginInfoInterface = reactive({
       username: '',
       password: '',
       captchaCode: '',
     });
-    const captchaUrl = ref('');
+    const captchaUrl = ref(''); // 验证码图片的url地址
 
+    // 表单规则校验
     const formRules = {
       username: [{ required: true, message: '帐号不能为空!', trigger: 'blur' }],
       password: [
@@ -58,6 +66,7 @@ export default defineComponent({
       captchaCode: [{ required: true, message: '验证码不能为空!', trigger: 'blur' }],
     };
 
+    // 获取验证码图片url
     const getCaptchaUrl = async () => {
       const { data } = await getCaptcha();
       captchaUrl.value = data;
@@ -68,8 +77,10 @@ export default defineComponent({
       router.push('/login/forget-password');
     };
 
+    // 验证码是否验证通过
     const isPassed: Ref<boolean> = ref(false);
 
+    // 监听验证码输入并进行校验
     const onInputCaptchaCode = async (value: string) => {
       const { data } = await verifyCaptcha({ captchaCode: value });
       if (data) {
@@ -79,6 +90,7 @@ export default defineComponent({
       }
     };
 
+    // 是否登录中
     const loading: Ref<boolean> = ref(false);
 
     const onLogin = async () => {
@@ -86,16 +98,19 @@ export default defineComponent({
         if (valid) {
           try {
             loading.value = true;
+            // TODO: 暂时与晓文约定采用获取code然后拼接用户密码并进行传输的方式
             const { data } = await getCode();
             const { code } = await login({ account: loginInfo.username, secret: `${loginInfo.password}.${data}` });
             if (code === 0) {
               loading.value = false;
+              // 如果路由携带redirect参数则直接跳转到目标页面
               if (route.params.redirect) {
                 router.push(route.params.redirect as string);
               }
               router.push('/');
             } else {
               loading.value = false;
+              // 登录失败删除验证码输入并更新验证码图片
               loginInfo.captchaCode = '';
               getCaptchaUrl();
               (instance as any).proxy.$message({

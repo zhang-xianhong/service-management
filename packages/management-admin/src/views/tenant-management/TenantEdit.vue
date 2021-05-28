@@ -34,10 +34,12 @@ export default defineComponent({
     const companyRef: Ref<any> = ref(null);
     const userRef: Ref<any> = ref(null);
     const managerRef: Ref<any> = ref(null);
+    
+    // 租户详情
     const tenantDetail = ref({
       contact: {},
       manager: {},
-    });
+    } as any);
 
     const getDetail = async () => {
       const { data } = await getTenantDetail(tenantId);
@@ -48,7 +50,7 @@ export default defineComponent({
       getDetail();
     }
 
-    // 校验表单输入
+    // 并行校验表单输入
     const validate = () =>
       Promise.all([
         new Promise((resolve) => {
@@ -68,16 +70,28 @@ export default defineComponent({
         }),
       ]);
 
+    // 租户更新或新建
     const onSubmit = async () => {
       const validator = await validate();
+      // 所有表单都校验通过则继续向下，否则直接返回false
       if (validator.some((item: any) => !item)) {
         return false;
       }
       if (isEditMode) {
-        const { code } = await updateTenant(tenantId, {
-          ...tenantDetail.value,
-          ...{ contact: undefined, manager: undefined },
+        const { nameShort, addr, addrDetail, logoUrl, intro } = tenantDetail.value;
+        const updateData: any = {
+          nameShort,
+          addr,
+          addrDetail,
+          logoUrl,
+          intro,
+        };
+        Object.keys(updateData).forEach((key: string) => {
+          if (updateData[key] === '') {
+            delete updateData[key];
+          }
         });
+        const { code } = await updateTenant(tenantId, updateData);
         if (code === 0) {
           (instance as any).proxy.$message({
             type: 'success',
@@ -95,34 +109,6 @@ export default defineComponent({
           router.back();
         }
       }
-      // validate().then((res: [unknown, unknown, unknown]) => {
-      //   if (res.every((item: unknown) => item)) {
-      //     if (isEditMode) {
-      //       updateTenant(tenantId, {
-      //         ...tenantDetail.value,
-      //         ...{ contact: undefined, manager: undefined },
-      //       }).then((res: any) => {
-      //         if (res.code === 0) {
-      //           (instance as any).proxy.$message({
-      //             type: 'success',
-      //             message: '更新成功',
-      //           });
-      //           router.back();
-      //         }
-      //       })
-      //     } else {
-      //       createTenant(tenantDetail.value).then((res: any) => {
-      //         if (res.code === 0) {
-      //           (instance as any).proxy.$message({
-      //             type: 'success',
-      //             message: '新建成功',
-      //           });
-      //           router.back();
-      //         }
-      //       })
-      //     }
-      //   }
-      // });
     };
 
     const onCancel = async () => {

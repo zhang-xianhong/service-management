@@ -190,7 +190,15 @@ export default defineComponent({
           message: '应用新建成功',
         });
         state.createDialogVisible = false;
+        state.appInfo = {
+          name: '',
+          description: '',
+          remark: '',
+          thumbnail: '',
+          services: [],
+        };
       }
+      getAppList();
     };
 
     const closeAppCreate = async () => {

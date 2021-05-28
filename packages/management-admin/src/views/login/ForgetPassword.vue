@@ -55,6 +55,7 @@ export default defineComponent({
       steps: [{ title: '1.验证邮箱' }, { title: '2.重置密码' }, { title: '3.完成' }],
       componentName: 'Email',
     });
+    // TODO:忘记密码接口暂未开发
     const onSubmit = (type: 'email' | 'password') => {
       console.log(type);
     };

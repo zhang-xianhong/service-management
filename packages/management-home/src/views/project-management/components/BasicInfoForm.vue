@@ -177,7 +177,9 @@ export default {
 
     // 表单操作
     const save = async () => {
-      const { code } = await updateProject((projectDetail as any).id, formData);
+      const item = { ...formData };
+      item.owner = item.owners.map((x: any) => x.userId).join(',');
+      const { code } = await updateProject((projectDetail as any).id, item);
       if (code === 0) {
         Object.assign(detailInfo, formData);
         context.emit('submit');

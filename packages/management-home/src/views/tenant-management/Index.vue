@@ -46,10 +46,20 @@ export default {
     getDetail();
 
     const onSave = async () => {
-      const { code } = await updateTenant(userInfo.value.tenantId, {
-        ...tenantDetail.value,
-        ...{ contact: undefined, manager: undefined },
+      const { nameShort, addr, addrDetail, logoUrl, intro } = tenantDetail.value;
+      const updateData: any = {
+        nameShort,
+        addr,
+        addrDetail,
+        logoUrl,
+        intro,
+      };
+      Object.keys(updateData).forEach((key: string) => {
+        if (updateData[key] === '') {
+          delete updateData[key];
+        }
       });
+      const { code } = await updateTenant(userInfo.value.tenantId, updateData);
       if (code === 0) {
         (instance as any).proxy.$message({
           type: 'success',
