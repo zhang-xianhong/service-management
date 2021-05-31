@@ -48,7 +48,7 @@
         <el-table-column label="申请时间" prop="createTime">
           <template #default="scope">{{ dateFormat(scope.row.createTime) }}</template>
         </el-table-column>
-        <!-- <el-table-column label="审核结果">
+        <el-table-column label="审核结果">
           <template #default="scope">
             <span>{{ getNameByCode(scope.row.auditResults, 'auditResults') }}</span>
           </template>
@@ -73,7 +73,7 @@
               </el-select>
             </el-popover>
           </template>
-        </el-table-column> -->
+        </el-table-column>
         <el-table-column label="状态">
           <template #default="scope">
             <span>{{ getNameByCode(scope.row.status, 'status') }}</span>
@@ -87,33 +87,6 @@
               <el-select v-model="searchProps.status" placeholder="请选择状态" clearable @change="statusChange">
                 <el-option
                   v-for="(item, index) in statusFilters"
-                  :key="index"
-                  :label="item.name"
-                  :value="item.id"
-                ></el-option>
-              </el-select>
-            </el-popover>
-          </template>
-        </el-table-column>
-        <el-table-column label="审核人" prop="reviewerName">
-          <template #header>
-            <i class="el-icon-search"></i>
-            <el-popover placement="bottom" :width="200" trigger="manual" :visible="reviewerTitleVisiable">
-              <template #reference>
-                <el-button type="text" @click="reviewerTitleClick">审核人</el-button>
-              </template>
-              <el-select
-                v-model="searchProps.reviewer"
-                placeholder="请输入审核人"
-                clearable
-                multiple
-                filterable
-                remote
-                :remote-method="remoteMethod"
-                @change="reviewerChange"
-              >
-                <el-option
-                  v-for="(item, index) in reviewerFilters"
                   :key="index"
                   :label="item.name"
                   :value="item.id"
@@ -230,14 +203,7 @@
 
 <script lang="ts">
 import { reactive, toRefs, ref, onBeforeUnmount } from 'vue';
-import {
-  getPublishList,
-  addPublish,
-  updatePublish,
-  deletePublish,
-  getServiceList,
-  findUserByName,
-} from '@/api/demands/publish';
+import { getPublishList, addPublish, updatePublish, deletePublish, getServiceList } from '@/api/demands/publish';
 import PackagedPagination from '@/components/pagination/Index.vue';
 import { debounce } from 'lodash';
 import { ElMessageBox, ElMessage } from 'element-plus';
@@ -251,8 +217,6 @@ interface TableState {
   total: number;
   statusFilters: Array<object>;
   auditResultsFilters: Array<object>;
-  applicantFilters: Array<object>;
-  reviewerFilters: Array<object>;
   searchProps: {
     keyword: string;
     page: number;
@@ -291,8 +255,6 @@ export default {
       total: 0,
       statusFilters: [],
       auditResultsFilters: [],
-      applicantFilters: [],
-      reviewerFilters: [],
       searchProps: {
         keyword: '',
         status: null,
@@ -342,9 +304,9 @@ export default {
         moduleType: 1,
         moduleId: 0,
         name: '',
-        applicant: userInfo.value.userId,
+        applicant: 0,
         applicantName: `${userInfo.value.displayName}_${userInfo.value.userName}`,
-        version: 1,
+        version: 0,
         description: '',
       };
     }
@@ -545,20 +507,6 @@ export default {
       getTableData();
     };
 
-    async function remoteMethod(keyword: string) {
-      if (keyword !== '') {
-        const { data = [] } = await findUserByName({ keyword });
-        const users = data.map((item: any) => ({
-          id: item.id,
-          name: item.userName,
-        }));
-        tableState.reviewerFilters = users;
-        tableState.applicantFilters = users;
-      } else {
-        tableState.reviewerFilters = [];
-        tableState.applicantFilters = [];
-      }
-    }
     // 筛选
     const blackHoverVisible = ref(false);
     const statusTitleVisiable = ref(false);
@@ -583,35 +531,10 @@ export default {
       blackHoverVisible.value = false;
       await getTableData();
     }
-    const reviewerTitleVisiable = ref(false);
-    function reviewerTitleClick() {
-      reviewerTitleVisiable.value = true;
-      blackHoverVisible.value = true;
-    }
-
-    async function reviewerChange() {
-      reviewerTitleVisiable.value = false;
-      blackHoverVisible.value = false;
-      await getTableData();
-    }
-
-    const applicantTitleVisiable = ref(false);
-    function applicantTitleClick() {
-      applicantTitleVisiable.value = true;
-      blackHoverVisible.value = true;
-    }
-
-    async function applicantChange() {
-      applicantTitleVisiable.value = false;
-      blackHoverVisible.value = false;
-      await getTableData();
-    }
 
     function blackHoverclick() {
       auditResultsTitleVisiable.value = false;
       statusTitleVisiable.value = false;
-      reviewerTitleVisiable.value = false;
-      applicantTitleVisiable.value = false;
       blackHoverVisible.value = false;
     }
     onBeforeUnmount(() => {
@@ -647,13 +570,6 @@ export default {
       auditResultsChange,
       blackHoverVisible,
       blackHoverclick,
-      remoteMethod,
-      reviewerTitleVisiable,
-      reviewerTitleClick,
-      reviewerChange,
-      applicantTitleVisiable,
-      applicantTitleClick,
-      applicantChange,
     };
   },
 };
