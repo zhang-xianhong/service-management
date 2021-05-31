@@ -34,7 +34,7 @@ export default defineComponent({
     const companyRef: Ref<any> = ref(null);
     const userRef: Ref<any> = ref(null);
     const managerRef: Ref<any> = ref(null);
-    
+
     // 租户详情
     const tenantDetail = ref({
       contact: {},

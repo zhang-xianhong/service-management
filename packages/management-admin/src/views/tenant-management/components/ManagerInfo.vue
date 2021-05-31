@@ -1,6 +1,6 @@
 <template>
-  <el-row style="font-weight:bolder">管理员信息</el-row>
-  <el-row style="padding:0 20px;">
+  <el-row style="font-weight: bolder">管理员信息</el-row>
+  <el-row style="padding: 0 20px">
     <el-form
       class="managerinfo-form"
       ref="formRef"

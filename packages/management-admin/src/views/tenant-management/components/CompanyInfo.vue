@@ -1,5 +1,5 @@
 <template>
-  <el-row style="font-weight:bolder">企业信息</el-row>
+  <el-row style="font-weight: bolder">企业信息</el-row>
   <el-row style="font-size: 12px">
     <el-form ref="formRef" :model="companyInfo" :rules="rules" inline label-width="140px" label-position="left">
       <el-form-item prop="name" class="form-item" label="企业名称">
@@ -80,7 +80,7 @@
           ></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item prop="license" label="营业执照号" style="display:block;">
+      <el-form-item prop="license" label="营业执照号" style="display: block">
         <template v-if="isEdit">{{ companyInfo.license }}</template>
         <el-input
           v-else
