@@ -4,7 +4,7 @@ const tagValue = ref([] as number[]);
 
 const tagNames = ref('');
 
-export default function (initialValue: string, tags: any[]) {
+export default function(initialValue: string, tags: any[]) {
   tagValue.value = initialValue
     .split(',')
     .filter((item: string) => item !== '')
