@@ -121,7 +121,7 @@
         </el-form>
       </div>
       <div class="project-list-dialog-footer">
-        <el-button type="primary" @click="submitProjectDetail">确定</el-button>
+        <el-button type="primary" @click="submitProjectDetail" :loading="submitLoading">确定</el-button>
         <el-button @click="closeDialog">取消</el-button>
       </div>
     </el-dialog>
@@ -186,7 +186,11 @@ export default defineComponent({
     }
     getAllTems();
 
+    const submitLoading = ref(false);
     const submitProjectDetail = () => {
+      if (submitLoading.value) {
+        return;
+      }
       if (!projectDetail.name) {
         return Message.error('项目名称不得为空');
       }
@@ -199,11 +203,13 @@ export default defineComponent({
       if (!projectDetail.templateId) {
         return Message.error('代码模板不得为空');
       }
+      submitLoading.value = true;
       addProjectData().then(() => {
         pageInfo.page = 1;
         getProjectListData();
         closeDialog();
         window.location.reload();
+        submitLoading.value = false;
       });
     };
 
@@ -278,6 +284,7 @@ export default defineComponent({
       loadings,
       validatorPass,
       getShowBool,
+      submitLoading,
     };
   },
 });
