@@ -374,7 +374,7 @@ export default defineComponent({
         });
       }
 
-      let regux = /^srv-[a-z0-9-]+(?<!-)$/;
+      let regux = /^[a-z0-9-]+(?<!-)$/;
       if(!regux.test(serviceDetail.name)){
         return ElMessage({
           showClose: true,
