@@ -87,6 +87,7 @@ export default defineComponent({
 
     const onClose = async () => {
       const { code } = await deleteAppById(detailInfo.value.id);
+      ctx.emit('update');
       if (code === 0) {
         (instance as any).proxy.$message({
           type: 'success',
@@ -155,7 +156,7 @@ export default defineComponent({
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
   margin: 10px;
   padding: 10px;
-  display: flex;
+  display: inline-flex;
   &:hover {
     box-shadow: 0 0 8px #409eff;
     cursor: pointer;

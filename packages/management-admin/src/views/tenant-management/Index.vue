@@ -123,6 +123,7 @@ export default {
       selections: [],
     });
 
+    // 获取租户列表数据
     const getTableData = async () => {
       tableState.loading = true;
       const { data } = await getTenantList(tableState.searchProps);
@@ -155,6 +156,7 @@ export default {
 
     const handleComputerNameInput = debounce(getTableData, 1000);
 
+    // 新增租户时tententId默认为零
     const onAdd = () => {
       router.push('/tenant-list/edit/0');
     };
@@ -179,6 +181,7 @@ export default {
       }
     };
 
+    // 租户删除
     const onDelete = async (rowData: any) => {
       (instance as any).proxy
         .$confirm(`是否删除${rowData.contactName}租户`, '提示', {
@@ -198,6 +201,7 @@ export default {
         });
     };
 
+    // 租户冻结
     const onFreeze = async (id: string) => {
       const { code } = await freezeTenant(id);
       if (code === 0) {
@@ -209,6 +213,7 @@ export default {
       }
     };
 
+    // 租户启动
     const onStart = async (id: string) => {
       const { code } = await enableTenant(id);
       if (code === 0) {

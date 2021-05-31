@@ -2,23 +2,26 @@
   <div>
     <el-form inline label-width="80px" :model="formData" :rules="rules">
       <el-form-item label="项目名称" prop="name">
-        <div class="form-content">
-          {{ detailInfo.name }}
-        </div>
+        <div class="form-content">{{ detailInfo.name }}</div>
       </el-form-item>
       <el-form-item label="项目描述" prop="description">
-        <div v-if="!editMode" class="form-content">
-          {{ detailInfo.description }}
-        </div>
+        <div v-if="!editMode" class="form-content">{{ detailInfo.description }}</div>
         <el-input v-else class="form-content" v-model="formData.description"></el-input>
       </el-form-item>
       <el-form-item label="代码模板" prop="templateId">
-        <div v-if="!editMode" class="form-content">
-          {{ detailInfo.templateName }}
-        </div>
-        <el-select class="form-content" v-if="editMode" v-model="formData.templateId" placeholder="请选择代码模板">
-          <el-option v-for="template in templates" :key="template.id" :label="template.name" :value="template.id">
-          </el-option>
+        <div v-if="!editMode" class="form-content">{{ detailInfo.templateName }}</div>
+        <el-select
+          class="form-content"
+          v-if="editMode"
+          v-model="formData.templateId"
+          placeholder="请选择代码模板"
+        >
+          <el-option
+            v-for="template in templates"
+            :key="template.id"
+            :label="template.name"
+            :value="template.id"
+          ></el-option>
         </el-select>
       </el-form-item>
       <el-form-item label="负 责 人">
@@ -32,17 +35,17 @@
         ></owner-select>
       </el-form-item>
       <el-form-item label="项目级别" prop="level">
-        <div v-if="!editMode" class="form-content">
-          {{ getLabel(detailInfo.level)(projectLevels) }}
-        </div>
+        <div v-if="!editMode" class="form-content">{{ getLabel(detailInfo.level)(projectLevels) }}</div>
         <el-radio-group class="form-content" v-if="editMode" v-model="formData.level">
-          <el-radio v-for="level in projectLevels" :key="level.value" :label="level.value">{{ level.label }}</el-radio>
+          <el-radio
+            v-for="level in projectLevels"
+            :key="level.value"
+            :label="level.value"
+          >{{ level.label }}</el-radio>
         </el-radio-group>
       </el-form-item>
       <el-form-item label="项目简介" prop="remark">
-        <div v-if="!editMode" class="form-content multiline">
-          {{ detailInfo.remark }}
-        </div>
+        <div v-if="!editMode" class="form-content multiline">{{ detailInfo.remark }}</div>
         <el-input
           class="form-content"
           type="textarea"
@@ -53,23 +56,23 @@
         ></el-input>
       </el-form-item>
       <el-form-item label="许可类型" prop="license">
-        <div v-if="!editMode" class="form-content">
-          {{ getLabel(detailInfo.license)(licenseTypes) }}
-        </div>
+        <div v-if="!editMode" class="form-content">{{ getLabel(detailInfo.license)(licenseTypes) }}</div>
         <el-radio-group class="form-content" v-if="editMode" v-model="formData.license">
-          <el-radio v-for="license in licenseTypes" :key="license.value" :label="license.value">{{
-            license.label
-          }}</el-radio>
+          <el-radio v-for="license in licenseTypes" :key="license.value" :label="license.value">
+            {{
+              license.label
+            }}
+          </el-radio>
         </el-radio-group>
       </el-form-item>
       <el-form-item label="项目状态" prop="status">
-        <div v-if="!editMode" class="form-content">
-          {{ getLabel(detailInfo.status)(statusOptions) }}
-        </div>
+        <div v-if="!editMode" class="form-content">{{ getLabel(detailInfo.status)(statusOptions) }}</div>
         <el-radio-group class="form-content" v-if="editMode" v-model="formData.status">
-          <el-radio v-for="status in statusOptions" :key="status.value" :label="status.value">{{
-            status.label
-          }}</el-radio>
+          <el-radio v-for="status in statusOptions" :key="status.value" :label="status.value">
+            {{
+              status.label
+            }}
+          </el-radio>
         </el-radio-group>
       </el-form-item>
     </el-form>
@@ -210,11 +213,9 @@ export default {
 
     // 表单操作
     const save = async () => {
-      const ownersNameArr = ownersName.value.split(',');
-      if (ownersNameArr.length > 10) {
-        return Message.warning('最多支持10个负责人');
-      }
-      const { code } = await updateProject((projectDetail as any).id, formData);
+      const item = { ...formData };
+      item.owner = item.owners.map((x: any) => x.userId).join(',');
+      const { code } = await updateProject((projectDetail as any).id, item);
       if (code === 0) {
         Object.assign(detailInfo, formData);
         context.emit('submit');
