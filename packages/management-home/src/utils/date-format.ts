@@ -11,6 +11,9 @@ function format(num: number): string {
  * @param timestamp
  */
 function dateFormat(timestamp: number | string): string {
+  if (!timestamp) {
+    return '';
+  }
   const date = new Date(timestamp);
   const year = date.getFullYear();
   const month = format(date.getMonth() + 1);
