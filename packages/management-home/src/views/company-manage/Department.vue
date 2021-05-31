@@ -2,12 +2,7 @@
   <div class="dept">
     <el-row>
       <el-col :span="10" style="text-align: left">
-        <el-button
-          type="primary"
-          style="width: 90px"
-          @click="handleAddDept"
-          :disabled="!isSel"
-        >添加子部门</el-button>
+        <el-button type="primary" style="width: 90px" @click="handleAddDept" :disabled="!isSel">添加子部门</el-button>
         <el-button @click="handleDel" :disabled="currentNodeData.id === 0 ? true : !isSel">删除</el-button>
       </el-col>
       <el-col :offset="10" :span="4" style="text-align: right">
@@ -51,7 +46,8 @@
                       <el-dropdown-item
                         @click="handleUpMove(data)"
                         v-if="data.id !== 0 && data.parent && data.parent.id !== 0"
-                      >上移一层</el-dropdown-item>
+                        >上移一层</el-dropdown-item
+                      >
                     </el-dropdown-menu>
                   </template>
                 </el-dropdown>
@@ -72,10 +68,7 @@
           }}
         </el-row>
         <el-row>
-          <el-button
-            @click="handleAddPerson"
-            :disabled="currentNodeData.id === 0 ? true : !isSel"
-          >添加成员</el-button>
+          <el-button @click="handleAddPerson" :disabled="currentNodeData.id === 0 ? true : !isSel">添加成员</el-button>
         </el-row>
         <el-row width="100%">
           <el-table :data="tableDataSource" style="width: 100%">
@@ -126,7 +119,7 @@
         <el-form :model="formData" ref="deptDiagFormRef" :rules="formRules">
           <el-form-item label="部门名称" prop="deptName" label-width="100px">
             <el-input v-model.trim="formData.deptName" placeholder="请输入部门名称"></el-input>
-            <el-input style="margin-bottom:0;display:none;"></el-input>
+            <el-input style="margin-bottom: 0; display: none"></el-input>
           </el-form-item>
         </el-form>
       </div>
@@ -235,7 +228,7 @@ export default defineComponent({
     const formRules = {
       deptName: [
         { required: true, message: '请输入部门名称', trigger: 'blur' },
-        { min: 2, max: 50, message: '长度在 2 到 50 个字符', trigger: 'blur' }
+        { min: 2, max: 50, message: '长度在 2 到 50 个字符', trigger: 'blur' },
       ],
     };
     // 提示信息
@@ -289,7 +282,7 @@ export default defineComponent({
         allDeptUser.value = deptTree;
         allUsers.value = data.users.map((user: any) => ({
           ...user,
-          status: UserStatus[user.status as 0 | -1]
+          status: UserStatus[user.status as 0 | -1],
         }));
         treeData.loading = false;
       }
@@ -425,9 +418,9 @@ export default defineComponent({
           return {
             name: displayName,
             id,
-            isLeaf: true
+            isLeaf: true,
           };
-        })
+        });
       }
     };
 
@@ -449,17 +442,16 @@ export default defineComponent({
 
     // 上移
     const handleUpMove = async (data: any) => {
-      const { id, parent, name } = data;
+      const res = data;
+      const { id, name } = data;
       const { code } = await updateDept({
         id,
         deptName: name,
-        parentId: parent.parent.id,
+        parentId: data.parent.parent.id,
       });
       if (code === ResCode.Success) {
         msgTips('success', '上移成功');
-        data.parent._children = data.parent._children.filter((item: any) => {
-          return item.id !== data.id;
-        });
+        res.parent._children = data.parent._children.filter((item: any) => item.id !== data.id);
         removeNode(data);
         append({ ...data }, data.parent.parent);
       } else {
@@ -467,14 +459,15 @@ export default defineComponent({
       }
     };
 
-    const reloadUserList = async (data: any) => {
+    const reloadUserList = (data: any) => {
       // 当前部门下的人员
       const { parentData, users } = data;
       const newUserList = users.filter((item: any) => {
         const oldList = parentData.children || parentData._children;
-        return !(oldList.find((subItem: any) => {
-          return subItem.id === item.id;
-        }));
+        return !oldList.find((subItem: any) => {
+          const isTrue = subItem.id === item.id;
+          return isTrue;
+        });
       });
       // 过滤当前组织下已存在的人员
       newUserList.forEach((item: any) => {
@@ -555,13 +548,8 @@ export default defineComponent({
                 _children: [],
                 isLeaf: false,
               };
-              treeData.currentNodeData._children.push(
-                newNodeData
-              );
-              append(
-                newNodeData,
-                treeData.currentNodeData,
-              );
+              treeData.currentNodeData._children.push(newNodeData);
+              append(newNodeData, treeData.currentNodeData);
             }
             msgTips('success', `${formData.isEdit ? '编辑' : '添加'}成功！`);
             closeDialog();

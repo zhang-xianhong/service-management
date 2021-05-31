@@ -10,12 +10,7 @@
       </el-form-item>
       <el-form-item label="代码模板" prop="templateId">
         <div v-if="!editMode" class="form-content">{{ detailInfo.templateName }}</div>
-        <el-select
-          class="form-content"
-          v-if="editMode"
-          v-model="formData.templateId"
-          placeholder="请选择代码模板"
-        >
+        <el-select class="form-content" v-if="editMode" v-model="formData.templateId" placeholder="请选择代码模板">
           <el-option
             v-for="template in templates"
             :key="template.id"
@@ -37,11 +32,7 @@
       <el-form-item label="项目级别" prop="level">
         <div v-if="!editMode" class="form-content">{{ getLabel(detailInfo.level)(projectLevels) }}</div>
         <el-radio-group class="form-content" v-if="editMode" v-model="formData.level">
-          <el-radio
-            v-for="level in projectLevels"
-            :key="level.value"
-            :label="level.value"
-          >{{ level.label }}</el-radio>
+          <el-radio v-for="level in projectLevels" :key="level.value" :label="level.value">{{ level.label }}</el-radio>
         </el-radio-group>
       </el-form-item>
       <el-form-item label="项目简介" prop="remark">
@@ -58,21 +49,17 @@
       <el-form-item label="许可类型" prop="license">
         <div v-if="!editMode" class="form-content">{{ getLabel(detailInfo.license)(licenseTypes) }}</div>
         <el-radio-group class="form-content" v-if="editMode" v-model="formData.license">
-          <el-radio
-            v-for="license in licenseTypes"
-            :key="license.value"
-            :label="license.value"
-          >{{ license.label }}</el-radio>
+          <el-radio v-for="license in licenseTypes" :key="license.value" :label="license.value">{{
+            license.label
+          }}</el-radio>
         </el-radio-group>
       </el-form-item>
       <el-form-item label="项目状态" prop="status">
         <div v-if="!editMode" class="form-content">{{ getLabel(detailInfo.status)(statusOptions) }}</div>
         <el-radio-group class="form-content" v-if="editMode" v-model="formData.status">
-          <el-radio
-            v-for="status in statusOptions"
-            :key="status.value"
-            :label="status.value"
-          >{{ status.label }}</el-radio>
+          <el-radio v-for="status in statusOptions" :key="status.value" :label="status.value">{{
+            status.label
+          }}</el-radio>
         </el-radio-group>
       </el-form-item>
     </el-form>
