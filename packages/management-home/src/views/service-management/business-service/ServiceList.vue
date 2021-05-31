@@ -389,6 +389,9 @@ export default defineComponent({
           type: 'error',
         });
       }
+      if (senddata.description.length > 60) {
+        return false;
+      }
       senddata.name = `srv-${senddata.name}`;
       senddata.classification = serviceDetail.classification ? serviceDetail.classification.join(',') : '';
       addService(senddata)

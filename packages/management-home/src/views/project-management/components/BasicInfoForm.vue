@@ -200,6 +200,9 @@ export default {
 
     // 表单操作
     const save = async () => {
+      if(formData.remark.length > 255) {
+        return false;
+      }
       const item = { ...formData };
       item.owner = item.owners.map((x: any) => x.userId).join(',');
       const { code } = await updateProject((projectDetail as any).id, item);
