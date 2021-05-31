@@ -2,7 +2,12 @@
   <div class="dept">
     <el-row>
       <el-col :span="10" style="text-align: left">
-        <el-button type="primary" style="width: 90px" @click="handleAddDept" :disabled="!isSel">添加子部门</el-button>
+        <el-button
+          type="primary"
+          style="width: 90px"
+          @click="handleAddDept"
+          :disabled="!isSel"
+        >添加子部门</el-button>
         <el-button @click="handleDel" :disabled="currentNodeData.id === 0 ? true : !isSel">删除</el-button>
       </el-col>
       <el-col :offset="10" :span="4" style="text-align: right">
@@ -17,25 +22,27 @@
     <el-row>
       <el-col :span="6" style="background: #fff">
         <div class="user-tree" v-loading="loading">
-          <!-- <el-scrollbar> -->
-          <el-tree
-            ref="userTreeRef"
-            node-key="id"
-            v-if="dataDone"
-            :highlight-current="true"
-            :expand-on-click-node="false"
-            :default-expand-all="false"
-            :load="loadNode"
-            draggable
-            lazy
-            @node-click="nodeClickHandle"
-            :props="treeProps"
-          >
-            <template #default="{ data }">
-              <div>
-                <svg-icon v-if="data._children" icon-name="folder" icon-class="tree-node-folder"></svg-icon>
-                <svg-icon v-else icon-name="person" icon-class="tree-node-folder"></svg-icon>
-                <span style="z-index: 1; background: transparent; margin-right: 5px">{{ data.name }}</span>
+          <el-scrollbar>
+            <el-tree
+              ref="userTreeRef"
+              node-key="id"
+              v-if="dataDone"
+              :highlight-current="true"
+              :expand-on-click-node="false"
+              :default-expand-all="false"
+              :load="loadNode"
+              lazy
+              @node-click="nodeClickHandle"
+              :props="treeProps"
+            >
+              <template #default="{ data }">
+                <div class="content-style">
+                  <svg-icon v-if="data._children" icon-name="folder" icon-class="tree-node-folder"></svg-icon>
+                  <svg-icon v-else icon-name="person" icon-class="tree-node-folder"></svg-icon>
+                  <span
+                    style="z-index: 1; background: transparent; margin-right: 5px"
+                  >{{ data.name }}</span>
+                </div>
                 <el-dropdown v-if="data._children && data.id !== 0">
                   <span class="el-dropdown-link">
                     <i class="el-icon-more" style="transform: rotate(90deg)"></i>
@@ -46,15 +53,13 @@
                       <el-dropdown-item
                         @click="handleUpMove(data)"
                         v-if="data.id !== 0 && data.parent && data.parent.id !== 0"
-                        >上移一层</el-dropdown-item
-                      >
+                      >上移一层</el-dropdown-item>
                     </el-dropdown-menu>
                   </template>
                 </el-dropdown>
-              </div>
-            </template>
-          </el-tree>
-          <!-- </el-scrollbar> -->
+              </template>
+            </el-tree>
+          </el-scrollbar>
         </div>
       </el-col>
       <el-col :offset="1" :span="16">
@@ -68,7 +73,10 @@
           }}
         </el-row>
         <el-row>
-          <el-button @click="handleAddPerson" :disabled="currentNodeData.id === 0 ? true : !isSel">添加成员</el-button>
+          <el-button
+            @click="handleAddPerson"
+            :disabled="currentNodeData.id === 0 ? true : !isSel"
+          >添加成员</el-button>
         </el-row>
         <el-row width="100%">
           <el-table :data="tableDataSource" style="width: 100%">
@@ -676,5 +684,9 @@ export default defineComponent({
   &.tree-node-folder {
     color: #66bbff;
   }
+}
+.content-style {
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 </style>
