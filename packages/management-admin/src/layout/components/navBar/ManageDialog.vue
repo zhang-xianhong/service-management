@@ -1,15 +1,13 @@
 <template>
-  <el-dialog
-    :title="title"
-    v-model="dialogVisible"
-    width="600px"
-    @closed="closeDialog"
-    :close-on-click-modal="false"
-  >
+  <el-dialog :title="title" v-model="dialogVisible" width="600px" @closed="closeDialog" :close-on-click-modal="false">
     <div class="add-config-set">
       <el-form :model="formData" ref="diagFormRef" :rules="formRules">
         <el-form-item label="账号" prop="userName" :label-width="labelWidth">
-          <el-input v-model.trim="formData.userName" disabled placeholder="请输入英文登录账号，创建后不可修改"></el-input>
+          <el-input
+            v-model.trim="formData.userName"
+            disabled
+            placeholder="请输入英文登录账号，创建后不可修改"
+          ></el-input>
         </el-form-item>
         <el-form-item label="姓名" prop="displayName" :label-width="labelWidth">
           <el-input v-model.trim="formData.displayName" disabled placeholder="请输入中文姓名"></el-input>
@@ -37,7 +35,7 @@
       <span class="dialog-footer">
         <el-button type="primary" @click="submitConfigForm" v-if="!disable">提交</el-button>
         <el-button @click="closeDialog" v-if="!disable">关闭</el-button>
-        <el-button type="primary" @click="() => disable = false" v-else>修改</el-button>
+        <el-button type="primary" @click="() => (disable = false)" v-else>修改</el-button>
       </span>
     </template>
   </el-dialog>
@@ -47,7 +45,7 @@
 import { defineComponent, reactive, toRefs, Ref, ref, getCurrentInstance } from 'vue';
 import { getUserInfo, updateUserInfo } from '@/api/user';
 const RES_CODE: any = {
-  success: 0
+  success: 0,
 };
 // 定义数据type
 interface DialogState {
@@ -56,7 +54,7 @@ interface DialogState {
   isEdit: boolean;
   formData: any;
 }
-const labelWidth: string = "100px";
+const labelWidth = '100px';
 export default defineComponent({
   name: 'ManageDialog',
   setup() {
@@ -71,8 +69,8 @@ export default defineComponent({
         phoneNumber: '',
         primaryMail: '',
         passWd: '',
-        rPassWd: ''
-      }
+        rPassWd: '',
+      },
     });
     // 校验规则
     const formRules = {
@@ -101,7 +99,7 @@ export default defineComponent({
       dialogContent.disable = true;
       getInfo();
       dialogVisible.value = true;
-    }
+    };
 
     // 初始化对话框数据
     function initDialog(): void {
@@ -112,7 +110,7 @@ export default defineComponent({
     const closeDialog = () => {
       initDialog();
       dialogVisible.value = false;
-    }
+    };
 
     // 表单引用
     const diagFormRef: any = ref({});
@@ -144,10 +142,10 @@ export default defineComponent({
       dialogVisible,
       formRules,
       diagFormRef,
-      labelWidth
-    }
-  }
-})
+      labelWidth,
+    };
+  },
+});
 </script>
 <style lang="scss" scoped>
 .dialog-footer {

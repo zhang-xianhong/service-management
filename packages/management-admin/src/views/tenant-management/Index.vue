@@ -1,8 +1,8 @@
 <template>
   <el-row>
-    <el-col :span="4" style="text-align:left">
-      <el-button style="width:90px" type="primary" @click="onAdd">
-        <i class="el-icon-plus" style="font-weight:bloder;margin-right:2px;"></i>新建
+    <el-col :span="4" style="text-align: left">
+      <el-button style="width: 90px" type="primary" @click="onAdd">
+        <i class="el-icon-plus" style="font-weight: bloder; margin-right: 2px"></i>新建
       </el-button>
       <!-- TODO：待确定 -->
       <!-- <el-button @click="freezeInBatches">冻结</el-button>
