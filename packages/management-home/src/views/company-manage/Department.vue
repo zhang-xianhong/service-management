@@ -119,7 +119,7 @@
         <el-form :model="formData" ref="deptDiagFormRef" :rules="formRules">
           <el-form-item label="部门名称" prop="deptName" label-width="100px">
             <el-input v-model.trim="formData.deptName" placeholder="请输入部门名称"></el-input>
-            <el-input style="margin-bottom:0;display:none;"></el-input>
+            <el-input style="margin-bottom: 0; display: none"></el-input>
           </el-form-item>
         </el-form>
       </div>
@@ -442,15 +442,16 @@ export default defineComponent({
 
     // 上移
     const handleUpMove = async (data: any) => {
-      const { id, parent, name } = data;
+      const res = data;
+      const { id, name } = data;
       const { code } = await updateDept({
         id,
         deptName: name,
-        parentId: parent.parent.id,
+        parentId: data.parent.parent.id,
       });
       if (code === ResCode.Success) {
         msgTips('success', '上移成功');
-        data.parent._children = data.parent._children.filter((item: any) => item.id !== data.id);
+        res.parent._children = data.parent._children.filter((item: any) => item.id !== data.id);
         removeNode(data);
         append({ ...data }, data.parent.parent);
       } else {
@@ -458,18 +459,21 @@ export default defineComponent({
       }
     };
 
-    // const reloadUserList = async (data: any) => {
-    //   // 当前部门下的人员
-    //   const { parentData, users } = data;
-    //   const newUserList = users.filter((item: any) => {
-    //     const oldList = parentData.children || parentData._children;
-    //     return !oldList.find((subItem: any) => subItem.id === item.id));
-    //   });
-    //   // 过滤当前组织下已存在的人员
-    //   newUserList.forEach((item: any) => {
-    //     append(item, data.parentData);
-    //   });
-    // };
+    const reloadUserList = (data: any) => {
+      // 当前部门下的人员
+      const { parentData, users } = data;
+      const newUserList = users.filter((item: any) => {
+        const oldList = parentData.children || parentData._children;
+        return !oldList.find((subItem: any) => {
+          const isTrue = subItem.id === item.id;
+          return isTrue;
+        });
+      });
+      // 过滤当前组织下已存在的人员
+      newUserList.forEach((item: any) => {
+        append(item, data.parentData);
+      });
+    };
 
     function nodeClickHandle(data: any, node: any): void {
       console.log('当前节点数据', data);
