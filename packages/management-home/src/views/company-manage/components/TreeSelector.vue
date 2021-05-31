@@ -4,7 +4,14 @@
       <el-col :span="10" :offset="1">
         <div class="title">添加人员</div>
         <div>
-          <div class="field-label">{{ optionLabel }}</div>
+          <div class="field-label">
+            <el-checkbox
+              v-model="checkAllTree"
+              @change="checkAllUser"
+              style="float:left;margin-left:10px;"
+            ></el-checkbox>
+            {{ optionLabel }}
+          </div>
           <div class="input-wrapper">
             <el-input
               :placeholder="optionPlaceholder"
@@ -16,11 +23,13 @@
           <div class="tree-wrapper" v-loading="!searchDone">
             <el-tree
               v-if="!searchStr && dataDone"
+              node-key="id"
               :default-expand-all="false"
               :load="loadNode"
               lazy
               :expand-on-click-node="false"
               :props="treeProps"
+              ref="userTreeRefs"
             >
               <template #default="{ data }">
                 <div class="node-bg" :class="{ 'checked-node': data.checked }"></div>
@@ -35,6 +44,7 @@
             </el-tree>
             <el-tree
               v-if="searchStr && searchDone"
+              node-key="id"
               :default-expand-all="false"
               :load="loadSearchNode"
               :expand-on-click-node="false"
@@ -70,7 +80,7 @@
     </el-row>
     <template #footer>
       <div class="dialog-footer">
-        <el-button type="primary" @click="submit">确 定</el-button>
+        <el-button type="primary" @click="submit" :disabled="!selectedUser.length">确 定</el-button>
         <el-button @click="cancel">取 消</el-button>
       </div>
     </template>
@@ -290,7 +300,14 @@ export default {
       syncStatus(user);
       selectedUser.value = _.reject({ id: user.id })(selectedUser.value);
     };
-
+    const userTreeRefs: any = ref(null);
+    const checkAllTree = ref(false);
+    const checkAllUser = (isSelect: boolean) => {
+      copyOption.forEach((item: any, index: number) => {
+        userTreeRefs.value.getNode(copyOption[index]).data.checked = isSelect;
+        checkSingle(userTreeRefs.value.getNode(copyOption[index]).data);
+      })
+    }
     return {
       dialogVisible,
       show,
@@ -307,6 +324,9 @@ export default {
       dataDone,
       loadSearchNode,
       searchDone,
+      checkAllTree,
+      checkAllUser,
+      userTreeRefs
     };
   },
 };

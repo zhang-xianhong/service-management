@@ -20,4 +20,4 @@ export const deleteConfig = (id: string): Promise<SuccessResponse<any>> =>
 export const getHistory = (id: string): Promise<SuccessResponse<any>> =>
   axios.get(getUrl(settings.GET_CONFIG_HISTORY, id));
 export const checkKeyRule = (payload: any): Promise<SuccessResponse<any>> =>
-  axios.get(getUrl(settings.CHECK_KEY_RULE), payload);
+  axios.post(getUrl(settings.CHECK_KEY_RULE), payload);

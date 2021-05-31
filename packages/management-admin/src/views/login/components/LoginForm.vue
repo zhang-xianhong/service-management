@@ -16,9 +16,16 @@
         ></el-input>
       </el-form-item>
       <el-form-item prop="captchaCode">
-        <el-input class="form-item" v-model="loginInfo.captchaCode" placeholder="验证码" @input="onInputCaptchaCode">
+        <el-input
+          class="form-item"
+          v-model="loginInfo.captchaCode"
+          placeholder="验证码"
+          @change="onInputCaptchaCode"
+        >
           <template #suffix>
-            <el-button id="success-btn" v-if="isPassed" type="success" circle><i class="el-icon-check"></i></el-button>
+            <el-button id="success-btn" v-if="isPassed" type="success" circle>
+              <i class="el-icon-check"></i>
+            </el-button>
             <img @click="getCaptchaUrl" :src="captchaUrl" />
           </template>
         </el-input>
@@ -82,10 +89,18 @@ export default defineComponent({
 
     // 监听验证码输入并进行校验
     const onInputCaptchaCode = async (value: string) => {
-      const { data } = await verifyCaptcha({ captchaCode: value });
-      if (data) {
-        isPassed.value = true;
-      } else {
+      if (!value) {
+        isPassed.value = false;
+        return;
+      }
+      try {
+        const { data } = await verifyCaptcha({ captchaCode: value });
+        if (data) {
+          isPassed.value = true;
+        } else {
+          isPassed.value = false;
+        }
+      } catch (error) {
         isPassed.value = false;
       }
     };
@@ -99,8 +114,8 @@ export default defineComponent({
           try {
             loading.value = true;
             // TODO: 暂时与晓文约定采用获取code然后拼接用户密码并进行传输的方式
-            const { data } = await getCode();
-            const { code } = await login({ account: loginInfo.username, secret: `${loginInfo.password}.${data}` });
+            const { data } = await getCode({ captchaCode: loginInfo.captchaCode });
+            const { code } = await login({ account: loginInfo.username, loginVerifyCode: data.loginVerifyCode, secret: `${loginInfo.password}.${data.code}` });
             if (code === 0) {
               loading.value = false;
               // 如果路由携带redirect参数则直接跳转到目标页面

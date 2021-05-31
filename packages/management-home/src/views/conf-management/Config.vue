@@ -178,12 +178,12 @@ const validatorKeyPass = async (rule: any, value: string, callback: Function) =>
     callback(new Error('字母、中划线、下划线、小数点包含数字，不能只输入数字不能以数字开头'));
   }
   // 后台校验
-  const { code } = await checkKeyRule({
+  const { code, message } = await checkKeyRule({
     name: value,
     scope: 2
   });
   if (code !== 0) {
-    callback(new Error('键已存在！'));
+    callback(new Error(message));
   }
   callback();
 };

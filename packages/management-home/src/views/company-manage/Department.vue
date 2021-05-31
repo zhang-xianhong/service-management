@@ -82,7 +82,6 @@
             <el-table-column type="index" label="序号" width="50" />
             <el-table-column label="登录账号" prop="userName"></el-table-column>
             <el-table-column label="姓名" prop="displayName"></el-table-column>
-            <!-- <el-table-column label="性别" prop="gender" width="50"></el-table-column> -->
             <el-table-column label="手机" prop="phoneNumber" width="200"></el-table-column>
             <el-table-column label="邮箱" prop="primaryMail"></el-table-column>
             <el-table-column label="账户状态" prop="status" width="100"></el-table-column>
@@ -126,7 +125,7 @@
       <div>
         <el-form :model="formData" ref="deptDiagFormRef" :rules="formRules">
           <el-form-item label="部门名称" prop="deptName" label-width="100px">
-            <el-input v-model.trim="formData.deptName" placeholder="请输入部门中文名称"></el-input>
+            <el-input v-model.trim="formData.deptName" placeholder="请输入部门名称"></el-input>
             <el-input style="margin-bottom:0;display:none;"></el-input>
           </el-form-item>
         </el-form>
@@ -179,26 +178,10 @@ enum UserStatus {
   禁用 = -1,
   启用 = 0,
 }
-enum GenderLabel {
-  男,
-  女,
-}
 // 状态码
 enum ResCode {
   Success,
 }
-
-// 中文校验
-function checkZNName(name: string): boolean {
-  const szReg = /[\u4e00-\u9fa5]{2,255}/;
-  return szReg.test(name);
-}
-const validatorZNNamePass = (rule: any, value: string, callback: Function) => {
-  if (!checkZNName(value)) {
-    callback(new Error('请输入长度至少2最大255个字的中文格式名称'));
-  }
-  callback();
-};
 const treeProps = {
   label: 'name',
   children: 'children',
@@ -247,14 +230,12 @@ export default defineComponent({
     const editFormData = ref();
     // 所有的人员
     const allUsers = ref([]);
-    // 当前node节点下的人
-    // const currentNodeUsers = ref([]);
 
     // 校验规则
     const formRules = {
       deptName: [
-        { required: true, message: '请输入部门中文名称', trigger: 'blur' },
-        { validator: validatorZNNamePass, trigger: 'blur' },
+        { required: true, message: '请输入部门名称', trigger: 'blur' },
+        { min: 2, max: 50, message: '长度在 2 到 50 个字符', trigger: 'blur' }
       ],
     };
     // 提示信息
@@ -308,8 +289,7 @@ export default defineComponent({
         allDeptUser.value = deptTree;
         allUsers.value = data.users.map((user: any) => ({
           ...user,
-          status: UserStatus[user.status as 0 | -1],
-          gender: GenderLabel[user.gender as 0 | 1],
+          status: UserStatus[user.status as 0 | -1]
         }));
         treeData.loading = false;
       }
@@ -445,9 +425,9 @@ export default defineComponent({
           return {
             name: displayName,
             id,
-            isLeaf: true,
+            isLeaf: true
           };
-        });
+        })
       }
     };
 
@@ -616,7 +596,6 @@ export default defineComponent({
       const { pageSize, page } = tableData.searchProps;
       // 获取当前的所有人员数据
       const filterRes = treeData.currentNodeUsers.filter((subItem: any) => subItem.displayName.includes(keyword));
-      // treeData.currentNodeUsers = filterRes;
       getCurrentTableData(filterRes, page, pageSize);
     };
     const filterAccount = debounce(serchUserList, 500);

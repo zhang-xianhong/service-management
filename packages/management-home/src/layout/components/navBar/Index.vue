@@ -59,9 +59,6 @@
         </span>
         <template #dropdown>
           <el-dropdown-menu>
-            <!-- <el-dropdown-item icon="el-icon-edit" v-if="userInfo.admin">用户管理</el-dropdown-item> -->
-            <!--            <el-dropdown-item icon="el-icon-map-location">登录地点</el-dropdown-item>-->
-            <!--            <el-dropdown-item icon="el-icon-s-custom">我的资产</el-dropdown-item>-->
             <el-dropdown-item icon="el-icon-info" @click="jump2UserCenter">个人中心</el-dropdown-item>
             <el-dropdown-item icon="el-icon-info">关于</el-dropdown-item>
             <el-dropdown-item icon="el-icon-switch-button" @click="handleLogout">登出</el-dropdown-item>
