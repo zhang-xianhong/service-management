@@ -366,6 +366,14 @@ export default defineComponent({
         });
       }
 
+      if (senddata.name.length > 32) {
+        return ElMessage({
+          showClose: true,
+          message: '服务名称不得超过32个字符',
+          type: 'error',
+        });
+      }
+
       let regux = /^srv-[a-z0-9-]+(?<!-)$/;
       if(!regux.test(serviceDetail.name)){
         return ElMessage({

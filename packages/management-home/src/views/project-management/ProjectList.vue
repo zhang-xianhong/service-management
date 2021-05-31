@@ -190,6 +190,9 @@ export default defineComponent({
       if (!projectDetail.name) {
         return Message.error('项目名称不得为空');
       }
+      if (projectDetail.name.length > 64) {
+        return Message.error('项目名称不得超过64个字符');
+      }
       if (!projectDetail.description) {
         return Message.error('项目描述不得为空');
       }
