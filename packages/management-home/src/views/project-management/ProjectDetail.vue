@@ -10,7 +10,11 @@
       <div>
         <div class="title">
           项目信息
-          <span class="edit-btn" v-if="!editMode && getShowBool('update')" @click="editMode = true">编辑</span>
+          <span
+            class="edit-btn"
+            v-if="!editMode && getShowBool('update')"
+            @click="editMode = true"
+          >编辑</span>
         </div>
         <basic-info-form
           :project-detail="projectDetail"
@@ -131,11 +135,6 @@ export default {
       {
         prop: 'displayName',
         label: '姓名',
-      },
-      {
-        prop: 'gender',
-        label: '性别',
-        width: '60',
       },
       {
         prop: 'phoneNumber',

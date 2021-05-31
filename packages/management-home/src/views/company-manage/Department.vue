@@ -22,45 +22,43 @@
     <el-row>
       <el-col :span="6" style="background: #fff">
         <div class="user-tree" v-loading="loading">
-          <el-scrollbar>
-            <el-tree
-              ref="userTreeRef"
-              node-key="id"
-              v-if="dataDone"
-              :highlight-current="true"
-              :expand-on-click-node="false"
-              :default-expand-all="false"
-              :load="loadNode"
-              draggable
-              lazy
-              @node-click="nodeClickHandle"
-              :props="treeProps"
-            >
-              <template #default="{ data }">
-                <div>
-                  <svg-icon v-if="data._children" icon-name="folder" icon-class="tree-node-folder"></svg-icon>
-                  <svg-icon v-else icon-name="person" icon-class="tree-node-folder"></svg-icon>
-                  <span
-                    style="z-index: 1; background: transparent; margin-right: 5px"
-                  >{{ data.name }}</span>
-                  <el-dropdown v-if="data._children && data.id !== 0">
-                    <span class="el-dropdown-link">
-                      <i class="el-icon-more" style="transform: rotate(90deg)"></i>
-                    </span>
-                    <template #dropdown>
-                      <el-dropdown-menu icon="el-icon-plus">
-                        <el-dropdown-item @click="handleRename(data)">重命名</el-dropdown-item>
-                        <el-dropdown-item
-                          @click="handleUpMove(data)"
-                          v-if="data.id !== 0 && data.parent && data.parent.id !== 0"
-                        >上移一层</el-dropdown-item>
-                      </el-dropdown-menu>
-                    </template>
-                  </el-dropdown>
-                </div>
-              </template>
-            </el-tree>
-          </el-scrollbar>
+          <!-- <el-scrollbar> -->
+          <el-tree
+            ref="userTreeRef"
+            node-key="id"
+            v-if="dataDone"
+            :highlight-current="true"
+            :expand-on-click-node="false"
+            :default-expand-all="false"
+            :load="loadNode"
+            draggable
+            lazy
+            @node-click="nodeClickHandle"
+            :props="treeProps"
+          >
+            <template #default="{ data }">
+              <div>
+                <svg-icon v-if="data._children" icon-name="folder" icon-class="tree-node-folder"></svg-icon>
+                <svg-icon v-else icon-name="person" icon-class="tree-node-folder"></svg-icon>
+                <span style="z-index: 1; background: transparent; margin-right: 5px">{{ data.name }}</span>
+                <el-dropdown v-if="data._children && data.id !== 0">
+                  <span class="el-dropdown-link">
+                    <i class="el-icon-more" style="transform: rotate(90deg)"></i>
+                  </span>
+                  <template #dropdown>
+                    <el-dropdown-menu icon="el-icon-plus">
+                      <el-dropdown-item @click="handleRename(data)">重命名</el-dropdown-item>
+                      <el-dropdown-item
+                        @click="handleUpMove(data)"
+                        v-if="data.id !== 0 && data.parent && data.parent.id !== 0"
+                      >上移一层</el-dropdown-item>
+                    </el-dropdown-menu>
+                  </template>
+                </el-dropdown>
+              </div>
+            </template>
+          </el-tree>
+          <!-- </el-scrollbar> -->
         </div>
       </el-col>
       <el-col :offset="1" :span="16">
@@ -84,7 +82,6 @@
             <el-table-column type="index" label="序号" width="50" />
             <el-table-column label="登录账号" prop="userName"></el-table-column>
             <el-table-column label="姓名" prop="displayName"></el-table-column>
-            <!-- <el-table-column label="性别" prop="gender" width="50"></el-table-column> -->
             <el-table-column label="手机" prop="phoneNumber" width="200"></el-table-column>
             <el-table-column label="邮箱" prop="primaryMail"></el-table-column>
             <el-table-column label="账户状态" prop="status" width="100"></el-table-column>
@@ -128,7 +125,8 @@
       <div>
         <el-form :model="formData" ref="deptDiagFormRef" :rules="formRules">
           <el-form-item label="部门名称" prop="deptName" label-width="100px">
-            <el-input v-model.trim="formData.deptName" placeholder="请输入部门中文名称"></el-input>
+            <el-input v-model.trim="formData.deptName" placeholder="请输入部门名称"></el-input>
+            <el-input style="margin-bottom:0;display:none;"></el-input>
           </el-form-item>
         </el-form>
       </div>
@@ -180,26 +178,10 @@ enum UserStatus {
   禁用 = -1,
   启用 = 0,
 }
-enum GenderLabel {
-  男,
-  女,
-}
 // 状态码
 enum ResCode {
   Success,
 }
-
-// 中文校验
-function checkZNName(name: string): boolean {
-  const szReg = /[\u4e00-\u9fa5]{2,255}/;
-  return szReg.test(name);
-}
-const validatorZNNamePass = (rule: any, value: string, callback: Function) => {
-  if (!checkZNName(value)) {
-    callback(new Error('请输入长度至少2最大255个字的中文格式名称'));
-  }
-  callback();
-};
 const treeProps = {
   label: 'name',
   children: 'children',
@@ -248,14 +230,12 @@ export default defineComponent({
     const editFormData = ref();
     // 所有的人员
     const allUsers = ref([]);
-    // 当前node节点下的人
-    // const currentNodeUsers = ref([]);
 
     // 校验规则
     const formRules = {
       deptName: [
-        { required: true, message: '请输入部门中文名称', trigger: 'blur' },
-        { validator: validatorZNNamePass, trigger: 'blur' },
+        { required: true, message: '请输入部门名称', trigger: 'blur' },
+        { min: 2, max: 50, message: '长度在 2 到 50 个字符', trigger: 'blur' }
       ],
     };
     // 提示信息
@@ -309,8 +289,7 @@ export default defineComponent({
         allDeptUser.value = deptTree;
         allUsers.value = data.users.map((user: any) => ({
           ...user,
-          status: UserStatus[user.status as 0 | -1],
-          gender: GenderLabel[user.gender as 0 | 1],
+          status: UserStatus[user.status as 0 | -1]
         }));
         treeData.loading = false;
       }
@@ -396,7 +375,7 @@ export default defineComponent({
     const handleDel = () => {
       if (treeData.currentNodeData._children) {
         if (treeData.currentNodeData._children.length) {
-          msgTips('warning', '该部门下有子节点，无法删除！');
+          msgTips('warning', '该部门下有人员，无法删除！');
           return;
         }
         // 判断部门中是否有人员
@@ -446,9 +425,9 @@ export default defineComponent({
           return {
             name: displayName,
             id,
-            isLeaf: true,
+            isLeaf: true
           };
-        });
+        })
       }
     };
 
@@ -478,6 +457,9 @@ export default defineComponent({
       });
       if (code === ResCode.Success) {
         msgTips('success', '上移成功');
+        data.parent._children = data.parent._children.filter((item: any) => {
+          return item.id !== data.id;
+        });
         removeNode(data);
         append({ ...data }, data.parent.parent);
       } else {
@@ -486,7 +468,16 @@ export default defineComponent({
     };
 
     const reloadUserList = async (data: any) => {
-      data.users.forEach((item: any) => {
+      // 当前部门下的人员
+      const { parentData, users } = data;
+      const newUserList = users.filter((item: any) => {
+        const oldList = parentData.children || parentData._children;
+        return !(oldList.find((subItem: any) => {
+          return subItem.id === item.id;
+        }));
+      });
+      // 过滤当前组织下已存在的人员
+      newUserList.forEach((item: any) => {
         append(item, data.parentData);
       });
     };
@@ -558,13 +549,17 @@ export default defineComponent({
               editFormData.value.name = formData.deptName;
               updateKeyChildren(editFormData.value);
             } else {
+              const newNodeData = {
+                id: data.deptId,
+                name: formData.deptName,
+                _children: [],
+                isLeaf: false,
+              };
+              treeData.currentNodeData._children.push(
+                newNodeData
+              );
               append(
-                {
-                  id: data.deptId,
-                  name: formData.deptName,
-                  _children: [],
-                  isLeaf: false,
-                },
+                newNodeData,
                 treeData.currentNodeData,
               );
             }
@@ -601,7 +596,6 @@ export default defineComponent({
       const { pageSize, page } = tableData.searchProps;
       // 获取当前的所有人员数据
       const filterRes = treeData.currentNodeUsers.filter((subItem: any) => subItem.displayName.includes(keyword));
-      // treeData.currentNodeUsers = filterRes;
       getCurrentTableData(filterRes, page, pageSize);
     };
     const filterAccount = debounce(serchUserList, 500);
