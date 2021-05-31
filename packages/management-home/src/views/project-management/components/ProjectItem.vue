@@ -97,7 +97,7 @@ export default defineComponent({
       }
     };
 
-    const levelArr = ['', '统一级', '行业级', '租户级'];
+    const levelArr = ['', '通用级', '行业级', '租户级'];
     const deleteProject = () => {
       console.log(props.dataObj.id);
       ctx.emit('deleteProject', props.dataObj.id);
