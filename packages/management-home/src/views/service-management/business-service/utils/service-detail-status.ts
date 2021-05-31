@@ -22,7 +22,7 @@ interface ServerStatusInterface {
 }
 
 // 解析服务状态信息
-export default function(status: number): ServerStatusInterface {
+export default function (status: number): ServerStatusInterface {
   switch (status) {
     case ServerStatusEnum.UNINITIALIZED:
       return {

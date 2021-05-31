@@ -16,12 +16,7 @@
         ></el-input>
       </el-form-item>
       <el-form-item prop="captchaCode">
-        <el-input
-          class="form-item"
-          v-model="loginInfo.captchaCode"
-          placeholder="验证码"
-          @change="onInputCaptchaCode"
-        >
+        <el-input class="form-item" v-model="loginInfo.captchaCode" placeholder="验证码" @change="onInputCaptchaCode">
           <template #suffix>
             <el-button id="success-btn" v-if="isPassed" type="success" circle>
               <i class="el-icon-check"></i>
@@ -103,9 +98,13 @@ export default defineComponent({
           try {
             loading.value = true;
             const { data } = await getCode({
-              captchaCode: loginInfo.captchaCode
+              captchaCode: loginInfo.captchaCode,
             });
-            const { code } = await login({ account: loginInfo.username, loginVerifyCode: data.loginVerifyCode, secret: `${loginInfo.password}.${data.code}` });
+            const { code } = await login({
+              account: loginInfo.username,
+              loginVerifyCode: data.loginVerifyCode,
+              secret: `${loginInfo.password}.${data.code}`,
+            });
             if (code === 0) {
               await getUser();
               loading.value = false;

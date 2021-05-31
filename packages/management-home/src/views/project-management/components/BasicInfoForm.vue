@@ -58,21 +58,21 @@
       <el-form-item label="许可类型" prop="license">
         <div v-if="!editMode" class="form-content">{{ getLabel(detailInfo.license)(licenseTypes) }}</div>
         <el-radio-group class="form-content" v-if="editMode" v-model="formData.license">
-          <el-radio v-for="license in licenseTypes" :key="license.value" :label="license.value">
-            {{
-              license.label
-            }}
-          </el-radio>
+          <el-radio
+            v-for="license in licenseTypes"
+            :key="license.value"
+            :label="license.value"
+          >{{ license.label }}</el-radio>
         </el-radio-group>
       </el-form-item>
       <el-form-item label="项目状态" prop="status">
         <div v-if="!editMode" class="form-content">{{ getLabel(detailInfo.status)(statusOptions) }}</div>
         <el-radio-group class="form-content" v-if="editMode" v-model="formData.status">
-          <el-radio v-for="status in statusOptions" :key="status.value" :label="status.value">
-            {{
-              status.label
-            }}
-          </el-radio>
+          <el-radio
+            v-for="status in statusOptions"
+            :key="status.value"
+            :label="status.value"
+          >{{ status.label }}</el-radio>
         </el-radio-group>
       </el-form-item>
     </el-form>
@@ -90,7 +90,7 @@ import { updateProject } from '@/api/project/project';
 import { getAllTemplates } from '@/api/settings/templates';
 import OwnerSelect from '@/components/owners-select/Index.vue';
 // import ElMessage from "element-plus";
-import Message from 'element-plus/es/el-message';
+// import Message from 'element-plus/es/el-message';
 
 export default {
   name: 'BasicInfoForm',

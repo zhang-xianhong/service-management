@@ -28,11 +28,7 @@
           </el-dropdown-menu>
         </template>
       </el-dropdown>
-      <span
-        class="el-dropdown-link"
-        v-if="!userCurrentProject.name"
-        style="font-size: 14px; margin-right: 10px"
-      >
+      <span class="el-dropdown-link" v-if="!userCurrentProject.name" style="font-size: 14px; margin-right: 10px">
         <i class="el-icon-s-unfold header-title-object-icon3"></i> 暂无项目
       </span>
       <el-dropdown trigger="click" class="header-title" v-else>
@@ -47,7 +43,8 @@
               :key="index"
               @click="handleDropClick(project)"
               :icon="project.id === userCurrentProject.id ? 'el-icon-check' : ''"
-            >{{ project.name }}</el-dropdown-item>
+              >{{ project.name }}</el-dropdown-item
+            >
           </el-dropdown-menu>
         </template>
       </el-dropdown>

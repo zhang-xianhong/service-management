@@ -8,7 +8,7 @@
             <el-checkbox
               v-model="checkAllTree"
               @change="checkAllUser"
-              style="float:left;margin-left:10px;"
+              style="float: left; margin-left: 10px"
             ></el-checkbox>
             {{ optionLabel }}
           </div>
@@ -306,8 +306,8 @@ export default {
       copyOption.forEach((item: any, index: number) => {
         userTreeRefs.value.getNode(copyOption[index]).data.checked = isSelect;
         checkSingle(userTreeRefs.value.getNode(copyOption[index]).data);
-      })
-    }
+      });
+    };
     return {
       dialogVisible,
       show,
@@ -326,7 +326,7 @@ export default {
       searchDone,
       checkAllTree,
       checkAllUser,
-      userTreeRefs
+      userTreeRefs,
     };
   },
 };

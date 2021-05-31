@@ -10,11 +10,7 @@
       <div>
         <div class="title">
           项目信息
-          <span
-            class="edit-btn"
-            v-if="!editMode && getShowBool('update')"
-            @click="editMode = true"
-          >编辑</span>
+          <span class="edit-btn" v-if="!editMode && getShowBool('update')" @click="editMode = true">编辑</span>
         </div>
         <basic-info-form
           :project-detail="projectDetail"
