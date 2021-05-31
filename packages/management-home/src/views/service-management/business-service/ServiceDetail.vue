@@ -14,7 +14,7 @@
             :key="index"
             :type="button.type || undefined"
             v-on="button.eventOption"
-            :disabled="button.disabled"
+            :disabled="!modelList.tables.length || button.disabled"
             :style="button.style"
           >
             {{ button.label }}
