@@ -98,7 +98,7 @@
             </el-popover>
           </template>
         </el-table-column>
-        <el-table-column label="审核说明" prop="auditInstructions" how-overflow-tooltip></el-table-column>
+        <el-table-column label="审核说明" prop="auditInstructions" show-overflow-tooltip></el-table-column>
         <el-table-column label="发布时间" prop="publishTime">
           <template #default="scope">{{ dateFormat(scope.row.publishTime) }}</template>
         </el-table-column>
@@ -123,7 +123,7 @@
     <el-dialog title="发布审核" v-model="addpublishDialog" width="600px" @closed="closepublishForm">
       <div class="add-publish-set">
         <el-form :model="publishForm.formData" :rules="publishRules" ref="publishFormRef">
-          <el-form-item label="发布说明" prop="auditInstructions" :label-width="labelWidth">
+          <el-form-item label="审核说明" prop="auditInstructions" :label-width="labelWidth">
             <el-input
               v-model="publishForm.formData.auditInstructions"
               type="textarea"
@@ -201,7 +201,7 @@ export default {
         page: 1,
         pageSize: 10,
         sortField: 'createTime',
-        sortType: 'ascending',
+        sortType: 'descending',
       },
     });
     // 新增配置表单数据
@@ -380,12 +380,13 @@ export default {
     }
     async function remoteMethod(keyword: string) {
       if (keyword !== '') {
-        const {
-          data: { users = [] },
-        } = await findUserByName({ keyword });
-        console.log('user', users);
-        tableState.reviewerFilters = [];
-        tableState.applicantFilters = [];
+        const { data = [] } = await findUserByName({ keyword });
+        const users = data.map((item: any) => ({
+          id: item.id,
+          name: item.userName,
+        }));
+        tableState.reviewerFilters = users;
+        tableState.applicantFilters = users;
       } else {
         tableState.reviewerFilters = [];
         tableState.applicantFilters = [];
