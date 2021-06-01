@@ -1,6 +1,6 @@
 <template>
-  <el-row style="font-weight:bolder">管理员信息</el-row>
-  <el-row style="padding:0 20px;">
+  <el-row style="font-weight: bolder">管理员信息</el-row>
+  <el-row style="padding: 0 20px">
     <el-form
       class="managerinfo-form"
       ref="formRef"
@@ -12,7 +12,13 @@
     >
       <el-form-item prop="account" class="form-item" label="管理员账号">
         <template v-if="isEdit">{{ managerInfo.account }}</template>
-        <el-input v-else v-model="managerInfo.account" style="width: 400px" placeholder="请输入小写英文账号"></el-input>
+        <el-input
+          v-else
+          v-model="managerInfo.account"
+          style="width: 400px"
+          placeholder="请输入小写英文账号"
+          maxlength="20"
+        ></el-input>
       </el-form-item>
       <el-form-item prop="email" class="form-item" label="管理员邮箱">
         <template v-if="isEdit">{{ managerInfo.email }}</template>
@@ -24,6 +30,7 @@
           v-else
           v-model="managerInfo.name"
           style="width: 400px"
+          maxlength="20"
           placeholder="请输入中文租户管理员姓名"
         ></el-input>
       </el-form-item>
@@ -117,12 +124,8 @@ export default {
         { pattern: /^\d{11}$/g, message: '管理员电话输入格式不合法，请重新输入', trigger: 'blur' },
       ],
       email: [
-        { required: true, message: '请输入管理员邮箱', trigger: 'blur' },
-        {
-          pattern: /^\w+((.\w+)|(-\w+))@[A-Za-z0-9]+((.|-)[A-Za-z0-9]+).[A-Za-z0-9]+$/g,
-          message: '管理员邮箱输入格式不合法，请重新输入',
-          trigger: 'blur',
-        },
+        { required: true, message: '请输入邮箱地址', trigger: 'blur' },
+        { type: 'email', message: '请输入正确的邮箱地址', trigger: 'blur' },
       ],
       password: [
         { required: true, message: '请输入初始密码' },

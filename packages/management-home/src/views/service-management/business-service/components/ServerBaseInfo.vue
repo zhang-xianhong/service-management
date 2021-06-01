@@ -14,6 +14,7 @@
           v-else
           :value="formData.owners"
           :options="formData.ownerUsers"
+          :use-project="true"
           @change="selectOwners"
         ></owner-select>
       </el-form-item>

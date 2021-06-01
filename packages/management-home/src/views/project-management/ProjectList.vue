@@ -63,8 +63,12 @@
             prop="name"
             :rules="[
               { required: true, message: '请输入英文名称', trigger: 'blur' },
-              { min: 1, max: 64, message: '最大不能超过 64 个字符', trigger: 'blur' },
-              { validator: validatorPass, message: '仅支持英文、数字、中划线', trigger: 'blur' },
+              { min: 3, max: 20, message: '请输入3到20个字符', trigger: 'blur' },
+              {
+                validator: validatorPass,
+                message: '[字母][字母/数字/中横线][字母/数字]（字母为小写）',
+                trigger: 'blur',
+              },
             ]"
           >
             <el-input v-model="projectDetail.name" @blur="checkEnglishName"></el-input>
@@ -72,8 +76,11 @@
           <el-form-item
             label="项目描述"
             :label-width="labelWidth"
-            prop="name"
-            :rules="[{ required: true, message: '请输入项目描述', trigger: 'blur' }]"
+            prop="description"
+            :rules="[
+              { required: true, message: '请输入项目描述', trigger: 'blur' },
+              { min: 3, max: 20, message: '请输入3到20个字符', trigger: 'blur' },
+            ]"
           >
             <el-input v-model="projectDetail.description"></el-input>
           </el-form-item>
@@ -113,7 +120,7 @@
           </el-form-item>
           <el-form-item label="项目状态" :label-width="labelWidth">
             <el-radio v-model="projectDetail.status" :label="1">启用</el-radio>
-            <el-radio v-model="projectDetail.status" :label="0">禁用</el-radio>
+            <el-radio v-model="projectDetail.status" :label="0">冻结</el-radio>
           </el-form-item>
           <el-form-item label="项目简介" :label-width="labelWidth">
             <el-input v-model="projectDetail.remark" type="textarea" :rows="5"></el-input>
@@ -121,7 +128,7 @@
         </el-form>
       </div>
       <div class="project-list-dialog-footer">
-        <el-button type="primary" @click="submitProjectDetail">确定</el-button>
+        <el-button type="primary" @click="submitProjectDetail" :loading="submitLoading">确定</el-button>
         <el-button @click="closeDialog">取消</el-button>
       </div>
     </el-dialog>
@@ -143,7 +150,6 @@ import {
   deleteProject,
   pageInfo,
 } from '@/views/project-management/utils/project-data-utils';
-import Message from 'element-plus/es/el-message';
 import fetchOwnersSelect from '@/components/fetchOwnersSelect/Index.vue';
 import { projectNameTest } from '@/api/project/project';
 import { userProjectList, userInfo } from '@/layout/messageCenter/user-info';
@@ -186,21 +192,30 @@ export default defineComponent({
     }
     getAllTems();
 
+    const submitLoading = ref(false);
     const submitProjectDetail = () => {
+      if (submitLoading.value) {
+        return;
+      }
       if (!projectDetail.name) {
-        return Message.error('项目名称不得为空');
+        return false;
+      }
+      if (projectDetail.name.length > 20) {
+        return false;
       }
       if (!projectDetail.description) {
-        return Message.error('项目描述不得为空');
+        return false;
       }
       if (!projectDetail.templateId) {
-        return Message.error('代码模板不得为空');
+        return false;
       }
+      submitLoading.value = true;
       addProjectData().then(() => {
         pageInfo.page = 1;
         getProjectListData();
         closeDialog();
         window.location.reload();
+        submitLoading.value = false;
       });
     };
 
@@ -275,6 +290,7 @@ export default defineComponent({
       loadings,
       validatorPass,
       getShowBool,
+      submitLoading,
     };
   },
 });

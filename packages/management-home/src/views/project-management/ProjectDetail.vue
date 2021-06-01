@@ -133,11 +133,6 @@ export default {
         label: '姓名',
       },
       {
-        prop: 'gender',
-        label: '性别',
-        width: '60',
-      },
-      {
         prop: 'phoneNumber',
         label: '手机',
       },
@@ -167,7 +162,7 @@ export default {
           status: userStatus[user.status as 0 | -1],
           gender: genderLabel[user.gender as 0 | 1],
         }));
-        const noPaRoles = data.roles.filter((x: any) => x.code !== 'PA');
+        const noPaRoles = data.roles.filter((x: any) => x.code !== 'PA' && x.code !== 'VIS');
         treeData.value[0].children = _.flow(
           _.reject({ isOwnerRole: true }),
           _.map((role: any) => ({
@@ -315,7 +310,7 @@ export default {
   .el-form-item__label {
     font-size: 12px;
   }
-  margin: -20px;
+  //margin: -20px;
   height: calc(100vh - 130px);
   background: #f2f2f2;
   .basic-info {

@@ -1,8 +1,8 @@
 <template>
   <el-row>
-    <el-col :span="4" style="text-align:left">
-      <el-button style="width:90px" type="primary" @click="onAdd">
-        <i class="el-icon-plus" style="font-weight:bloder;margin-right:2px;"></i>新建
+    <el-col :span="4" style="text-align: left">
+      <el-button style="width: 90px" type="primary" @click="onAdd">
+        <i class="el-icon-plus" style="font-weight: bloder; margin-right: 2px"></i>新建
       </el-button>
       <!-- TODO：待确定 -->
       <!-- <el-button @click="freezeInBatches">冻结</el-button>
@@ -44,7 +44,7 @@
             冻结
           </el-button>
           <el-button type="primary" v-if="scope.row.status === statusEnum.FREEZE" @click="onStart(scope.row.id)">
-            启动
+            启用
           </el-button>
           <el-button :disabled="scope.row.status === statusEnum.START" @click="onDelete(scope.row)">删除</el-button>
         </template>
@@ -219,7 +219,7 @@ export default {
       if (code === 0) {
         (instance as any).proxy.$message({
           type: 'success',
-          message: '启动成功',
+          message: '启用成功',
         });
         getTableData();
       }

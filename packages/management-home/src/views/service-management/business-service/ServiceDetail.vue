@@ -14,11 +14,14 @@
             :key="index"
             :type="button.type || undefined"
             v-on="button.eventOption"
-            :disabled="button.disabled"
+            :disabled="!modelList.tables.length || button.disabled"
             :style="button.style"
           >
             {{ button.label }}
           </el-button>
+          <span v-if="!modelList.tables.length && pageLoading" style="color: red; font-size: 12px;margin-left: 10px;"
+            >请至少创建一个数据对象</span
+          >
         </el-col>
         <el-col :span="8" class="detail-operation">
           <div class="detail-status">
@@ -408,6 +411,7 @@ export default {
       initModelList();
     });
 
+    const pageLoading = ref(false);
     const modelSelected = async (model: any) => {
       modelInfo.value = null;
       if (model) {
@@ -421,6 +425,7 @@ export default {
           modelInfo.value = { ...data, fields: model.fields };
           isShowDownDrawer.value = true;
           drawerName.value = 'ModelFieldForm';
+          pageLoading.value = true;
         }
       } else {
         isShowDownDrawer.value = false;
@@ -510,6 +515,7 @@ export default {
       userProjectList,
       sqlLoadings,
       getShowBool,
+      pageLoading,
     };
   },
 };

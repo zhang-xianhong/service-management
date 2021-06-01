@@ -49,7 +49,12 @@
     </el-row>
     <el-dialog :title="dialogTitle" v-model="dialogVisible">
       <el-form :model="form" :rules="rules" ref="formRef">
-        <el-form-item label="标签名称" :label-width="80" prop="name">
+        <el-form-item
+          label="标签名称"
+          :label-width="80"
+          prop="name"
+          :rules="[{ min: 1, max: 25, message: '内容过长，最多不能超过25个字符', trigger: 'blur' }]"
+        >
           <el-input v-model="form.name" autocomplete="off"></el-input>
         </el-form-item>
       </el-form>
@@ -221,6 +226,9 @@ export default defineComponent({
       dialogTitle.value = '新增标签';
     };
     const save = () => {
+      if (form.value.name.length > 25) {
+        return false;
+      }
       formRef.value.validate(async (isValid: boolean) => {
         if (isValid) {
           loading.value = true;

@@ -9,7 +9,7 @@
   >
     <div>
       <el-form :model="formData" ref="diagFormRef" :rules="formRules">
-        <el-form-item label="登记账号" prop="username" :label-width="labelWidth">
+        <el-form-item label="登录账号" prop="username" :label-width="labelWidth">
           <el-input
             v-model.trim="formData.username"
             :disabled="isEdit"
@@ -35,12 +35,17 @@
             <el-radio label="-1">禁用</el-radio>
           </el-radio-group>
         </el-form-item>
-        <el-form-item label="初始密码" :label-width="labelWidth" v-if="!isEdit">
-          <el-tooltip content="复制密码，保存后可用新密码登录" placement="top" effect="light" style="margin-right: 5px">
+        <el-form-item label="初始密码" :label-width="labelWidth" v-if="!isEdit" style="position: relative">
+          <!-- <el-tooltip
+            content="复制密码，保存后可用新密码登录"
+            placement="top"
+            effect="light"
+            style="margin-right: 5px"
+          >
             <svg-icon icon-name="wenhao" icon-class="detail-icons__item"></svg-icon>
-          </el-tooltip>
-          <el-input v-model.trim="formData.password" style="width: 280px" show-password></el-input>
-          <el-button type="text" style="margin-left: 20px" @click="handleCopy">复制</el-button>
+          </el-tooltip>-->
+          <el-input v-model.trim="formData.password" show-password></el-input>
+          <el-button type="text" class="btn-copy" @click="handleCopy">复制</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -73,65 +78,6 @@ interface DialogState {
 }
 const labelWidth = '100px';
 
-// 手机号校验
-const validatorMobilePass = async (rule: any, value: string, callback: Function) => {
-  if (!checkMobile(value)) {
-    callback(new Error('请输入正确的手机号码'));
-  }
-  // 继续后台校验
-  const { code, data } = await checkUserInfo({
-    key: 'phoneNumber',
-    value,
-  });
-  if (code === 0 && data.exist) {
-    callback(new Error('手机号已存在'));
-  } else {
-    callback();
-  }
-};
-
-// 邮箱校验
-const validatorMailPass = async (rule: any, value: string, callback: Function) => {
-  if (!checkMail(value)) {
-    callback(new Error('请输入正确的邮箱格式'));
-  }
-  // 继续后台校验
-  const { code, data } = await checkUserInfo({
-    key: 'primaryMail',
-    value,
-  });
-  if (code === 0 && data.exist) {
-    callback(new Error('邮箱已存在'));
-  } else {
-    callback();
-  }
-};
-
-// 中文姓名校验
-const validatorZNNamePass = (rule: any, value: string, callback: Function) => {
-  if (!checkZNName(value)) {
-    callback(new Error('请输入长度至少2个最大16个字的中文格式名称'));
-  }
-  callback();
-};
-
-// 英文名称校验
-const validatorEnPass = async (rule: any, value: string, callback: Function) => {
-  if (!checkEnName(value)) {
-    callback(new Error('请输入长度至少2个英文字母的账户名称'));
-  }
-  // 继续后台校验
-  const { code, data } = await checkUserInfo({
-    key: 'username',
-    value,
-  });
-  if (code === 0 && data.exist) {
-    callback(new Error('账号已存在'));
-  } else {
-    callback();
-  }
-};
-
 export default defineComponent({
   name: 'AddPerson',
   setup() {
@@ -149,6 +95,79 @@ export default defineComponent({
         password: '',
       },
     });
+    let editBeforeFormData: any = {};
+    // 手机号校验
+    const validatorMobilePass = async (rule: any, value: string, callback: Function) => {
+      if (!checkMobile(value)) {
+        callback(new Error('请输入正确的手机号码'));
+      }
+      //  编辑的话判断手机号码是否有更改
+      if (dialogContent.isEdit && editBeforeFormData.phoneNumber === dialogContent.formData.phoneNumber) {
+        // 是否有更改
+        callback();
+      }
+      // 继续后台校验
+      const { code, data } = await checkUserInfo({
+        key: 'phoneNumber',
+        value,
+      });
+      if (code === 0 && data.exist) {
+        callback(new Error('手机号已存在'));
+      } else {
+        callback();
+      }
+    };
+
+    // 邮箱校验
+    const validatorMailPass = async (rule: any, value: string, callback: Function) => {
+      if (!checkMail(value)) {
+        callback(new Error('请输入正确的邮箱格式'));
+      }
+      //  编辑的话判断手机号码是否有更改
+      if (dialogContent.isEdit && editBeforeFormData.primaryMail === dialogContent.formData.primaryMail) {
+        // 是否有更改
+        callback();
+      }
+      // 继续后台校验
+      const { code, data } = await checkUserInfo({
+        key: 'primaryMail',
+        value,
+      });
+      if (code === 0 && data.exist) {
+        callback(new Error('邮箱已存在'));
+      } else {
+        callback();
+      }
+    };
+
+    // 中文姓名校验
+    const validatorZNNamePass = (rule: any, value: string, callback: Function) => {
+      if (!checkZNName(value)) {
+        callback(new Error('请输入长度至少2个最大16个字的中文格式名称'));
+      }
+      callback();
+    };
+
+    // 英文名称校验
+    const validatorEnPass = async (rule: any, value: string, callback: Function) => {
+      // 编辑的话不用校验
+      if (dialogContent.isEdit) {
+        callback();
+      }
+      if (!checkEnName(value)) {
+        callback(new Error('请输入长度至少2个英文字母的账户名称'));
+      }
+      // 继续后台校验
+      const { code, data } = await checkUserInfo({
+        key: 'username',
+        value,
+      });
+      if (code === 0 && data.exist) {
+        callback(new Error('账号已存在'));
+      } else {
+        callback();
+      }
+    };
     // 校验规则
     const formRules = {
       username: [
@@ -173,6 +192,7 @@ export default defineComponent({
     // 打开对话框
     const openDialog = (type: string, data: any): void => {
       if (type === 'edit') {
+        editBeforeFormData = { ...data };
         dialogContent.isEdit = true;
         dialogContent.title = '人员详情';
         dialogContent.disable = true;
@@ -195,7 +215,7 @@ export default defineComponent({
         displayName: '',
         phoneNumber: '',
         primaryMail: '',
-        status: '-1',
+        status: '0',
         password: generatePasswd(12),
       };
     }
@@ -265,5 +285,10 @@ export default defineComponent({
   display: block;
   text-align: center;
   margin-bottom: 20px;
+}
+.btn-copy {
+  position: absolute;
+  right: 50px;
+  top: 0;
 }
 </style>

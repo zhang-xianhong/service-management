@@ -1,19 +1,32 @@
 <template>
-  <el-row style="font-weight:bolder">企业信息</el-row>
+  <el-row style="font-weight: bolder">企业信息</el-row>
   <el-row style="font-size: 12px">
-    <el-form ref="formRef" :model="companyInfo" :rules="rules" inline label-width="140px" label-position="left">
-      <el-form-item prop="name" class="form-item" label="企业名称">
+    <el-form
+      ref="formRef"
+      :model="companyInfo"
+      :rules="rules"
+      inline
+      label-width="140px"
+      label-position="left"
+    >
+      <el-form-item prop="name" class="form-item" label="企业中文名称">
         <template v-if="isEdit">{{ companyInfo.name }}</template>
         <el-input
           v-else
           v-model="companyInfo.name"
           style="width: 400px"
           placeholder="请输入企业名称"
+          maxlength="40"
           @blur="validateName"
         ></el-input>
       </el-form-item>
       <el-form-item prop="nameShort" class="form-item" label="企业别称">
-        <el-input v-model="companyInfo.nameShort" style="width: 400px" placeholder="请输入企业简称"></el-input>
+        <el-input
+          v-model="companyInfo.nameShort"
+          style="width: 400px"
+          placeholder="请输入企业简称"
+          maxlength="40"
+        ></el-input>
       </el-form-item>
       <el-form-item prop="tenantEngAbbr" class="form-item" label="企业英文简称">
         <template v-if="isEdit">{{ companyInfo.tenantEngAbbr }}</template>
@@ -22,6 +35,7 @@
           v-model="companyInfo.tenantEngAbbr"
           style="width: 400px"
           placeholder="请输入企业英文简称"
+          maxlength="16"
         ></el-input>
       </el-form-item>
       <el-form-item prop="addr" class="form-item" label="企业地址">
@@ -36,7 +50,12 @@
       </el-form-item>
       <el-form-item prop="industryId" class="form-item" label="所属行业">
         <template v-if="isEdit">{{ computedIndustryName || companyInfo.industryId }}</template>
-        <el-select v-else v-model="companyInfo.industryId" style="width: 400px" placeholder="请选择所属行业">
+        <el-select
+          v-else
+          v-model="companyInfo.industryId"
+          style="width: 400px"
+          placeholder="请选择所属行业"
+        >
           <el-option
             v-for="(item, index) in industryOptions"
             :key="index"
@@ -46,7 +65,12 @@
         </el-select>
       </el-form-item>
       <el-form-item prop="addrDetail" class="form-item" label="详细地址">
-        <el-input v-model="companyInfo.addrDetail" style="width: 400px" placeholder="请输入详细地址"></el-input>
+        <el-input
+          v-model="companyInfo.addrDetail"
+          style="width: 400px"
+          placeholder="请输入详细地址"
+          maxlength="255"
+        ></el-input>
       </el-form-item>
       <el-form-item prop="natureId" class="form-item" label="企业性质">
         <template v-if="isEdit">{{ computedNature || companyInfo.natureId }}</template>
@@ -80,13 +104,14 @@
           ></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item prop="license" label="营业执照号" style="display:block;">
+      <el-form-item prop="license" label="营业执照号" style="display: block">
         <template v-if="isEdit">{{ companyInfo.license }}</template>
         <el-input
           v-else
           v-model="companyInfo.license"
           style="width: 400px"
           placeholder="请输入营业执照号"
+          maxlength="18"
           @blur="validateLicenseId"
         ></el-input>
       </el-form-item>
@@ -112,7 +137,7 @@
       </el-form-item>
       <el-form-item prop="logoUrl" class="form-item">
         <template v-slot:label>
-          企业logo
+          企业LOGO
           <i class="el-icon-question info-icon"></i>
         </template>
         <el-upload
@@ -140,7 +165,7 @@ import { SuccessResponse } from '@/types/response';
 import { getImageUrl } from '@/api/files';
 import { validateCompanyName, validateLicense } from '@/api/tenant';
 import CompanyInfoInterface from '../types/company-info-interface';
-
+const iamgeTypes = ['jpg', 'bmp', 'png', 'jpeg'];
 export default {
   name: 'CompanyInfo',
   props: {
@@ -245,15 +270,22 @@ export default {
           trigger: 'blur',
         },
         {
-          pattern: /^[a-zA-Z]+$/g,
-          message: '该企业英文简称包含非法字符，请重新输入',
+          pattern: /^[a-z]+$/g,
+          message: '该企业英文简称只支持英文小写字母，请重新输入',
           trigger: 'blur',
         },
       ],
       industryId: [{ required: true, message: '请选择所属行业' }],
       natureId: [{ required: true, message: '请选择企业性质' }],
       scaleId: [{ required: true, message: '请选择企业规模' }],
-      license: [{ required: true, message: '请输入营业执照号', trigger: 'blur' }],
+      license: [
+        { required: true, message: '请输入营业执照号', trigger: 'blur' },
+        {
+          pattern: /(^(?:(?![IOZSV])[\dA-Z]){2}\d{6}(?:(?![IOZSV])[\dA-Z]){10}$)|(^\d{15}$)/,
+          message: '营业执照号不合法，请重新输入',
+          trigger: 'blur',
+        },
+      ],
       licenseUrl: [{ required: true, message: '请上传营业执照' }],
     };
 
@@ -299,7 +331,13 @@ export default {
     });
 
     // 图片上传大小校验
-    const beforeUpload = (file: { size: number }) => {
+    const beforeUpload = (file: { size: number; name: string }) => {
+      if (iamgeTypes.indexOf(file.name.split('.')[1]) === -1) {
+        (instance as any).proxy.$message({
+          type: 'warning',
+          message: '图片格式错误，仅支持bmp,jpg,png,jpeg格式图片',
+        });
+      }
       if (file.size > 1024 * 1024 * 3) {
         (instance as any).proxy.$message({
           type: 'warning',
@@ -314,6 +352,7 @@ export default {
       if (res.code === 0 && res.data?.fileKey) {
         companyInfo.value.licenseUrl = res.data.fileKey;
         licenseUrl.value = URL.createObjectURL(file.raw);
+        formRef.value.validateField('licenseUrl');
       } else {
         (instance as any).proxy.$message({
           type: 'error',
@@ -370,7 +409,6 @@ export default {
         });
       }
     };
-
     return {
       IMAGE_UPLOAD,
       formRef,
@@ -400,7 +438,7 @@ export default {
 .info-icon {
   &:hover {
     &::after {
-      content: '建议尺寸115x85';
+      content: "建议尺寸115x85";
       position: absolute;
       margin-top: -20px;
       margin-left: -40px;

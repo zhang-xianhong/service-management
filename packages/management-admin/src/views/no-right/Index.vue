@@ -1,7 +1,5 @@
 <template>
-  <div>
-    没有权限
-  </div>
+  <div>没有权限</div>
 </template>
 
 <script>

@@ -19,8 +19,4 @@ app.config.globalProperties.$ELEMENT = {
 // 权限点鉴权，控制页面中按钮/模块显隐函数
 app.config.globalProperties.$showModule = showModule;
 
-app
-  .use(Element)
-  .use(Store)
-  .use(Router)
-  .mount('#app');
+app.use(Element).use(Store).use(Router).mount('#app');

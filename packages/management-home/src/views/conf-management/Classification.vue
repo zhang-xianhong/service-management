@@ -38,10 +38,18 @@
         <el-button type="primary" @click="save" v-if="getShowBool('update')">保存</el-button>
         <el-button @click="remove" v-if="getShowBool('delete')">删除</el-button>
         <el-form :model="currentNode" label-position="top" :rules="rules" class="mt20">
-          <el-form-item prop="name" label="分类名称">
+          <el-form-item
+            prop="name"
+            label="分类名称"
+            :rules="[{ min: 1, max: 20, message: '名称过长，最多不超过20个字符' }]"
+          >
             <el-input v-model="currentNode.name"></el-input>
           </el-form-item>
-          <el-form-item label="描述">
+          <el-form-item
+            label="描述"
+            prop="description"
+            :rules="[{ min: 1, max: 225, message: '描述过长，最多不超过225个字符' }]"
+          >
             <el-input type="textarea" :rows="10" v-model="currentNode.description"></el-input>
           </el-form-item>
         </el-form>
@@ -175,6 +183,12 @@ export default defineComponent({
       name: [{ required: true, message: '请输入分类名称', trigger: 'blur' }],
     };
     const save = async () => {
+      if (currentNode.value.name.length > 20) {
+        return false;
+      }
+      if ((currentNode.value.description as any).length > 225) {
+        return false;
+      }
       if (currentNode.value.id) {
         const { code } = await confApi.updateClassification(_.pick(['id', 'name', 'description'])(currentNode.value));
         if (code === 0) {

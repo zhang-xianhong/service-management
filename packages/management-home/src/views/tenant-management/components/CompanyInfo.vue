@@ -56,7 +56,7 @@
         <img :src="companyInfo.sourceUrl?.licenseUrl" class="avatar" />
       </el-form-item>
       <el-form-item prop="logoUrl" class="form-item">
-        <template v-slot:label>企业logo<i class="el-icon-question info-icon"></i></template>
+        <template v-slot:label>企业LOGO<i class="el-icon-question info-icon"></i></template>
         <img v-if="companyInfo.sourceUrl?.logoUrl" :src="companyInfo.sourceUrl.logoUrl" class="avatar" />
         <el-upload
           v-else

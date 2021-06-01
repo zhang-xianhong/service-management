@@ -5,7 +5,7 @@ const types: any[] = [];
 
 export default async () => {
   await getDictionaryTypes().then((res: any) => {
-    types.push(...res.data);
+    types.push(...res?.data);
   });
   // 获取行业信息
   const industryId: string = types[0].typeKey;

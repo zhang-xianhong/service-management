@@ -40,6 +40,7 @@
         ref="serverMuitable"
         @selection-change="handleSelection"
         v-if="refreshMess"
+        v-loading="tableLoading"
       >
         <el-table-column type="selection" width="55"></el-table-column>
         <el-table-column type="index" width="50" label="序号"></el-table-column>
@@ -122,12 +123,16 @@
               { min: 1, max: 32, message: '最大不能超过 32 个字符', trigger: 'blur' },
               {
                 validator: validatorPass,
-                message: '仅支持英文、数字、中划线，不能以中划线开头和结尾',
+                message: '仅支持小写英文、数字、中划线，不能以中划线开头和结尾',
                 trigger: 'blur',
               },
             ]"
           >
-            <el-input v-model.trim="serviceDetail.name" @blur="checkEnglishName">
+            <el-input
+              v-model.trim="serviceDetail.name"
+              placeholder='请输入英文名称，如"project1"，创建后无法修改'
+              @blur="checkEnglishName"
+            >
               <template #prepend>srv-</template>
             </el-input>
           </el-form-item>
@@ -140,7 +145,10 @@
               { min: 1, max: 60, message: '最大不能超过 60 个字符', trigger: 'blur' },
             ]"
           >
-            <el-input v-model.trim="serviceDetail.description"></el-input>
+            <el-input
+              v-model.trim="serviceDetail.description"
+              placeholder='请输入中文服务描述，如"项目管理服务"，创建后无法修改'
+            ></el-input>
           </el-form-item>
           <el-form-item label="负责人" :label-width="labelWidth">
             <fetch-owners-select @get-owners="setOwner" :use-project="true"></fetch-owners-select>
@@ -162,7 +170,12 @@
             </el-select>
           </el-form-item>
           <el-form-item label="服务详情" :label-width="labelWidth">
-            <el-input v-model="serviceDetail.detail" type="textarea" :rows="5"></el-input>
+            <el-input
+              v-model="serviceDetail.detail"
+              placeholder="请输入服务详情，最多支持255个字符"
+              type="textarea"
+              :rows="5"
+            ></el-input>
           </el-form-item>
           <el-form-item label="服务依赖" :label-width="labelWidth" prop="dependencies">
             <el-select v-model="serviceDetail.dependencies" clearable multiple>
@@ -267,11 +280,22 @@ export default defineComponent({
   },
   setup() {
 
-    if (userProjectList.value.length) {
-      getClassifications();
-      getTagsForService();
+    const tableLoading = ref(false)
 
-      refreshServiceList();
+    const pageInfo = reactive({
+      page: 1,
+      pageSize: 10,
+      classification: '',
+      tags: [],
+      keyword: '',
+    });
+
+    if (userProjectList.value.length) {
+      tableLoading.value = true;
+      getClassifications()
+        .then(() => getTagsForService())
+        .then(() => refreshServiceList(pageInfo))
+        .then(() => tableLoading.value = false)
     }
 
     const mutiArray = ref([] as any);
@@ -287,13 +311,6 @@ export default defineComponent({
     };
     const labelWidth = ref('100px');
 
-    const pageInfo = reactive({
-      page: 1,
-      pageSize: 10,
-      classification: '',
-      tags: [],
-      keyword: '',
-    });
     const refreshDataAndChange = () => {
       rememberMutiArray.value = mutiArray.value;
       (serverMuitable.value as any).clearSelection();
@@ -353,12 +370,32 @@ export default defineComponent({
           type: 'error',
         });
       }
+
+      if (senddata.name.length > 32) {
+        return ElMessage({
+          showClose: true,
+          message: '服务名称不得超过32个字符',
+          type: 'error',
+        });
+      }
+
+      let regux = /^[a-z0-9-]+(?<!-)$/;
+      if(!regux.test(serviceDetail.name)){
+        return ElMessage({
+          showClose: true,
+          message: '服务名称不符合命名规范',
+          type: 'error',
+        });
+      }
       if (!senddata.description) {
         return ElMessage({
           showClose: true,
           message: '请输入服务描述',
           type: 'error',
         });
+      }
+      if (senddata.description.length > 60) {
+        return false;
       }
       senddata.name = `srv-${senddata.name}`;
       senddata.classification = serviceDetail.classification ? serviceDetail.classification.join(',') : '';
@@ -564,6 +601,7 @@ export default defineComponent({
       userProjectList,
       validatorPass,
       getShowBool,
+      tableLoading,
     };
   },
 });

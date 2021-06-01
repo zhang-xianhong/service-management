@@ -13,14 +13,16 @@
         </el-badge>
         <template #dropdown>
           <el-dropdown-menu>
-            <el-dropdown-item icon="el-icon-message"
-              >升级公告<span class="el-badge__content el-badge__content--primary">2</span></el-dropdown-item
-            >
+            <el-dropdown-item icon="el-icon-message">
+              升级公告
+              <span class="el-badge__content el-badge__content--primary">2</span>
+            </el-dropdown-item>
             <el-dropdown-item icon="el-icon-s-flag">待办任务</el-dropdown-item>
             <el-dropdown-item icon="el-icon-tickets">待办工单</el-dropdown-item>
-            <el-dropdown-item icon="el-icon-date"
-              >今日日程<span class="el-badge__content el-badge__content--primary">3</span></el-dropdown-item
-            >
+            <el-dropdown-item icon="el-icon-date">
+              今日日程
+              <span class="el-badge__content el-badge__content--primary">3</span>
+            </el-dropdown-item>
             <el-dropdown-item icon="el-icon-edit-outline">待批申请</el-dropdown-item>
             <el-dropdown-item icon="el-icon-bell">系统通知</el-dropdown-item>
           </el-dropdown-menu>
@@ -31,7 +33,8 @@
       </span>
       <el-dropdown trigger="click" class="header-title" v-else>
         <span class="el-dropdown-link">
-          <i class="el-icon-s-unfold header-title-object-icon3"></i> {{ userCurrentProject.name }}
+          <i class="el-icon-s-unfold header-title-object-icon3"></i>
+          {{ userCurrentProject.name }}
         </span>
         <template #dropdown>
           <el-dropdown-menu>
@@ -53,9 +56,6 @@
         </span>
         <template #dropdown>
           <el-dropdown-menu>
-            <el-dropdown-item icon="el-icon-edit" v-if="userInfo.admin">用户管理</el-dropdown-item>
-            <!--            <el-dropdown-item icon="el-icon-map-location">登录地点</el-dropdown-item>-->
-            <!--            <el-dropdown-item icon="el-icon-s-custom">我的资产</el-dropdown-item>-->
             <el-dropdown-item icon="el-icon-info" @click="jump2UserCenter">个人中心</el-dropdown-item>
             <el-dropdown-item icon="el-icon-info">关于</el-dropdown-item>
             <el-dropdown-item icon="el-icon-switch-button" @click="handleLogout">登出</el-dropdown-item>

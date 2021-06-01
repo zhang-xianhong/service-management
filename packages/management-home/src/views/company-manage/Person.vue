@@ -2,10 +2,16 @@
   <div>
     <el-row>
       <el-col :span="10" style="text-align: left">
-        <el-button type="primary" style="width: 90px" @click="openAddDialog">新建</el-button>
-        <el-button @click="handleUpdateStatus(0)" :disabled="!multipleSelection.length">启用</el-button>
-        <el-button @click="handleUpdateStatus(-1)" :disabled="!multipleSelection.length">禁用</el-button>
-        <el-button @click="handleDel" :disabled="!multipleSelection.length">删除</el-button>
+        <el-button type="primary" style="width: 90px" @click="openAddDialog" v-if="getShowBool('add')">新建</el-button>
+        <el-button @click="handleUpdateStatus(0)" :disabled="!multipleSelection.length" v-if="getShowBool('update')"
+          >启用</el-button
+        >
+        <el-button @click="handleUpdateStatus(-1)" :disabled="!multipleSelection.length" v-if="getShowBool('update')"
+          >禁用</el-button
+        >
+        <el-button @click="handleDel" :disabled="!multipleSelection.length" v-if="getShowBool('delete')"
+          >删除</el-button
+        >
       </el-col>
       <el-col :offset="10" :span="4" style="text-align: right">
         <el-input
@@ -27,11 +33,18 @@
         <el-table-column label="账户状态" prop="status">
           <template #default="scope">{{ UserStatus[scope.row.status] }}</template>
         </el-table-column>
+        <el-table-column label="激活状态" prop="activate">
+          <template #default="scope">{{ scope.row.activate ? '已激活' : '未激活' }}</template>
+        </el-table-column>
         <el-table-column label="部门" prop="deptName"></el-table-column>
         <el-table-column label="操作" width="300">
           <template #default="scope">
-            <el-button type="primary" size="mini" @click="openEditDialog(scope.row)">编辑</el-button>
-            <el-button type="primary" size="mini" @click="handleResetPasswd(scope.row)">重置密码</el-button>
+            <el-button type="primary" size="mini" @click="openEditDialog(scope.row)" v-if="getShowBool('update')"
+              >编辑</el-button
+            >
+            <el-button type="primary" size="mini" @click="handleResetPasswd(scope.row)" v-if="getShowBool('update')"
+              >重置密码</el-button
+            >
           </template>
         </el-table-column>
       </el-table>
@@ -57,17 +70,17 @@
     >
       <div>
         <el-form :model="resetFormData" ref="resetDiagFormRef" :rules="resetFormRules">
-          <el-form-item label="新密码" prop="newPassword" label-width="100px">
-            <el-tooltip :content="passwdMsg" placement="top" effect="light" style="margin-right: 5px">
+          <el-form-item label="新密码" prop="newPassword" label-width="100px" style="position: relative">
+            <!-- <el-tooltip
+              :content="passwdMsg"
+              placement="top"
+              effect="light"
+              style="margin-right: 5px"
+            >
               <svg-icon icon-name="wenhao" icon-class="detail-icons__item"></svg-icon>
-            </el-tooltip>
-            <el-input
-              v-model.trim="resetFormData.newPassword"
-              placeholder="请输入新的密码"
-              show-password
-              style="width: 280px"
-            ></el-input>
-            <el-button type="text" style="margin-left: 20px" @click="handleCopy">复制</el-button>
+            </el-tooltip>-->
+            <el-input v-model.trim="resetFormData.newPassword" placeholder="请输入新的密码" show-password></el-input>
+            <el-button type="text" @click="handleCopy" class="btn-copy">复制</el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -88,6 +101,7 @@ import { ElMessageBox, ElMessage } from 'element-plus';
 import AddPerson from './components/AddPerson.vue';
 import PackagedPagination from '@/components/pagination/Index.vue';
 import { generatePasswd, copyFun } from './utils';
+import { getShowBool } from '@/utils/permission-show-module';
 import { getUserList, createUser, updateUser, delUser, updateUserStatus, resetPassWd } from '@/api/company/users';
 // 用户状态
 enum UserStatus {
@@ -326,6 +340,7 @@ export default defineComponent({
           } else {
             msgTips('error', '密码重置失败');
           }
+          closeResetDialog();
         }
       });
     };
@@ -354,8 +369,21 @@ export default defineComponent({
       resetDiagFormRef,
       passwdMsg,
       handleCopy,
+      getShowBool,
     };
   },
 });
 </script>
-<style lang="sass" scoped></style>
+<style lang="scss" scoped>
+.dialog-footer {
+  width: 100%;
+  display: block;
+  text-align: center;
+  margin-bottom: 20px;
+}
+.btn-copy {
+  position: absolute;
+  right: 50px;
+  top: 0;
+}
+</style>

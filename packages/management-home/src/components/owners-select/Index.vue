@@ -30,15 +30,19 @@ export default {
       type: Array,
       default: () => [],
     },
+    useProject: {
+      type: Boolean,
+      default: () => false,
+    },
   },
   emits: ['update:modelValue', 'change'],
-  setup(props: { value: Array<any>; options: Array<any> }, ctx: SetupContext) {
+  setup(props: { value: Array<any>; options: Array<any>; useProject: boolean }, ctx: SetupContext) {
     const ownerIds: Ref<number[]> = ref(props.value.map((item: { userId: number }) => item.userId));
     const owners: Ref<any[]> = ref(props.options);
     const loading: Ref<boolean> = ref(false);
 
     async function getOwners(keyword = '') {
-      owners.value = await getOwnerList(keyword, owners.value);
+      owners.value = await getOwnerList(keyword, owners.value, props.useProject);
     }
 
     getOwners();
