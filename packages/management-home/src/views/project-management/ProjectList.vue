@@ -63,7 +63,7 @@
             prop="name"
             :rules="[
               { required: true, message: '请输入英文名称', trigger: 'blur' },
-              { min: 3, max: 20, message: '最大不能超过 20 个字符', trigger: 'blur' },
+              { min: 3, max: 20, message: '请输入3到20个字符', trigger: 'blur' },
               {
                 validator: validatorPass,
                 message: '[字母][字母/数字/中横线][字母/数字]（字母为小写）',
