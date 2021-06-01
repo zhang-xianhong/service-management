@@ -150,7 +150,6 @@ import {
   deleteProject,
   pageInfo,
 } from '@/views/project-management/utils/project-data-utils';
-import Message from 'element-plus/es/el-message';
 import fetchOwnersSelect from '@/components/fetchOwnersSelect/Index.vue';
 import { projectNameTest } from '@/api/project/project';
 import { userProjectList, userInfo } from '@/layout/messageCenter/user-info';

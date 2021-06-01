@@ -76,7 +76,7 @@ import { reactive, ref, Ref, watchEffect, watch } from 'vue';
 import { updateProject } from '@/api/project/project';
 import { getAllTemplates } from '@/api/settings/templates';
 import OwnerSelect from '@/components/owners-select/Index.vue';
-import ElMessage from 'element-plus';
+import { ElMessage } from 'element-plus';
 // import Message from 'element-plus/es/el-message';
 
 export default {
