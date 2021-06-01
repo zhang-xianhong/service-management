@@ -63,8 +63,12 @@
             prop="name"
             :rules="[
               { required: true, message: '请输入英文名称', trigger: 'blur' },
-              { min: 1, max: 64, message: '最大不能超过 64 个字符', trigger: 'blur' },
-              { validator: validatorPass, message: '仅支持英文、数字、中划线', trigger: 'blur' },
+              { min: 3, max: 20, message: '最大不能超过 20 个字符', trigger: 'blur' },
+              {
+                validator: validatorPass,
+                message: '[字母][字母/数字/中横线][字母/数字]（字母为小写）',
+                trigger: 'blur',
+              },
             ]"
           >
             <el-input v-model="projectDetail.name" @blur="checkEnglishName"></el-input>
@@ -194,8 +198,12 @@ export default defineComponent({
       if (!projectDetail.name) {
         return Message.error('项目名称不得为空');
       }
-      if (projectDetail.name.length > 64) {
-        return Message.error('项目名称不得超过64个字符');
+      if (projectDetail.name.length > 20 || projectDetail.name.length < 3) {
+        return Message.error('项目名称不得超过20个字符且不得少于3个字符');
+      }
+      const reg = /^[a-z][a-z0-9-]+[a-z0-9]$/;
+      if (!reg.test(projectDetail.name)) {
+        return Message.error('名称只能输入小写字母、数字、中横线，只能以字母开头，且不能以中横线开头或结尾');
       }
       if (!projectDetail.description) {
         return Message.error('项目描述不得为空');
