@@ -11,15 +11,17 @@
               :readonly="!statusArr[index]"
             />
           </div>
-          <template v-if="index !== 4">
-            <el-button type="text" v-if="!statusArr[index]" @click="checkStatus(index)">修改</el-button>
-            <span v-else>
-              <el-button type="text" @click="save(index, item)">保存</el-button>
-              <el-button type="text" @click="cancel(index, item)">取消</el-button>
-            </span>
-          </template>
-          <template v-else>
-            <el-button type="text" @click="reWritePass()">修改密码</el-button>
+          <template v-if="index !== 0">
+            <template v-if="index !== 4">
+              <el-button type="text" v-if="!statusArr[index]" @click="checkStatus(index)">修改</el-button>
+              <span v-else>
+                <el-button type="text" @click="save(index, item)">保存</el-button>
+                <el-button type="text" @click="cancel(index, item)">取消</el-button>
+              </span>
+            </template>
+            <template v-else>
+              <el-button type="text" @click="reWritePass()">修改密码</el-button>
+            </template>
           </template>
         </el-form-item>
       </el-form>
@@ -59,7 +61,7 @@ export default defineComponent({
     const userSetInfo = reactive({} as any);
     const userRelease = reactive({} as any);
     const statusArr = ref([false, false, false, false, false]);
-    const props = ['displayName', 'userName', 'phoneNumber', 'primaryMail', 'password'];
+    const props = ['userName', 'displayName', 'phoneNumber', 'primaryMail', 'password'];
     const labels = ['用户账号', '用户姓名', '联系电话', '电子邮箱', '用户密码'];
 
     getUserProfile().then((res) => {

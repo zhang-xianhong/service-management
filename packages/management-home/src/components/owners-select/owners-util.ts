@@ -7,8 +7,12 @@ const ownerMap: Map<number, any> = new Map();
  * @param keyword 关键字查询
  * @param field 内容筛选
  */
-async function getOwnerList(keyword = '', owners: Array<any> = [], field: 'user' | 'department' | 'all' = 'user') {
-  const { data } = await queryInTenant({ keyword, field });
+async function getOwnerList(keyword = '', owners: Array<any> = [], projects = false) {
+  const item: any = { keyword };
+  if (projects) {
+    item.projectId = localStorage.getItem('projectId');
+  }
+  const { data } = await queryInTenant(item);
   let users = data;
   Object.assign(users, owners);
   const userIds = Array.from(new Set(users.map((item: any) => item.id)));

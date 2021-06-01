@@ -76,7 +76,7 @@ import { reactive, ref, Ref, watchEffect, watch } from 'vue';
 import { updateProject } from '@/api/project/project';
 import { getAllTemplates } from '@/api/settings/templates';
 import OwnerSelect from '@/components/owners-select/Index.vue';
-// import ElMessage from "element-plus";
+import { ElMessage } from 'element-plus';
 // import Message from 'element-plus/es/el-message';
 
 export default {
@@ -200,8 +200,12 @@ export default {
 
     // 表单操作
     const save = async () => {
-      if(formData.remark.length > 255) {
+      if (formData.remark.length > 255) {
         return false;
+      }
+      const ownersArr = ownersName.value.split(',');
+      if (ownersArr.length > 10) {
+        return ElMessage.warning('最多支持10个负责人');
       }
       const item = { ...formData };
       item.owner = item.owners.map((x: any) => x.userId).join(',');
