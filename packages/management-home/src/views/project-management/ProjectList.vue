@@ -76,8 +76,11 @@
           <el-form-item
             label="项目描述"
             :label-width="labelWidth"
-            prop="name"
-            :rules="[{ required: true, message: '请输入项目描述', trigger: 'blur' }]"
+            prop="description"
+            :rules="[
+              { required: true, message: '请输入项目描述', trigger: 'blur' },
+              { min: 3, max: 20, message: '请输入3到20个字符', trigger: 'blur' },
+            ]"
           >
             <el-input v-model="projectDetail.description"></el-input>
           </el-form-item>
@@ -196,20 +199,16 @@ export default defineComponent({
         return;
       }
       if (!projectDetail.name) {
-        return Message.error('项目名称不得为空');
+        return false;
       }
-      if (projectDetail.name.length > 20 || projectDetail.name.length < 3) {
-        return Message.error('项目名称不得超过20个字符且不得少于3个字符');
-      }
-      const reg = /^[a-z][a-z0-9-]+[a-z0-9]$/;
-      if (!reg.test(projectDetail.name)) {
-        return Message.error('名称只能输入小写字母、数字、中横线，只能以字母开头，且不能以中横线开头或结尾');
+      if (projectDetail.name.length > 20) {
+        return false;
       }
       if (!projectDetail.description) {
-        return Message.error('项目描述不得为空');
+        return false;
       }
       if (!projectDetail.templateId) {
-        return Message.error('代码模板不得为空');
+        return false;
       }
       submitLoading.value = true;
       addProjectData().then(() => {

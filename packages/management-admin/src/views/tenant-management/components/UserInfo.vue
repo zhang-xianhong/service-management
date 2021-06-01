@@ -161,7 +161,7 @@ export default {
       if (iamgeTypes.indexOf(file.name.split('.')[1]) === -1) {
         (instance as any).proxy.$message({
           type: 'warning',
-          message: '图片格式错误，仅支持bmp,jpg,png,jpeg格式图片'
+          message: '图片格式错误，仅支持bmp,jpg,png,jpeg格式图片',
         });
       }
       if (file.size > 1024 * 1024 * 3) {

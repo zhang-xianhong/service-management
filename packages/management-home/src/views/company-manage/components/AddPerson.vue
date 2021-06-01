@@ -35,12 +35,7 @@
             <el-radio label="-1">禁用</el-radio>
           </el-radio-group>
         </el-form-item>
-        <el-form-item
-          label="初始密码"
-          :label-width="labelWidth"
-          v-if="!isEdit"
-          style="position: relative"
-        >
+        <el-form-item label="初始密码" :label-width="labelWidth" v-if="!isEdit" style="position: relative">
           <!-- <el-tooltip
             content="复制密码，保存后可用新密码登录"
             placement="top"
@@ -107,9 +102,9 @@ export default defineComponent({
         callback(new Error('请输入正确的手机号码'));
       }
       //  编辑的话判断手机号码是否有更改
-      if (dialogContent.isEdit && (editBeforeFormData.phoneNumber === dialogContent.formData.phoneNumber)) {
+      if (dialogContent.isEdit && editBeforeFormData.phoneNumber === dialogContent.formData.phoneNumber) {
         // 是否有更改
-        callback()
+        callback();
       }
       // 继续后台校验
       const { code, data } = await checkUserInfo({
@@ -129,9 +124,9 @@ export default defineComponent({
         callback(new Error('请输入正确的邮箱格式'));
       }
       //  编辑的话判断手机号码是否有更改
-      if (dialogContent.isEdit && (editBeforeFormData.primaryMail === dialogContent.formData.primaryMail)) {
+      if (dialogContent.isEdit && editBeforeFormData.primaryMail === dialogContent.formData.primaryMail) {
         // 是否有更改
-        callback()
+        callback();
       }
       // 继续后台校验
       const { code, data } = await checkUserInfo({
