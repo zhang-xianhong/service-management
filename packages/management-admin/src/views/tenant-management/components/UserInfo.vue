@@ -154,12 +154,8 @@ export default {
           trigger: 'blur',
         },
       ],
-      email: [
-        { required: true, message: '请输入邮箱地址', trigger: 'blur' },
-        { type: 'email', message: '请输入正确的邮箱地址', trigger: 'blur' },
-      ],
-      frontPhoto: [{ required: true, message: '请上传身份证正面', trigger: 'blur' }],
-      reversePhoto: [{ required: true, message: '请上传身份证反面', trigger: 'blur' }],
+      frontPhoto: [{ required: true, message: '请上传身份证正面' }],
+      reversePhoto: [{ required: true, message: '请上传身份证反面' }],
     };
 
     // 图片上传大小校验
@@ -184,6 +180,7 @@ export default {
       if (res.code === 0 && res.data?.fileKey) {
         userInfo.value.frontPhoto = res.data.fileKey;
         frontPhoto.value = URL.createObjectURL(file.raw);
+        formRef.value.validateField('frontPhoto');
       } else {
         (instance as any).proxy.$message({
           type: 'error',
@@ -197,6 +194,7 @@ export default {
       if (res.code === 0 && res.data?.fileKey) {
         userInfo.value.reversePhoto = res.data.fileKey;
         reversePhoto.value = URL.createObjectURL(file.raw);
+        formRef.value.validateField('reversePhoto');
       } else {
         (instance as any).proxy.$message({
           type: 'error',

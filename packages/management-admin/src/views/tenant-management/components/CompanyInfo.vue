@@ -1,7 +1,14 @@
 <template>
   <el-row style="font-weight: bolder">企业信息</el-row>
   <el-row style="font-size: 12px">
-    <el-form ref="formRef" :model="companyInfo" :rules="rules" inline label-width="140px" label-position="left">
+    <el-form
+      ref="formRef"
+      :model="companyInfo"
+      :rules="rules"
+      inline
+      label-width="140px"
+      label-position="left"
+    >
       <el-form-item prop="name" class="form-item" label="企业中文名称">
         <template v-if="isEdit">{{ companyInfo.name }}</template>
         <el-input
@@ -43,7 +50,12 @@
       </el-form-item>
       <el-form-item prop="industryId" class="form-item" label="所属行业">
         <template v-if="isEdit">{{ computedIndustryName || companyInfo.industryId }}</template>
-        <el-select v-else v-model="companyInfo.industryId" style="width: 400px" placeholder="请选择所属行业">
+        <el-select
+          v-else
+          v-model="companyInfo.industryId"
+          style="width: 400px"
+          placeholder="请选择所属行业"
+        >
           <el-option
             v-for="(item, index) in industryOptions"
             :key="index"
@@ -340,6 +352,7 @@ export default {
       if (res.code === 0 && res.data?.fileKey) {
         companyInfo.value.licenseUrl = res.data.fileKey;
         licenseUrl.value = URL.createObjectURL(file.raw);
+        formRef.value.validateField('licenseUrl');
       } else {
         (instance as any).proxy.$message({
           type: 'error',
@@ -396,7 +409,6 @@ export default {
         });
       }
     };
-
     return {
       IMAGE_UPLOAD,
       formRef,
@@ -426,7 +438,7 @@ export default {
 .info-icon {
   &:hover {
     &::after {
-      content: '建议尺寸115x85';
+      content: "建议尺寸115x85";
       position: absolute;
       margin-top: -20px;
       margin-left: -40px;
