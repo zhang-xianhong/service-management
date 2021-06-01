@@ -34,7 +34,12 @@
       </el-col>
     </el-row>
     <el-row style="background: #fff">
-      <el-table :data="tableData" style="width: 100%" @selection-change="selChange" v-loading="loading">
+      <el-table
+        :data="tableData"
+        style="width: 100%"
+        @selection-change="selChange"
+        v-loading="loading"
+      >
         <el-table-column type="selection" width="45" />
         <el-table-column type="index" label="序号" width="50" />
         <el-table-column label="登录账号" prop="userName"></el-table-column>
@@ -87,7 +92,12 @@
     >
       <div>
         <el-form :model="resetFormData" ref="resetDiagFormRef" :rules="resetFormRules">
-          <el-form-item label="新密码" prop="newPassword" label-width="100px" style="position: relative">
+          <el-form-item
+            label="新密码"
+            prop="newPassword"
+            label-width="100px"
+            style="position: relative"
+          >
             <!-- <el-tooltip
               :content="passwdMsg"
               placement="top"

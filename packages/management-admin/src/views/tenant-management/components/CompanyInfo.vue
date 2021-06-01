@@ -1,7 +1,14 @@
 <template>
   <el-row style="font-weight: bolder">企业信息</el-row>
   <el-row style="font-size: 12px">
-    <el-form ref="formRef" :model="companyInfo" :rules="rules" inline label-width="140px" label-position="left">
+    <el-form
+      ref="formRef"
+      :model="companyInfo"
+      :rules="rules"
+      inline
+      label-width="140px"
+      label-position="left"
+    >
       <el-form-item prop="name" class="form-item" label="企业名称">
         <template v-if="isEdit">{{ companyInfo.name }}</template>
         <el-input
@@ -36,7 +43,12 @@
       </el-form-item>
       <el-form-item prop="industryId" class="form-item" label="所属行业">
         <template v-if="isEdit">{{ computedIndustryName || companyInfo.industryId }}</template>
-        <el-select v-else v-model="companyInfo.industryId" style="width: 400px" placeholder="请选择所属行业">
+        <el-select
+          v-else
+          v-model="companyInfo.industryId"
+          style="width: 400px"
+          placeholder="请选择所属行业"
+        >
           <el-option
             v-for="(item, index) in industryOptions"
             :key="index"
@@ -140,7 +152,7 @@ import { SuccessResponse } from '@/types/response';
 import { getImageUrl } from '@/api/files';
 import { validateCompanyName, validateLicense } from '@/api/tenant';
 import CompanyInfoInterface from '../types/company-info-interface';
-
+const iamgeTypes = ['jpg', 'bmp', 'png', 'jpeg'];
 export default {
   name: 'CompanyInfo',
   props: {
@@ -299,7 +311,13 @@ export default {
     });
 
     // 图片上传大小校验
-    const beforeUpload = (file: { size: number }) => {
+    const beforeUpload = (file: { size: number; name: string }) => {
+      if (iamgeTypes.indexOf(file.name.split('.')[1]) === -1) {
+        (instance as any).proxy.$message({
+          type: 'warning',
+          message: '图片格式错误，仅支持bmp,jpg,png,jpeg格式图片'
+        });
+      }
       if (file.size > 1024 * 1024 * 3) {
         (instance as any).proxy.$message({
           type: 'warning',
@@ -400,7 +418,7 @@ export default {
 .info-icon {
   &:hover {
     &::after {
-      content: '建议尺寸115x85';
+      content: "建议尺寸115x85";
       position: absolute;
       margin-top: -20px;
       margin-left: -40px;
