@@ -16,7 +16,12 @@
         <el-table-column prop="type" label="数据类型">
           <template #default="scope">
             <el-select v-model="scope.row.typeId" :disabled="isFieldDisabled(scope)">
-              <el-option v-for="type in allTypes" :key="type.id" :label="type.name" :value="type.id"></el-option>
+              <el-option
+                v-for="type in allTypes"
+                :key="type.id"
+                :label="type.name"
+                :value="type.id"
+              ></el-option>
             </el-select>
           </template>
         </el-table-column>
@@ -61,13 +66,15 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref, inject, Ref, watchEffect } from 'vue';
+import { defineComponent, onMounted, ref, inject, Ref, watchEffect, getCurrentInstance } from 'vue';
 import { getDataTypesAll } from '@/api/settings/data-types';
 import { updateFields } from '@/api/schema/model';
 import _ from 'lodash/fp';
 export default defineComponent({
   name: 'ColumnForm',
   setup(props, context) {
+    // 组件实例
+    const instance = getCurrentInstance();
     const currentModel = inject('currentModel') as Ref<any>;
     const serviceId = inject('serviceId') as number;
     const afterUpdate = inject('afterUpdate') as Function;
@@ -98,6 +105,28 @@ export default defineComponent({
       context.emit('back');
     };
     const save = async () => {
+      // 过滤空
+      const res = fields.value.find((item: any) => {
+        const { description, name, typeId } = item;
+        return !(description && name && typeId);
+      });
+      if (res) {
+        let msg: string = '';
+        const { description, name } = res;
+        if (!name) {
+          msg = '属性名不能为空！'
+        } else if (!description) {
+          msg = '属性描述不能为空！'
+        } else {
+          msg = '数据类型不能为空！'
+        }
+        (instance as any).proxy.$message({
+          type: 'warning',
+          message: msg,
+        });
+        return;
+      }
+
       const { code } = await updateFields(modelId, {
         serviceId,
         fields: _.flow(
