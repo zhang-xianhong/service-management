@@ -134,6 +134,10 @@ import { ElMessageBox, ElMessage } from 'element-plus';
 import dateFormat from '@/utils/date-format';
 import { getShowBool } from '@/utils/permission-show-module';
 
+// 状态码
+enum ResCode {
+  Success,
+}
 interface TableState {
   tableData: Array<object>;
   loading: boolean;
@@ -169,11 +173,12 @@ const validatorKeyPass = async (rule: any, value: string, callback: Function) =>
     callback(new Error('字母、中划线、下划线、小数点包含数字，不能只输入数字不能以数字开头'));
   }
   // 后台校验
-  const { code, message } = await checkKeyRule({
+  const { code, message, data } = await checkKeyRule({
     name: value,
     scope: 2,
   });
-  if (code !== 0) {
+  const { usable } = data;
+  if (code === ResCode.Success && !usable) {
     callback(new Error(message));
   }
   callback();

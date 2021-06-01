@@ -117,7 +117,7 @@
           </el-form-item>
           <el-form-item label="项目状态" :label-width="labelWidth">
             <el-radio v-model="projectDetail.status" :label="1">启用</el-radio>
-            <el-radio v-model="projectDetail.status" :label="0">禁用</el-radio>
+            <el-radio v-model="projectDetail.status" :label="0">冻结</el-radio>
           </el-form-item>
           <el-form-item label="项目简介" :label-width="labelWidth">
             <el-input v-model="projectDetail.remark" type="textarea" :rows="5"></el-input>

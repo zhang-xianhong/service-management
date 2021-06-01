@@ -44,7 +44,7 @@
             </el-popover>
           </template>
         </el-table-column>
-        <el-table-column label="发布描述" prop="description"></el-table-column>
+        <el-table-column label="发布描述" prop="description" show-overflow-tooltip></el-table-column>
         <el-table-column label="申请时间" prop="createTime">
           <template #default="scope">{{ dateFormat(scope.row.createTime) }}</template>
         </el-table-column>
@@ -326,10 +326,10 @@ export default {
       ],
     });
     const publishRules = {
-      moduleType: [{ required: true, message: '请选择发布类型', trigger: 'blur' }],
-      name: [{ required: true, message: '请输入发布名称', trigger: 'blur' }],
-      applicant: [{ required: true, message: '请选择申请账号', trigger: 'blur' }],
-      version: [{ required: true, message: '请选择发布版本', trigger: 'blur' }],
+      moduleType: [{ required: true, message: '请选择发布类型', trigger: 'change' }],
+      name: [{ required: true, message: '请输入发布名称', trigger: 'change' }],
+      applicant: [{ required: true, message: '请选择申请账号', trigger: 'change' }],
+      version: [{ required: true, message: '请选择发布版本', trigger: 'change' }],
       description: [{ required: true, message: '请输入发布说明', trigger: 'blur' }],
     };
 

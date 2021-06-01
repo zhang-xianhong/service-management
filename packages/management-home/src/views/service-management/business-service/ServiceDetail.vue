@@ -14,7 +14,7 @@
             :key="index"
             :type="button.type || undefined"
             v-on="button.eventOption"
-            :disabled="!modelList.tables.length || button.disabled"
+            :disabled="button.disabled"
             :style="button.style"
           >
             {{ button.label }}
@@ -467,8 +467,6 @@ export default {
           return '应用变更中, 请稍后...';
         case 20:
           return '应用启动中, 请稍后...';
-        case 30:
-          return '应用停止中，请稍后...';
         default:
           return '';
       }

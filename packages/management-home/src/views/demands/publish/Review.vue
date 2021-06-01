@@ -41,7 +41,7 @@
             </el-popover>
           </template>
         </el-table-column>
-        <el-table-column label="发布描述" prop="description"></el-table-column>
+        <el-table-column label="发布描述" prop="description" show-overflow-tooltip></el-table-column>
         <el-table-column label="申请时间" prop="createTime">
           <template #default="scope">{{ dateFormat(scope.row.createTime) }}</template>
         </el-table-column>
@@ -98,7 +98,7 @@
             </el-popover>
           </template>
         </el-table-column>
-        <el-table-column label="审核说明" prop="auditInstructions"></el-table-column>
+        <el-table-column label="审核说明" prop="auditInstructions" show-overflow-tooltip></el-table-column>
         <el-table-column label="发布时间" prop="publishTime">
           <template #default="scope">{{ dateFormat(scope.row.publishTime) }}</template>
         </el-table-column>
