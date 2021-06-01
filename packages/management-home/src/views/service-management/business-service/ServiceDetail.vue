@@ -19,7 +19,7 @@
           >
             {{ button.label }}
           </el-button>
-          <span v-if="!modelList.tables.length" style="color: red; font-size: 12px;margin-left: 10px;"
+          <span v-if="!modelList.tables.length && pageLoading" style="color: red; font-size: 12px;margin-left: 10px;"
             >请至少创建一个数据对象</span
           >
         </el-col>
@@ -411,6 +411,7 @@ export default {
       initModelList();
     });
 
+    const pageLoading = ref(false);
     const modelSelected = async (model: any) => {
       modelInfo.value = null;
       if (model) {
@@ -424,6 +425,7 @@ export default {
           modelInfo.value = { ...data, fields: model.fields };
           isShowDownDrawer.value = true;
           drawerName.value = 'ModelFieldForm';
+          pageLoading.value = true;
         }
       } else {
         isShowDownDrawer.value = false;
@@ -513,6 +515,7 @@ export default {
       userProjectList,
       sqlLoadings,
       getShowBool,
+      pageLoading,
     };
   },
 };

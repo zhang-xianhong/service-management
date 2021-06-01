@@ -310,7 +310,7 @@ export default {
   .el-form-item__label {
     font-size: 12px;
   }
-  margin: -20px;
+  //margin: -20px;
   height: calc(100vh - 130px);
   background: #f2f2f2;
   .basic-info {
