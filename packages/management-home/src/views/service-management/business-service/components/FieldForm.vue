@@ -16,12 +16,7 @@
         <el-table-column prop="type" label="数据类型">
           <template #default="scope">
             <el-select v-model="scope.row.typeId" :disabled="isFieldDisabled(scope)">
-              <el-option
-                v-for="type in allTypes"
-                :key="type.id"
-                :label="type.name"
-                :value="type.id"
-              ></el-option>
+              <el-option v-for="type in allTypes" :key="type.id" :label="type.name" :value="type.id"></el-option>
             </el-select>
           </template>
         </el-table-column>
@@ -111,14 +106,14 @@ export default defineComponent({
         return !(description && name && typeId);
       });
       if (res) {
-        let msg: string = '';
+        let msg = '';
         const { description, name } = res;
         if (!name) {
-          msg = '属性名不能为空！'
+          msg = '属性名不能为空！';
         } else if (!description) {
-          msg = '属性描述不能为空！'
+          msg = '属性描述不能为空！';
         } else {
-          msg = '数据类型不能为空！'
+          msg = '数据类型不能为空！';
         }
         (instance as any).proxy.$message({
           type: 'warning',
