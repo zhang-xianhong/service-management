@@ -40,6 +40,7 @@
         ref="serverMuitable"
         @selection-change="handleSelection"
         v-if="refreshMess"
+        v-loading="tableLoading"
       >
         <el-table-column type="selection" width="55"></el-table-column>
         <el-table-column type="index" width="50" label="序号"></el-table-column>
@@ -279,11 +280,22 @@ export default defineComponent({
   },
   setup() {
 
-    if (userProjectList.value.length) {
-      getClassifications();
-      getTagsForService();
+    const tableLoading = ref(false)
 
-      refreshServiceList();
+    const pageInfo = reactive({
+      page: 1,
+      pageSize: 10,
+      classification: '',
+      tags: [],
+      keyword: '',
+    });
+
+    if (userProjectList.value.length) {
+      tableLoading.value = true;
+      getClassifications()
+        .then(() => getTagsForService())
+        .then(() => refreshServiceList(pageInfo))
+        .then(() => tableLoading.value = false)
     }
 
     const mutiArray = ref([] as any);
@@ -299,13 +311,6 @@ export default defineComponent({
     };
     const labelWidth = ref('100px');
 
-    const pageInfo = reactive({
-      page: 1,
-      pageSize: 10,
-      classification: '',
-      tags: [],
-      keyword: '',
-    });
     const refreshDataAndChange = () => {
       rememberMutiArray.value = mutiArray.value;
       (serverMuitable.value as any).clearSelection();
@@ -596,6 +601,7 @@ export default defineComponent({
       userProjectList,
       validatorPass,
       getShowBool,
+      tableLoading,
     };
   },
 });

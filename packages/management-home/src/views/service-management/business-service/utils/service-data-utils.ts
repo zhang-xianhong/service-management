@@ -67,6 +67,8 @@ export function refreshServiceList(payload = {} as any) {
             .join(',');
         }
         x.source = x.source || '新建';
+
+        console.log(x, 'this is x');
       });
     }
     serviceTableList.list = res.data.rows;
@@ -74,7 +76,7 @@ export function refreshServiceList(payload = {} as any) {
   });
 }
 
-export const getTagsForService = () =>
+export const getTagsForService = async () =>
   getAllTags().then((res) => {
     tags.value = res.data;
     const arr = {} as any;
@@ -98,7 +100,7 @@ export function deleteBlankArray(item: any) {
   sortMap.value[item.id] = item.name;
 }
 
-export const getClassifications = () => {
+export const getClassifications = async () => {
   sortMap.value = {};
   return getClassificationList().then((res) => {
     const ids = { children: res.data };
