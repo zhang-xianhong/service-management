@@ -29,6 +29,12 @@ export const getSqlData = () => {
     });
 };
 
+export const getTraceAndLog = () => {
+  getServiceTraceId(currentServiceIdForData.value).then((res) => {
+    logSetTimeOut(res.data.traceNode || 'sa-ci-cd', res.data.traceId);
+  });
+};
+
 export const clearSql = () => {
   sqlDialogVisiable.value = false;
   sqlData.value = '';
@@ -38,8 +44,9 @@ export const getTreaceId = () => {
   const id = currentServiceIdForData.value;
   return getChangesApply(id).then((res) => {
     if (res?.data) {
-      const { logName, traceId } = res.data;
-      logSetTimeOut(logName, traceId);
+      // const { logName, traceId } = res.data;
+      // logSetTimeOut(logName, traceId);
+      getTraceAndLog();
       thenRefresh.value = !thenRefresh.value;
     }
   });
@@ -47,9 +54,12 @@ export const getTreaceId = () => {
 
 export const startServiceData = (branch = 'master', userId = '123456') =>
   startService({ serviceId: currentServiceIdForData.value, branch, userId }).then((res) => {
-    const { logName, traceId } = res.data;
+    // const { logName, traceId } = res.data;
     thenRefresh.value = !thenRefresh.value;
-    logSetTimeOut(logName, traceId);
+    // logSetTimeOut(logName, traceId);
+    if (res.data) {
+      getTraceAndLog();
+    }
   });
 
 export const stopServiceData = () => {
@@ -62,10 +72,4 @@ export const stopServiceData = () => {
     .catch((e) => {
       console.log(e);
     });
-};
-
-export const getTraceAndLog = () => {
-  getServiceTraceId(currentServiceIdForData.value).then((res) => {
-    logSetTimeOut('sa-ci-cd', res.data);
-  });
 };

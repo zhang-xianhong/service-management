@@ -2,27 +2,16 @@
   <div>
     <el-row>
       <el-col :span="10" style="text-align: left">
-        <el-button
-          type="primary"
-          style="width: 90px"
-          @click="openAddDialog"
-          v-if="getShowBool('add')"
-        >新建</el-button>
-        <el-button
-          @click="handleUpdateStatus(0)"
-          :disabled="!multipleSelection.length"
-          v-if="getShowBool('update')"
-        >启用</el-button>
-        <el-button
-          @click="handleUpdateStatus(-1)"
-          :disabled="!multipleSelection.length"
-          v-if="getShowBool('update')"
-        >禁用</el-button>
-        <el-button
-          @click="handleDel"
-          :disabled="!multipleSelection.length"
-          v-if="getShowBool('delete')"
-        >删除</el-button>
+        <el-button type="primary" style="width: 90px" @click="openAddDialog" v-if="getShowBool('add')">新建</el-button>
+        <el-button @click="handleUpdateStatus(0)" :disabled="!multipleSelection.length" v-if="getShowBool('update')"
+          >启用</el-button
+        >
+        <el-button @click="handleUpdateStatus(-1)" :disabled="!multipleSelection.length" v-if="getShowBool('update')"
+          >禁用</el-button
+        >
+        <el-button @click="handleDel" :disabled="!multipleSelection.length" v-if="getShowBool('delete')"
+          >删除</el-button
+        >
       </el-col>
       <el-col :offset="10" :span="4" style="text-align: right">
         <el-input
@@ -50,18 +39,12 @@
         <el-table-column label="部门" prop="deptName"></el-table-column>
         <el-table-column label="操作" width="300">
           <template #default="scope">
-            <el-button
-              type="primary"
-              size="mini"
-              @click="openEditDialog(scope.row)"
-              v-if="getShowBool('update')"
-            >编辑</el-button>
-            <el-button
-              type="primary"
-              size="mini"
-              @click="handleResetPasswd(scope.row)"
-              v-if="getShowBool('update')"
-            >重置密码</el-button>
+            <el-button type="primary" size="mini" @click="openEditDialog(scope.row)" v-if="getShowBool('update')"
+              >编辑</el-button
+            >
+            <el-button type="primary" size="mini" @click="handleResetPasswd(scope.row)" v-if="getShowBool('update')"
+              >重置密码</el-button
+            >
           </template>
         </el-table-column>
       </el-table>
@@ -386,7 +369,7 @@ export default defineComponent({
       resetDiagFormRef,
       passwdMsg,
       handleCopy,
-      getShowBool
+      getShowBool,
     };
   },
 });

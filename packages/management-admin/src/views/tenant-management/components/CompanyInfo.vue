@@ -153,7 +153,7 @@ import { SuccessResponse } from '@/types/response';
 import { getImageUrl } from '@/api/files';
 import { validateCompanyName, validateLicense } from '@/api/tenant';
 import CompanyInfoInterface from '../types/company-info-interface';
-
+const iamgeTypes = ['jpg', 'bmp', 'png', 'jpeg'];
 export default {
   name: 'CompanyInfo',
   props: {
@@ -319,7 +319,13 @@ export default {
     });
 
     // 图片上传大小校验
-    const beforeUpload = (file: { size: number }) => {
+    const beforeUpload = (file: { size: number; name: string }) => {
+      if (iamgeTypes.indexOf(file.name.split('.')[1]) === -1) {
+        (instance as any).proxy.$message({
+          type: 'warning',
+          message: '图片格式错误，仅支持bmp,jpg,png,jpeg格式图片',
+        });
+      }
       if (file.size > 1024 * 1024 * 3) {
         (instance as any).proxy.$message({
           type: 'warning',

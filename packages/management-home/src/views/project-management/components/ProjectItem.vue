@@ -204,7 +204,7 @@ export default defineComponent({
     background-color: #0abf5b;
   }
   .block {
-    background-color: yellow;
+    background-color: #ff9d00;
   }
   .close-project:hover {
     color: #409eff;
