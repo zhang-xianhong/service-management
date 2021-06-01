@@ -2,18 +2,24 @@
   <el-row style="font-weight: bolder">企业信息</el-row>
   <el-row style="font-size: 12px">
     <el-form ref="formRef" :model="companyInfo" :rules="rules" inline label-width="140px" label-position="left">
-      <el-form-item prop="name" class="form-item" label="企业名称">
+      <el-form-item prop="name" class="form-item" label="企业中文名称">
         <template v-if="isEdit">{{ companyInfo.name }}</template>
         <el-input
           v-else
           v-model="companyInfo.name"
           style="width: 400px"
           placeholder="请输入企业名称"
+          maxlength="40"
           @blur="validateName"
         ></el-input>
       </el-form-item>
       <el-form-item prop="nameShort" class="form-item" label="企业别称">
-        <el-input v-model="companyInfo.nameShort" style="width: 400px" placeholder="请输入企业简称"></el-input>
+        <el-input
+          v-model="companyInfo.nameShort"
+          style="width: 400px"
+          placeholder="请输入企业简称"
+          maxlength="40"
+        ></el-input>
       </el-form-item>
       <el-form-item prop="tenantEngAbbr" class="form-item" label="企业英文简称">
         <template v-if="isEdit">{{ companyInfo.tenantEngAbbr }}</template>
@@ -22,6 +28,7 @@
           v-model="companyInfo.tenantEngAbbr"
           style="width: 400px"
           placeholder="请输入企业英文简称"
+          maxlength="16"
         ></el-input>
       </el-form-item>
       <el-form-item prop="addr" class="form-item" label="企业地址">
@@ -46,7 +53,12 @@
         </el-select>
       </el-form-item>
       <el-form-item prop="addrDetail" class="form-item" label="详细地址">
-        <el-input v-model="companyInfo.addrDetail" style="width: 400px" placeholder="请输入详细地址"></el-input>
+        <el-input
+          v-model="companyInfo.addrDetail"
+          style="width: 400px"
+          placeholder="请输入详细地址"
+          maxlength="255"
+        ></el-input>
       </el-form-item>
       <el-form-item prop="natureId" class="form-item" label="企业性质">
         <template v-if="isEdit">{{ computedNature || companyInfo.natureId }}</template>
@@ -87,6 +99,7 @@
           v-model="companyInfo.license"
           style="width: 400px"
           placeholder="请输入营业执照号"
+          maxlength="18"
           @blur="validateLicenseId"
         ></el-input>
       </el-form-item>
@@ -112,7 +125,7 @@
       </el-form-item>
       <el-form-item prop="logoUrl" class="form-item">
         <template v-slot:label>
-          企业logo
+          企业LOGO
           <i class="el-icon-question info-icon"></i>
         </template>
         <el-upload
@@ -245,15 +258,22 @@ export default {
           trigger: 'blur',
         },
         {
-          pattern: /^[a-zA-Z]+$/g,
-          message: '该企业英文简称包含非法字符，请重新输入',
+          pattern: /^[a-z]+$/g,
+          message: '该企业英文简称只支持英文小写字母，请重新输入',
           trigger: 'blur',
         },
       ],
       industryId: [{ required: true, message: '请选择所属行业' }],
       natureId: [{ required: true, message: '请选择企业性质' }],
       scaleId: [{ required: true, message: '请选择企业规模' }],
-      license: [{ required: true, message: '请输入营业执照号', trigger: 'blur' }],
+      license: [
+        { required: true, message: '请输入营业执照号', trigger: 'blur' },
+        {
+          pattern: /(^(?:(?![IOZSV])[\dA-Z]){2}\d{6}(?:(?![IOZSV])[\dA-Z]){10}$)|(^\d{15}$)/,
+          message: '营业执照号不合法，请重新输入',
+          trigger: 'blur',
+        },
+      ],
       licenseUrl: [{ required: true, message: '请上传营业执照' }],
     };
 

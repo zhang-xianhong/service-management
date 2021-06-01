@@ -12,7 +12,13 @@
     >
       <el-form-item prop="name" class="form-item" label="联系人姓名">
         <template v-if="isEdit">{{ userInfo.name }}</template>
-        <el-input v-else v-model="userInfo.name" style="width: 400px" placeholder="请输入联系人中文姓名"></el-input>
+        <el-input
+          v-else
+          v-model="userInfo.name"
+          style="width: 400px"
+          placeholder="请输入联系人中文姓名"
+          maxlength="20"
+        ></el-input>
       </el-form-item>
       <el-form-item prop="phone" class="form-item" label="联系人电话">
         <template v-if="isEdit">{{ userInfo.phone }}</template>
@@ -142,15 +148,15 @@ export default {
       ],
       IDCard: [
         { required: true, message: '请输入联系人身份证号', trigger: 'blur' },
-        { pattern: /^[0-9|X]+$/g, message: '联系人身份证号输入格式不合法，请重新输入', trigger: 'blur' },
-      ],
-      email: [
-        { required: true, message: '请输入联系人邮箱', trigger: 'blur' },
         {
-          pattern: /^\w+((.\w+)|(-\w+))@[A-Za-z0-9]+((.|-)[A-Za-z0-9]+).[A-Za-z0-9]+$/g,
-          message: '联系人邮箱输入格式不合法，请重新输入',
+          pattern: /^[1-9]\d{5}[1-9]\d{3}((0[1-9])|(1[0-2]))((0[1-9])|([1-2][0-9])|(3[0-1]))\d{3}(\d|x|X)$/g,
+          message: '联系人身份证号输入格式不合法，请重新输入',
           trigger: 'blur',
         },
+      ],
+      email: [
+        { required: true, message: '请输入邮箱地址', trigger: 'blur' },
+        { type: 'email', message: '请输入正确的邮箱地址', trigger: 'blur' },
       ],
       frontPhoto: [{ required: true, message: '请上传身份证正面', trigger: 'blur' }],
       reversePhoto: [{ required: true, message: '请上传身份证反面', trigger: 'blur' }],

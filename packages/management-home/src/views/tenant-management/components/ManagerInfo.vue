@@ -101,15 +101,11 @@ export default {
       ],
       phone: [
         { required: true, message: '请输入管理员电话' },
-        { pattern: /^\d{11}$/g, message: '管理员电话输入格式不合法，请重新输入', trigger: 'blur' },
+        { pattern: /^\d{11}$/g, message: '管理员电话输入格式不合法，请重新输入', trigger: ['blur', 'change'] },
       ],
       email: [
-        { required: true, message: '请输入管理员邮箱', trigger: 'blur' },
-        {
-          pattern: /^\w+((.\w+)|(-\w+))@[A-Za-z0-9]+((.|-)[A-Za-z0-9]+).[A-Za-z0-9]+$/g,
-          message: '管理员邮箱输入格式不合法，请重新输入',
-          trigger: 'blur',
-        },
+        { required: true, message: '请输入邮箱地址', trigger: 'blur' },
+        { type: 'email', message: '请输入正确的邮箱地址', trigger: ['blur', 'change'] }
       ],
       password: [
         { required: true, message: '请输入初始密码' },
