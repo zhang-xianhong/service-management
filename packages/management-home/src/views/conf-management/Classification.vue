@@ -45,7 +45,11 @@
           >
             <el-input v-model="currentNode.name"></el-input>
           </el-form-item>
-          <el-form-item label="描述">
+          <el-form-item
+            label="描述"
+            prop="description"
+            :rules="[{ min: 1, max: 225, message: '描述过长，最多不超过225个字符' }]"
+          >
             <el-input type="textarea" :rows="10" v-model="currentNode.description"></el-input>
           </el-form-item>
         </el-form>
@@ -180,6 +184,9 @@ export default defineComponent({
     };
     const save = async () => {
       if (currentNode.value.name.length > 20) {
+        return false;
+      }
+      if ((currentNode.value.description as any).length > 225) {
         return false;
       }
       if (currentNode.value.id) {
