@@ -32,7 +32,7 @@
           v-else
           class="avatar-uploader"
           :action="IMAGE_UPLOAD"
-          accept=".jpg,.bmp,.png,jpeg"
+          accept=".jpg, .bmp, .png, jpeg"
           :show-file-list="false"
           :before-upload="beforeUpload"
           @success="frontUploadSuccess"
@@ -47,7 +47,7 @@
           v-else
           class="avatar-uploader"
           :action="IMAGE_UPLOAD"
-          accept=".jpg,.bmp,.png,jpeg"
+          accept=".jpg, .bmp, .png, jpeg"
           :show-file-list="false"
           :before-upload="beforeUpload"
           @success="reverseUploadSuccess"
@@ -66,7 +66,7 @@ import { IMAGE_UPLOAD } from '@/shared/constant/file';
 import { SuccessResponse } from '@/types/response';
 import { getImageUrl } from '@/api/files';
 import UserInfoInterface from '../types/user-info-interface';
-
+const iamgeTypes = ['jpg', 'bmp', 'png', 'jpeg'];
 export default {
   name: 'UserInfo',
   props: {
@@ -157,7 +157,13 @@ export default {
     };
 
     // 图片上传大小校验
-    const beforeUpload = (file: { size: number }) => {
+    const beforeUpload = (file: { size: number; name: string }) => {
+      if (iamgeTypes.indexOf(file.name.split('.')[1]) === -1) {
+        (instance as any).proxy.$message({
+          type: 'warning',
+          message: '图片格式错误，仅支持bmp,jpg,png,jpeg格式图片',
+        });
+      }
       if (file.size > 1024 * 1024 * 3) {
         (instance as any).proxy.$message({
           type: 'warning',

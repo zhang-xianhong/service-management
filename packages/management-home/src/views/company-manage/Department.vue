@@ -2,8 +2,17 @@
   <div class="dept">
     <el-row>
       <el-col :span="10" style="text-align: left">
-        <el-button type="primary" style="width: 90px" @click="handleAddDept" :disabled="!isSel">添加子部门</el-button>
-        <el-button @click="handleDel" :disabled="currentNodeData.id === 0 ? true : !isSel">删除</el-button>
+        <el-button
+          type="primary"
+          style="width: 90px"
+          @click="handleAddDept"
+          :disabled="!isSel"
+          v-if="getShowBool('add')"
+          >添加子部门</el-button
+        >
+        <el-button @click="handleDel" :disabled="currentNodeData.id === 0 ? true : !isSel" v-if="getShowBool('delete')"
+          >删除</el-button
+        >
       </el-col>
       <el-col :offset="10" :span="4" style="text-align: right">
         <el-input
@@ -36,7 +45,7 @@
                   <svg-icon v-else icon-name="person" icon-class="tree-node-folder"></svg-icon>
                   <span style="z-index: 1; background: transparent; margin-right: 5px">{{ data.name }}</span>
                 </div>
-                <el-dropdown v-if="data._children && data.id !== 0">
+                <el-dropdown v-if="data._children && data.id !== 0 && getShowBool('update')">
                   <span class="el-dropdown-link">
                     <i class="el-icon-more" style="transform: rotate(90deg)"></i>
                   </span>
@@ -67,7 +76,12 @@
           }}
         </el-row>
         <el-row>
-          <el-button @click="handleAddPerson" :disabled="currentNodeData.id === 0 ? true : !isSel">添加成员</el-button>
+          <el-button
+            v-if="getShowBool('add')"
+            @click="handleAddPerson"
+            :disabled="currentNodeData.id === 0 ? true : !isSel"
+            >添加成员</el-button
+          >
         </el-row>
         <el-row width="100%">
           <el-table :data="tableDataSource" style="width: 100%">
@@ -79,7 +93,9 @@
             <el-table-column label="账户状态" prop="status" width="100"></el-table-column>
             <el-table-column label="操作" width="100">
               <template #default="scope">
-                <el-button type="primary" size="mini" @click="handleDelPerson(scope.row)">删除</el-button>
+                <el-button type="primary" size="mini" @click="handleDelPerson(scope.row)" v-if="getShowBool('delete')"
+                  >删除</el-button
+                >
               </template>
             </el-table-column>
           </el-table>
@@ -141,6 +157,7 @@ import TreeSelector from './components/TreeSelector.vue';
 import { ElMessageBox, ElMessage } from 'element-plus';
 import { debounce } from 'lodash';
 import PackagedPagination from '@/components/pagination/Index.vue';
+import { getShowBool } from '@/utils/permission-show-module';
 
 interface TreeDataSourceType {
   label: string;
@@ -629,6 +646,7 @@ export default defineComponent({
       loadNode,
       handlePageSizeChange,
       handlePageChange,
+      getShowBool,
     };
   },
 });
