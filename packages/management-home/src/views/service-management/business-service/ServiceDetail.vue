@@ -14,11 +14,14 @@
             :key="index"
             :type="button.type || undefined"
             v-on="button.eventOption"
-            :disabled="button.disabled"
+            :disabled="!modelList.tables.length || button.disabled"
             :style="button.style"
           >
             {{ button.label }}
           </el-button>
+          <span v-if="!modelList.tables.length" style="color: red; font-size: 12px;margin-left: 10px;"
+            >请至少创建一个数据对象</span
+          >
         </el-col>
         <el-col :span="8" class="detail-operation">
           <div class="detail-status">

@@ -67,8 +67,6 @@ export function refreshServiceList(payload = {} as any) {
             .join(',');
         }
         x.source = x.source || '新建';
-
-        console.log(x, 'this is x');
       });
     }
     serviceTableList.list = res.data.rows;
