@@ -9,7 +9,7 @@
   >
     <div>
       <el-form :model="formData" ref="diagFormRef" :rules="formRules">
-        <el-form-item label="登记账号" prop="username" :label-width="labelWidth">
+        <el-form-item label="登录账号" prop="username" :label-width="labelWidth">
           <el-input
             v-model.trim="formData.username"
             :disabled="isEdit"
@@ -35,12 +35,17 @@
             <el-radio label="-1">禁用</el-radio>
           </el-radio-group>
         </el-form-item>
-        <el-form-item label="初始密码" :label-width="labelWidth" v-if="!isEdit">
-          <el-tooltip content="复制密码，保存后可用新密码登录" placement="top" effect="light" style="margin-right: 5px">
+        <el-form-item label="初始密码" :label-width="labelWidth" v-if="!isEdit" style="position: relative">
+          <!-- <el-tooltip
+            content="复制密码，保存后可用新密码登录"
+            placement="top"
+            effect="light"
+            style="margin-right: 5px"
+          >
             <svg-icon icon-name="wenhao" icon-class="detail-icons__item"></svg-icon>
-          </el-tooltip>
-          <el-input v-model.trim="formData.password" style="width: 280px" show-password></el-input>
-          <el-button type="text" style="margin-left: 20px" @click="handleCopy">复制</el-button>
+          </el-tooltip>-->
+          <el-input v-model.trim="formData.password" show-password></el-input>
+          <el-button type="text" class="btn-copy" @click="handleCopy">复制</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -195,7 +200,7 @@ export default defineComponent({
         displayName: '',
         phoneNumber: '',
         primaryMail: '',
-        status: '-1',
+        status: '0',
         password: generatePasswd(12),
       };
     }
@@ -265,5 +270,10 @@ export default defineComponent({
   display: block;
   text-align: center;
   margin-bottom: 20px;
+}
+.btn-copy {
+  position: absolute;
+  right: 50px;
+  top: 0;
 }
 </style>

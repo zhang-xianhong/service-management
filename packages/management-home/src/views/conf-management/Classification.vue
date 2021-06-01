@@ -38,8 +38,10 @@
         <el-button type="primary" @click="save" v-if="getShowBool('update')">保存</el-button>
         <el-button @click="remove" v-if="getShowBool('delete')">删除</el-button>
         <el-form :model="currentNode" label-position="top" :rules="rules" class="mt20">
-          <el-form-item prop="name" label="分类名称"
-          :rules="[{min:1,max:20,message:'名称过长，最多不超过20个字符'}]"
+          <el-form-item
+            prop="name"
+            label="分类名称"
+            :rules="[{ min: 1, max: 20, message: '名称过长，最多不超过20个字符' }]"
           >
             <el-input v-model="currentNode.name"></el-input>
           </el-form-item>

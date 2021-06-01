@@ -17,25 +17,25 @@
     <el-row>
       <el-col :span="6" style="background: #fff">
         <div class="user-tree" v-loading="loading">
-          <!-- <el-scrollbar> -->
-          <el-tree
-            ref="userTreeRef"
-            node-key="id"
-            v-if="dataDone"
-            :highlight-current="true"
-            :expand-on-click-node="false"
-            :default-expand-all="false"
-            :load="loadNode"
-            draggable
-            lazy
-            @node-click="nodeClickHandle"
-            :props="treeProps"
-          >
-            <template #default="{ data }">
-              <div>
-                <svg-icon v-if="data._children" icon-name="folder" icon-class="tree-node-folder"></svg-icon>
-                <svg-icon v-else icon-name="person" icon-class="tree-node-folder"></svg-icon>
-                <span style="z-index: 1; background: transparent; margin-right: 5px">{{ data.name }}</span>
+          <el-scrollbar>
+            <el-tree
+              ref="userTreeRef"
+              node-key="id"
+              v-if="dataDone"
+              :highlight-current="true"
+              :expand-on-click-node="false"
+              :default-expand-all="false"
+              :load="loadNode"
+              lazy
+              @node-click="nodeClickHandle"
+              :props="treeProps"
+            >
+              <template #default="{ data }">
+                <div class="content-style">
+                  <svg-icon v-if="data._children" icon-name="folder" icon-class="tree-node-folder"></svg-icon>
+                  <svg-icon v-else icon-name="person" icon-class="tree-node-folder"></svg-icon>
+                  <span style="z-index: 1; background: transparent; margin-right: 5px">{{ data.name }}</span>
+                </div>
                 <el-dropdown v-if="data._children && data.id !== 0">
                   <span class="el-dropdown-link">
                     <i class="el-icon-more" style="transform: rotate(90deg)"></i>
@@ -51,10 +51,9 @@
                     </el-dropdown-menu>
                   </template>
                 </el-dropdown>
-              </div>
-            </template>
-          </el-tree>
-          <!-- </el-scrollbar> -->
+              </template>
+            </el-tree>
+          </el-scrollbar>
         </div>
       </el-col>
       <el-col :offset="1" :span="16">
@@ -676,5 +675,9 @@ export default defineComponent({
   &.tree-node-folder {
     color: #66bbff;
   }
+}
+.content-style {
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 </style>
