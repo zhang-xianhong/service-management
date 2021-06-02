@@ -16,7 +16,12 @@
         ></el-input>
       </el-form-item>
       <el-form-item prop="captchaCode">
-        <el-input class="form-item" v-model="loginInfo.captchaCode" placeholder="验证码" @change="onInputCaptchaCode">
+        <el-input
+          class="form-item"
+          v-model="loginInfo.captchaCode"
+          placeholder="验证码"
+          @change="onInputCaptchaCode"
+        >
           <template #suffix>
             <el-button id="success-btn" v-if="isPassed" type="success" circle>
               <i class="el-icon-check"></i>
@@ -126,6 +131,7 @@ export default defineComponent({
               loading.value = false;
               // 登录失败删除验证码输入并更新验证码图片
               loginInfo.captchaCode = '';
+              isPassed.value = false;
               getCaptchaUrl();
               (instance as any).proxy.$message({
                 type: 'error',
@@ -135,6 +141,7 @@ export default defineComponent({
           } catch {
             loading.value = false;
             loginInfo.captchaCode = '';
+            isPassed.value = false;
             getCaptchaUrl();
           }
         }
