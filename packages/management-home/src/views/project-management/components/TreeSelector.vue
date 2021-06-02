@@ -66,7 +66,12 @@
           <div class="list-wrapper">
             <div v-for="(user, $index) in selectedUser" :key="$index">
               <span>{{ user.displayName || user.name }}</span>
-              <span>{{ user.deptName }}</span>
+              <el-tooltip effect="light" :content="user.deptName" placement="right-end">
+                <span
+                  style="width: 130px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; display: inline-block; vertical-align: bottom"
+                  >{{ user.deptName }}</span
+                >
+              </el-tooltip>
               <i class="el-icon-error" style="float: right" @click="remove(user)"></i>
             </div>
           </div>
