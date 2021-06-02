@@ -8,7 +8,7 @@ export function generatePasswd(len: number): string {
   } else if (length > 16) {
     length = 16;
   }
-  const passwordArray = ['ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz', '1234567890', '@$!%*?&'];
+  const passwordArray = ['ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz', '1234567890', '!@#$%^&'];
   const password = [];
   let n = 0;
   for (let i = 0; i < length; i++) {
