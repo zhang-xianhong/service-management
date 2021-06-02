@@ -26,7 +26,7 @@
           :label="col.label"
           sortable="custom"
         ></el-table-column>
-        <el-table-column prop="operation" width="220">
+        <el-table-column prop="operation" width="220" label="操作">
           <template #default="{ row }">
             <!-- <el-button type="primary" @click="detail(row)" size="mini">详情</el-button> -->
             <el-button type="primary" @click="disabled(row)" size="mini" v-if="getShowBool('update')">禁用</el-button>
