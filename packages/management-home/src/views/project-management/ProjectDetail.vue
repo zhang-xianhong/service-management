@@ -184,11 +184,15 @@ export default {
 
     const reloadUserList = async (role: any) => {
       await initUserList();
-      userTreeRef.value.setCurrentKey(role.id);
-      const treeUser: any = _.find({ id: role.id })(treeData.value[0].children);
-      userList.value = _.intersectionWith((node: any, user: any) => node.id === user.id)(allUsers.value)(
-        treeUser.children,
-      );
+      if (role?.id) {
+        userTreeRef.value.setCurrentKey(role.id);
+        const treeUser: any = _.find({ id: role.id })(treeData.value[0].children);
+        userList.value = _.intersectionWith((node: any, user: any) => node.id === user.id)(allUsers.value)(
+          treeUser.children,
+        );
+      } else {
+        userList.value = allUsers.value;
+      }
     };
     const removeUser = (row: any) => {
       ElMessageBox.confirm(`是否将${row.displayName}从${row.deptName}中移除？`, '提示', {
@@ -314,17 +318,18 @@ export default {
   height: calc(100vh - 130px);
   background: #f2f2f2;
   .basic-info {
-    height: 300px;
+    min-height: 300px;
     margin-bottom: 20px;
     background: white;
     padding: 20px;
     .el-form-item {
-      height: 32px;
+      min-height: 32px;
+      height: auto;
     }
     .form-content {
       width: calc(50vw - 300px);
       &.multiline {
-        height: 100px;
+        height: auto;
         overflow: auto;
       }
     }

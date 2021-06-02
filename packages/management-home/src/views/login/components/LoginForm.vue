@@ -115,6 +115,7 @@ export default defineComponent({
             } else {
               loading.value = false;
               loginInfo.captchaCode = '';
+              isPassed.value = false;
               getCaptchaUrl();
               (instance as any).proxy.$message({
                 type: 'error',
@@ -124,6 +125,7 @@ export default defineComponent({
           } catch {
             loading.value = false;
             loginInfo.captchaCode = '';
+            isPassed.value = false;
             getCaptchaUrl();
           }
         }

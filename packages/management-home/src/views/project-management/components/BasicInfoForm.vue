@@ -1,10 +1,10 @@
 <template>
   <div>
-    <el-form inline label-width="80px" :model="formData" :rules="rules">
-      <el-form-item label="项目名称" prop="name">
+    <el-form inline label-width="100px" :model="formData" :rules="rules">
+      <el-form-item label="项目英文名" prop="name">
         <div class="form-content">{{ detailInfo.name }}</div>
       </el-form-item>
-      <el-form-item label="项目描述" prop="description">
+      <el-form-item label="项目中文名" prop="description">
         <div v-if="!editMode" class="form-content">{{ detailInfo.description }}</div>
         <el-input v-else class="form-content" v-model="formData.description"></el-input>
       </el-form-item>

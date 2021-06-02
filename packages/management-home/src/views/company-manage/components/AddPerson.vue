@@ -35,7 +35,13 @@
             <el-radio label="-1">禁用</el-radio>
           </el-radio-group>
         </el-form-item>
-        <el-form-item label="初始密码" :label-width="labelWidth" v-if="!isEdit" style="position: relative">
+        <el-form-item
+          label="初始密码"
+          :label-width="labelWidth"
+          v-if="!isEdit"
+          style="position: relative"
+          prop="password"
+        >
           <!-- <el-tooltip
             content="复制密码，保存后可用新密码登录"
             placement="top"
@@ -65,7 +71,7 @@
 
 <script lang="ts">
 import { defineComponent, reactive, toRefs, Ref, ref, inject } from 'vue';
-import { checkMail, checkZNName, checkEnName, checkMobile } from '@/utils/validate';
+import { checkMail, checkZNName, checkEnName, checkMobile, checkPasswd } from '@/utils/validate';
 import { generatePasswd, copyFun } from '../utils';
 import { checkUserInfo } from '@/api/company/users';
 
@@ -77,7 +83,14 @@ interface DialogState {
   formData: any;
 }
 const labelWidth = '100px';
-
+const passwdMsg = '长度在 8 到 16 个字符,只能输入大小写字母、数字、特殊字符（!@#$%^&),至少1个大写字母，1个小写字母';
+// 密码校验
+const validatorPasswdPass = (rule: any, value: string, callback: Function) => {
+  if (!checkPasswd(value)) {
+    callback(new Error(passwdMsg));
+  }
+  callback();
+};
 export default defineComponent({
   name: 'AddPerson',
   setup() {
@@ -187,6 +200,10 @@ export default defineComponent({
         { validator: validatorMailPass, trigger: 'blur' },
       ],
       status: [{ required: true, message: '请选择账户状态', trigger: 'change' }],
+      password: [
+        { required: true, message: '请输入初始密码', trigger: 'blur' },
+        { validator: validatorPasswdPass, trigger: 'blur' },
+      ],
     };
 
     // 打开对话框

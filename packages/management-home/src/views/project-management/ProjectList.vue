@@ -71,7 +71,7 @@
               },
             ]"
           >
-            <el-input v-model="projectDetail.name" @blur="checkEnglishName"></el-input>
+            <el-input v-model="projectDetail.name" @blur="checkEnglishName" ref="projectNameInput"></el-input>
           </el-form-item>
           <el-form-item
             label="项目描述"
@@ -82,7 +82,7 @@
               { min: 3, max: 20, message: '请输入3到20个字符', trigger: 'blur' },
             ]"
           >
-            <el-input v-model="projectDetail.description"></el-input>
+            <el-input v-model="projectDetail.description" ref="projectDescriptionInput"></el-input>
           </el-form-item>
           <el-form-item
             label="代码模板"
@@ -172,6 +172,9 @@ export default defineComponent({
     const projectParentDiv = ref(null as any);
     const loadings = ref(true);
 
+    const projectDescriptionInput = ref(null as any);
+    const projectNameInput = ref(null as any);
+
     const closeDialog = () => {
       addDialogVisible.value = false;
       const keys = Object.keys(projectDetail);
@@ -194,6 +197,9 @@ export default defineComponent({
 
     const submitLoading = ref(false);
     const submitProjectDetail = () => {
+      projectNameInput.value.handleBlur();
+      projectDescriptionInput.value.handleBlur();
+      console.log(projectDescriptionInput.value);
       if (submitLoading.value) {
         return;
       }
@@ -267,6 +273,11 @@ export default defineComponent({
         callback(new Error(rule.message));
       }
     };
+    watch(addDialogVisible, (nn: any) => {
+      if (nn) {
+        projectDetail.templateId = codeTemplateList.value[0].id;
+      }
+    });
     return {
       addDialogVisible,
       projectDetail,
@@ -291,6 +302,8 @@ export default defineComponent({
       validatorPass,
       getShowBool,
       submitLoading,
+      projectDescriptionInput,
+      projectNameInput,
     };
   },
 });

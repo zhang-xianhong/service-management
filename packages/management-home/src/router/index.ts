@@ -150,6 +150,7 @@ const routes: Array<RouteRecordRaw> = [
           icon: 'el-icon-eleme',
           isRootLevel: false,
           id: 16,
+          hidden: false,
         },
       },
       {

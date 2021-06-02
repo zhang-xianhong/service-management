@@ -237,11 +237,10 @@
 </template>
 
 <script lang="ts">
-/*eslint-disable*/
 import { defineComponent, reactive, ref, onBeforeUnmount, computed } from 'vue';
 import PackagedPagination from '@/components/pagination/Index.vue';
 import { userProjectList } from '@/layout/messageCenter/user-info';
-import { getShowBool } from "@/utils/permission-show-module";
+import { getShowBool } from '@/utils/permission-show-module';
 import {
   refreshServiceList,
   serviceTableList,
@@ -279,8 +278,7 @@ export default defineComponent({
     };
   },
   setup() {
-
-    const tableLoading = ref(false)
+    const tableLoading = ref(false);
 
     const pageInfo = reactive({
       page: 1,
@@ -295,7 +293,7 @@ export default defineComponent({
       getClassifications()
         .then(() => getTagsForService())
         .then(() => refreshServiceList(pageInfo))
-        .then(() => tableLoading.value = false)
+        .then(() => (tableLoading.value = false));
     }
 
     const mutiArray = ref([] as any);
@@ -360,8 +358,8 @@ export default defineComponent({
       senddata.tags = serviceDetail.tags ? serviceDetail.tags.join(',') : '';
       senddata.dependencies = serviceDetail.dependencies
         ? serviceDetail.dependencies.map((x: any) => ({
-          id: x,
-        }))
+            id: x,
+          }))
         : [];
       if (!senddata.name) {
         return ElMessage({
@@ -379,8 +377,8 @@ export default defineComponent({
         });
       }
 
-      let regux = /^[a-z0-9-]+(?<!-)$/;
-      if(!regux.test(serviceDetail.name)){
+      const regux = /^[a-z0-9-]+(?<!-)$/;
+      if (!regux.test(serviceDetail.name)) {
         return ElMessage({
           showClose: true,
           message: '服务名称不符合命名规范',
@@ -543,7 +541,7 @@ export default defineComponent({
       blackHoverclick();
     });
     const validatorPass = (rule: any, value: any, callback: any) => {
-      const reg = /^(?!-)(?!.*-$)[a-z0-9\-]+$/;
+      const reg = /^(?!-)(?!.*-$)[a-z0-9-]+$/;
       if (!reg.test(value)) {
         callback(new Error(rule.message));
       }

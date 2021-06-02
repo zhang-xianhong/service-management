@@ -103,6 +103,7 @@ import PackagedPagination from '@/components/pagination/Index.vue';
 import { generatePasswd, copyFun } from './utils';
 import { getShowBool } from '@/utils/permission-show-module';
 import { getUserList, createUser, updateUser, delUser, updateUserStatus, resetPassWd } from '@/api/company/users';
+import { checkPasswd } from '@/utils/validate';
 // 用户状态
 enum UserStatus {
   禁用 = -1,
@@ -132,13 +133,8 @@ interface RefAddDialog {
 interface ResetFormState {
   newPassword: any[];
 }
-const passwdMsg = '长度在 8 到 16 个字符,至少1个大写字母，1个小写字母，1个数字和1个特殊字符($@$!%*?&)';
-
+const passwdMsg = '长度在 8 到 16 个字符,只能输入大小写字母、数字、特殊字符（(!@#$%^&),至少1个大写字母，1个小写字母';
 // 密码校验
-function checkPasswd(passwd: string): boolean {
-  const szReg = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@!^#%&])[A-Za-z\d@$!%*?&]{8,16}/;
-  return szReg.test(passwd);
-}
 const validatorPasswdPass = (rule: any, value: string, callback: Function) => {
   if (!checkPasswd(value)) {
     callback(new Error(passwdMsg));
