@@ -30,7 +30,7 @@
                   :indeterminate="data.isIndeterminate"
                   @change="checkUser(data, node)"
                 ></el-checkbox>
-                <el-tooltip effect="dark" :content="data.name" placement="right-end">
+                <el-tooltip effect="light" :content="data.name" placement="right-end">
                   <span
                     style="z-index: 1; background: transparent; width: 150px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis"
                     >{{ data.name }}</span
