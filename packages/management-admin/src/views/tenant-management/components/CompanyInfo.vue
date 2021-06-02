@@ -231,8 +231,8 @@ export default {
           trigger: 'blur',
         },
         {
-          pattern: /^[\u4e00-\u9fa5|a-zA-Z|()]+$/g,
-          message: '包含非法字符，只能输入中文、大小写字母及()',
+          pattern: /^[\u4e00-\u9fa5|a-zA-Z|()（）]+$/g,
+          message: '包含非法字符，只能输入中文、大小写字母及中英文()',
           trigger: 'blur',
         },
       ],
@@ -244,8 +244,8 @@ export default {
           trigger: 'blur',
         },
         {
-          pattern: /^[\u4e00-\u9fa5|a-zA-Z|()]+$/g,
-          message: '该企业简称包含非法字符，请重新输入',
+          pattern: /^[\u4e00-\u9fa5|a-zA-Z|()（）]+$/g,
+          message: '包含非法字符，只能输入中文、大小写字母及中英文()',
           trigger: 'blur',
         },
       ],
