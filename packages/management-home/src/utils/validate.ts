@@ -22,3 +22,8 @@ export function checkMobile(value: string): boolean {
   const subValue = value.replace(/[^-|\d]/g, '');
   return /^(1)\d{10}$/.test(subValue);
 }
+// 自定义密码校验  长度在 8 到 16 个字符,只能输入大小写字母、数字、特殊字符（(!@#$%^&),至少1个大写字母，1个小写字母
+export function checkPasswd(passwd: string): boolean {
+  const szReg = /^(?=.*[a-z])(?=.*[A-Z])[A-Za-z\d（!@#$%^&)]{8,16}/;
+  return szReg.test(passwd);
+}
