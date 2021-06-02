@@ -50,7 +50,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, ref } from 'vue';
+import { defineComponent, reactive, ref, watch } from 'vue';
 import { userInfo } from '@/layout/messageCenter/user-info';
 import { getUserProfile, updateUserPassword, updateUserProfile } from '@/api/auth';
 import { ElMessage } from 'element-plus';
@@ -143,8 +143,8 @@ export default defineComponent({
         { required: true, message: '请输入新密码' },
         { min: 8, max: 16, message: '密码长度在8到16位', trigger: 'blur' },
         {
-          pattern: /^(?=.*[A-Z])(?=.*[a-z])[A-Za-z\d]{8,16}$/g,
-          message: '包含非法字符，只能输入大小写字母、数字、下划线，且必须包含大、小写字母',
+          pattern: /^(?=.*[a-z])(?=.*[A-Z])[A-Za-z\d（!@#$%^&)]{8,16}/,
+          message: '只能输入大小写字母、数字、下划线，且必须包含大、小写字母',
           trigger: 'blur',
         },
         { validator: validatePass, trigger: 'blur' },
@@ -154,6 +154,13 @@ export default defineComponent({
         { validator: checkPasswordValidator, trigger: 'blur' },
       ],
     };
+    watch(dialogFormVisible, (nn) => {
+      if (!nn) {
+        passForm.oldPassword = '';
+        passForm.newPassword = '';
+        passForm.confirmPassword = '';
+      }
+    });
 
     return {
       userInfo,
