@@ -430,6 +430,7 @@ export default {
     // 关闭新增dialog
     function closepublishForm() {
       initpublishForm();
+      publishFormRef.value.resetFields();
       togglepublishDialog();
     }
 
