@@ -400,9 +400,9 @@ export default {
 
     // 改变service方法
     function serviceChange(serviceId: any) {
-      const { name = '' }: any = publishForm.serviceList.find((i: any) => i.id === serviceId);
+      const data: any = publishForm.serviceList.find((i: any) => i.id === serviceId);
       publishForm.formData.moduleId = serviceId;
-      publishForm.formData.name = name;
+      publishForm.formData.name = data?.name;
     }
 
     function getNameByCode(code: number, type: string): string {
@@ -440,7 +440,6 @@ export default {
           // 添加
           if (!publishForm.isEdit) {
             const publishData = publishForm.formData;
-            console.log('publishData', publishData);
             const { code } = await addPublish(publishData);
             if (code === 0) {
               ElMessage({

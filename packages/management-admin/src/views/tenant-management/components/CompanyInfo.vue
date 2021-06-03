@@ -47,8 +47,8 @@
           <el-option
             v-for="(item, index) in industryOptions"
             :key="index"
-            :value="item.value"
-            :label="item.label"
+            :label="item.value"
+            :value="item.key"
           ></el-option>
         </el-select>
       </el-form-item>
@@ -258,8 +258,8 @@ export default {
           trigger: 'blur',
         },
         {
-          pattern: /^[a-z]+$/g,
-          message: '该企业英文简称只支持英文小写字母，请重新输入',
+          pattern: /^[a-zA-Z]+$/g,
+          message: '该企业英文简称只支持英文大小写字母，请重新输入',
           trigger: 'blur',
         },
       ],
@@ -269,7 +269,7 @@ export default {
       license: [
         { required: true, message: '请输入营业执照号', trigger: 'blur' },
         {
-          pattern: /(^(?:(?![IOZSV])[\dA-Z]){2}\d{6}(?:(?![IOZSV])[\dA-Z]){10}$)|(^\d{15}$)/,
+          pattern: /(^[A-Z0-9]{18}$)|(^\d{15}$)/,
           message: '营业执照号不合法，请重新输入',
           trigger: 'blur',
         },

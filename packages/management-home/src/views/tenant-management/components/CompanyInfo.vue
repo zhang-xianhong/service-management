@@ -120,36 +120,28 @@ export default {
 
     // 已选行业展示
     const computedIndustryName = computed(
-      () =>
-        industryOptions.value.filter((item: any) => item.key === companyInfo.value.industryId)[0]?.value ||
-        '',
+      () => industryOptions.value.filter((item: any) => item.key === companyInfo.value.industryId)[0]?.value || '',
     );
 
     // 省份选项信息
     const provinceOptions = ref([] as any[]);
 
     const computedAddrName = computed(
-      () =>
-        provinceOptions.value.filter((item: any) => String(item.code) === companyInfo.value.addr)[0]?.name ||
-        '',
+      () => provinceOptions.value.filter((item: any) => String(item.code) === companyInfo.value.addr)[0]?.name || '',
     );
 
     // 企业性质选项信息
     const natureOptions = ref([] as any[]);
 
     const computedNatureName = computed(
-      () =>
-        natureOptions.value.filter((item: any) => item.key === companyInfo.value.natureId)[0]?.value ||
-        '',
+      () => natureOptions.value.filter((item: any) => item.key === companyInfo.value.natureId)[0]?.value || '',
     );
 
     // 企业规模选项信息
     const scaleOptions = ref([] as any[]);
 
     const computedScaleName = computed(
-      () =>
-        scaleOptions.value.filter((item: any) => item.key === companyInfo.value.scaleId)[0]?.value ||
-        '',
+      () => scaleOptions.value.filter((item: any) => item.key === companyInfo.value.scaleId)[0]?.value || '',
     );
 
     useCompanyInfo().then((res: any) => {
