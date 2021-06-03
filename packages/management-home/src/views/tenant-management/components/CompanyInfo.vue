@@ -122,7 +122,7 @@ export default {
     const computedIndustryName = computed(
       () =>
         industryOptions.value.filter((item: any) => item.key === companyInfo.value.industryId)[0]?.value ||
-        companyInfo.value.industryId,
+        '',
     );
 
     // 省份选项信息
@@ -131,7 +131,7 @@ export default {
     const computedAddrName = computed(
       () =>
         provinceOptions.value.filter((item: any) => String(item.code) === companyInfo.value.addr)[0]?.name ||
-        companyInfo.value.addr,
+        '',
     );
 
     // 企业性质选项信息
@@ -140,7 +140,7 @@ export default {
     const computedNatureName = computed(
       () =>
         natureOptions.value.filter((item: any) => item.key === companyInfo.value.natureId)[0]?.value ||
-        companyInfo.value.natureId,
+        '',
     );
 
     // 企业规模选项信息
@@ -149,7 +149,7 @@ export default {
     const computedScaleName = computed(
       () =>
         scaleOptions.value.filter((item: any) => item.key === companyInfo.value.scaleId)[0]?.value ||
-        companyInfo.value.scaleId,
+        '',
     );
 
     useCompanyInfo().then((res: any) => {

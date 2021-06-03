@@ -40,12 +40,7 @@
       </el-form-item>
       <el-form-item label="关联服务">
         <el-select v-if="isEditable" v-model="serviceIds" multiple>
-          <el-option
-            v-for="(item, index) in allService"
-            :key="index"
-            :value="item.id"
-            :label="item.name"
-          ></el-option>
+          <el-option v-for="(item, index) in allService" :key="index" :value="item.id" :label="item.name"></el-option>
         </el-select>
         <template v-else>{{ computedServicesName }}</template>
       </el-form-item>
@@ -194,7 +189,7 @@ export default defineComponent({
   cursor: pointer;
   &:hover {
     &::after {
-      content: "建议尺寸110x110，支持png、jpg格式，小于50k";
+      content: '建议尺寸110x110，支持png、jpg格式，小于50k';
       position: absolute;
       margin-top: -20px;
       margin-left: -40px;
