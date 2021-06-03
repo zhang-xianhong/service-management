@@ -26,10 +26,10 @@
           :label="col.label"
           sortable="custom"
         ></el-table-column>
-        <el-table-column prop="operation" width="220">
+        <el-table-column prop="operation" width="220" label="操作">
           <template #default="{ row }">
             <!-- <el-button type="primary" @click="detail(row)" size="mini">详情</el-button> -->
-            <el-button type="primary" @click="disabled(row)" size="mini" v-if="getShowBool('update')">禁用</el-button>
+            <!--            <el-button type="primary" @click="disabled(row)" size="mini" v-if="getShowBool('update')">禁用</el-button>-->
             <!-- <el-button type="primary" @click="enabled(row)" size="mini">启用</el-button> -->
             <el-button type="primary" @click="rename(row)" size="mini" v-if="getShowBool('update')">修改</el-button>
             <el-button @click="groupRemove([row.id])" v-if="getShowBool('delete')">删除</el-button>
@@ -84,12 +84,6 @@ export default defineComponent({
     const page = ref(1);
     const total = ref(0);
     const pageSize = ref(10);
-    const handlePageSizeChange = (size: number) => {
-      pageSize.value = size;
-    };
-    const handlePageChange = (curPage: number) => {
-      page.value = curPage;
-    };
     // 获取组件实例
     const instance = getCurrentInstance();
     // 表格数据
@@ -103,18 +97,18 @@ export default defineComponent({
         label: '标签名称',
         prop: 'name',
       },
-      {
-        label: '创建账号',
-        prop: 'createUser',
-      },
+      // {
+      //   label: '创建账号',
+      //   prop: 'createUser',
+      // },
       {
         label: '创建时间',
         prop: 'createTime',
       },
-      {
-        label: '克隆源',
-        prop: 'cloneBy',
-      },
+      // {
+      //   label: '克隆源',
+      //   prop: 'cloneBy',
+      // },
     ];
     const format = (num: number): string => {
       if (num < 10) {
@@ -154,7 +148,14 @@ export default defineComponent({
         loading.value = false;
       }
     };
-
+    const handlePageSizeChange = (size: number) => {
+      pageSize.value = size;
+      getTagList();
+    };
+    const handlePageChange = (curPage: number) => {
+      page.value = curPage;
+      getTagList();
+    };
     // 过滤
     const filterTag = _.debounce(500)(getTagList);
 

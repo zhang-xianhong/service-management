@@ -14,7 +14,12 @@
       </el-col>
     </el-row>
     <el-row style="background: #fff">
-      <el-table :data="tableData" v-loading="loading" style="width: 100%" @selection-change="handleSelectionChange">
+      <el-table
+        :data="tableData"
+        v-loading="loading"
+        style="width: 100%"
+        @selection-change="handleSelectionChange"
+      >
         <el-table-column type="selection" width="45" />
         <el-table-column type="index" label="序号" width="50" />
         <el-table-column label="键" prop="name"></el-table-column>
@@ -28,12 +33,18 @@
         <el-table-column label="配置版本" prop="version" width="100"></el-table-column>
         <el-table-column label="操作" width="300">
           <template #default="scope">
-            <el-button type="primary" size="mini" @click="onEdit(scope.row)" v-if="getShowBool('update')"
-              >编辑</el-button
-            >
-            <el-button type="primary" size="mini" @click="changeHistory(scope.row)" v-if="getShowBool('selectDetail')"
-              >变更历史</el-button
-            >
+            <el-button
+              type="primary"
+              size="mini"
+              @click="onEdit(scope.row)"
+              v-if="getShowBool('update')"
+            >编辑</el-button>
+            <el-button
+              type="primary"
+              size="mini"
+              @click="changeHistory(scope.row)"
+              v-if="getShowBool('selectDetail')"
+            >变更历史</el-button>
             <el-button size="mini" @click="onDelete(scope.row)" v-if="getShowBool('delete')">删除</el-button>
           </template>
         </el-table-column>
@@ -64,7 +75,10 @@
             <el-input v-model.trim="configForm.formData.value" :disabled="configForm.disabled"></el-input>
           </el-form-item>
           <el-form-item label="默认值" prop="defaultValue" :label-width="labelWidth">
-            <el-input v-model.trim="configForm.formData.defaultValue" :disabled="configForm.disabled"></el-input>
+            <el-input
+              v-model.trim="configForm.formData.defaultValue"
+              :disabled="configForm.disabled"
+            ></el-input>
           </el-form-item>
           <el-form-item label="类型" prop="type" :label-width="labelWidth">
             <el-radio-group v-model="configForm.formData.type" :disabled="configForm.disabled">
@@ -73,7 +87,10 @@
             </el-radio-group>
           </el-form-item>
           <el-form-item label="配置描述" :label-width="labelWidth" prop="description">
-            <el-input v-model.trim="configForm.formData.description" :disabled="configForm.disabled"></el-input>
+            <el-input
+              v-model.trim="configForm.formData.description"
+              :disabled="configForm.disabled"
+            ></el-input>
           </el-form-item>
         </el-form>
       </div>
@@ -173,13 +190,13 @@ const validatorKeyPass = async (rule: any, value: string, callback: Function) =>
     callback(new Error('字母、中划线、下划线、小数点包含数字，不能只输入数字不能以数字开头'));
   }
   // 后台校验
-  const { code, message, data } = await checkKeyRule({
+  const { code, data } = await checkKeyRule({
     name: value,
     scope: 2,
   });
   const { usable } = data;
   if (code === ResCode.Success && !usable) {
-    callback(new Error(message));
+    callback(new Error('键已存在!'));
   }
   callback();
 };
