@@ -440,19 +440,12 @@ export default defineComponent({
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning',
-      })
-        .then(() =>
-          deleteServiceForList(mutiArray.value).then(() => {
-            refreshServiceList(pageInfo);
-            Message.success('删除成功');
-          }),
-        )
-        .catch(() => {
-          Message({
-            type: 'info',
-            message: '已取消删除',
-          });
-        });
+      }).then(() =>
+        deleteServiceForList(mutiArray.value).then(() => {
+          refreshServiceList(pageInfo);
+          Message.success('删除成功');
+        }),
+      );
     }
 
     const runDialogVisible = ref(false);
