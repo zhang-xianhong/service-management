@@ -238,7 +238,7 @@ export default defineComponent({
     // 获取组件实例
     const instance = getCurrentInstance();
     const dialogVisible: Ref<boolean> = ref(false);
-
+    let oldDeptName = '';
     const formData = reactive({
       isEdit: false,
       deptName: '',
@@ -461,6 +461,7 @@ export default defineComponent({
     const handleRename = (data: any): void => {
       editFormData.value = data;
       formData.isEdit = true;
+      oldDeptName = data.name;
       formData.deptName = data.name;
       dialogVisible.value = true;
     };
@@ -551,6 +552,10 @@ export default defineComponent({
         if (valid) {
           let res;
           if (formData.isEdit) {
+            if (oldDeptName === formData.deptName) {
+              closeDialog();
+              return;
+            }
             const { id, parent } = editFormData.value;
             res = await updateDept({
               parentId: parent ? parent.id : 0,
