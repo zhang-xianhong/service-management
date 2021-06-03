@@ -8,12 +8,11 @@
           @click="handleAddDept"
           :disabled="!isSel"
           v-if="getShowBool('add')"
-        >添加子部门</el-button>
-        <el-button
-          @click="handleDel"
-          :disabled="currentNodeData.id === 0 ? true : !isSel"
-          v-if="getShowBool('delete')"
-        >删除</el-button>
+          >添加子部门</el-button
+        >
+        <el-button @click="handleDel" :disabled="currentNodeData.id === 0 ? true : !isSel" v-if="getShowBool('delete')"
+          >删除</el-button
+        >
       </el-col>
       <el-col :offset="10" :span="4" style="text-align: right">
         <el-input
@@ -44,9 +43,7 @@
                 <div class="content-style">
                   <svg-icon v-if="data._children" icon-name="folder" icon-class="tree-node-folder"></svg-icon>
                   <svg-icon v-else icon-name="person" icon-class="tree-node-folder"></svg-icon>
-                  <span
-                    style="z-index: 1; background: transparent; margin-right: 5px"
-                  >{{ data.name }}</span>
+                  <span style="z-index: 1; background: transparent; margin-right: 5px">{{ data.name }}</span>
                 </div>
                 <el-dropdown v-if="data._children && data.id !== 0 && getShowBool('update')">
                   <span class="el-dropdown-link">
@@ -58,7 +55,8 @@
                       <el-dropdown-item
                         @click="handleUpMove(data)"
                         v-if="data.id !== 0 && data.parent && data.parent.id !== 0"
-                      >上移一层</el-dropdown-item>
+                        >上移一层</el-dropdown-item
+                      >
                     </el-dropdown-menu>
                   </template>
                 </el-dropdown>
@@ -82,7 +80,8 @@
             v-if="getShowBool('add')"
             @click="handleAddPerson"
             :disabled="currentNodeData.id === 0 ? true : !isSel"
-          >添加成员</el-button>
+            >添加成员</el-button
+          >
         </el-row>
         <el-row width="100%">
           <el-table :data="tableDataSource" style="width: 100%">
@@ -98,12 +97,9 @@
             </el-table-column>
             <el-table-column label="操作" width="100">
               <template #default="scope">
-                <el-button
-                  type="primary"
-                  size="mini"
-                  @click="handleDelPerson(scope.row)"
-                  v-if="getShowBool('delete')"
-                >删除</el-button>
+                <el-button type="primary" size="mini" @click="handleDelPerson(scope.row)" v-if="getShowBool('delete')"
+                  >删除</el-button
+                >
               </template>
             </el-table-column>
           </el-table>
@@ -238,7 +234,7 @@ export default defineComponent({
     // 获取组件实例
     const instance = getCurrentInstance();
     const dialogVisible: Ref<boolean> = ref(false);
-
+    let oldDeptName = '';
     const formData = reactive({
       isEdit: false,
       deptName: '',
@@ -461,6 +457,7 @@ export default defineComponent({
     const handleRename = (data: any): void => {
       editFormData.value = data;
       formData.isEdit = true;
+      oldDeptName = data.name;
       formData.deptName = data.name;
       dialogVisible.value = true;
     };
@@ -551,6 +548,10 @@ export default defineComponent({
         if (valid) {
           let res;
           if (formData.isEdit) {
+            if (oldDeptName === formData.deptName) {
+              closeDialog();
+              return;
+            }
             const { id, parent } = editFormData.value;
             res = await updateDept({
               parentId: parent ? parent.id : 0,
