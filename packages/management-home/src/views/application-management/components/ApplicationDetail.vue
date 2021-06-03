@@ -7,21 +7,24 @@
       </el-form-item>
       <el-form-item label="应用英文名称" prop="name" required>{{ detailInfo.name }}</el-form-item>
       <el-form-item>
-        <template v-slot:label>应用图标<i class="el-icon-question info-icon"></i></template>
+        <template v-slot:label>
+          应用图标
+          <i class="el-icon-question info-icon"></i>
+        </template>
         <el-upload
           v-if="isEditable"
           class="avatar-uploader"
           :action="IMAGE_UPLOAD"
-          accept=".jpg,.png,.jpeg"
+          accept=".jpg, .png, .jpeg"
           :show-file-list="false"
           :before-upload="beforeUpload"
           @success="logoUploadSuccess"
           @error="logoUploadError"
         >
           <i v-if="!detailInfo.imageUrl" class="el-icon-plus avatar-uploader-icon"></i>
-          <img v-else style="width: 110px; height: 110px" :src="detailInfo.imageUrl" alt="" />
+          <img v-else style="width: 110px; height: 110px" :src="detailInfo.imageUrl" alt />
         </el-upload>
-        <img v-else style="width: 110px; height: 110px" :src="detailInfo.imageUrl" alt="" />
+        <img v-else style="width: 110px; height: 110px" :src="detailInfo.imageUrl" alt />
       </el-form-item>
       <el-form-item label="应用简介">
         <el-input
@@ -37,7 +40,12 @@
       </el-form-item>
       <el-form-item label="关联服务">
         <el-select v-if="isEditable" v-model="serviceIds" multiple>
-          <el-option v-for="(item, index) in allService" :key="index" :value="item.id" :label="item.name"></el-option>
+          <el-option
+            v-for="(item, index) in allService"
+            :key="index"
+            :value="item.id"
+            :label="item.name"
+          ></el-option>
         </el-select>
         <template v-else>{{ computedServicesName }}</template>
       </el-form-item>
@@ -45,7 +53,7 @@
     <div class="dialog-footer">
       <el-button v-if="isEditable" type="primary" @click="updateAppDetail">提交</el-button>
       <el-button v-else type="primary" @click="isEditable = true">编辑</el-button>
-      <el-button @click="$emit('close')">关闭</el-button>
+      <el-button @click="handleCloseDialog">关闭</el-button>
     </div>
   </el-dialog>
 </template>
@@ -86,7 +94,7 @@ export default defineComponent({
     const detailInfo: Ref<DetailInterface> = ref(props.detail);
     const isEditable: Ref<boolean> = ref(false);
 
-    const isVisable = computed(() => props.visable);
+    const isVisable: any = computed(() => props.visable);
 
     getAllService();
 
@@ -137,6 +145,10 @@ export default defineComponent({
         ctx.emit('close');
       }
     };
+    const handleCloseDialog = () => {
+      isEditable.value = false;
+      ctx.emit('close');
+    };
 
     return {
       IMAGE_UPLOAD,
@@ -150,6 +162,7 @@ export default defineComponent({
       logoUploadSuccess,
       beforeUpload,
       updateAppDetail,
+      handleCloseDialog,
     };
   },
 });
@@ -181,7 +194,7 @@ export default defineComponent({
   cursor: pointer;
   &:hover {
     &::after {
-      content: '建议尺寸110x110，支持png、jpg格式，小于50k';
+      content: "建议尺寸110x110，支持png、jpg格式，小于50k";
       position: absolute;
       margin-top: -20px;
       margin-left: -40px;

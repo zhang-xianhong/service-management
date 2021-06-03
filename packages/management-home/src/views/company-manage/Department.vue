@@ -8,11 +8,12 @@
           @click="handleAddDept"
           :disabled="!isSel"
           v-if="getShowBool('add')"
-          >添加子部门</el-button
-        >
-        <el-button @click="handleDel" :disabled="currentNodeData.id === 0 ? true : !isSel" v-if="getShowBool('delete')"
-          >删除</el-button
-        >
+        >添加子部门</el-button>
+        <el-button
+          @click="handleDel"
+          :disabled="currentNodeData.id === 0 ? true : !isSel"
+          v-if="getShowBool('delete')"
+        >删除</el-button>
       </el-col>
       <el-col :offset="10" :span="4" style="text-align: right">
         <el-input
@@ -43,7 +44,9 @@
                 <div class="content-style">
                   <svg-icon v-if="data._children" icon-name="folder" icon-class="tree-node-folder"></svg-icon>
                   <svg-icon v-else icon-name="person" icon-class="tree-node-folder"></svg-icon>
-                  <span style="z-index: 1; background: transparent; margin-right: 5px">{{ data.name }}</span>
+                  <span
+                    style="z-index: 1; background: transparent; margin-right: 5px"
+                  >{{ data.name }}</span>
                 </div>
                 <el-dropdown v-if="data._children && data.id !== 0 && getShowBool('update')">
                   <span class="el-dropdown-link">
@@ -55,8 +58,7 @@
                       <el-dropdown-item
                         @click="handleUpMove(data)"
                         v-if="data.id !== 0 && data.parent && data.parent.id !== 0"
-                        >上移一层</el-dropdown-item
-                      >
+                      >上移一层</el-dropdown-item>
                     </el-dropdown-menu>
                   </template>
                 </el-dropdown>
@@ -80,8 +82,7 @@
             v-if="getShowBool('add')"
             @click="handleAddPerson"
             :disabled="currentNodeData.id === 0 ? true : !isSel"
-            >添加成员</el-button
-          >
+          >添加成员</el-button>
         </el-row>
         <el-row width="100%">
           <el-table :data="tableDataSource" style="width: 100%">
@@ -90,12 +91,19 @@
             <el-table-column label="姓名" prop="displayName"></el-table-column>
             <el-table-column label="手机" prop="phoneNumber" width="200"></el-table-column>
             <el-table-column label="邮箱" prop="primaryMail"></el-table-column>
-            <el-table-column label="账户状态" prop="status" width="100"></el-table-column>
+            <el-table-column label="账户状态" prop="status" width="100">
+              <template #default="scope">
+                <span>{{ UserStatus[scope.row.status] }}</span>
+              </template>
+            </el-table-column>
             <el-table-column label="操作" width="100">
               <template #default="scope">
-                <el-button type="primary" size="mini" @click="handleDelPerson(scope.row)" v-if="getShowBool('delete')"
-                  >删除</el-button
-                >
+                <el-button
+                  type="primary"
+                  size="mini"
+                  @click="handleDelPerson(scope.row)"
+                  v-if="getShowBool('delete')"
+                >删除</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -298,7 +306,7 @@ export default defineComponent({
         allDeptUser.value = deptTree;
         allUsers.value = data.users.map((user: any) => ({
           ...user,
-          status: UserStatus[user.status as 0 | -1],
+          status: user.status,
         }));
         treeData.loading = false;
       }
@@ -432,6 +440,7 @@ export default defineComponent({
         queryUserListData.value = rows.map((item: any) => {
           const { id, displayName } = item;
           return {
+            ...item,
             name: displayName,
             id,
             isLeaf: true,
@@ -479,7 +488,7 @@ export default defineComponent({
       // 当前部门下的人员
       const { parentData, users } = data;
       const newUserList = users.filter((item: any) => {
-        const oldList = parentData.children || parentData._children;
+        const oldList = parentData.children ? [...parentData._children, ...parentData.children] : parentData._children;
         return !oldList.find((subItem: any) => {
           const isTrue = subItem.id === item.id;
           return isTrue;
@@ -489,6 +498,9 @@ export default defineComponent({
       newUserList.forEach((item: any) => {
         append(item, data.parentData);
       });
+      treeData.currentNodeUsers = [...treeData.currentNodeUsers, ...newUserList];
+      const { page, pageSize } = tableData.searchProps;
+      getCurrentTableData(treeData.currentNodeUsers, page, pageSize);
     };
 
     function nodeClickHandle(data: any, node: any): void {
@@ -647,6 +659,7 @@ export default defineComponent({
       handlePageSizeChange,
       handlePageChange,
       getShowBool,
+      UserStatus,
     };
   },
 });

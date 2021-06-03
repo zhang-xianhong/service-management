@@ -26,7 +26,7 @@
           :label="col.label"
           sortable="custom"
         ></el-table-column>
-        <el-table-column prop="operation" width="220">
+        <el-table-column prop="operation" width="220" label="操作">
           <template #default="{ row }">
             <!-- <el-button type="primary" @click="detail(row)" size="mini">详情</el-button> -->
             <el-button type="primary" @click="disabled(row)" size="mini" v-if="getShowBool('update')">禁用</el-button>
@@ -84,12 +84,6 @@ export default defineComponent({
     const page = ref(1);
     const total = ref(0);
     const pageSize = ref(10);
-    const handlePageSizeChange = (size: number) => {
-      pageSize.value = size;
-    };
-    const handlePageChange = (curPage: number) => {
-      page.value = curPage;
-    };
     // 获取组件实例
     const instance = getCurrentInstance();
     // 表格数据
@@ -154,7 +148,14 @@ export default defineComponent({
         loading.value = false;
       }
     };
-
+    const handlePageSizeChange = (size: number) => {
+      pageSize.value = size;
+      getTagList();
+    };
+    const handlePageChange = (curPage: number) => {
+      page.value = curPage;
+      getTagList();
+    };
     // 过滤
     const filterTag = _.debounce(500)(getTagList);
 
