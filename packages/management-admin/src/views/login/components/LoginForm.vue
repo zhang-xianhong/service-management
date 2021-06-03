@@ -16,7 +16,12 @@
         ></el-input>
       </el-form-item>
       <el-form-item prop="captchaCode">
-        <el-input class="form-item" v-model="loginInfo.captchaCode" placeholder="验证码" @change="onInputCaptchaCode">
+        <el-input
+          class="form-item"
+          v-model="loginInfo.captchaCode"
+          placeholder="验证码"
+          @change="onInputCaptchaCode"
+        >
           <template #suffix>
             <el-button id="success-btn" v-if="isPassed" type="success" circle>
               <i class="el-icon-check"></i>
@@ -130,7 +135,7 @@ export default defineComponent({
               getCaptchaUrl();
               let msg = '';
               switch (code) {
-                case 1119000:
+                case 1105001:
                   msg = '验证码错误！';
                   break;
                 case 1118000:
