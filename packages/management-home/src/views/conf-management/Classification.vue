@@ -229,12 +229,7 @@ export default defineComponent({
             });
           }
         })
-        .catch(() => {
-          ElMessage({
-            type: 'info',
-            message: '已取消操作',
-          });
-        });
+        .catch(() => false);
     };
 
     onMounted(loadTreeData);
