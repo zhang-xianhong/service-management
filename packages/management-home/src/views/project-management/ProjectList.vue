@@ -122,7 +122,12 @@
             <el-radio v-model="projectDetail.status" :label="1">启用</el-radio>
             <el-radio v-model="projectDetail.status" :label="0">冻结</el-radio>
           </el-form-item>
-          <el-form-item label="项目简介" :label-width="labelWidth">
+          <el-form-item
+            label="项目简介"
+            :label-width="labelWidth"
+            prop="remark"
+            :rules="[{ min: 0, max: 255, message: '最长不超过255个字符', trigger: 'blur' }]"
+          >
             <el-input v-model="projectDetail.remark" type="textarea" :rows="5"></el-input>
           </el-form-item>
         </el-form>

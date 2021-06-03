@@ -14,7 +14,8 @@ async function getOwnerList(keyword = '', owners: Array<any> = [], projects = fa
   }
   const { data } = await queryInTenant(item);
   let users = data;
-  Object.assign(users, owners);
+  // Object.assign(users, owners);
+  console.log(owners);
   const userIds = Array.from(new Set(users.map((item: any) => item.id)));
   users = users.filter((item: any, index: number) => {
     if (userIds.indexOf(item.id) > -1) {

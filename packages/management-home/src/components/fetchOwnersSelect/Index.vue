@@ -35,11 +35,11 @@ export default defineComponent({
       const projectId = localStorage.getItem('projectId');
       const payload = props.useProject ? { keyword, projectId } : { keyword };
       queryInTenant(payload).then((res) => {
-        console.log(res, 'this is owners');
         // const { users } = res.data || { users: [] };
         options.value = res.data || [];
       });
     };
+    remoteMethod('');
     const changeOwners = (res: any) => {
       ctx.emit('get-owners', res.join(','));
     };
