@@ -1,19 +1,15 @@
 <template>
   <div>
     <el-row class="classific-row">
-      <el-button
-        style="width: 120px"
-        type="primary"
-        @click="addTop"
-        v-if="getShowBool('add')"
-      >新增顶级分类</el-button>
+      <el-button style="width: 120px" type="primary" @click="addTop" v-if="getShowBool('add')">新增顶级分类</el-button>
       <el-button
         style="width: 120px"
         :type="currentNode.id === -1 || !treeFirstIdArray.includes(currentNode.id) ? 'info' : 'primary'"
         @click="addChild"
         :disabled="currentNode.id === -1 || !treeFirstIdArray.includes(currentNode.id)"
         v-if="getShowBool('update')"
-      >新增子级分类</el-button>
+        >新增子级分类</el-button
+      >
       <el-button type="primary" v-if="!allExpanded" @click="expandAll">展开所有</el-button>
       <el-button type="primary" v-if="allExpanded" @click="collapseAll">折叠所有</el-button>
     </el-row>
@@ -41,13 +37,7 @@
       <el-col :span="12" v-if="~currentNode.id">
         <el-button type="primary" @click="save" v-if="getShowBool('update')">保存</el-button>
         <el-button @click="remove" v-if="getShowBool('delete')">删除</el-button>
-        <el-form
-          :model="currentNode"
-          label-position="top"
-          :rules="rules"
-          class="mt20"
-          ref="classFormRef"
-        >
+        <el-form :model="currentNode" label-position="top" :rules="rules" class="mt20" ref="classFormRef">
           <el-form-item prop="name" label="分类名称">
             <el-input v-model="currentNode.name"></el-input>
           </el-form-item>
