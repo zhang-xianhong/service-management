@@ -23,9 +23,9 @@
     >
       <el-table-column type="selection" width="45" />
       <el-table-column type="index" label="序号" width="50" />
-      <el-table-column label="数据类型" prop="name" sortable></el-table-column>
+      <el-table-column label="类型名称" prop="name" sortable></el-table-column>
       <el-table-column label="描述" prop="description" sortable></el-table-column>
-      <el-table-column label="克隆源" prop="cloneBy" sortable></el-table-column>
+      <!--      <el-table-column label="克隆源" prop="cloneBy" sortable></el-table-column>-->
       <el-table-column label="操作" width="200">
         <template #default="scope">
           <template v-if="!scope.row.isSystem">
