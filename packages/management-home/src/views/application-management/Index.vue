@@ -1,7 +1,15 @@
 <template>
   <el-row>
     <el-col :span="6" style="text-align: left">
-      <el-button type="primary" icon="el-icon-plus" style="width: 90px" @click="openCreateDialog">新增</el-button>
+      <el-button
+        type="primary"
+        icon="el-icon-plus"
+        style="width: 90px"
+        @click="openCreateDialog"
+        v-if="getShowBool('add')"
+        :disabled="!userProjectList.length"
+        >新增</el-button
+      >
     </el-col>
     <el-col :span="6" :offset="12" style="text-align: right">
       <el-input
@@ -14,18 +22,31 @@
     </el-col>
   </el-row>
   <el-row style="background: #fff">
-    <div style="background: #fff; width: 100%" v-loading="loading" element-loading-text="数据加载中...">
-      <div class="application-list_content">
+    <div
+      style="background: #fff; width: 100%; min-height: 180px"
+      v-loading="!userProjectList.length"
+      element-loading-text="暂无项目，请联系管理员添加项目"
+      element-loading-spinner="el-icon-loading"
+      element-loading-background="rgba(255, 255, 255, 1)"
+    >
+      <div
+        class="application-list_content"
+        v-loading="loading"
+        v-if="userProjectList.length && applicationList.length"
+        element-loading-text="数据更新中..."
+        element-loading-spinner="el-icon-loading"
+        element-loading-background="rgba(255, 255, 255, 1)"
+        :style="{ minHeight: applicationList.length && !loading ? '180px' : '130px' }"
+      >
         <application-card
           v-for="item in applicationList"
           :key="item.id"
           :data="item"
           @update="onUpdate"
         ></application-card>
-        <div v-if="!applicationList.length && !loading" class="placeholders">暂无数据</div>
       </div>
       <packaged-pagination
-        v-if="applicationList.length"
+        v-if="applicationList.length && !loading"
         :current-page="searchProps.page"
         :page-sizes="[1, 5, 10, 20, 50]"
         :page-size="searchProps.pageSize"
@@ -34,6 +55,14 @@
         @size-change="handlePageSizeChange"
         @current-change="handlePageChange"
       ></packaged-pagination>
+      <div
+        style="background: #fff; width: 100%; min-height: 180px"
+        v-if="!applicationList.length && !loading"
+        v-loading="true"
+        element-loading-text="暂无数据"
+        element-loading-spinner="el-icon-loading"
+        element-loading-background="rgba(255, 255, 255, 1)"
+      ></div>
     </div>
   </el-row>
   <el-dialog title="新建应用" v-model="createDialogVisible" width="500px">
@@ -90,6 +119,8 @@ import { getApps, createApp } from '@/api/app';
 import { SuccessResponse } from '@/types/response';
 import { allService, getAllService } from '../service-management/business-service/utils/service-data-utils';
 import { debounce } from 'lodash/fp';
+import { userProjectList } from '@/layout/messageCenter/user-info';
+import { getShowBool } from '@/utils/permission-show-module';
 
 interface StateInterface {
   applicationList: any[];
@@ -98,6 +129,7 @@ interface StateInterface {
   createDialogVisible: boolean;
   appInfo: { name: string; description: string; remark: string; thumbnail: string; services: number[] };
   imageUrl: string;
+  statusLabel: string;
 }
 
 export default defineComponent({
@@ -128,6 +160,7 @@ export default defineComponent({
         services: [],
       },
       imageUrl: '',
+      statusLabel: '',
     });
     const englishName = ref(null as any);
     const descriptionName = ref(null as any);
@@ -147,16 +180,26 @@ export default defineComponent({
 
     const getAppList = async () => {
       state.loading = true;
+      state.statusLabel = '数据加载中...';
       const { data } = await getApps(searchProps);
       state.loading = false;
+      state.statusLabel = '';
       if (data.rows) {
         state.applicationList = data.rows;
         state.total = data.count;
+      }
+      if (userProjectList.value.length === 0) {
+        return (state.statusLabel = '暂无项目，请联系管理员添加项目');
+      }
+      if (state.applicationList.length === 0) {
+        return (state.statusLabel = '暂无数据');
       }
     };
     getAppList();
 
     getAllService();
+
+    setInterval(() => (state.statusLabel = new Date().toDateString()), 2000);
 
     const openCreateDialog = () => {
       state.createDialogVisible = true;
@@ -256,6 +299,8 @@ export default defineComponent({
       handlePageChange,
       englishName,
       descriptionName,
+      userProjectList,
+      getShowBool,
     };
   },
 });

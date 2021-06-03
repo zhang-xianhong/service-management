@@ -179,7 +179,7 @@ const validatorKeyPass = async (rule: any, value: string, callback: Function) =>
   });
   const { usable } = data;
   if (code === ResCode.Success && !usable) {
-    callback(new Error('键已存在，无法新建'));
+    callback(new Error('键已存在!'));
   }
   callback();
 };
