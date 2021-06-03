@@ -46,6 +46,12 @@ export default defineComponent({
       });
     };
     const addModel = async () => {
+      if (!form.value.name && !form.value.description) {
+        return ElMessage.error('未输入数据名称与描述');
+      }
+      if (!form.value.name || !form.value.description) {
+        return false;
+      }
       const { code } = await createModel({
         ...form.value,
         serviceId,
