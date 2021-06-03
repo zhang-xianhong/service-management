@@ -40,19 +40,16 @@
       </el-form-item>
       <el-form-item label="关联服务">
         <el-select v-if="isEditable" v-model="serviceIds" multiple>
-          <el-option
-            v-for="(item, index) in allService"
-            :key="index"
-            :value="item.id"
-            :label="item.name"
-          ></el-option>
+          <el-option v-for="(item, index) in allService" :key="index" :value="item.id" :label="item.name"></el-option>
         </el-select>
         <template v-else>{{ computedServicesName }}</template>
       </el-form-item>
     </el-form>
     <div class="dialog-footer">
-      <el-button v-if="isEditable" type="primary" @click="updateAppDetail">提交</el-button>
-      <el-button v-else type="primary" @click="isEditable = true">编辑</el-button>
+      <template v-if="getShowBool('update')">
+        <el-button v-if="isEditable" type="primary" @click="updateAppDetail">提交</el-button>
+        <el-button v-else type="primary" @click="isEditable = true">编辑</el-button>
+      </template>
       <el-button @click="handleCloseDialog">关闭</el-button>
     </div>
   </el-dialog>
@@ -64,6 +61,7 @@ import { IMAGE_UPLOAD } from '@/shared/constant/file';
 import { SuccessResponse } from '@/types/response';
 import { updateAppById } from '@/api/app';
 import { getAllService, allService } from '@/views/service-management/business-service/utils/service-data-utils';
+import { getShowBool } from '@/utils/permission-show-module';
 
 interface DetailInterface {
   id: string;
@@ -163,6 +161,7 @@ export default defineComponent({
       beforeUpload,
       updateAppDetail,
       handleCloseDialog,
+      getShowBool,
     };
   },
 });
@@ -194,7 +193,7 @@ export default defineComponent({
   cursor: pointer;
   &:hover {
     &::after {
-      content: "建议尺寸110x110，支持png、jpg格式，小于50k";
+      content: '建议尺寸110x110，支持png、jpg格式，小于50k';
       position: absolute;
       margin-top: -20px;
       margin-left: -40px;
