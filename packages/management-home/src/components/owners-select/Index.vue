@@ -11,7 +11,7 @@
     @change="onChange"
     v-bind="$attrs"
   >
-    <el-option v-for="(item, index) in owners" :key="index" :label="item.displayName" :value="item.id"> </el-option>
+    <el-option v-for="item in owners" :key="item.id" :label="item.displayName" :value="item.id"> </el-option>
   </el-select>
 </template>
 
@@ -48,12 +48,13 @@ export default {
     getOwners();
 
     function onChange(value: number[]) {
-      const owners = value.map((id: number) => getOwnerById(id));
+      const ownerData = value.map((id: number) => getOwnerById(id));
+      owners.value = ownerData;
       ctx.emit('change', {
-        ownerUsers: owners,
+        ownerUsers: ownerData,
         owner: value.join(','),
-        owners: owners.map((item: any) => ({ userId: item.id })),
-        ownersName: owners.map((item: any) => item.displayName).join(','),
+        owners: ownerData.map((item: any) => ({ userId: item.id })),
+        ownersName: ownerData.map((item: any) => item.displayName).join(','),
       });
     }
 

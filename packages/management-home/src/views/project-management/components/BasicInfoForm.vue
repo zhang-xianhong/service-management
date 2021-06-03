@@ -196,6 +196,7 @@ export default {
       formData.owner = value.owner;
       formData.owners = value.owners;
       formData.ownerUsers = value.ownerUsers;
+      console.log(value, 'this is value');
     };
 
     // 表单操作
