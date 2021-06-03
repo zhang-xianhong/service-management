@@ -122,7 +122,12 @@
             <el-radio v-model="projectDetail.status" :label="1">启用</el-radio>
             <el-radio v-model="projectDetail.status" :label="0">冻结</el-radio>
           </el-form-item>
-          <el-form-item label="项目简介" :label-width="labelWidth">
+          <el-form-item
+            label="项目简介"
+            :label-width="labelWidth"
+            prop="remark"
+            :rules="[{ min: 0, max: 255, message: '最多支持255个字符', trigger: 'blur' }]"
+          >
             <el-input v-model="projectDetail.remark" type="textarea" :rows="5"></el-input>
           </el-form-item>
         </el-form>
@@ -199,7 +204,6 @@ export default defineComponent({
     const submitProjectDetail = () => {
       projectNameInput.value.handleBlur();
       projectDescriptionInput.value.handleBlur();
-      console.log(projectDescriptionInput.value);
       if (submitLoading.value) {
         return;
       }
@@ -213,6 +217,9 @@ export default defineComponent({
         return false;
       }
       if (!projectDetail.templateId) {
+        return false;
+      }
+      if (projectDetail.remark.length > 255) {
         return false;
       }
       submitLoading.value = true;
@@ -260,7 +267,6 @@ export default defineComponent({
       };
     });
     const checkEnglishName = () => {
-      console.log(projectDetail.name);
       if (!projectDetail.name) {
         return;
       }

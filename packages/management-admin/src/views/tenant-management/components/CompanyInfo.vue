@@ -325,6 +325,7 @@ export default {
           type: 'warning',
           message: '图片格式错误，仅支持bmp,jpg,png,jpeg格式图片',
         });
+        return false;
       }
       if (file.size > 1024 * 1024 * 3) {
         (instance as any).proxy.$message({

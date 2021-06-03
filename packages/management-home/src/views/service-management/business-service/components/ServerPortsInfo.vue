@@ -1,6 +1,6 @@
 <template>
   <div style="background: #fff">
-    <el-table :data="tableData" style="width: 100%" height="330" :row-class-name="tableRowClassName">
+    <el-table :data="tableData" style="width: 100%" height="290" :row-class-name="tableRowClassName">
       <el-table-column label="序号" type="index" width="50"></el-table-column>
       <el-table-column label="接口名称" prop="name">
         <template #default="scope">

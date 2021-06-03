@@ -32,7 +32,12 @@
       </div>
     </div>
   </div>
-  <application-detail :visable="isDetailVisable" :detail="computedDetail" @close="onCloseDetail"></application-detail>
+  <application-detail
+    :visable="isDetailVisable"
+    :detail="computedDetail"
+    @close="onCloseDetail"
+    v-if="getShowBool('delete')"
+  ></application-detail>
 </template>
 
 <script lang="ts">
@@ -41,6 +46,7 @@ import { IMAGE_UPLOAD } from '@/shared/constant/file';
 import ApplicationDetail from './ApplicationDetail.vue';
 import { SuccessResponse } from '@/types/response';
 import { updateAppById, deleteAppById } from '@/api/app';
+import { getShowBool } from '@/utils/permission-show-module';
 
 interface PropsInterface {
   id: string;
@@ -134,6 +140,7 @@ export default defineComponent({
       beforeUpload,
       logoUploadSuccess,
       logoUploadError,
+      getShowBool,
     };
   },
 });
