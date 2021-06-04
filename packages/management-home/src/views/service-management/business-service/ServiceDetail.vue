@@ -19,7 +19,7 @@
           >
             {{ button.label }}
           </el-button>
-          <span v-if="!modelList.tables.length && pageLoading" style="color: red; font-size: 12px;margin-left: 10px;"
+          <span v-if="!modelList.tables.length && pageLoading" style="color: red; font-size: 12px; margin-left: 10px"
             >请至少创建一个数据对象</span
           >
         </el-col>
