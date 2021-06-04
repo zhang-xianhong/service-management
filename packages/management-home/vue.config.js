@@ -27,7 +27,8 @@ module.exports = {
         // 后端rest服务
         // target: 'http://10.95.22.74:3001', // 鹏鹏的机器
         // target: 'http://10.91.21.72:3000', // 雯雯的机器
-        target: 'http://tenant1.dev-citybase.oa.com', // 开发集成环境
+        // target: 'http://tenant1.dev-citybase.oa.com', // 开发集成环境
+        target: 'http://fbxxyxgs.test-citybase.oa.com',
         ws: true,
         changeOrigin: true
         // 添加所有请求路径前缀/api/

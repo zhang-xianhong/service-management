@@ -29,6 +29,7 @@
           style="width: 400px"
           placeholder="请输入企业英文简称"
           maxlength="16"
+          @blur="validateEngAbbrName"
         ></el-input>
       </el-form-item>
       <el-form-item prop="addr" class="form-item" label="企业地址">
@@ -47,8 +48,8 @@
           <el-option
             v-for="(item, index) in industryOptions"
             :key="index"
-            :value="item.value"
-            :label="item.label"
+            :label="item.value"
+            :value="item.key"
           ></el-option>
         </el-select>
       </el-form-item>
@@ -151,7 +152,7 @@ import useCompanyInfo from '../utils/tenant-config';
 import { IMAGE_UPLOAD } from '@/shared/constant/file';
 import { SuccessResponse } from '@/types/response';
 import { getImageUrl } from '@/api/files';
-import { validateCompanyName, validateLicense } from '@/api/tenant';
+import { validateCompanyName, validateLicense, validateEngAbbr } from '@/api/tenant';
 import CompanyInfoInterface from '../types/company-info-interface';
 const iamgeTypes = ['jpg', 'bmp', 'png', 'jpeg'];
 export default {
@@ -231,8 +232,8 @@ export default {
           trigger: 'blur',
         },
         {
-          pattern: /^[\u4e00-\u9fa5|a-zA-Z|()]+$/g,
-          message: '包含非法字符，只能输入中文、大小写字母及()',
+          pattern: /^[\u4e00-\u9fa5|a-zA-Z|()（）]+$/g,
+          message: '包含非法字符，只能输入中文、大小写字母及中英文()',
           trigger: 'blur',
         },
       ],
@@ -244,8 +245,8 @@ export default {
           trigger: 'blur',
         },
         {
-          pattern: /^[\u4e00-\u9fa5|a-zA-Z|()]+$/g,
-          message: '该企业简称包含非法字符，请重新输入',
+          pattern: /^[\u4e00-\u9fa5|a-zA-Z|()（）]+$/g,
+          message: '包含非法字符，只能输入中文、大小写字母及中英文()',
           trigger: 'blur',
         },
       ],
@@ -258,8 +259,8 @@ export default {
           trigger: 'blur',
         },
         {
-          pattern: /^[a-z]+$/g,
-          message: '该企业英文简称只支持英文小写字母，请重新输入',
+          pattern: /^[a-zA-Z]+$/g,
+          message: '该企业英文简称只支持英文大小写字母，请重新输入',
           trigger: 'blur',
         },
       ],
@@ -269,7 +270,7 @@ export default {
       license: [
         { required: true, message: '请输入营业执照号', trigger: 'blur' },
         {
-          pattern: /(^(?:(?![IOZSV])[\dA-Z]){2}\d{6}(?:(?![IOZSV])[\dA-Z]){10}$)|(^\d{15}$)/,
+          pattern: /(^[A-Z0-9]{18}$)|(^\d{15}$)/,
           message: '营业执照号不合法，请重新输入',
           trigger: 'blur',
         },
@@ -385,6 +386,20 @@ export default {
       }
     };
 
+    // 企业名称校验
+    const validateEngAbbrName = async (el: any) => {
+      if (el.target.value === '') {
+        return;
+      }
+      const { data } = await validateEngAbbr(el.target.value);
+      if (!data.usable) {
+        (instance as any).proxy.$message({
+          type: 'error',
+          message: '该英文简称已存在，请重新输入！',
+        });
+      }
+    };
+
     // 营业执照号校验
     const validateLicenseId = async (el: any) => {
       if (el.target.value === '') {
@@ -417,6 +432,7 @@ export default {
       logoUploadSuccess,
       uploadFailed,
       validateName,
+      validateEngAbbrName,
       validateLicenseId,
     };
   },

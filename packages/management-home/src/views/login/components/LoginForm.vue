@@ -119,7 +119,7 @@ export default defineComponent({
               getCaptchaUrl();
               let msg = '';
               switch (code) {
-                case 1119000:
+                case 1105001:
                   msg = '验证码错误！';
                   break;
                 case 1118000:

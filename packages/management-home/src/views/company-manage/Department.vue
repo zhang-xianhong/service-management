@@ -327,7 +327,7 @@ export default defineComponent({
       tableData.total = data.length;
       const pageMaxCount = page * pageSize;
       const startIndex = (page - 1) * pageSize;
-      const endIndex = page * pageSize - 1;
+      const endIndex = page * pageSize;
       if (pageMaxCount < tableData.total) {
         tableData.tableDataSource = data.slice(startIndex, endIndex);
       } else {
@@ -508,6 +508,8 @@ export default defineComponent({
       treeData.currentNode = node;
       const { page, pageSize } = tableData.searchProps;
       if (!data._children) {
+        const res = allUsers.value.find((item: any) => item.id === data.id);
+        getCurrentTableData([res], page, pageSize);
         return;
       }
       if (data.id === 0) {
