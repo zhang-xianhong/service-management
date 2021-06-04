@@ -54,11 +54,11 @@
         :total="pageInfo.total"
       ></packaged-pagination>
     </div>
-    <el-dialog v-model="addDialogVisible" title="新建项目" width="500px" @close="closeDialog" destroy-on-close>
+    <el-dialog v-model="addDialogVisible" title="新建项目" width="520px" @close="closeDialog" destroy-on-close>
       <div class="add-project-dialog">
         <el-form :model="projectDetail">
           <el-form-item
-            label="项目名称"
+            label="项目英文名"
             :label-width="labelWidth"
             prop="name"
             :rules="[
@@ -74,7 +74,7 @@
             <el-input v-model="projectDetail.name" @blur="checkEnglishName" ref="projectNameInput"></el-input>
           </el-form-item>
           <el-form-item
-            label="项目描述"
+            label="项目中文名"
             :label-width="labelWidth"
             prop="description"
             :rules="[
@@ -168,7 +168,7 @@ export default defineComponent({
   },
   data() {
     return {
-      labelWidth: '80px',
+      labelWidth: '90px',
     };
   },
   setup() {
