@@ -24,7 +24,9 @@
             v-model.trim="formData.phoneNumber"
             :disabled="disable"
             placeholder="请输入中国大陆手机号"
-          ></el-input>
+          >
+            <template #prepend>+86</template>
+          </el-input>
         </el-form-item>
         <el-form-item label="邮箱" prop="primaryMail" :label-width="labelWidth">
           <el-input v-model.trim="formData.primaryMail" :disabled="disable" placeholder="请输入注册邮箱"></el-input>
