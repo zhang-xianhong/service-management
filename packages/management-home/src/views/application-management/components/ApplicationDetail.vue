@@ -1,5 +1,5 @@
 <template>
-  <el-dialog title="应用基本信息" v-model="isVisable" width="500px">
+  <el-dialog :title="isEditable ? '编辑应用' : '应用基本信息'" v-model="isVisable" width="500px">
     <el-form :model="detailInfo" label-width="120px" label-position="left">
       <el-form-item label="应用中文名称" prop="description">
         <el-input v-if="isEditable" v-model="detailInfo.description" placeholder="请输入中文名称"></el-input>
