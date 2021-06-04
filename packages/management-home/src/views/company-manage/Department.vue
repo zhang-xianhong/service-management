@@ -131,7 +131,7 @@
       @user-changed="reloadUserList"
     ></TreeSelector>
     <el-dialog
-      title="添加子部门"
+      :title="formData.isEdit ? ' 重命名子部门' : '添加子部门'"
       v-model="dialogVisible"
       width="500px"
       @closed="closeDialog"
