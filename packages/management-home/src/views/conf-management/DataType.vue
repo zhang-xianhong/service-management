@@ -90,7 +90,7 @@ export default {
         page: 1,
         pageSize: 10,
         sortField: 'createTime',
-        sortType: 'ascending',
+        sortType: 'descending',
       },
     });
 

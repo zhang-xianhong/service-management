@@ -183,7 +183,7 @@ export default defineComponent({
         page: 1,
         pageSize: 10,
         sortField: 'createTime',
-        sortType: 'ascending',
+        sortType: 'descending',
       },
     });
     // 新增配置表单数据
