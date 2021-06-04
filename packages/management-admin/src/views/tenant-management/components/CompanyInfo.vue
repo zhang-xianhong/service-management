@@ -29,6 +29,7 @@
           style="width: 400px"
           placeholder="请输入企业英文简称"
           maxlength="16"
+          @blur="validateEngAbbrName"
         ></el-input>
       </el-form-item>
       <el-form-item prop="addr" class="form-item" label="企业地址">
@@ -151,7 +152,7 @@ import useCompanyInfo from '../utils/tenant-config';
 import { IMAGE_UPLOAD } from '@/shared/constant/file';
 import { SuccessResponse } from '@/types/response';
 import { getImageUrl } from '@/api/files';
-import { validateCompanyName, validateLicense } from '@/api/tenant';
+import { validateCompanyName, validateLicense, validateEngAbbr } from '@/api/tenant';
 import CompanyInfoInterface from '../types/company-info-interface';
 const iamgeTypes = ['jpg', 'bmp', 'png', 'jpeg'];
 export default {
@@ -385,6 +386,20 @@ export default {
       }
     };
 
+    // 企业名称校验
+    const validateEngAbbrName = async (el: any) => {
+      if (el.target.value === '') {
+        return;
+      }
+      const { data } = await validateEngAbbr(el.target.value);
+      if (!data.usable) {
+        (instance as any).proxy.$message({
+          type: 'error',
+          message: '该英文简称已存在，请重新输入！',
+        });
+      }
+    };
+
     // 营业执照号校验
     const validateLicenseId = async (el: any) => {
       if (el.target.value === '') {
@@ -417,6 +432,7 @@ export default {
       logoUploadSuccess,
       uploadFailed,
       validateName,
+      validateEngAbbrName,
       validateLicenseId,
     };
   },
