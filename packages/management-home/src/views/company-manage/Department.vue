@@ -327,7 +327,7 @@ export default defineComponent({
       tableData.total = data.length;
       const pageMaxCount = page * pageSize;
       const startIndex = (page - 1) * pageSize;
-      const endIndex = page * pageSize - 1;
+      const endIndex = page * pageSize;
       if (pageMaxCount < tableData.total) {
         tableData.tableDataSource = data.slice(startIndex, endIndex);
       } else {

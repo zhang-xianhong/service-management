@@ -160,7 +160,7 @@ export default defineComponent({
   }
   .operations {
     display: none;
-    z-index: 2;
+    z-index: -2;
     width: 30px;
     height: 100px;
     text-align: right;
