@@ -24,7 +24,7 @@
     ></div>
     <div class="operations">
       <i class="el-icon-circle-close" @click.stop="removeModel(table)"></i>
-      <i class="el-icon-link"></i>
+      <!--      <i class="el-icon-link"></i>-->
     </div>
   </div>
 </template>
