@@ -68,10 +68,10 @@
   <el-dialog title="新建应用" v-model="createDialogVisible" width="500px">
     <el-form :model="appInfo" :rules="rules" label-width="120px" label-position="left">
       <el-form-item label="应用中文名称" prop="description">
-        <el-input v-model="appInfo.description" placeholder="请输入中文名称"></el-input>
+        <el-input v-model="appInfo.description" placeholder="请输入中文名称" ref="descriptionName"></el-input>
       </el-form-item>
       <el-form-item label="应用英文名称" prop="name">
-        <el-input v-model="appInfo.name" placeholder="请输入英文名称"></el-input>
+        <el-input v-model="appInfo.name" placeholder="请输入英文名称" ref="englishName"></el-input>
       </el-form-item>
       <el-form-item>
         <template v-slot:label>应用图标<i class="el-icon-question info-icon"></i></template>
@@ -111,7 +111,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, toRefs, getCurrentInstance } from 'vue';
+import { defineComponent, reactive, toRefs, getCurrentInstance, ref } from 'vue';
 import ApplicationCard from './components/ApplicationCard.vue';
 import PackagedPagination from '@/components/pagination/Index.vue';
 import { IMAGE_UPLOAD } from '@/shared/constant/file';
@@ -162,6 +162,8 @@ export default defineComponent({
       imageUrl: '',
       statusLabel: '',
     });
+    const englishName = ref(null as any);
+    const descriptionName = ref(null as any);
 
     const rules = {
       description: [
@@ -226,6 +228,15 @@ export default defineComponent({
     };
 
     const submitAppCreate = async () => {
+      englishName.value.handleBlur();
+      descriptionName.value.handleBlur();
+      if (!state.appInfo.name || !state.appInfo.description) {
+        return false;
+      }
+      const reg = /^[a-zA-Z]+$/g;
+      if (!reg.test(state.appInfo.name)) {
+        return false;
+      }
       const { code } = await createApp(state.appInfo);
       if (code === 0) {
         (instance as any).proxy.$message({
@@ -289,6 +300,8 @@ export default defineComponent({
       filterApps,
       handlePageSizeChange,
       handlePageChange,
+      englishName,
+      descriptionName,
       userProjectList,
       getShowBool,
     };
