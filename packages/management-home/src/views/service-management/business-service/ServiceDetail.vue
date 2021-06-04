@@ -463,6 +463,7 @@ export default {
         path: `/service-management/service-list/detail/${value}`,
         query: { detailName: name },
       });
+      window.location.reload();
     };
 
     const logs = (res: any) => {
