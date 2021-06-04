@@ -230,6 +230,9 @@ export default defineComponent({
     const submitAppCreate = async () => {
       englishName.value.handleBlur();
       descriptionName.value.handleBlur();
+      if (!state.appInfo.name || !state.appInfo.description) {
+        return false;
+      }
       const reg = /^[a-zA-Z]+$/g;
       if (!reg.test(state.appInfo.name)) {
         return false;
