@@ -237,6 +237,10 @@ export default defineComponent({
       if (!reg.test(state.appInfo.name)) {
         return false;
       }
+      const chineseReg = /^[\u4e00-\u9fa5]+$/g;
+      if (!chineseReg.test(state.appInfo.description)) {
+        return false;
+      }
       const { code } = await createApp(state.appInfo);
       if (code === 0) {
         (instance as any).proxy.$message({
