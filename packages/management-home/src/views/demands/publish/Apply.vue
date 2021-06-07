@@ -14,8 +14,21 @@
       </el-col>
     </el-row>
     <el-row style="background: #fff">
-      <el-table :data="tableData" v-loading="loading" style="width: 100%" @selection-change="handleSelectionChange">
+      <el-table :data="tableData" v-loading="loading" class="publish-table" @selection-change="handleSelectionChange">
+        <el-table-column type="expand">
+          <template #default="props">
+            <el-form label-position="left" class="publish-table-expand">
+              <el-form-item label="发布说明">
+                <span>{{ props.row.description }}</span>
+              </el-form-item>
+              <el-form-item label="审核说明" v-if="props.row.auditInstructions">
+                <span>{{ props.row.auditInstructions }}</span>
+              </el-form-item>
+            </el-form>
+          </template>
+        </el-table-column>
         <el-table-column type="index" label="序号" width="50" />
+        <el-table-column label="发布类型" prop="moduleType"></el-table-column>
         <el-table-column label="发布名称" prop="name"></el-table-column>
         <el-table-column label="申请账号" prop="applicantName">
           <template #header>
@@ -44,36 +57,10 @@
             </el-popover>
           </template>
         </el-table-column>
-        <el-table-column label="发布描述" prop="description" show-overflow-tooltip></el-table-column>
+        <el-table-column label="发布版本" prop="version"></el-table-column>
         <el-table-column label="申请时间" prop="createTime">
           <template #default="scope">{{ dateFormat(scope.row.createTime) }}</template>
         </el-table-column>
-        <!-- <el-table-column label="审核结果">
-          <template #default="scope">
-            <span>{{ getNameByCode(scope.row.auditResults, 'auditResults') }}</span>
-          </template>
-          <template #header>
-            <i class="el-icon-search"></i>
-            <el-popover placement="bottom" :width="200" trigger="manual" :visible="auditResultsTitleVisiable">
-              <template #reference>
-                <el-button type="text" @click="auditResultsTitleClick">审核结果</el-button>
-              </template>
-              <el-select
-                v-model="searchProps.auditResults"
-                placeholder="请选择审核结果"
-                clearable
-                @change="auditResultsChange"
-              >
-                <el-option
-                  v-for="(item, index) in auditResultsFilters"
-                  :key="index"
-                  :label="item.name"
-                  :value="item.id"
-                ></el-option>
-              </el-select>
-            </el-popover>
-          </template>
-        </el-table-column> -->
         <el-table-column label="状态">
           <template #default="scope">
             <span>{{ getNameByCode(scope.row.status, 'status') }}</span>
@@ -243,7 +230,7 @@ import { debounce } from 'lodash';
 import { ElMessageBox, ElMessage } from 'element-plus';
 import dateFormat from '@/utils/date-format';
 import { userInfo } from '@/layout/messageCenter/user-info';
-import { STATUS, AUDIT_RESULTS } from './constant';
+import { STATUS, AUDIT_RESULTS, getModuleType } from './constant';
 
 interface TableState {
   tableData: Array<object>;
@@ -367,6 +354,7 @@ export default {
         tableState.total = count;
         const publishData = rows.map((item: any) => ({
           ...item,
+          moduleType: getModuleType(item.moduleType),
           applicantName: `${userInfo.value.displayName}_${userInfo.value.userName}`,
         }));
         tableState.tableData = publishData;
@@ -658,7 +646,7 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="scss">
 .datatype-add {
   float: right;
   margin-bottom: 12px;
@@ -680,5 +668,22 @@ export default {
   top: 0;
   background-color: rgba(0, 0, 0, 0.2);
   z-index: 40;
+}
+.publish-table {
+  width: 100%;
+  &-expand {
+    label {
+      width: 90px;
+      color: #99a9bf;
+    }
+  }
+  .el-form-item {
+    margin-right: 0;
+    margin-bottom: 0;
+  }
+  .el-form-item__content {
+    padding-left: 90px;
+    font-size: 12px;
+  }
 }
 </style>
