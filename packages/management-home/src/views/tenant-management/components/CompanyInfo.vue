@@ -1,7 +1,15 @@
 <template>
   <el-row style="font-size: 12px; font-weight: bolder">企业信息</el-row>
   <el-row>
-    <el-form ref="formRef" class="tenant-form" :model="companyInfo" inline label-width="140px" label-position="left">
+    <el-form
+      ref="formRef"
+      class="tenant-form"
+      :model="companyInfo"
+      :rules="rules"
+      inline
+      label-width="140px"
+      label-position="left"
+    >
       <el-form-item prop="name" class="form-item" label="企业名称" required>
         {{ companyInfo.name }}
       </el-form-item>
@@ -75,7 +83,7 @@
 </template>
 
 <script lang="ts">
-import { computed, ref, WritableComputedRef, getCurrentInstance } from 'vue';
+import { computed, ref, WritableComputedRef, getCurrentInstance, Ref } from 'vue';
 import useCompanyInfo from '../utils/tenant-config';
 import { SuccessResponse } from '@/types/response';
 import { IMAGE_UPLOAD } from '@/shared/constant/file';
@@ -111,6 +119,24 @@ export default {
   setup(props: { isEdit: boolean; modelValue: any }) {
     // 组件实例
     const instance = getCurrentInstance();
+    // 表单引用
+    const formRef: Ref<any> = ref(null);
+    // 表单校验规则
+    const rules = {
+      nameShort: [
+        {
+          min: 2,
+          max: 40,
+          message: '企业别称长度在2到40个字符之间',
+          trigger: 'blur',
+        },
+        {
+          pattern: /^[\u4e00-\u9fa5|a-zA-Z|()（）]+$/g,
+          message: '包含非法字符，只能输入中文、大小写字母及中英文()',
+          trigger: 'blur',
+        },
+      ],
+    };
 
     // 企业信息
     const companyInfo: WritableComputedRef<CompanyInfoInterface> = computed(() => props.modelValue);
@@ -176,6 +202,8 @@ export default {
     };
 
     return {
+      rules,
+      formRef,
       IMAGE_UPLOAD,
       companyInfo,
       industryOptions,
