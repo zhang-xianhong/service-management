@@ -66,7 +66,7 @@
     </div>
   </el-row>
   <el-dialog title="新建应用" v-model="createDialogVisible" width="500px">
-    <el-form :model="appInfo" :rules="rules" label-width="120px" label-position="left">
+    <el-form :model="appInfo" :rules="rules" label-width="120px" label-position="left" ref="form">
       <el-form-item label="应用中文名称" prop="description">
         <el-input v-model="appInfo.description" placeholder="请输入中文名称" ref="descriptionName"></el-input>
       </el-form-item>
@@ -164,6 +164,7 @@ export default defineComponent({
     });
     const englishName = ref(null as any);
     const descriptionName = ref(null as any);
+    const form = ref(null as any);
 
     const rules = {
       description: [
@@ -262,6 +263,7 @@ export default defineComponent({
     const closeAppCreate = async () => {
       state.createDialogVisible = false;
       state.imageUrl = '';
+      form.value.resetFields();
       state.appInfo = {
         name: '',
         description: '',
@@ -307,6 +309,7 @@ export default defineComponent({
       handlePageChange,
       englishName,
       descriptionName,
+      form,
       userProjectList,
       getShowBool,
     };
