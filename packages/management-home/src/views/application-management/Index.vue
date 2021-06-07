@@ -261,6 +261,7 @@ export default defineComponent({
 
     const closeAppCreate = async () => {
       state.createDialogVisible = false;
+      state.imageUrl = '';
       state.appInfo = {
         name: '',
         description: '',
