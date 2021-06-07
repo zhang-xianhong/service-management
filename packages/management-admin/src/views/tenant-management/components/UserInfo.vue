@@ -154,6 +154,10 @@ export default {
           trigger: 'blur',
         },
       ],
+      email: [
+        { required: true, message: '请输入邮箱地址', trigger: 'blur' },
+        { type: 'email', message: '请输入正确的邮箱地址', trigger: 'blur' },
+      ],
       frontPhoto: [{ required: true, message: '请上传身份证正面' }],
       reversePhoto: [{ required: true, message: '请上传身份证反面' }],
     };
@@ -165,6 +169,7 @@ export default {
           type: 'warning',
           message: '图片格式错误，仅支持bmp,jpg,png,jpeg格式图片',
         });
+        return false;
       }
       if (file.size > 1024 * 1024 * 3) {
         (instance as any).proxy.$message({

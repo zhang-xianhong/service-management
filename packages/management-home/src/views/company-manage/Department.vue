@@ -238,7 +238,7 @@ export default defineComponent({
     // 获取组件实例
     const instance = getCurrentInstance();
     const dialogVisible: Ref<boolean> = ref(false);
-
+    let oldDeptName = '';
     const formData = reactive({
       isEdit: false,
       deptName: '',
@@ -331,7 +331,7 @@ export default defineComponent({
       tableData.total = data.length;
       const pageMaxCount = page * pageSize;
       const startIndex = (page - 1) * pageSize;
-      const endIndex = page * pageSize - 1;
+      const endIndex = page * pageSize;
       if (pageMaxCount < tableData.total) {
         tableData.tableDataSource = data.slice(startIndex, endIndex);
       } else {
@@ -392,7 +392,7 @@ export default defineComponent({
     const handleDel = () => {
       if (treeData.currentNodeData._children) {
         if (treeData.currentNodeData._children.length) {
-          msgTips('warning', '该部门下有人员，无法删除！');
+          msgTips('warning', '该部门下不为空，无法删除！');
           return;
         }
         // 判断部门中是否有人员
@@ -461,6 +461,7 @@ export default defineComponent({
     const handleRename = (data: any): void => {
       editFormData.value = data;
       formData.isEdit = true;
+      oldDeptName = data.name;
       formData.deptName = data.name;
       dialogVisible.value = true;
     };
@@ -511,6 +512,8 @@ export default defineComponent({
       treeData.currentNode = node;
       const { page, pageSize } = tableData.searchProps;
       if (!data._children) {
+        const res = allUsers.value.find((item: any) => item.id === data.id);
+        getCurrentTableData([res], page, pageSize);
         return;
       }
       if (data.id === 0) {
@@ -551,6 +554,10 @@ export default defineComponent({
         if (valid) {
           let res;
           if (formData.isEdit) {
+            if (oldDeptName === formData.deptName) {
+              closeDialog();
+              return;
+            }
             const { id, parent } = editFormData.value;
             res = await updateDept({
               parentId: parent ? parent.id : 0,

@@ -58,3 +58,6 @@ export const serviceNameTest = (payload: any): Promise<SuccessResponse<any>> =>
 
 export const getServiceTraceId: (serviceId: any) => Promise<SuccessResponse<any>> = (serviceId: any) =>
   request.get(getUrl(URL.service.GET_SERVICE_TRACE_ID), { params: { serviceId } });
+
+export const updateServiceStatus: (ids: any) => Promise<SuccessResponse<any>> = (ids: any) =>
+  request.post(getUrl(URL.service.UPDATE_SERVICE_STATUS), { ids });

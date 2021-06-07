@@ -187,7 +187,7 @@ const routes: Array<RouteRecordRaw> = [
       title: '应用编排',
       icon: 'el-icon-eleme',
       isRootLevel: true,
-      id: 9,
+      id: 22,
       node: true,
     },
     children: [
@@ -199,7 +199,7 @@ const routes: Array<RouteRecordRaw> = [
           title: '应用列表',
           icon: 'el-icon-eleme',
           isRootLevel: false,
-          id: 8,
+          id: 23,
         },
       },
     ],
@@ -254,7 +254,7 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import(/* webpackChunkName: "datatype-edit" */ '@/views/conf-management/DataTypeEdit.vue'),
         name: 'DataTypeEdit',
         meta: {
-          title: '数据类型编辑',
+          title: '新增数据类型',
           icon: 'el-icon-eleme',
           hidden: true,
           isRootLevel: false,

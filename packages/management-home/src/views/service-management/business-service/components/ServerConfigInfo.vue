@@ -107,7 +107,7 @@
 </template>
 
 <script lang="ts">
-import { reactive, toRefs, onMounted, getCurrentInstance } from 'vue';
+import { reactive, toRefs, onMounted, getCurrentInstance, inject } from 'vue';
 import {
   getServiceConfig,
   addConfig,
@@ -130,6 +130,7 @@ export default {
   emits: ['back'],
   setup(props: { id: number }) {
     const { proxy } = getCurrentInstance() as any;
+    const serviceId = inject('serviceId') as number;
 
     const state = reactive({
       tableData: [] as any[],
@@ -207,7 +208,11 @@ export default {
 
     // 保存新增配置项修改
     const saveModify = async (rowData: any) => {
-      const { code } = await addConfig(rowData);
+      const configData = {
+        ...rowData,
+        serviceId,
+      };
+      const { code } = await addConfig(configData);
       if (code === 0) {
         proxy.$message({
           type: 'success',

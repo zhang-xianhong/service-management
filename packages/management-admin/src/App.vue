@@ -19,7 +19,7 @@ body {
   font-size: 12px;
 }
 #app {
-  font-family: Roboto, 'PingFang SC', 'Avenir', Helvetica, Arial, sans-serif;
+  font-family: 'Microsoft YaHei', 'PingFang SC', 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: #2c3e50;

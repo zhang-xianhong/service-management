@@ -19,7 +19,7 @@
           >
             {{ button.label }}
           </el-button>
-          <span v-if="!modelList.tables.length && pageLoading" style="color: red; font-size: 12px;margin-left: 10px;"
+          <span v-if="!modelList.tables.length && pageLoading" style="color: red; font-size: 12px; margin-left: 10px"
             >请至少创建一个数据对象</span
           >
         </el-col>
@@ -170,7 +170,7 @@ import RelationInfo from './components/RelationInfo.vue';
 import ModelFieldForm from './components/FieldForm.vue';
 import ModelBaseInfo from './components/ModelBaseInfo.vue';
 import ServerConfigInfo from './components/ServerConfigInfo.vue';
-import { getServiceList, getServiceById } from '@/api/servers';
+import { getServiceList, getServiceById, updateServiceStatus } from '@/api/servers';
 import { getAllTags } from '@/api/settings/tags';
 import { getClassificationList } from '@/api/settings/classification';
 import { getServiceModelList, getModelDetail } from '@/api/schema/model';
@@ -306,10 +306,6 @@ export default {
 
     getServerInfo();
 
-    onBeforeUnmount(() => {
-      clearInterval(intervalId);
-    });
-
     const tags: any[] = [];
 
     // 获取所有标签
@@ -345,7 +341,7 @@ export default {
 
     watch(serverInfo, () => {
       serverStatusInfo.value = useStatusUtils(serverInfo.value.status);
-      const { status, initTimes } = serverInfo.value;
+      const { status, initTimes, id } = serverInfo.value;
       buttons.value.forEach((x: any) => {
         // eslint-disable-next-line no-param-reassign
         x.disabled = +status === 10 || +status === 20;
@@ -364,6 +360,9 @@ export default {
         label: (statusmaps as any)[status],
         color: (statusColor as any)[status],
       };
+      if (+status === 20 || +status === 30) {
+        updateServiceStatus([id]);
+      }
     });
 
     watch(thenRefresh, () => {
@@ -453,6 +452,7 @@ export default {
         path: `/service-management/service-list/detail/${value}`,
         query: { detailName: name },
       });
+      window.location.reload();
     };
 
     const logs = (res: any) => {
@@ -475,6 +475,10 @@ export default {
         default:
           return '';
       }
+    });
+
+    onBeforeUnmount(() => {
+      clearInterval(intervalId);
     });
 
     return {

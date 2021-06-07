@@ -100,15 +100,17 @@ export default defineComponent({
     const reWritePass = () => {
       dialogFormVisible.value = true;
     };
-
+    const formRef = ref(null as any);
     const sendPass = () => {
-      updateUserPassword({ ...passForm }).then((res) => {
-        dialogFormVisible.value = false;
-        console.log(res);
+      formRef.value.validate((valid: boolean) => {
+        if (valid) {
+          updateUserPassword({ ...passForm }).then((res) => {
+            dialogFormVisible.value = false;
+            console.log(res);
+          });
+        }
       });
     };
-    const formRef = ref(null as any);
-
     // 初始密码校验
     const validatePass = (rule: any, value: string, callback: Function) => {
       if (value !== '') {

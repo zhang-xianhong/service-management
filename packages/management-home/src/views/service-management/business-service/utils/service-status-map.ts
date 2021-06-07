@@ -57,8 +57,8 @@ export const statusColor = {
   21: '#0ABF5B',
   22: '#E54545',
   30: '#FF9D00',
-  31: '#E54545',
-  32: '#0ABF5B',
+  32: '#E54545',
+  31: '#0ABF5B',
 };
 
 export const computeStatusLabel = (initIime: number) => {

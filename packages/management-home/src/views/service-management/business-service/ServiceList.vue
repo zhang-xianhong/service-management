@@ -237,7 +237,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, ref, onBeforeUnmount, computed } from 'vue';
+import { defineComponent, reactive, ref, onBeforeUnmount, computed, watch } from 'vue';
 import PackagedPagination from '@/components/pagination/Index.vue';
 import { userProjectList } from '@/layout/messageCenter/user-info';
 import { getShowBool } from '@/utils/permission-show-module';
@@ -255,7 +255,7 @@ import {
   allService,
   ownersMap,
 } from './utils/service-data-utils';
-import { addService, serviceNameTest } from '@/api/servers';
+import { addService, serviceNameTest, updateServiceStatus } from '@/api/servers';
 import Message from 'element-plus/es/el-message';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { computeStatusLabel, statusColor } from '@/views/service-management/business-service/utils/service-status-map';
@@ -334,10 +334,6 @@ export default defineComponent({
         refreshDataAndChange();
       }, 5000);
     }
-
-    onBeforeUnmount(() => {
-      clearInterval(intervalId);
-    });
 
     const handleSizeChange = (res: number) => {
       pageInfo.pageSize = res;
@@ -440,19 +436,12 @@ export default defineComponent({
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning',
-      })
-        .then(() =>
-          deleteServiceForList(mutiArray.value).then(() => {
-            refreshServiceList(pageInfo);
-            Message.success('删除成功');
-          }),
-        )
-        .catch(() => {
-          Message({
-            type: 'info',
-            message: '已取消删除',
-          });
-        });
+      }).then(() =>
+        deleteServiceForList(mutiArray.value).then(() => {
+          refreshServiceList(pageInfo);
+          Message.success('删除成功');
+        }),
+      );
     }
 
     const runDialogVisible = ref(false);
@@ -537,15 +526,48 @@ export default defineComponent({
       blackHoverVisible.value = false;
       searchForList();
     }
-    onBeforeUnmount(() => {
-      blackHoverclick();
-    });
+
     const validatorPass = (rule: any, value: any, callback: any) => {
       const reg = /^(?!-)(?!.*-$)[a-z0-9-]+$/;
       if (!reg.test(value)) {
         callback(new Error(rule.message));
       }
     };
+
+    // let intervalStatus: any = null;
+    // const statusRefresh = (ids: any) => {
+    //   if (intervalStatus) {
+    //     clearInterval(intervalStatus);
+    //     intervalStatus = null;
+    //   }
+    //   if (ids.length) {
+    //     updateServiceStatus(ids);
+    //     intervalStatus = setInterval(() => {
+    //       updateServiceStatus(ids);
+    //     }, 30 * 1000);
+    //   }
+    // };
+
+    watch(
+      () => serviceTableList.list,
+      (nn) => {
+        let ids = [];
+        if (nn.length) {
+          ids = nn.filter((x: any) => x.status === 20 || x.status === 30).map((x: any) => x.id);
+          if (ids.length) {
+            updateServiceStatus(ids);
+          }
+        }
+      },
+    );
+
+    onBeforeUnmount(() => {
+      clearInterval(intervalId);
+      // clearInterval(intervalStatus);
+      // intervalStatus = null;
+      blackHoverclick();
+    });
+
     return {
       serviceTableList,
       serviceDetail,

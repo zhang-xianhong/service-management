@@ -24,7 +24,7 @@
     ></div>
     <div class="operations">
       <i class="el-icon-circle-close" @click.stop="removeModel(table)"></i>
-      <i class="el-icon-link"></i>
+      <!--      <i class="el-icon-link"></i>-->
     </div>
   </div>
 </template>
@@ -160,7 +160,7 @@ export default defineComponent({
   }
   .operations {
     display: none;
-    z-index: 2;
+    z-index: -2;
     width: 30px;
     height: 100px;
     text-align: right;
