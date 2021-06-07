@@ -190,6 +190,7 @@ import {
   clearSql,
   getTreaceId,
   thenRefresh,
+  serverInfo,
 } from './utils/service-detail-data';
 import _ from 'lodash/fp';
 import {
@@ -245,7 +246,6 @@ export default {
     getServerList();
 
     // 服务详情信息
-    const serverInfo = ref({} as any);
 
     // erd图组件参数构造
     provide('serviceId', currentServiceId.value);
@@ -360,7 +360,7 @@ export default {
         label: (statusmaps as any)[status],
         color: (statusColor as any)[status],
       };
-      if (+status === 20 || +status === 30) {
+      if (+status === 30) {
         updateServiceStatus([id]);
       }
     });

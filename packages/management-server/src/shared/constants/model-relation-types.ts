@@ -1,5 +1,0 @@
-export enum MODEL_RELATION_TYPES {
-  ONE_TO_ONE = 0,
-  ONE_TO_MANY,
-  MANY_TO_MANY
-}
