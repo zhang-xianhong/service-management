@@ -388,7 +388,7 @@ export default defineComponent({
     const handleDel = () => {
       if (treeData.currentNodeData._children) {
         if (treeData.currentNodeData._children.length) {
-          msgTips('warning', '该部门下有人员，无法删除！');
+          msgTips('warning', '该部门下不为空，无法删除！');
           return;
         }
         // 判断部门中是否有人员
