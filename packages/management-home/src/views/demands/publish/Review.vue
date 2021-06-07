@@ -104,7 +104,12 @@
         </el-table-column>
         <el-table-column label="操作" width="300">
           <template #default="scope">
-            <el-button type="primary" size="mini" :disabled="scope.row.auditResults !== 0" @click="onReview(scope.row)"
+            <el-button
+              type="primary"
+              size="mini"
+              :disabled="scope.row.auditResults !== 0"
+              @click="onReview(scope.row)"
+              v-if="getShowBool('update')"
               >审核</el-button
             >
           </template>
@@ -156,6 +161,7 @@ import { ElMessage } from 'element-plus';
 import dateFormat from '@/utils/date-format';
 import { userInfo } from '@/layout/messageCenter/user-info';
 import { STATUS, AUDIT_RESULTS, AUDIT_RESULTS_CODE } from './constant';
+import { getShowBool } from '@/utils/permission-show-module';
 
 interface TableState {
   tableData: Array<object>;
@@ -430,6 +436,7 @@ export default {
       remoteMethod,
       blackHoverVisible,
       blackHoverclick,
+      getShowBool,
     };
   },
 };
