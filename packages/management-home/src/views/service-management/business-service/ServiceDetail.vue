@@ -19,7 +19,7 @@
           >
             {{ button.label }}
           </el-button>
-          <span v-if="!modelList.tables.length && pageLoading" style="color: red; font-size: 12px;margin-left: 10px;"
+          <span v-if="!modelList.tables.length && pageLoading" style="color: red; font-size: 12px; margin-left: 10px"
             >请至少创建一个数据对象</span
           >
         </el-col>
@@ -338,18 +338,6 @@ export default {
 
     // 服务状态
     const serverStatusInfo = ref({});
-    let intervalStatus: any = null;
-    const statusRefresh = (ids: any) => {
-      if (intervalStatus) {
-        clearInterval(intervalStatus);
-        intervalStatus = null;
-      }
-      if (ids.length) {
-        intervalStatus = setInterval(() => {
-          updateServiceStatus(ids);
-        }, 30 * 1000);
-      }
-    };
 
     watch(serverInfo, () => {
       serverStatusInfo.value = useStatusUtils(serverInfo.value.status);
@@ -372,8 +360,9 @@ export default {
         label: (statusmaps as any)[status],
         color: (statusColor as any)[status],
       };
-      const statusArr = +status === 20 || +status === 30 ? [id] : [];
-      statusRefresh(statusArr);
+      if (+status === 20 || +status === 30) {
+        updateServiceStatus([id]);
+      }
     });
 
     watch(thenRefresh, () => {
@@ -463,6 +452,7 @@ export default {
         path: `/service-management/service-list/detail/${value}`,
         query: { detailName: name },
       });
+      window.location.reload();
     };
 
     const logs = (res: any) => {
@@ -489,7 +479,6 @@ export default {
 
     onBeforeUnmount(() => {
       clearInterval(intervalId);
-      clearInterval(intervalStatus);
     });
 
     return {

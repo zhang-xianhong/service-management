@@ -534,18 +534,19 @@ export default defineComponent({
       }
     };
 
-    let intervalStatus: any = null;
-    const statusRefresh = (ids: any) => {
-      if (intervalStatus) {
-        clearInterval(intervalStatus);
-        intervalStatus = null;
-      }
-      if (ids.length) {
-        intervalStatus = setInterval(() => {
-          updateServiceStatus(ids);
-        }, 30 * 1000);
-      }
-    };
+    // let intervalStatus: any = null;
+    // const statusRefresh = (ids: any) => {
+    //   if (intervalStatus) {
+    //     clearInterval(intervalStatus);
+    //     intervalStatus = null;
+    //   }
+    //   if (ids.length) {
+    //     updateServiceStatus(ids);
+    //     intervalStatus = setInterval(() => {
+    //       updateServiceStatus(ids);
+    //     }, 30 * 1000);
+    //   }
+    // };
 
     watch(
       () => serviceTableList.list,
@@ -553,15 +554,17 @@ export default defineComponent({
         let ids = [];
         if (nn.length) {
           ids = nn.filter((x: any) => x.status === 20 || x.status === 30).map((x: any) => x.id);
+          if (ids.length) {
+            updateServiceStatus(ids);
+          }
         }
-        statusRefresh(ids);
       },
     );
 
     onBeforeUnmount(() => {
       clearInterval(intervalId);
-      clearInterval(intervalStatus);
-      intervalStatus = null;
+      // clearInterval(intervalStatus);
+      // intervalStatus = null;
       blackHoverclick();
     });
 

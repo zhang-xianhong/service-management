@@ -219,7 +219,7 @@ export default defineComponent({
       if (!projectDetail.templateId) {
         return false;
       }
-      if (projectDetail.remark.length > 255) {
+      if (projectDetail.remark && projectDetail.remark.length > 255) {
         return false;
       }
       submitLoading.value = true;
