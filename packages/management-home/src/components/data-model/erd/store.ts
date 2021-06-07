@@ -24,6 +24,7 @@ export interface Table {
   position: {
     x: number;
     y: number;
+    temp?: boolean;
   };
   dragging?: number;
   selected?: boolean;
@@ -129,6 +130,7 @@ export const move = (index: number, movementX: number, movementY: number): void 
   const yPos = tables.value[index].position.y + movementY;
   tables.value[index].position.x = Math.max(xPos, 30);
   tables.value[index].position.y = Math.max(yPos, 30);
+  tables.value[index].position.temp = false;
   recalcCanvasSize();
   relations.value.forEach((relation, rIndex) => {
     if (relation.includes(index)) {

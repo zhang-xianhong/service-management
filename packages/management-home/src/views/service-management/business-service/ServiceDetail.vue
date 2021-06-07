@@ -278,14 +278,15 @@ export default {
       tables.forEach((table: any, index: number) => {
         const tablePosition = serverInfo.value?.config?.coordinate[table.id];
         const oldTablePosition = modelList.value.tables[index]?.position;
-        if (oldTablePosition || tablePosition) {
+        if ((oldTablePosition && !oldTablePosition.temp) || (tablePosition && !tablePosition.temp)) {
           // eslint-disable-next-line no-param-reassign
           table.position = oldTablePosition || tablePosition;
         } else {
           // eslint-disable-next-line no-param-reassign
           table.position = {
-            x: 200 + offset * 10,
-            y: 20 + offset * 10,
+            x: 200 + offset * 20,
+            y: 20 + offset * 20,
+            temp: true,
           };
           offset += 1;
         }
