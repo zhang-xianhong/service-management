@@ -7,9 +7,8 @@ import {
 import { ref } from 'vue';
 
 import { ElMessageBox } from 'element-plus';
-import Message from 'element-plus/es/el-message';
 
-export default function() {
+export default function () {
   const buttons = ref([] as any);
   // 初始化
   const initialize = () => {
@@ -18,14 +17,7 @@ export default function() {
       confirmButtonText: '确定',
       cancelButtonText: '取消',
       type: 'warning',
-    })
-      .then(() => getSqlData())
-      .catch(() => {
-        Message({
-          type: 'info',
-          message: '已取消操作',
-        });
-      });
+    }).then(() => getSqlData());
   };
   // 启动
   const start = () => {
@@ -34,14 +26,7 @@ export default function() {
       confirmButtonText: '确定',
       cancelButtonText: '取消',
       type: 'warning',
-    })
-      .then(() => startServiceData())
-      .catch(() => {
-        Message({
-          type: 'info',
-          message: '已取消操作',
-        });
-      });
+    }).then(() => startServiceData());
   };
 
   // const build = () => {
@@ -57,14 +42,7 @@ export default function() {
       confirmButtonText: '确定',
       cancelButtonText: '取消',
       type: 'warning',
-    })
-      .then(() => stopServiceData())
-      .catch(() => {
-        Message({
-          type: 'info',
-          message: '已取消操作',
-        });
-      });
+    }).then(() => stopServiceData());
   };
 
   // 发布

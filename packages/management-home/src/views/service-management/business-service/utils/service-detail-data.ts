@@ -4,6 +4,8 @@ import { logSetTimeOut } from '@/views/service-management/business-service/utils
 import Message from 'element-plus/es/el-message';
 export const thenRefresh = ref(false);
 
+export const serverInfo = ref({} as any);
+
 export const currentServiceIdForData = ref('' as any);
 export const buildServiceData = (branch = 'develop', userId = '123456') =>
   buildService({ serviceId: currentServiceIdForData.value, branch, userId });
