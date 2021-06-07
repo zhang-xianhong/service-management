@@ -47,6 +47,7 @@ import ApplicationDetail from './ApplicationDetail.vue';
 import { SuccessResponse } from '@/types/response';
 import { updateAppById, deleteAppById } from '@/api/app';
 import { getShowBool } from '@/utils/permission-show-module';
+import { ElMessage, ElMessageBox } from 'element-plus';
 
 interface PropsInterface {
   id: string;
@@ -92,14 +93,32 @@ export default defineComponent({
     };
 
     const onClose = async () => {
-      const { code } = await deleteAppById(detailInfo.value.id);
-      ctx.emit('update');
-      if (code === 0) {
-        (instance as any).proxy.$message({
-          type: 'success',
-          message: '应用删除成功！',
+      ElMessageBox.confirm(`是否删除该应用？`, '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+      })
+        .then(async () => {
+          const { code } = await deleteAppById(detailInfo.value.id);
+          ctx.emit('update');
+          if (code === 0) {
+            (instance as any).proxy.$message({
+              type: 'success',
+              message: '应用删除成功！',
+            });
+          } else {
+            (instance as any).proxy.$message({
+              type: 'error',
+              message: '应用删除失败！',
+            });
+          }
+        })
+        .catch(() => {
+          ElMessage({
+            type: 'info',
+            message: '已取消操作',
+          });
         });
-      }
     };
 
     const beforeUpload = (file: { size: number }) => {
