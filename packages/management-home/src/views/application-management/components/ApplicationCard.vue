@@ -18,6 +18,7 @@
       </el-upload>
       <div class="application-detail">
         <div class="application-detail__name">{{ detailInfo.description }}</div>
+        <div class="application-detail__englishname">{{ detailInfo.name }}</div>
         <div class="application-detail__desc">{{ detailInfo.remark }}</div>
       </div>
       <div class="application-operation">
@@ -204,9 +205,11 @@ export default defineComponent({
     }
     .application-detail {
       display: inline-block;
+      margin-top: 20px;
       margin-left: 20px;
       width: 200px;
-      &__name {
+      &__name,
+      &__englishname {
         font-size: 12px;
         font-weight: bolder;
         width: 80%;
@@ -214,7 +217,7 @@ export default defineComponent({
         word-break: break-all;
         white-space: nowrap;
         text-overflow: ellipsis;
-        margin-bottom: 10px;
+        // margin-bottom: 10px;
       }
       &__desc {
         font-size: 12px;
