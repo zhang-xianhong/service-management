@@ -72,9 +72,9 @@
               <el-radio label="1">系统类型</el-radio>
             </el-radio-group>
           </el-form-item>
-          <el-form-item label="配置描述" :label-width="labelWidth" prop="description">
-            <el-input v-model.trim="configForm.formData.description" :disabled="configForm.disabled"></el-input>
-          </el-form-item>
+          <!--          <el-form-item label="配置描述" :label-width="labelWidth" prop="description">-->
+          <!--            <el-input v-model.trim="configForm.formData.description" :disabled="configForm.disabled"></el-input>-->
+          <!--          </el-form-item>-->
         </el-form>
       </div>
       <template #footer>
