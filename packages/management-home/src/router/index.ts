@@ -23,15 +23,6 @@ export const baseRoutes: Array<RouteRecordRaw> = [
     },
   },
   {
-    path: '/forget-password',
-    name: 'password',
-    component: () => import('@/views/login/ForgetPassword.vue'),
-    meta: {
-      isRootLevel: false,
-      title: '密码找回',
-    },
-  },
-  {
     path: '/not-found',
     name: 'notFound',
     component: () => import('@/views/not-found/Index.vue'),
@@ -47,6 +38,26 @@ export const baseRoutes: Array<RouteRecordRaw> = [
     meta: {
       isRootLevel: false,
       title: '信息获取中...',
+    },
+  },
+  {
+    path: '/reset-password',
+    component: () => import('@/views/login/ResetPassword.vue'),
+    name: 'resetPassword',
+    meta: {
+      title: '重置密码',
+      icon: 'el-icon-eleme',
+      isRootLevel: true,
+      hidden: true,
+    },
+  },
+  {
+    path: '/forget-password',
+    name: 'password',
+    component: () => import('@/views/login/ForgetPassword.vue'),
+    meta: {
+      isRootLevel: false,
+      title: '密码找回',
     },
   },
 ];

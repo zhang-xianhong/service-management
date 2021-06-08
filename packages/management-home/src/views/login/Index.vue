@@ -7,7 +7,10 @@
       </div>
     </el-col>
     <el-col class="login-main" :span="16">
-      <login-form></login-form>
+      <!-- 增加插槽--重置密码页面复用该页面， -->
+      <slot>
+        <login-form></login-form>
+      </slot>
     </el-col>
   </el-row>
 </template>
@@ -15,7 +18,6 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import LoginForm from './components/LoginForm.vue';
-
 export default defineComponent({
   name: 'Login',
   components: {
