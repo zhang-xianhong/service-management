@@ -242,6 +242,7 @@ import { ElMessageBox, ElMessage } from 'element-plus';
 import dateFormat from '@/utils/date-format';
 import { userInfo } from '@/layout/messageCenter/user-info';
 import { STATUS, AUDIT_RESULTS, getModuleType } from './constant';
+import { getShowBool } from '@/utils/permission-show-module';
 
 interface TableState {
   tableData: Array<object>;
@@ -652,6 +653,7 @@ export default {
       applicantTitleVisiable,
       applicantTitleClick,
       applicantChange,
+      getShowBool,
     };
   },
 };
