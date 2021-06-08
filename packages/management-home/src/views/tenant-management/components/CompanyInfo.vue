@@ -87,6 +87,7 @@ import { computed, ref, WritableComputedRef, getCurrentInstance, Ref } from 'vue
 import useCompanyInfo from '../utils/tenant-config';
 import { SuccessResponse } from '@/types/response';
 import { IMAGE_UPLOAD } from '@/shared/constant/file';
+import { uploadValidate } from '@/utils/validate';
 
 // 企业信息接口
 interface CompanyInfoInterface {
@@ -178,14 +179,8 @@ export default {
     });
 
     // 图片上传大小校验
-    const beforeUpload = (file: { size: number }) => {
-      if (file.size > 1024 * 1024 * 3) {
-        (instance as any).proxy.$message({
-          type: 'warning',
-          message: '上传图片大小不能超过 3Mb',
-        });
-        return false;
-      }
+    const beforeUpload = (file: any) => {
+      uploadValidate(instance, file);
     };
 
     // 企业logo上传成功回调

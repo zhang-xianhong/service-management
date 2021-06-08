@@ -72,7 +72,7 @@ import { IMAGE_UPLOAD } from '@/shared/constant/file';
 import { SuccessResponse } from '@/types/response';
 import { getImageUrl } from '@/api/files';
 import UserInfoInterface from '../types/user-info-interface';
-const iamgeTypes = ['jpg', 'bmp', 'png', 'jpeg'];
+import { uploadValidate } from '@/utils/validate';
 export default {
   name: 'UserInfo',
   props: {
@@ -164,20 +164,7 @@ export default {
 
     // 图片上传大小校验
     const beforeUpload = (file: { size: number; name: string }) => {
-      if (iamgeTypes.indexOf(file.name.split('.')[1]) === -1) {
-        (instance as any).proxy.$message({
-          type: 'warning',
-          message: '图片格式错误，仅支持bmp,jpg,png,jpeg格式图片',
-        });
-        return false;
-      }
-      if (file.size > 1024 * 1024 * 3) {
-        (instance as any).proxy.$message({
-          type: 'warning',
-          message: '上传图片大小不能超过 3Mb',
-        });
-        return false;
-      }
+      uploadValidate(instance, file);
     };
 
     // 身份证正面上传成功回调
