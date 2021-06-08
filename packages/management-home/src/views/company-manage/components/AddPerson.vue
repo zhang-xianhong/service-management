@@ -20,7 +20,11 @@
           <el-input v-model.trim="formData.displayName" :disabled="disable" placeholder="请输入中文姓名"></el-input>
         </el-form-item>
         <el-form-item label="手机" prop="phoneNumber" :label-width="labelWidth">
-          <el-input v-model.trim="formData.phoneNumber" :disabled="disable" placeholder="请输入中国大陆手机号">
+          <el-input
+            v-model.trim="formData.phoneNumber"
+            :disabled="disable"
+            placeholder="请输入中国大陆手机号"
+          >
             <template #prepend>+86</template>
           </el-input>
         </el-form-item>
@@ -51,6 +55,16 @@
           <el-input v-model.trim="formData.password" show-password></el-input>
           <el-button type="text" class="btn-copy" @click="handleCopy">复制</el-button>
         </el-form-item>
+        <el-form-item label="租户角色" prop="isAdmin" :label-width="labelWidth" v-if="isEdit">
+          <el-select v-model="formData.isAdmin" :disabled="roleState">
+            <el-option
+              v-for="item in roleOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            ></el-option>
+          </el-select>
+        </el-form-item>
       </el-form>
     </div>
     <template #footer>
@@ -68,11 +82,12 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, toRefs, Ref, ref, inject } from 'vue';
+import { defineComponent, reactive, toRefs, Ref, ref, inject, computed } from 'vue';
 import { checkMail, checkZNName, checkEnName, checkMobile, checkPasswd } from '@/utils/validate';
 import { generatePasswd, copyFun } from '../utils';
 import { checkUserInfo } from '@/api/company/users';
-
+import { userInfo } from '@/layout/messageCenter/user-info';
+console.log('userinfo', userInfo);
 // 定义数据type
 interface DialogState {
   title: string;
@@ -104,6 +119,7 @@ export default defineComponent({
         primaryMail: '',
         status: '0',
         password: '',
+        isAdmin: false,
       },
     });
     let editBeforeFormData: any = {};
@@ -202,6 +218,7 @@ export default defineComponent({
         { required: true, message: '请输入初始密码', trigger: 'blur' },
         { validator: validatorPasswdPass, trigger: 'blur' },
       ],
+      isAdmin: [{ required: true, message: '请选择用户角色', trigger: 'blur' }],
     };
 
     // 打开对话框
@@ -212,6 +229,7 @@ export default defineComponent({
         dialogContent.title = '人员详情';
         dialogContent.disable = true;
         dialogContent.formData = data;
+        dialogContent.formData.isAdmin = data.admin;
         dialogContent.formData.username = data.userName;
       } else {
         dialogContent.isEdit = false;
@@ -276,6 +294,22 @@ export default defineComponent({
       dialogContent.disable = false;
       dialogContent.title = '编辑人员';
     };
+    const roleOptions = [
+      {
+        value: true,
+        label: '租户管理员',
+      },
+      {
+        value: false,
+        label: '租户成员',
+      },
+    ];
+    const roleState = computed(() => {
+      const isDisable =
+        dialogContent.disable ||
+        (dialogContent.formData.isAdmin && userInfo.value.userId === dialogContent.formData.id);
+      return !userInfo.value.admin ? true : isDisable;
+    });
 
     return {
       ...toRefs(dialogContent),
@@ -290,6 +324,9 @@ export default defineComponent({
       handleCopy,
       handleReset,
       enableEdit,
+      roleOptions,
+      userInfo,
+      roleState,
     };
   },
 });
