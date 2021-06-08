@@ -6,7 +6,7 @@
       </el-button>
       <!-- TODO：待确定 -->
       <!-- <el-button @click="freezeInBatches">冻结</el-button>
-      <el-button @click="deleteInBatches">删除</el-button> -->
+      <el-button @click="deleteInBatches">删除</el-button>-->
     </el-col>
     <el-col :offset="14" :span="6" style="text-align: right">
       <el-input
@@ -19,7 +19,6 @@
   </el-row>
   <el-row style="background: #fff">
     <el-table :data="tableData">
-      <el-table-column type="selection" width="45" />
       <el-table-column type="index" label="序号" width="50" />
       <el-table-column property="name" label="企业名称">
         <template #default="scope">
@@ -40,13 +39,21 @@
       </el-table-column>
       <el-table-column label="操作" width="200">
         <template #default="scope">
-          <el-button type="primary" v-if="scope.row.status === statusEnum.START" @click="onFreeze(scope.row.id)">
-            冻结
-          </el-button>
-          <el-button type="primary" v-if="scope.row.status === statusEnum.FREEZE" @click="onStart(scope.row.id)">
-            启用
-          </el-button>
-          <el-button :disabled="scope.row.status === statusEnum.START" @click="onDelete(scope.row)">删除</el-button>
+          <el-button
+            type="text"
+            v-if="scope.row.status === statusEnum.START"
+            @click="onFreeze(scope.row.id)"
+          >冻结</el-button>
+          <el-button
+            type="text"
+            v-if="scope.row.status === statusEnum.FREEZE"
+            @click="onStart(scope.row.id)"
+          >启用</el-button>
+          <el-button
+            type="text"
+            :disabled="scope.row.status === statusEnum.START"
+            @click="onDelete(scope.row)"
+          >删除</el-button>
         </template>
       </el-table-column>
     </el-table>

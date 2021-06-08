@@ -622,11 +622,13 @@ export default defineComponent({
     // 页面size改变
     const handlePageSizeChange = (data: any) => {
       const { page } = tableData.searchProps;
+      tableData.searchProps.pageSize = data;
       getCurrentTableData(treeData.currentNodeUsers, page, data);
     };
     // 页面改变
     const handlePageChange = (data: any) => {
       const { pageSize } = tableData.searchProps;
+      tableData.searchProps.page = data;
       getCurrentTableData(treeData.currentNodeUsers, data, pageSize);
     };
 

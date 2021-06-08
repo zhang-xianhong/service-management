@@ -15,7 +15,7 @@
     </el-row>
     <el-row style="background: #fff">
       <el-table :data="tableData" v-loading="loading" style="width: 100%" @selection-change="handleSelectionChange">
-        <el-table-column type="selection" width="45" />
+        <el-table-column type="selection" width="45" v-if="getShowBool('update') || getShowBool('delete')" />
         <el-table-column type="index" label="序号" width="50" />
         <el-table-column label="键" prop="name"></el-table-column>
         <el-table-column label="值" prop="value"></el-table-column>
@@ -72,9 +72,9 @@
               <el-radio label="1">系统类型</el-radio>
             </el-radio-group>
           </el-form-item>
-          <el-form-item label="配置描述" :label-width="labelWidth" prop="description">
-            <el-input v-model.trim="configForm.formData.description" :disabled="configForm.disabled"></el-input>
-          </el-form-item>
+          <!--          <el-form-item label="配置描述" :label-width="labelWidth" prop="description">-->
+          <!--            <el-input v-model.trim="configForm.formData.description" :disabled="configForm.disabled"></el-input>-->
+          <!--          </el-form-item>-->
         </el-form>
       </div>
       <template #footer>
