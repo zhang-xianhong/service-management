@@ -42,7 +42,7 @@
         v-if="refreshMess"
         v-loading="tableLoading"
       >
-        <el-table-column type="selection" width="55"></el-table-column>
+        <el-table-column type="selection" width="55" v-if="getShowBool('delete')"></el-table-column>
         <el-table-column type="index" width="50" label="序号"></el-table-column>
         <el-table-column property="name" label="服务英文名">
           <template #default="scope">
@@ -130,7 +130,7 @@
           >
             <el-input
               v-model.trim="serviceDetail.name"
-              placeholder='请输入英文名称，如"project1"，创建后无法修改'
+              placeholder="请输入英文名称，如'project1'，创建后无法修改"
               @blur="checkEnglishName"
             >
               <template #prepend>srv-</template>
@@ -147,7 +147,7 @@
           >
             <el-input
               v-model.trim="serviceDetail.description"
-              placeholder='请输入中文服务描述，如"项目管理服务"，创建后无法修改'
+              placeholder="请输入中文服务描述，如项'目管理服务'，创建后无法修改"
             ></el-input>
           </el-form-item>
           <el-form-item label="负责人" :label-width="labelWidth">
