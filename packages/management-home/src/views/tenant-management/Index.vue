@@ -1,6 +1,6 @@
 <template>
   <div style="background: #fff; padding: 30px">
-    <company-info :isEdit="isEdit" v-model="tenantDetail"></company-info>
+    <company-info :isEdit="isEdit" ref="companyRef" v-model="tenantDetail"></company-info>
     <user-info :isEdit="isEdit" v-model="tenantDetail"></user-info>
     <manager-info :isEdit="isEdit" v-model="tenantDetail"></manager-info>
     <el-row v-if="getShowBool('update')">
@@ -11,7 +11,7 @@
 </template>
 
 <script lang="ts">
-import { ref, getCurrentInstance } from 'vue';
+import { ref, getCurrentInstance, Ref } from 'vue';
 import CompanyInfo from './components/CompanyInfo.vue';
 import UserInfo from './components/UserInfo.vue';
 import ManagerInfo from './components/ManagerInfo.vue';
@@ -31,6 +31,7 @@ export default {
     const instance = getCurrentInstance();
 
     const isEdit = ref(false);
+    const companyRef: Ref<any> = ref(null);
 
     // 租户详情
     const tenantDetail = ref({
@@ -46,30 +47,35 @@ export default {
     getDetail();
 
     const onSave = async () => {
-      const { nameShort, addr, addrDetail, logoUrl, intro } = tenantDetail.value;
-      const updateData: any = {
-        nameShort,
-        addr,
-        addrDetail,
-        logoUrl,
-        intro,
-      };
-      Object.keys(updateData).forEach((key: string) => {
-        if (updateData[key] === '') {
-          delete updateData[key];
+      companyRef.value.formRef.validate(async (validator: boolean) => {
+        if (validator) {
+          const { nameShort, addr, addrDetail, logoUrl, intro } = tenantDetail.value;
+          const updateData: any = {
+            nameShort,
+            addr,
+            addrDetail,
+            logoUrl,
+            intro,
+          };
+          Object.keys(updateData).forEach((key: string) => {
+            if (updateData[key] === '') {
+              delete updateData[key];
+            }
+          });
+          const { code } = await updateTenant(userInfo.value.tenantId, updateData);
+          if (code === 0) {
+            (instance as any).proxy.$message({
+              type: 'success',
+              message: '更新成功',
+            });
+            isEdit.value = false;
+          }
         }
       });
-      const { code } = await updateTenant(userInfo.value.tenantId, updateData);
-      if (code === 0) {
-        (instance as any).proxy.$message({
-          type: 'success',
-          message: '更新成功',
-        });
-        isEdit.value = false;
-      }
     };
 
     return {
+      companyRef,
       isEdit,
       tenantDetail,
       onSave,

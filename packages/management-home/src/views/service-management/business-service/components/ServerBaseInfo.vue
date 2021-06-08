@@ -118,9 +118,9 @@ export default {
       if (allService.value.length === 0) {
         return '';
       }
-      const names = formData.dependencies.map(
-        (id: number) => allService.value.filter((item: any) => item.id === id)[0]?.name,
-      );
+      const names = formData.dependencies
+        .map((id: number) => allService.value.filter((item: any) => item.id === id)[0]?.name)
+        .filter((x: any) => x);
       return names.join(',');
     });
 
@@ -166,7 +166,10 @@ export default {
 
     // 保存表单修改
     const saveFormData = async () => {
-      const { code } = await updateService(String(props.id), formData);
+      console.log(formData);
+      const data = { ...formData };
+      data.dependencies = formData.dependencies.map((x: any) => ({ id: x }));
+      const { code } = await updateService(String(props.id), data);
       if (code === 0) {
         isShowMode.value = true;
         useTags(formData.tag, props.tags);

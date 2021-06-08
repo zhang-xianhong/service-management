@@ -19,7 +19,7 @@
           >
             {{ button.label }}
           </el-button>
-          <span v-if="!modelList.tables.length && pageLoading" style="color: red; font-size: 12px;margin-left: 10px;"
+          <span v-if="!modelList.tables.length && pageLoading" style="color: red; font-size: 12px; margin-left: 10px"
             >请至少创建一个数据对象</span
           >
         </el-col>
@@ -170,7 +170,7 @@ import RelationInfo from './components/RelationInfo.vue';
 import ModelFieldForm from './components/FieldForm.vue';
 import ModelBaseInfo from './components/ModelBaseInfo.vue';
 import ServerConfigInfo from './components/ServerConfigInfo.vue';
-import { getServiceList, getServiceById } from '@/api/servers';
+import { getServiceList, getServiceById, updateServiceStatus } from '@/api/servers';
 import { getAllTags } from '@/api/settings/tags';
 import { getClassificationList } from '@/api/settings/classification';
 import { getServiceModelList, getModelDetail } from '@/api/schema/model';
@@ -190,6 +190,7 @@ import {
   clearSql,
   getTreaceId,
   thenRefresh,
+  serverInfo,
 } from './utils/service-detail-data';
 import _ from 'lodash/fp';
 import {
@@ -245,7 +246,6 @@ export default {
     getServerList();
 
     // 服务详情信息
-    const serverInfo = ref({} as any);
 
     // erd图组件参数构造
     provide('serviceId', currentServiceId.value);
@@ -278,14 +278,15 @@ export default {
       tables.forEach((table: any, index: number) => {
         const tablePosition = serverInfo.value?.config?.coordinate[table.id];
         const oldTablePosition = modelList.value.tables[index]?.position;
-        if (oldTablePosition || tablePosition) {
+        if ((oldTablePosition && !oldTablePosition.temp) || (tablePosition && !tablePosition.temp)) {
           // eslint-disable-next-line no-param-reassign
           table.position = oldTablePosition || tablePosition;
         } else {
           // eslint-disable-next-line no-param-reassign
           table.position = {
-            x: 200 + offset * 10,
-            y: 20 + offset * 10,
+            x: 200 + offset * 20,
+            y: 20 + offset * 20,
+            temp: true,
           };
           offset += 1;
         }
@@ -305,10 +306,6 @@ export default {
     const intervalId = setInterval(() => getServerInfo(), 5000);
 
     getServerInfo();
-
-    onBeforeUnmount(() => {
-      clearInterval(intervalId);
-    });
 
     const tags: any[] = [];
 
@@ -345,7 +342,7 @@ export default {
 
     watch(serverInfo, () => {
       serverStatusInfo.value = useStatusUtils(serverInfo.value.status);
-      const { status, initTimes } = serverInfo.value;
+      const { status, initTimes, id } = serverInfo.value;
       buttons.value.forEach((x: any) => {
         // eslint-disable-next-line no-param-reassign
         x.disabled = +status === 10 || +status === 20;
@@ -364,6 +361,9 @@ export default {
         label: (statusmaps as any)[status],
         color: (statusColor as any)[status],
       };
+      if (+status === 30) {
+        updateServiceStatus([id]);
+      }
     });
 
     watch(thenRefresh, () => {
@@ -453,6 +453,7 @@ export default {
         path: `/service-management/service-list/detail/${value}`,
         query: { detailName: name },
       });
+      window.location.reload();
     };
 
     const logs = (res: any) => {
@@ -475,6 +476,10 @@ export default {
         default:
           return '';
       }
+    });
+
+    onBeforeUnmount(() => {
+      clearInterval(intervalId);
     });
 
     return {

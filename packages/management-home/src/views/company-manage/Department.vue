@@ -327,7 +327,7 @@ export default defineComponent({
       tableData.total = data.length;
       const pageMaxCount = page * pageSize;
       const startIndex = (page - 1) * pageSize;
-      const endIndex = page * pageSize - 1;
+      const endIndex = page * pageSize;
       if (pageMaxCount < tableData.total) {
         tableData.tableDataSource = data.slice(startIndex, endIndex);
       } else {
@@ -388,7 +388,7 @@ export default defineComponent({
     const handleDel = () => {
       if (treeData.currentNodeData._children) {
         if (treeData.currentNodeData._children.length) {
-          msgTips('warning', '该部门下有人员，无法删除！');
+          msgTips('warning', '该部门下不为空，无法删除！');
           return;
         }
         // 判断部门中是否有人员
@@ -508,6 +508,8 @@ export default defineComponent({
       treeData.currentNode = node;
       const { page, pageSize } = tableData.searchProps;
       if (!data._children) {
+        const res = allUsers.value.find((item: any) => item.id === data.id);
+        getCurrentTableData([res], page, pageSize);
         return;
       }
       if (data.id === 0) {
@@ -620,11 +622,13 @@ export default defineComponent({
     // 页面size改变
     const handlePageSizeChange = (data: any) => {
       const { page } = tableData.searchProps;
+      tableData.searchProps.pageSize = data;
       getCurrentTableData(treeData.currentNodeUsers, page, data);
     };
     // 页面改变
     const handlePageChange = (data: any) => {
       const { pageSize } = tableData.searchProps;
+      tableData.searchProps.page = data;
       getCurrentTableData(treeData.currentNodeUsers, data, pageSize);
     };
 

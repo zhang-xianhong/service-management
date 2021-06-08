@@ -6,7 +6,7 @@
     @mouseenter="drawTempRleation(index)"
     @mouseleave="removeTempRleation()"
   >
-    <div class="header">
+    <div class="header" :title="table.name">
       {{ table.name }}
     </div>
     <div class="body">
@@ -23,17 +23,19 @@
       @mousedown.stop="drawRelationStart($event, index)"
     ></div>
     <div class="operations">
-      <i class="el-icon-circle-close" @click.stop="removeModel(table)"></i>
-      <i class="el-icon-link"></i>
+      <i class="el-icon-circle-close" @click.stop="removeModel(table)" v-if="serverInfo.initTimes"></i>
+      <!--      <i class="el-icon-link"></i>-->
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, inject } from 'vue';
+import { defineComponent, computed, inject, ref } from 'vue';
 import { drawRelationStart, drawTempRleation, removeTempRleation } from './store';
 import { deleteModel } from '@/api/schema/model';
 import { ElMessageBox } from 'element-plus';
+import { serverInfo } from '@/views/service-management/business-service/utils/service-detail-data';
+
 export default defineComponent({
   name: 'ErdTable',
   props: {
@@ -57,6 +59,7 @@ export default defineComponent({
   setup(props) {
     const erdEmit = inject('erdEmit') as Function;
     const markers = ['top', 'right', 'bottom', 'left'];
+    const disabled = ref(false);
     const removeModel = async (table: any) => {
       ElMessageBox.confirm(`确认删除对象${table.name}？`, '提示', {
         confirmButtonText: '确定',
@@ -69,6 +72,7 @@ export default defineComponent({
         }
       });
     };
+    console.log(serverInfo.value, 'service info');
     const table = computed(() => props.tableAttr);
     return {
       markers,
@@ -77,6 +81,8 @@ export default defineComponent({
       removeTempRleation,
       removeModel,
       table,
+      disabled,
+      serverInfo,
     };
   },
 });
@@ -98,6 +104,10 @@ export default defineComponent({
     font-size: 12px;
     font-weight: 700;
     color: #333;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 100%;
   }
   .body {
     width: 100%;
@@ -160,7 +170,7 @@ export default defineComponent({
   }
   .operations {
     display: none;
-    z-index: 2;
+    z-index: -2;
     width: 30px;
     height: 100px;
     text-align: right;

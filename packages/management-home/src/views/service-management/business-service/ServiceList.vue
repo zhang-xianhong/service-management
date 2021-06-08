@@ -42,7 +42,7 @@
         v-if="refreshMess"
         v-loading="tableLoading"
       >
-        <el-table-column type="selection" width="55"></el-table-column>
+        <el-table-column type="selection" width="55" v-if="getShowBool('delete')"></el-table-column>
         <el-table-column type="index" width="50" label="序号"></el-table-column>
         <el-table-column property="name" label="服务英文名">
           <template #default="scope">
@@ -130,7 +130,7 @@
           >
             <el-input
               v-model.trim="serviceDetail.name"
-              placeholder='请输入英文名称，如"project1"，创建后无法修改'
+              placeholder="请输入英文名称，如'project1'，创建后无法修改"
               @blur="checkEnglishName"
             >
               <template #prepend>srv-</template>
@@ -147,7 +147,7 @@
           >
             <el-input
               v-model.trim="serviceDetail.description"
-              placeholder='请输入中文服务描述，如"项目管理服务"，创建后无法修改'
+              placeholder="请输入中文服务描述，如项'目管理服务'，创建后无法修改"
             ></el-input>
           </el-form-item>
           <el-form-item label="负责人" :label-width="labelWidth">
@@ -237,7 +237,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, ref, onBeforeUnmount, computed } from 'vue';
+import { defineComponent, reactive, ref, onBeforeUnmount, computed, watch } from 'vue';
 import PackagedPagination from '@/components/pagination/Index.vue';
 import { userProjectList } from '@/layout/messageCenter/user-info';
 import { getShowBool } from '@/utils/permission-show-module';
@@ -255,7 +255,7 @@ import {
   allService,
   ownersMap,
 } from './utils/service-data-utils';
-import { addService, serviceNameTest } from '@/api/servers';
+import { addService, serviceNameTest, updateServiceStatus } from '@/api/servers';
 import Message from 'element-plus/es/el-message';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { computeStatusLabel, statusColor } from '@/views/service-management/business-service/utils/service-status-map';
@@ -335,10 +335,6 @@ export default defineComponent({
       }, 5000);
     }
 
-    onBeforeUnmount(() => {
-      clearInterval(intervalId);
-    });
-
     const handleSizeChange = (res: number) => {
       pageInfo.pageSize = res;
       refreshServiceList(pageInfo);
@@ -355,7 +351,7 @@ export default defineComponent({
     }
     function addServiceByForm() {
       const senddata = { ...serviceDetail };
-      senddata.tags = serviceDetail.tags ? serviceDetail.tags.join(',') : '';
+      senddata.tag = serviceDetail.tags ? serviceDetail.tags.join(',') : '';
       senddata.dependencies = serviceDetail.dependencies
         ? serviceDetail.dependencies.map((x: any) => ({
             id: x,
@@ -530,15 +526,48 @@ export default defineComponent({
       blackHoverVisible.value = false;
       searchForList();
     }
-    onBeforeUnmount(() => {
-      blackHoverclick();
-    });
+
     const validatorPass = (rule: any, value: any, callback: any) => {
       const reg = /^(?!-)(?!.*-$)[a-z0-9-]+$/;
       if (!reg.test(value)) {
         callback(new Error(rule.message));
       }
     };
+
+    // let intervalStatus: any = null;
+    // const statusRefresh = (ids: any) => {
+    //   if (intervalStatus) {
+    //     clearInterval(intervalStatus);
+    //     intervalStatus = null;
+    //   }
+    //   if (ids.length) {
+    //     updateServiceStatus(ids);
+    //     intervalStatus = setInterval(() => {
+    //       updateServiceStatus(ids);
+    //     }, 30 * 1000);
+    //   }
+    // };
+
+    watch(
+      () => serviceTableList.list,
+      (nn) => {
+        let ids = [];
+        if (nn.length) {
+          ids = nn.filter((x: any) => x.status === 30).map((x: any) => x.id);
+          if (ids.length) {
+            updateServiceStatus(ids);
+          }
+        }
+      },
+    );
+
+    onBeforeUnmount(() => {
+      clearInterval(intervalId);
+      // clearInterval(intervalStatus);
+      // intervalStatus = null;
+      blackHoverclick();
+    });
+
     return {
       serviceTableList,
       serviceDetail,

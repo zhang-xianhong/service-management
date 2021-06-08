@@ -5,10 +5,10 @@
     <el-dialog v-model="dialogVisible" title="创建数据对象" width="600px">
       <el-form ref="formRef" label-width="120px" label-position="left" :model="form" :rules="rules">
         <el-form-item label="数据对象名称" prop="name">
-          <el-input v-model.trim="form.name"></el-input>
+          <el-input v-model.trim="form.name" ref="objectName"></el-input>
         </el-form-item>
         <el-form-item label="数据对象描述" prop="description">
-          <el-input v-model.trim="form.description"></el-input>
+          <el-input v-model.trim="form.description" ref="objectDescription"></el-input>
         </el-form-item>
       </el-form>
       <template #footer>
@@ -35,6 +35,8 @@ export default defineComponent({
       name: '',
       description: '',
     });
+    const objectName = ref(null as any);
+    const objectDescription = ref(null as any);
     const showDialog = () => {
       dialogVisible.value = true;
       nextTick(() => {
@@ -46,12 +48,16 @@ export default defineComponent({
       });
     };
     const addModel = async () => {
-      if (!form.value.name && !form.value.description) {
-        return ElMessage.error('未输入数据名称与描述');
-      }
+      objectName.value.handleBlur();
+      objectDescription.value.handleBlur();
       if (!form.value.name || !form.value.description) {
         return false;
       }
+      const reg = /^([A-Z][a-z]+)+$/;
+      if (!reg.test(form.value.name)) {
+        return false;
+      }
+      // 英文驼峰名验证
       const { code } = await createModel({
         ...form.value,
         serviceId,
@@ -63,7 +69,10 @@ export default defineComponent({
       }
     };
     const rules = {
-      name: [{ required: true, message: '请输入对象名称', trigger: 'blur' }],
+      name: [
+        { required: true, message: '请输入对象名称', trigger: 'blur' },
+        { pattern: /^([A-Z][a-z]+)+$/, message: '名称必须是大驼峰格式，均为英文字母，请重新输入', trigger: 'blur' },
+      ],
       description: [{ required: true, message: '请输入对象描述', trigger: 'blur' }],
     };
     return {
@@ -73,6 +82,8 @@ export default defineComponent({
       addModel,
       rules,
       formRef,
+      objectName,
+      objectDescription,
     };
   },
 });
