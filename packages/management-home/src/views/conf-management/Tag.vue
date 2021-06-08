@@ -17,7 +17,7 @@
     </el-row>
     <el-row style="background: #fff">
       <el-table :data="tagList" @selection-change="handleSelectionChange" @sort-change="sortChange" v-loading="loading">
-        <el-table-column type="selection" width="45" />
+        <el-table-column type="selection" width="45" v-if="getShowBool('delete')" />
         <el-table-column type="index" label="序号" width="50" />
         <el-table-column
           v-for="col in columns"

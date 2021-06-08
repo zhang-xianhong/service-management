@@ -21,7 +21,7 @@
       @selection-change="handleSelectionChange"
       @sort-change="sortChange"
     >
-      <el-table-column type="selection" width="45" />
+      <el-table-column type="selection" width="45" v-if="getShowBool('delete')" />
       <el-table-column type="index" label="序号" width="50" />
       <el-table-column label="类型名称" prop="name" sortable></el-table-column>
       <el-table-column label="描述" prop="description" sortable></el-table-column>
