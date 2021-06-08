@@ -20,11 +20,11 @@ export default function(initialValue: string, classifications: any[]) {
   // 分类信息递归处理
   const handleClassification = (items: any[]) => {
     for (const item of items) {
-      if (item.children?.length === 0) {
+      if (item?.children?.length === 0) {
         item.children = undefined;
       }
       classificationMap.set(item.id, item);
-      if (item.children && item.children.length) {
+      if (item?.children?.length) {
         handleClassification(item.children);
       }
     }
