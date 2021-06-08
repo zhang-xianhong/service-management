@@ -351,7 +351,7 @@ export default defineComponent({
     }
     function addServiceByForm() {
       const senddata = { ...serviceDetail };
-      senddata.tags = serviceDetail.tags ? serviceDetail.tags.join(',') : '';
+      senddata.tag = serviceDetail.tags ? serviceDetail.tags.join(',') : '';
       senddata.dependencies = serviceDetail.dependencies
         ? serviceDetail.dependencies.map((x: any) => ({
             id: x,
@@ -553,7 +553,7 @@ export default defineComponent({
       (nn) => {
         let ids = [];
         if (nn.length) {
-          ids = nn.filter((x: any) => x.status === 20 || x.status === 30).map((x: any) => x.id);
+          ids = nn.filter((x: any) => x.status === 30).map((x: any) => x.id);
           if (ids.length) {
             updateServiceStatus(ids);
           }

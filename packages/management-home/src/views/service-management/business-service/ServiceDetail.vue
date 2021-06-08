@@ -190,6 +190,7 @@ import {
   clearSql,
   getTreaceId,
   thenRefresh,
+  serverInfo,
 } from './utils/service-detail-data';
 import _ from 'lodash/fp';
 import {
@@ -245,7 +246,6 @@ export default {
     getServerList();
 
     // 服务详情信息
-    const serverInfo = ref({} as any);
 
     // erd图组件参数构造
     provide('serviceId', currentServiceId.value);
@@ -278,14 +278,15 @@ export default {
       tables.forEach((table: any, index: number) => {
         const tablePosition = serverInfo.value?.config?.coordinate[table.id];
         const oldTablePosition = modelList.value.tables[index]?.position;
-        if (oldTablePosition || tablePosition) {
+        if ((oldTablePosition && !oldTablePosition.temp) || (tablePosition && !tablePosition.temp)) {
           // eslint-disable-next-line no-param-reassign
           table.position = oldTablePosition || tablePosition;
         } else {
           // eslint-disable-next-line no-param-reassign
           table.position = {
-            x: 200 + offset * 10,
-            y: 20 + offset * 10,
+            x: 200 + offset * 20,
+            y: 20 + offset * 20,
+            temp: true,
           };
           offset += 1;
         }
@@ -360,7 +361,7 @@ export default {
         label: (statusmaps as any)[status],
         color: (statusColor as any)[status],
       };
-      if (+status === 20 || +status === 30) {
+      if (+status === 30) {
         updateServiceStatus([id]);
       }
     });

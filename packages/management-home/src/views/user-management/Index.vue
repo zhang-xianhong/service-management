@@ -1,6 +1,6 @@
 <template>
   <div class="user-management">
-    <div class="user-headers">当前所在企业： {{ userInfo.dept }}</div>
+    <div class="user-headers">当前所在企业： {{ tenantDetail.name }}</div>
     <div class="user-body-form">
       <el-form :model="userSetInfo" label-width="150px">
         <el-form-item v-for="(item, index) in props" :key="item" :label="labels[index]">
@@ -54,6 +54,7 @@ import { defineComponent, reactive, ref, watch } from 'vue';
 import { userInfo } from '@/layout/messageCenter/user-info';
 import { getUserProfile, updateUserPassword, updateUserProfile } from '@/api/auth';
 import { ElMessage } from 'element-plus';
+import { getTenantDetail } from '@/api/tenant';
 
 export default defineComponent({
   name: 'UserManagement',
@@ -76,7 +77,6 @@ export default defineComponent({
       statusArr.value[index] = !statusArr.value[index];
     };
     const save = (id: number, prop: string) => {
-      console.log(id, prop);
       if (!userSetInfo[prop]) {
         return ElMessage.error(`${labels[id]} 不得为空！`);
       }
@@ -100,15 +100,17 @@ export default defineComponent({
     const reWritePass = () => {
       dialogFormVisible.value = true;
     };
-
+    const formRef = ref(null as any);
     const sendPass = () => {
-      updateUserPassword({ ...passForm }).then((res) => {
-        dialogFormVisible.value = false;
-        console.log(res);
+      formRef.value.validate((valid: boolean) => {
+        if (valid) {
+          updateUserPassword({ ...passForm }).then((res) => {
+            dialogFormVisible.value = false;
+            console.log(res);
+          });
+        }
       });
     };
-    const formRef = ref(null as any);
-
     // 初始密码校验
     const validatePass = (rule: any, value: string, callback: Function) => {
       if (value !== '') {
@@ -161,6 +163,13 @@ export default defineComponent({
         passForm.confirmPassword = '';
       }
     });
+    const tenantDetail = ref({} as any);
+    const getDetail = async () => {
+      const { data } = await getTenantDetail(userInfo.value.tenantId);
+      tenantDetail.value = data;
+      console.log(data);
+    };
+    getDetail();
 
     return {
       userInfo,
@@ -177,6 +186,7 @@ export default defineComponent({
       sendPass,
       formRules,
       formRef,
+      tenantDetail,
     };
   },
 });

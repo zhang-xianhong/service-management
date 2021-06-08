@@ -2,7 +2,7 @@
   <div class="general">
     <el-row>
       <el-col :span="6" style="text-align: left">
-        <el-button type="primary" @click="addNewConfig" style="width: 90px">新建</el-button>
+        <el-button type="primary" @click="addNewConfig" style="width: 90px" v-if="getShowBool('add')">新建</el-button>
       </el-col>
       <el-col :offset="8" :span="10" style="text-align: right">
         <el-input
@@ -72,9 +72,9 @@
               <el-radio label="1">系统类型</el-radio>
             </el-radio-group>
           </el-form-item>
-          <el-form-item label="配置描述" :label-width="labelWidth" prop="description">
-            <el-input v-model.trim="configForm.formData.description" :disabled="configForm.disabled"></el-input>
-          </el-form-item>
+          <!--          <el-form-item label="配置描述" :label-width="labelWidth" prop="description">-->
+          <!--            <el-input v-model.trim="configForm.formData.description" :disabled="configForm.disabled"></el-input>-->
+          <!--          </el-form-item>-->
         </el-form>
       </div>
       <template #footer>

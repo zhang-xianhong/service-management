@@ -66,7 +66,7 @@
     </div>
   </el-row>
   <el-dialog title="新建应用" v-model="createDialogVisible" width="500px">
-    <el-form :model="appInfo" :rules="rules" label-width="120px" label-position="left">
+    <el-form :model="appInfo" :rules="rules" label-width="120px" label-position="left" ref="form">
       <el-form-item label="应用中文名称" prop="description">
         <el-input v-model="appInfo.description" placeholder="请输入中文名称" ref="descriptionName"></el-input>
       </el-form-item>
@@ -164,12 +164,12 @@ export default defineComponent({
     });
     const englishName = ref(null as any);
     const descriptionName = ref(null as any);
+    const form = ref(null as any);
 
     const rules = {
       description: [
         { required: true, message: '请输入应用中文名称', trigger: 'blur' },
         { min: 3, max: 20, message: '应用中文名称长度在3到20个字符之间', trigger: 'blur' },
-        { pattern: /^[\u4e00-\u9fa5]+$/g, message: '该应用中文名称包含非法字符，请重新输入', trigger: 'blur' },
       ],
       name: [
         { required: true, message: '请输入应用英文名称', trigger: 'blur' },
@@ -237,8 +237,10 @@ export default defineComponent({
       if (!reg.test(state.appInfo.name)) {
         return false;
       }
-      const chineseReg = /^[\u4e00-\u9fa5]+$/g;
-      if (!chineseReg.test(state.appInfo.description)) {
+      if (state.appInfo.name.length > 16 || state.appInfo.name.length < 3) {
+        return false;
+      }
+      if (state.appInfo.description.length > 20 || state.appInfo.description.length < 3) {
         return false;
       }
       const { code } = await createApp(state.appInfo);
@@ -261,6 +263,8 @@ export default defineComponent({
 
     const closeAppCreate = async () => {
       state.createDialogVisible = false;
+      state.imageUrl = '';
+      form.value.resetFields();
       state.appInfo = {
         name: '',
         description: '',
@@ -306,6 +310,7 @@ export default defineComponent({
       handlePageChange,
       englishName,
       descriptionName,
+      form,
       userProjectList,
       getShowBool,
     };

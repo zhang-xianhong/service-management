@@ -53,7 +53,7 @@ export default defineComponent({
       if (!form.value.name || !form.value.description) {
         return false;
       }
-      const reg = /^[a-zA-Z]+$/g;
+      const reg = /^([A-Z][a-z]+)+$/;
       if (!reg.test(form.value.name)) {
         return false;
       }
@@ -71,7 +71,7 @@ export default defineComponent({
     const rules = {
       name: [
         { required: true, message: '请输入对象名称', trigger: 'blur' },
-        { pattern: /^[a-zA-Z]+$/g, message: '名称必须是大驼峰格式，均为英文字母，请重新输入', trigger: 'blur' },
+        { pattern: /^([A-Z][a-z]+)+$/, message: '名称必须是大驼峰格式，均为英文字母，请重新输入', trigger: 'blur' },
       ],
       description: [{ required: true, message: '请输入对象描述', trigger: 'blur' }],
     };
