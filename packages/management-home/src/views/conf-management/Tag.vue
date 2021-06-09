@@ -31,7 +31,7 @@
             <!-- <el-button type="primary" @click="detail(row)" size="mini">详情</el-button> -->
             <!--            <el-button type="primary" @click="disabled(row)" size="mini" v-if="getShowBool('update')">禁用</el-button>-->
             <!-- <el-button type="primary" @click="enabled(row)" size="mini">启用</el-button> -->
-            <el-button type="primary" @click="rename(row)" size="mini" v-if="getShowBool('update')">修改</el-button>
+            <el-button type="primary" @click="rename(row)" size="mini" v-if="getShowBool('update')">编辑</el-button>
             <el-button @click="groupRemove([row.id])" v-if="getShowBool('delete')">删除</el-button>
           </template>
         </el-table-column>
@@ -222,7 +222,7 @@ export default defineComponent({
     const rename = (row: any) => {
       form.value.name = row.name;
       dialogVisible.value = true;
-      dialogTitle.value = '修改标签';
+      dialogTitle.value = '编辑标签';
       id = row.id;
     };
     const add = () => {
@@ -245,7 +245,7 @@ export default defineComponent({
           loading.value = false;
           if (code === 0) {
             dialogVisible.value = false;
-            dialogTitle.value === '新增标签' ? ElMessage.success('新增标签成功') : ElMessage.success('修改标签成功');
+            dialogTitle.value === '新增标签' ? ElMessage.success('新增标签成功') : ElMessage.success('编辑标签成功');
             getTagList();
           }
         }
