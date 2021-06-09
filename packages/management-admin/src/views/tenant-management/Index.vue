@@ -39,21 +39,15 @@
       </el-table-column>
       <el-table-column label="操作" width="200">
         <template #default="scope">
-          <el-button
-            type="text"
-            v-if="scope.row.status === statusEnum.START"
-            @click="onFreeze(scope.row.id)"
-          >冻结</el-button>
-          <el-button
-            type="text"
-            v-if="scope.row.status === statusEnum.FREEZE"
-            @click="onStart(scope.row.id)"
-          >启用</el-button>
-          <el-button
-            type="text"
-            :disabled="scope.row.status === statusEnum.START"
-            @click="onDelete(scope.row)"
-          >删除</el-button>
+          <el-button type="text" v-if="scope.row.status === statusEnum.START" @click="onFreeze(scope.row.id)"
+            >冻结</el-button
+          >
+          <el-button type="text" v-if="scope.row.status === statusEnum.FREEZE" @click="onStart(scope.row.id)"
+            >启用</el-button
+          >
+          <el-button type="text" :disabled="scope.row.status === statusEnum.START" @click="onDelete(scope.row)"
+            >删除</el-button
+          >
         </template>
       </el-table-column>
     </el-table>
@@ -165,7 +159,7 @@ export default {
 
     // 新增租户时tententId默认为零
     const onAdd = () => {
-      router.push('/tenant-list/edit/0');
+      router.push('/tenant-list/add');
     };
 
     // 批量冻结

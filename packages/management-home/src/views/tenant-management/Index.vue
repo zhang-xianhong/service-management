@@ -16,7 +16,6 @@ import CompanyInfo from './components/CompanyInfo.vue';
 import UserInfo from './components/UserInfo.vue';
 import ManagerInfo from './components/ManagerInfo.vue';
 import { getTenantDetail, updateTenant } from '@/api/tenant';
-import { userInfo } from '@/layout/messageCenter/user-info';
 import { getShowBool } from '@/utils/permission-show-module';
 
 export default {
@@ -40,7 +39,7 @@ export default {
     } as any);
 
     const getDetail = async () => {
-      const { data } = await getTenantDetail(userInfo.value.tenantId);
+      const { data } = await getTenantDetail();
       tenantDetail.value = data;
     };
 
@@ -62,7 +61,7 @@ export default {
               delete updateData[key];
             }
           });
-          const { code } = await updateTenant(userInfo.value.tenantId, updateData);
+          const { code } = await updateTenant(updateData);
           if (code === 0) {
             (instance as any).proxy.$message({
               type: 'success',
@@ -73,7 +72,6 @@ export default {
         }
       });
     };
-
     return {
       companyRef,
       isEdit,

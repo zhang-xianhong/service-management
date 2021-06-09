@@ -88,6 +88,17 @@ const routes: Array<RouteRecordRaw> = [
         },
       },
       {
+        path: '/tenant-list/add',
+        component: () => import(/* webpackChunkName: "tenant" */ '@/views/tenant-management/TenantAdd.vue'),
+        name: 'TenantAdd',
+        meta: {
+          title: '新增账户',
+          icon: 'el-icon-eleme',
+          hidden: true,
+          isRootLevel: false,
+        },
+      },
+      {
         path: '/tenant-list/edit/:id',
         component: () => import(/* webpackChunkName: "tenant" */ '@/views/tenant-management/TenantEdit.vue'),
         name: 'TenantEdit',

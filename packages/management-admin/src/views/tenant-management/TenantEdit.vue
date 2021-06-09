@@ -78,14 +78,8 @@ export default defineComponent({
         return false;
       }
       if (isEditMode) {
-        const { nameShort, addr, addrDetail, logoUrl, intro } = tenantDetail.value;
-        const updateData: any = {
-          nameShort,
-          addr,
-          addrDetail,
-          logoUrl,
-          intro,
-        };
+        const updateData: any = tenantDetail.value;
+        delete updateData.manager.password;
         Object.keys(updateData).forEach((key: string) => {
           if (updateData[key] === '') {
             delete updateData[key];
