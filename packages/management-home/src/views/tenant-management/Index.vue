@@ -113,4 +113,14 @@ export default {
   height: 85px;
   display: block;
 }
+.image-slot {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  background: #f5f7fa;
+  color: #909399;
+  font-size: 30px;
+}
 </style>

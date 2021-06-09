@@ -11,7 +11,7 @@
       label-position="left"
     >
       <el-form-item prop="account" class="form-item" label="管理员账号">
-        <template v-if="isEdit">{{ managerInfo.account }}</template>
+        <template v-if="!isCreate">{{ managerInfo.account }}</template>
         <el-input
           v-else
           v-model="managerInfo.account"
@@ -21,11 +21,11 @@
         ></el-input>
       </el-form-item>
       <el-form-item prop="email" class="form-item" label="管理员邮箱">
-        <template v-if="isEdit">{{ managerInfo.email }}</template>
+        <template v-if="!isEdit">{{ managerInfo.email }}</template>
         <el-input v-else v-model="managerInfo.email" style="width: 400px" placeholder="请输入管理员邮箱"></el-input>
       </el-form-item>
       <el-form-item prop="name" class="form-item" label="管理员姓名">
-        <template v-if="isEdit">{{ managerInfo.name }}</template>
+        <template v-if="!isEdit">{{ managerInfo.name }}</template>
         <el-input
           v-else
           v-model="managerInfo.name"
@@ -34,19 +34,20 @@
           placeholder="请输入中文租户管理员姓名"
         ></el-input>
       </el-form-item>
-      <el-form-item v-if="!isEdit" prop="password" class="form-item" label="初始密码">
+      <el-form-item v-if="isCreate" prop="password" class="form-item" label="初始密码">
         <el-input
           show-password
           v-model="managerInfo.password"
           style="width: 400px"
           placeholder="请输入初始密码"
         ></el-input>
+        <el-button type="text" v-if="managerInfo.password" class="btn-copy" @click="handleCopy">复制</el-button>
       </el-form-item>
       <el-form-item prop="phone" class="form-item" label="管理员电话">
-        <template v-if="isEdit">{{ managerInfo.phone }}</template>
+        <template v-if="!isEdit">{{ managerInfo.phone }}</template>
         <el-input v-else v-model="managerInfo.phone" style="width: 400px" placeholder="请输入管理员电话号码"></el-input>
       </el-form-item>
-      <el-form-item v-if="!isEdit" prop="confirmPassword" class="form-item" label="确认初始密码">
+      <el-form-item v-if="isCreate" prop="confirmPassword" class="form-item" label="确认初始密码">
         <el-input
           show-password
           v-model="managerInfo.confirmPassword"
@@ -61,6 +62,7 @@
 <script lang="ts">
 import { computed, ref, WritableComputedRef, Ref } from 'vue';
 import ManagerInfoInterface from '../types/manager-info-interface';
+import { copyFun } from '@/utils';
 
 export default {
   name: 'ManagerInfo',
@@ -69,12 +71,16 @@ export default {
       type: Boolean,
       default: false,
     },
+    isCreate: {
+      type: Boolean,
+      default: false,
+    },
     modelValue: {
       type: Object,
       default: () => ({}),
     },
   },
-  setup(props: { isEdit: boolean; modelValue: any }) {
+  setup(props: { isEdit: boolean; isCreate: boolean; modelValue: any }) {
     // 表单引用
     const formRef: Ref<any> = ref(null);
 
@@ -139,10 +145,16 @@ export default {
       ],
     };
 
+    // 复制密码
+    const handleCopy = () => {
+      copyFun(managerInfo.value.password);
+    };
+
     return {
       formRef,
       managerInfo,
       rules,
+      handleCopy,
     };
   },
 };
@@ -151,5 +163,10 @@ export default {
 <style scoped>
 .managerinfo-form {
   width: 100%;
+}
+.btn-copy {
+  position: absolute;
+  right: 35px;
+  top: 0;
 }
 </style>

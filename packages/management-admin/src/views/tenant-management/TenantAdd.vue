@@ -9,13 +9,13 @@
         v-model="currentState.modelValue"
         @go="goStep"
         @submit="onSubmit"
+        :isCreate="isCreate"
+        :isEdit="isCreate"
         :ref="currentState.ref"
       ></component>
     </keep-alive>
     <el-row>
-      <el-button type="primary" @click="goPrevStep(currentState.activeStep)" v-if="currentState.activeStep !== 0"
-        >上一步</el-button
-      >
+      <el-button @click="goPrevStep(currentState.activeStep)" v-if="currentState.activeStep !== 0">上一步</el-button>
       <el-button type="primary" @click="goNextStep(currentState.activeStep)" v-if="currentState.activeStep !== 2"
         >下一步</el-button
       >
@@ -47,6 +47,7 @@ export default defineComponent({
     const companyRef: Ref<any> = ref(null);
     const userRef: Ref<any> = ref(null);
     const managerRef: Ref<any> = ref(null);
+    const isCreate = ref(true);
 
     // 租户详情
     const tenantDetail = ref({
@@ -131,6 +132,7 @@ export default defineComponent({
     };
 
     return {
+      isCreate,
       companyRef,
       userRef,
       managerRef,
