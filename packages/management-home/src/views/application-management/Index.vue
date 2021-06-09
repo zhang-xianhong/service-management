@@ -250,6 +250,7 @@ export default defineComponent({
           message: '应用新建成功',
         });
         state.createDialogVisible = false;
+        state.imageUrl = '';
         state.appInfo = {
           name: '',
           description: '',
