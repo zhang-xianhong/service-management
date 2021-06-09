@@ -39,21 +39,15 @@
       </el-table-column>
       <el-table-column label="操作" width="200">
         <template #default="scope">
-          <el-button
-            type="text"
-            v-if="scope.row.status === statusEnum.START"
-            @click="onFreeze(scope.row.id)"
-          >冻结</el-button>
-          <el-button
-            type="text"
-            v-if="scope.row.status === statusEnum.FREEZE"
-            @click="onStart(scope.row.id)"
-          >启用</el-button>
-          <el-button
-            type="text"
-            :disabled="scope.row.status === statusEnum.START"
-            @click="onDelete(scope.row)"
-          >删除</el-button>
+          <el-button type="text" v-if="scope.row.status === statusEnum.START" @click="onFreeze(scope.row)"
+            >冻结</el-button
+          >
+          <el-button type="text" v-if="scope.row.status === statusEnum.FREEZE" @click="onStart(scope.row.id)"
+            >启用</el-button
+          >
+          <el-button type="text" :disabled="scope.row.status === statusEnum.START" @click="onDelete(scope.row)"
+            >删除</el-button
+          >
         </template>
       </el-table-column>
     </el-table>
@@ -71,6 +65,7 @@
 
 <script lang="ts">
 import { reactive, toRefs, getCurrentInstance } from 'vue';
+import { ElMessageBox, ElMessage } from 'element-plus';
 import { getTenantList, deleteTenant, freezeTenant, enableTenant } from '@/api/tenant';
 import { debounce } from 'lodash';
 import { useRouter } from 'vue-router';
@@ -209,15 +204,28 @@ export default {
     };
 
     // 租户冻结
-    const onFreeze = async (id: string) => {
-      const { code } = await freezeTenant(id);
-      if (code === 0) {
-        (instance as any).proxy.$message({
-          type: 'success',
-          message: '冻结成功',
+    const onFreeze = async (data: any) => {
+      ElMessageBox.confirm(`是否冻结【${data.name}】租户?`, '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+      })
+        .then(async () => {
+          const { code } = await freezeTenant(data.id);
+          if (code === 0) {
+            (instance as any).proxy.$message({
+              type: 'success',
+              message: '冻结成功',
+            });
+            getTableData();
+          }
+        })
+        .catch(() => {
+          ElMessage({
+            type: 'info',
+            message: '冻结失败',
+          });
         });
-        getTableData();
-      }
     };
 
     // 租户启动
