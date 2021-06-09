@@ -112,25 +112,22 @@ const routes: Array<RouteRecordRaw> = [
     ],
   },
   {
-    path: "/about-info",
-    redirect: "/about",
+    path: '/about-info',
+    redirect: '/about',
     component: Layout,
     meta: {
       isRootLevel: true,
       hidden: true,
-      title: "关于信息",
+      title: '关于信息',
     },
     children: [
       {
-        path: "/about",
-        component: () =>
-          import(
-            /* webpackChunkName: "userinfo" */ "@/views/about-info/Index.vue"
-          ),
-        name: "about",
+        path: '/about',
+        component: () => import(/* webpackChunkName: "userinfo" */ '@/views/about-info/Index.vue'),
+        name: 'about',
         meta: {
-          title: "关于信息",
-          icon: "el-icon-eleme",
+          title: '关于信息',
+          icon: 'el-icon-eleme',
           isRootLevel: false,
         },
       },

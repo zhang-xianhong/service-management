@@ -93,7 +93,7 @@ export default defineComponent({
     };
 
     const toAboutInfo = () => {
-      router.push("/about-info");
+      router.push('/about-info');
     };
 
     const openEditDialog = (): void => {
