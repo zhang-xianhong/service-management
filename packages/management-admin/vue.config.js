@@ -12,9 +12,6 @@ module.exports = {
       }
     }
   },
-  configureWebpack: {
-    devtool: 'eval-cheap-module-source-map'
-  },
   devServer: {
     host: 'dev.sa.qq.com',
     port: '3000',
