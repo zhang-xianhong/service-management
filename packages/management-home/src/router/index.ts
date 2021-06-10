@@ -408,6 +408,33 @@ const routes: Array<RouteRecordRaw> = [
       },
     ],
   },
+  {
+    path: '/about-info',
+    name: 'AboutInfo',
+    redirect: '/about',
+    component: Layout,
+    meta: {
+      isRootLevel: true,
+      hidden: true,
+      node: true,
+    },
+    children: [
+      {
+        path: 'about',
+        component: () =>
+          import(
+            /* webpackChunkName: "userinfo" */ '@/views/about-info/Index.vue'
+          ),
+        name: 'About',
+        meta: {
+          title: '关于信息',
+          icon: 'el-icon-eleme',
+          isRootLevel: false,
+          hidden: true,
+        },
+      },
+    ],
+  },
 ];
 
 export const reCreateRouter = (routes: Array<RouteRecordRaw>): Router =>

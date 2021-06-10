@@ -230,7 +230,6 @@ export default defineComponent({
         word-break: break-all;
         white-space: nowrap;
         text-overflow: ellipsis;
-        // margin-bottom: 10px;
       }
       &__desc {
         font-size: 12px;
