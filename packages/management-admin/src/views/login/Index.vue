@@ -24,7 +24,7 @@ export default defineComponent({
   setup() {
     const backToHead = () => {
       window.location.href = 'https://citybase.qq.com';
-      window.location.reload();
+      // window.location.reload();
     };
     return {
       backToHead,
@@ -52,6 +52,7 @@ $image: url(~@/assets/img/citybase-login.jpg);
       line-height: 24px;
       font-size: 18px;
       letter-spacing: 0;
+      cursor: pointer;
     }
   }
   &-main {

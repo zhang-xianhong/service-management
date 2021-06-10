@@ -81,7 +81,7 @@ import TreeSelector from './components/TreeSelector.vue';
 import BasicInfoForm from './components/BasicInfoForm.vue';
 import { ElMessageBox } from 'element-plus';
 import { getMemberList, getProjectDetail, deleteMember } from '@/api/project/project';
-import { getTenentDepartment } from '@/api/tenant';
+import { getTenantDepartment } from '@/api/tenant';
 import { userProjectList } from '@/layout/messageCenter/user-info';
 import { getShowBool } from '@/utils/permission-show-module';
 
@@ -252,7 +252,7 @@ export default {
     };
 
     const initDepartments = async () => {
-      const { code, data } = await getTenentDepartment({ deptId: 0, level: 9 });
+      const { code, data } = await getTenantDepartment({ deptId: 0, level: 9 });
       if (code === 0) {
         const deptTree = [
           {

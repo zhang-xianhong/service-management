@@ -15,10 +15,32 @@
         {{ userInfo.email }}
       </el-form-item>
       <el-form-item prop="frontPhoto" class="form-item" label="身份证正面" required>
-        <img :src="userInfo.sourceUrl?.frontPhoto" class="avatar" />
+        <el-image
+          class="avatar"
+          hide-on-click-modal
+          :src="userInfo.sourceUrl?.frontPhoto"
+          :preview-src-list="[userInfo.sourceUrl?.frontPhoto]"
+        >
+          <template #error>
+            <div class="image-slot">
+              <i class="el-icon-picture-outline"></i>
+            </div>
+          </template>
+        </el-image>
       </el-form-item>
       <el-form-item prop="reversePhoto" class="form-item" label="身份证反面" required>
-        <img :src="userInfo.sourceUrl?.reversePhoto" class="avatar" />
+        <el-image
+          class="avatar"
+          hide-on-click-modal
+          :src="userInfo.sourceUrl?.reversePhoto"
+          :preview-src-list="[userInfo.sourceUrl?.reversePhoto]"
+        >
+          <template #error>
+            <div class="image-slot">
+              <i class="el-icon-picture-outline"></i>
+            </div>
+          </template>
+        </el-image>
       </el-form-item>
     </el-form>
   </el-row>
