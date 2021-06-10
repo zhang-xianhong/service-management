@@ -22,7 +22,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, inject } from 'vue';
+import { defineComponent, ref, inject, watch } from 'vue';
 import { removeRelation, updateRelation } from '@/api/schema/model';
 
 export default defineComponent({
@@ -55,6 +55,14 @@ export default defineComponent({
         afterUpdate();
       }
     };
+    watch(
+      () => props.data,
+      (nn: any) => {
+        console.log(nn, 'this is inline');
+        formData.value.model = nn.model;
+        formData.value.relationModel = nn.relationModel;
+      },
+    );
     return {
       formData,
       relationChange,
