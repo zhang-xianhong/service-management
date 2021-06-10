@@ -2,7 +2,12 @@
   <div class="general">
     <el-row>
       <el-col :span="6" style="text-align: left">
-        <el-button type="primary" @click="addNewConfig" style="width: 90px" v-if="getShowBool('add')">新建</el-button>
+        <el-button
+          type="primary"
+          @click="addNewConfig"
+          style="width: 90px"
+          v-if="getShowBool('add')"
+        >新建</el-button>
       </el-col>
       <el-col :offset="8" :span="10" style="text-align: right">
         <el-input
@@ -14,8 +19,17 @@
       </el-col>
     </el-row>
     <el-row style="background: #fff">
-      <el-table :data="tableData" v-loading="loading" style="width: 100%" @selection-change="handleSelectionChange">
-        <el-table-column type="selection" width="45" v-if="getShowBool('update') || getShowBool('delete')" />
+      <el-table
+        :data="tableData"
+        v-loading="loading"
+        style="width: 100%"
+        @selection-change="handleSelectionChange"
+      >
+        <el-table-column
+          type="selection"
+          width="45"
+          v-if="getShowBool('update') || getShowBool('delete')"
+        />
         <el-table-column type="index" label="序号" width="50" />
         <el-table-column label="键" prop="name"></el-table-column>
         <el-table-column label="值" prop="value"></el-table-column>
@@ -28,12 +42,18 @@
         <el-table-column label="配置版本" prop="version" width="100"></el-table-column>
         <el-table-column label="操作" width="300">
           <template #default="scope">
-            <el-button type="primary" size="mini" @click="onEdit(scope.row)" v-if="getShowBool('update')"
-              >编辑</el-button
-            >
-            <el-button type="primary" size="mini" @click="changeHistory(scope.row)" v-if="getShowBool('selectDetail')"
-              >变更历史</el-button
-            >
+            <el-button
+              type="primary"
+              size="mini"
+              @click="onEdit(scope.row)"
+              v-if="getShowBool('update')"
+            >编辑</el-button>
+            <el-button
+              type="primary"
+              size="mini"
+              @click="changeHistory(scope.row)"
+              v-if="getShowBool('selectDetail')"
+            >变更历史</el-button>
             <el-button size="mini" @click="onDelete(scope.row)" v-if="getShowBool('delete')">删除</el-button>
           </template>
         </el-table-column>
@@ -50,7 +70,7 @@
       ></packaged-pagination>
     </el-row>
     <el-dialog
-      :title="configForm.isEdit ? '配置详情' : '新建配置'"
+      :title="configForm.isEdit ? '编辑配置' : '新建配置'"
       v-model="addConfigDialog"
       width="600px"
       @closed="closeConfigForm"
@@ -58,13 +78,19 @@
       <div class="add-config-set">
         <el-form :model="configForm.formData" :rules="configRules" ref="configFormRef">
           <el-form-item label="键" :label-width="labelWidth" prop="name">
-            <el-input v-model.trim="configForm.formData.name" :disabled="configForm.disabled"></el-input>
+            <el-input
+              v-model.trim="configForm.formData.name"
+              :disabled="configForm.disabled || configForm.isEdit"
+            ></el-input>
           </el-form-item>
           <el-form-item label="值" prop="value" :label-width="labelWidth">
             <el-input v-model.trim="configForm.formData.value" :disabled="configForm.disabled"></el-input>
           </el-form-item>
           <el-form-item label="默认值" prop="defaultValue" :label-width="labelWidth">
-            <el-input v-model.trim="configForm.formData.defaultValue" :disabled="configForm.disabled"></el-input>
+            <el-input
+              v-model.trim="configForm.formData.defaultValue"
+              :disabled="configForm.disabled"
+            ></el-input>
           </el-form-item>
           <el-form-item label="类型" prop="type" :label-width="labelWidth">
             <el-radio-group v-model="configForm.formData.type" :disabled="configForm.disabled">
