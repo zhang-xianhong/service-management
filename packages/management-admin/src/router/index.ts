@@ -88,6 +88,17 @@ const routes: Array<RouteRecordRaw> = [
         },
       },
       {
+        path: '/tenant-list/add',
+        component: () => import(/* webpackChunkName: "tenant" */ '@/views/tenant-management/TenantAdd.vue'),
+        name: 'TenantAdd',
+        meta: {
+          title: '新增账户',
+          icon: 'el-icon-eleme',
+          hidden: true,
+          isRootLevel: false,
+        },
+      },
+      {
         path: '/tenant-list/edit/:id',
         component: () => import(/* webpackChunkName: "tenant" */ '@/views/tenant-management/TenantEdit.vue'),
         name: 'TenantEdit',
@@ -95,6 +106,28 @@ const routes: Array<RouteRecordRaw> = [
           title: '租户管理',
           icon: 'el-icon-eleme',
           hidden: true,
+          isRootLevel: false,
+        },
+      },
+    ],
+  },
+  {
+    path: '/about-info',
+    redirect: '/about',
+    component: Layout,
+    meta: {
+      isRootLevel: true,
+      hidden: true,
+      title: '关于信息',
+    },
+    children: [
+      {
+        path: '/about',
+        component: () => import(/* webpackChunkName: "userinfo" */ '@/views/about-info/Index.vue'),
+        name: 'about',
+        meta: {
+          title: '关于信息',
+          icon: 'el-icon-eleme',
           isRootLevel: false,
         },
       },
