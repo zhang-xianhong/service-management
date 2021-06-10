@@ -33,19 +33,22 @@
       <el-table-column property="managerTel" label="管理员电话"></el-table-column>
       <el-table-column property="status" label="状态">
         <template #default="scope">
-          <template v-if="scope.row.status === statusEnum.START">启用</template>
-          <template v-else>冻结</template>
+          <template v-if="scope.row.status === statusEnum.ENABLE">启用</template>
+          <template v-else>禁用</template>
         </template>
       </el-table-column>
       <el-table-column label="操作" width="200">
         <template #default="scope">
-          <el-button type="text" v-if="scope.row.status === statusEnum.START" @click="onFreeze(scope.row)"
-            >冻结</el-button
+          <el-button type="text" v-if="scope.row.status === statusEnum.ENABLE" @click="onFreeze(scope.row.id)"
+            >禁用</el-button
           >
-          <el-button type="text" v-if="scope.row.status === statusEnum.FREEZE" @click="onStart(scope.row.id)"
+          <el-button type="text" v-if="scope.row.status === statusEnum.FREEZE" @click="onEnable(scope.row.id)"
             >启用</el-button
           >
-          <el-button type="text" :disabled="scope.row.status === statusEnum.START" @click="onDelete(scope.row)"
+          <el-button type="text" :disabled="scope.row.status === statusEnum.FREEZE" @click="onResetPWD(scope.row)"
+            >重置密码</el-button
+          >
+          <el-button type="text" :disabled="scope.row.status === statusEnum.ENABLE" @click="onDelete(scope.row)"
             >删除</el-button
           >
         </template>
@@ -99,7 +102,7 @@ interface TableStateInterface {
 
 // 租户状态
 enum statusEnum {
-  'START',
+  'ENABLE',
   'FREEZE',
 }
 
@@ -160,7 +163,7 @@ export default {
 
     // 新增租户时tententId默认为零
     const onAdd = () => {
-      router.push('/tenant-list/edit/0');
+      router.push('/tenant-list/add');
     };
 
     // 批量冻结
@@ -229,7 +232,7 @@ export default {
     };
 
     // 租户启动
-    const onStart = async (id: string) => {
+    const onEnable = async (id: string) => {
       const { code } = await enableTenant(id);
       if (code === 0) {
         (instance as any).proxy.$message({
@@ -238,6 +241,12 @@ export default {
         });
         getTableData();
       }
+    };
+
+    // 重置租户密码
+    const onResetPWD = async (id: string) => {
+      // TODO
+      console.log(id);
     };
 
     return {
@@ -251,7 +260,8 @@ export default {
       deleteInBatches,
       onDelete,
       onFreeze,
-      onStart,
+      onEnable,
+      onResetPWD,
     };
   },
 };

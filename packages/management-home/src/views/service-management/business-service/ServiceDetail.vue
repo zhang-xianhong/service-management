@@ -437,6 +437,10 @@ export default {
       componentName.value === 'ServerBaseInfo' ? serverInfo.value : modelInfo.value,
     );
 
+    watch(modelInfo, (nn: any) => {
+      console.log(nn, 'this is nn');
+    });
+
     const { proxy } = getCurrentInstance() as any;
     // 切换服务
     const selectService = (value: number) => {

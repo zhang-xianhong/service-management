@@ -1,9 +1,17 @@
 <template>
-  <el-row style="font-weight: bolder">企业信息</el-row>
+  <el-row class="tenant-title">企业信息</el-row>
   <el-row style="font-size: 12px">
-    <el-form ref="formRef" :model="companyInfo" :rules="rules" inline label-width="140px" label-position="left">
+    <el-form
+      ref="formRef"
+      :model="companyInfo"
+      :rules="rules"
+      class="companyInfo-form"
+      inline
+      label-width="140px"
+      label-position="left"
+    >
       <el-form-item prop="name" class="form-item" label="企业中文名称">
-        <template v-if="isEdit">{{ companyInfo.name }}</template>
+        <template v-if="!isCreate">{{ companyInfo.name }}</template>
         <el-input
           v-else
           v-model="companyInfo.name"
@@ -14,7 +22,9 @@
         ></el-input>
       </el-form-item>
       <el-form-item prop="nameShort" class="form-item" label="企业别称">
+        <template v-if="!isEdit">{{ companyInfo.nameShort }}</template>
         <el-input
+          v-else
           v-model="companyInfo.nameShort"
           style="width: 400px"
           placeholder="请输入企业简称"
@@ -22,7 +32,7 @@
         ></el-input>
       </el-form-item>
       <el-form-item prop="tenantEngAbbr" class="form-item" label="企业英文简称">
-        <template v-if="isEdit">{{ companyInfo.tenantEngAbbr }}</template>
+        <template v-if="!isCreate">{{ companyInfo.tenantEngAbbr }}</template>
         <el-input
           v-else
           v-model="companyInfo.tenantEngAbbr"
@@ -33,7 +43,8 @@
         ></el-input>
       </el-form-item>
       <el-form-item prop="addr" class="form-item" label="企业地址">
-        <el-select v-model="companyInfo.addr" style="width: 400px" placeholder="请选择省份">
+        <template v-if="!isEdit">{{ computedAddrName }}</template>
+        <el-select v-else v-model="companyInfo.addr" style="width: 400px" placeholder="请选择省份">
           <el-option
             v-for="(item, index) in provinceOptions"
             :key="index"
@@ -43,7 +54,7 @@
         </el-select>
       </el-form-item>
       <el-form-item prop="industryId" class="form-item" label="所属行业">
-        <template v-if="isEdit">{{ computedIndustryName || companyInfo.industryId }}</template>
+        <template v-if="!isEdit">{{ computedIndustryName }}</template>
         <el-select v-else v-model="companyInfo.industryId" style="width: 400px" placeholder="请选择所属行业">
           <el-option
             v-for="(item, index) in industryOptions"
@@ -54,7 +65,9 @@
         </el-select>
       </el-form-item>
       <el-form-item prop="addrDetail" class="form-item" label="详细地址">
+        <template v-if="!isEdit">{{ companyInfo.addrDetail }}</template>
         <el-input
+          v-else
           v-model="companyInfo.addrDetail"
           style="width: 400px"
           placeholder="请输入详细地址"
@@ -62,7 +75,7 @@
         ></el-input>
       </el-form-item>
       <el-form-item prop="natureId" class="form-item" label="企业性质">
-        <template v-if="isEdit">{{ computedNature || companyInfo.natureId }}</template>
+        <template v-if="!isEdit">{{ computedNatureName }}</template>
         <el-select v-else v-model="companyInfo.natureId" style="width: 400px" placeholder="请选择企业性质">
           <el-option
             v-for="(item, index) in natureOptions"
@@ -73,7 +86,9 @@
         </el-select>
       </el-form-item>
       <el-form-item prop="intro" class="form-item" label="公司简介">
+        <template v-if="!isEdit">{{ companyInfo.intro }}</template>
         <el-input
+          v-else
           type="textarea"
           v-model="companyInfo.intro"
           style="width: 400px"
@@ -83,7 +98,7 @@
         ></el-input>
       </el-form-item>
       <el-form-item prop="scaleId" class="form-item" label="企业规模">
-        <template v-if="isEdit">{{ computedScale || companyInfo.scaleId }}</template>
+        <template v-if="!isEdit">{{ computedScaleName }}</template>
         <el-select v-else v-model="companyInfo.scaleId" style="width: 400px" placeholder="请选择企业规模">
           <el-option
             v-for="(item, index) in scaleOptions"
@@ -94,7 +109,7 @@
         </el-select>
       </el-form-item>
       <el-form-item prop="license" label="营业执照号" style="display: block">
-        <template v-if="isEdit">{{ companyInfo.license }}</template>
+        <template v-if="!isEdit">{{ companyInfo.license }}</template>
         <el-input
           v-else
           v-model="companyInfo.license"
@@ -109,9 +124,8 @@
           营业执照
           <i class="el-icon-question info-icon"></i>
         </template>
-        <img v-if="isEdit" :src="licenseUrl" class="avatar" />
         <el-upload
-          v-else
+          v-if="isEdit"
           class="avatar-uploader"
           :action="IMAGE_UPLOAD"
           accept=".jpg, .bmp, .png, jpeg"
@@ -123,6 +137,13 @@
           <img v-if="licenseUrl" :src="licenseUrl" class="avatar" />
           <i v-else class="el-icon-plus avatar-uploader-icon"></i>
         </el-upload>
+        <el-image v-else class="avatar" hide-on-click-modal :src="licenseUrl" :preview-src-list="[licenseUrl]">
+          <template #error>
+            <div class="image-slot">
+              <i class="el-icon-picture-outline"></i>
+            </div>
+          </template>
+        </el-image>
       </el-form-item>
       <el-form-item prop="logoUrl" class="form-item">
         <template v-slot:label>
@@ -130,6 +151,7 @@
           <i class="el-icon-question info-icon"></i>
         </template>
         <el-upload
+          v-if="isEdit"
           class="avatar-uploader"
           :action="IMAGE_UPLOAD"
           accept=".jpg, .bmp, .png, jpeg"
@@ -141,6 +163,13 @@
           <img v-if="logoUrl" :src="logoUrl" class="avatar" />
           <i v-else class="el-icon-plus avatar-uploader-icon"></i>
         </el-upload>
+        <el-image v-else class="avatar" hide-on-click-modal :src="logoUrl" :preview-src-list="[logoUrl]">
+          <template #error>
+            <div class="image-slot">
+              <i class="el-icon-picture-outline"></i>
+            </div>
+          </template>
+        </el-image>
       </el-form-item>
     </el-form>
   </el-row>
@@ -154,11 +183,15 @@ import { SuccessResponse } from '@/types/response';
 import { getImageUrl } from '@/api/files';
 import { validateCompanyName, validateLicense, validateEngAbbr } from '@/api/tenant';
 import CompanyInfoInterface from '../types/company-info-interface';
-const iamgeTypes = ['jpg', 'bmp', 'png', 'jpeg'];
+import { uploadValidate } from '@/utils/validate';
 export default {
   name: 'CompanyInfo',
   props: {
     isEdit: {
+      type: Boolean,
+      default: false,
+    },
+    isCreate: {
       type: Boolean,
       default: false,
     },
@@ -167,7 +200,7 @@ export default {
       default: () => ({}),
     },
   },
-  setup(props: { isEdit: boolean; modelValue: any }) {
+  setup(props: { isEdit: boolean; isCreate: boolean; modelValue: any }) {
     // 组件实例
     const instance = getCurrentInstance();
 
@@ -283,32 +316,28 @@ export default {
 
     // 已选行业展示
     const computedIndustryName = computed(
-      () =>
-        industryOptions.value.filter((item: any) => item.key === companyInfo.value.industryId)[0]?.value ||
-        companyInfo.value.industryId,
+      () => industryOptions.value.filter((item: any) => item.key === companyInfo.value.industryId)[0]?.value || '',
     );
 
     // 省份选项信息
     const provinceOptions = ref([] as any[]);
 
+    const computedAddrName = computed(
+      () => provinceOptions.value.filter((item: any) => String(item.code) === companyInfo.value.addr)[0]?.name || '',
+    );
+
     // 企业性质选项信息
     const natureOptions = ref([] as any[]);
 
-    // 已选企业性质展示
-    const computedNature = computed(
-      () =>
-        natureOptions.value.filter((item: any) => item.key === companyInfo.value.natureId)[0]?.value ||
-        companyInfo.value.natureId,
+    const computedNatureName = computed(
+      () => natureOptions.value.filter((item: any) => item.key === companyInfo.value.natureId)[0]?.value || '',
     );
 
     // 企业规模选项信息
     const scaleOptions = ref([] as any[]);
 
-    // 已选企业规模展示
-    const computedScale = computed(
-      () =>
-        scaleOptions.value.filter((item: any) => item.key === companyInfo.value.scaleId)[0]?.value ||
-        companyInfo.value.scaleId,
+    const computedScaleName = computed(
+      () => scaleOptions.value.filter((item: any) => item.key === companyInfo.value.scaleId)[0]?.value || '',
     );
 
     // 获取企业所有配置相关信息
@@ -321,20 +350,7 @@ export default {
 
     // 图片上传大小校验
     const beforeUpload = (file: { size: number; name: string }) => {
-      if (iamgeTypes.indexOf(file.name.split('.')[1]) === -1) {
-        (instance as any).proxy.$message({
-          type: 'warning',
-          message: '图片格式错误，仅支持bmp,jpg,png,jpeg格式图片',
-        });
-        return false;
-      }
-      if (file.size > 1024 * 1024 * 3) {
-        (instance as any).proxy.$message({
-          type: 'warning',
-          message: '上传图片大小不能超过 3Mb',
-        });
-        return false;
-      }
+      uploadValidate(instance, file);
     };
 
     // 企业执照上传成功回调
@@ -423,10 +439,11 @@ export default {
       industryOptions,
       computedIndustryName,
       provinceOptions,
+      computedAddrName,
       natureOptions,
-      computedNature,
+      computedNatureName,
       scaleOptions,
-      computedScale,
+      computedScaleName,
       beforeUpload,
       licenseUploadSuccess,
       logoUploadSuccess,
@@ -440,6 +457,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.companyInfo-form {
+  width: 100%;
+}
 .info-icon {
   &:hover {
     &::after {
