@@ -21,3 +21,5 @@ export const STATUS: any = {
   2: '审核不通过',
   // 3: '已发布',
 };
+
+export const getModuleType = (type: number) => MODULE_TYPE[type];

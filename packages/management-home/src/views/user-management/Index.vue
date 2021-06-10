@@ -165,7 +165,7 @@ export default defineComponent({
     });
     const tenantDetail = ref({} as any);
     const getDetail = async () => {
-      const { data } = await getTenantDetail(userInfo.value.tenantId);
+      const { data } = await getTenantDetail();
       tenantDetail.value = data;
       console.log(data);
     };
