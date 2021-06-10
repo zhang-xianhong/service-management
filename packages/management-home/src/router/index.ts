@@ -275,6 +275,20 @@ const routes: Array<RouteRecordRaw> = [
           id: 23,
         },
       },
+      {
+        path: 'application-detail',
+        component: () =>
+          import(/* webpackChunkName: "classification" */ '@/views/application-management/IframeDiv.vue'),
+        name: 'ApplicationDetail',
+        meta: {
+          title: '应用详情',
+          icon: 'el-icon-eleme',
+          isRootLevel: false,
+          id: 23,
+          hidden: true,
+          activeMenu: '/application/application-list',
+        },
+      },
     ],
   },
   {
