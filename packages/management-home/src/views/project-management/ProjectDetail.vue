@@ -223,7 +223,7 @@ export default {
           roleId: rowId,
           ids: [row.id],
         });
-        if (code === 0) reloadUserList({ id: userTreeRef.value.getCurrentKey() });
+        if (code === 0) reloadUserList({ id: rowId });
       });
     };
     // 初始化项目信息

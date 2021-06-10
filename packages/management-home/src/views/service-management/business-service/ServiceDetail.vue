@@ -421,7 +421,7 @@ export default {
           isShowDownDrawer.value = false;
         } else {
           const { data } = await getModelDetail(model.id);
-          componentName.value = 'ModelBaseInfo';
+          // componentName.value = 'ModelBaseInfo';
           modelInfo.value = { ...data, fields: model.fields };
           isShowDownDrawer.value = true;
           drawerName.value = 'ModelFieldForm';
