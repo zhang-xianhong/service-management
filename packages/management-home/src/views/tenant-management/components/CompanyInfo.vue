@@ -61,11 +61,34 @@
       </el-form-item>
       <el-form-item prop="licenseUrl" class="form-item" required>
         <template v-slot:label>营业执照<i class="el-icon-question info-icon"></i></template>
-        <img :src="companyInfo.sourceUrl?.licenseUrl" class="avatar" />
+        <el-image
+          class="avatar"
+          hide-on-click-modal
+          :src="companyInfo.sourceUrl?.licenseUrl"
+          :preview-src-list="[companyInfo.sourceUrl?.licenseUrl]"
+        >
+          <template #error>
+            <div class="image-slot">
+              <i class="el-icon-picture-outline"></i>
+            </div>
+          </template>
+        </el-image>
       </el-form-item>
       <el-form-item prop="logoUrl" class="form-item">
         <template v-slot:label>企业LOGO<i class="el-icon-question info-icon"></i></template>
-        <img v-if="companyInfo.sourceUrl?.logoUrl" :src="companyInfo.sourceUrl.logoUrl" class="avatar" />
+        <el-image
+          v-if="companyInfo.sourceUrl?.logoUrl"
+          class="avatar"
+          hide-on-click-modal
+          :src="companyInfo.sourceUrl?.logoUrl"
+          :preview-src-list="[companyInfo.sourceUrl?.logoUrl]"
+        >
+          <template #error>
+            <div class="image-slot">
+              <i class="el-icon-picture-outline"></i>
+            </div>
+          </template>
+        </el-image>
         <el-upload
           v-else
           class="avatar-uploader"

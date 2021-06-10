@@ -1,5 +1,5 @@
 <template>
-  <el-row style="font-weight: bolder">企业联系人信息</el-row>
+  <el-row class="tenant-title">企业联系人信息</el-row>
   <el-row>
     <el-form
       ref="formRef"
@@ -11,7 +11,7 @@
       label-position="left"
     >
       <el-form-item prop="name" class="form-item" label="联系人姓名">
-        <template v-if="isEdit">{{ userInfo.name }}</template>
+        <template v-if="!isEdit">{{ userInfo.name }}</template>
         <el-input
           v-else
           v-model="userInfo.name"
@@ -21,21 +21,20 @@
         ></el-input>
       </el-form-item>
       <el-form-item prop="phone" class="form-item" label="联系人电话">
-        <template v-if="isEdit">{{ userInfo.phone }}</template>
+        <template v-if="!isEdit">{{ userInfo.phone }}</template>
         <el-input v-else v-model="userInfo.phone" style="width: 400px" placeholder="请输入联系人电话"></el-input>
       </el-form-item>
       <el-form-item prop="IDCard" class="form-item" label="联系人身份证号">
-        <template v-if="isEdit">{{ userInfo.IDCard }}</template>
+        <template v-if="!isEdit">{{ userInfo.IDCard }}</template>
         <el-input v-else v-model="userInfo.IDCard" style="width: 400px" placeholder="请输入联系人身份证号"></el-input>
       </el-form-item>
       <el-form-item prop="email" class="form-item" label="联系人邮箱">
-        <template v-if="isEdit">{{ userInfo.email }}</template>
+        <template v-if="!isEdit">{{ userInfo.email }}</template>
         <el-input v-else v-model="userInfo.email" style="width: 400px" placeholder="请输入联系人邮箱"></el-input>
       </el-form-item>
       <el-form-item prop="frontPhoto" class="form-item" label="身份证正面">
-        <img v-if="isEdit" :src="frontPhoto" class="avatar" />
         <el-upload
-          v-else
+          v-if="isEdit"
           class="avatar-uploader"
           :action="IMAGE_UPLOAD"
           accept=".jpg, .bmp, .png, jpeg"
@@ -46,11 +45,17 @@
           <img v-if="frontPhoto" :src="frontPhoto" class="avatar" />
           <i v-else class="el-icon-plus avatar-uploader-icon"></i>
         </el-upload>
+        <el-image v-else class="avatar" hide-on-click-modal :src="frontPhoto" :preview-src-list="[frontPhoto]">
+          <template #error>
+            <div class="image-slot">
+              <i class="el-icon-picture-outline"></i>
+            </div>
+          </template>
+        </el-image>
       </el-form-item>
       <el-form-item prop="reversePhoto" class="form-item" label="身份证反面">
-        <img v-if="isEdit" :src="reversePhoto" class="avatar" />
         <el-upload
-          v-else
+          v-if="isEdit"
           class="avatar-uploader"
           :action="IMAGE_UPLOAD"
           accept=".jpg, .bmp, .png, jpeg"
@@ -61,6 +66,13 @@
           <img v-if="reversePhoto" :src="reversePhoto" class="avatar" />
           <i v-else class="el-icon-plus avatar-uploader-icon"></i>
         </el-upload>
+        <el-image v-else class="avatar" hide-on-click-modal :src="reversePhoto" :preview-src-list="[reversePhoto]">
+          <template #error>
+            <div class="image-slot">
+              <i class="el-icon-picture-outline"></i>
+            </div>
+          </template>
+        </el-image>
       </el-form-item>
     </el-form>
   </el-row>
@@ -80,12 +92,16 @@ export default {
       type: Boolean,
       default: false,
     },
+    isCreate: {
+      type: Boolean,
+      default: false,
+    },
     modelValue: {
       type: Object,
       default: () => ({}),
     },
   },
-  setup(props: { isEdit: boolean; modelValue: any }) {
+  setup(props: { isEdit: boolean; isCreate: boolean; modelValue: any }) {
     // 组件实例
     const instance = getCurrentInstance();
 
