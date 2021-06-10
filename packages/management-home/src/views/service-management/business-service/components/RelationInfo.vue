@@ -1,5 +1,5 @@
 <template>
-  <div class="baseinfo-container">
+  <div class="baseinfo-container" v-if="showOrNot">
     <div class="baseinfo-title">基本信息</div>
     <el-form :model="formData" label-width="120px" label-position="left" style="height: 87%; overflow: auto">
       <el-form-item label="数据对象">
@@ -55,18 +55,18 @@ export default defineComponent({
         afterUpdate();
       }
     };
+    const showOrNot = ref(true);
     watch(
       () => props.data,
       (nn: any) => {
         console.log(nn, 'this is inline');
-        formData.value.model = nn.model;
-        formData.value.relationModel = nn.relationModel;
       },
     );
     return {
       formData,
       relationChange,
       remove,
+      showOrNot,
     };
   },
 });

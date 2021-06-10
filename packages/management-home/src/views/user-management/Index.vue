@@ -102,14 +102,16 @@ export default defineComponent({
     };
     const formRef = ref(null as any);
     const sendPass = () => {
-      formRef.value.validate((valid: boolean) => {
-        if (valid) {
-          updateUserPassword({ ...passForm }).then((res) => {
-            dialogFormVisible.value = false;
-            console.log(res);
-          });
-        }
+      let viva = true;
+      formRef.value.validate((res: any) => {
+        viva = res;
       });
+      if (viva) {
+        updateUserPassword({ ...passForm }).then((res) => {
+          dialogFormVisible.value = false;
+          console.log(res);
+        });
+      }
     };
     // 初始密码校验
     const validatePass = (rule: any, value: string, callback: Function) => {

@@ -54,7 +54,7 @@
         <template #default="scope">
           <template v-if="!scope.row.isSystem">
             <a class="operation-link" @click="openParamsModel(scope.$index, scope.row)">参数</a>
-            <a class="operation-link" @click="addItem(scope.$index)">添加</a>
+            <a class="operation-link" @click="addItem(scope.$index)" v-if="scope.$index === 0">添加</a>
             <a class="operation-link" @click="deleteItem(scope.$index, scope.row)">删除</a>
           </template>
         </template>
@@ -201,7 +201,7 @@ export default defineComponent({
 
     // 添加属性
     const addItem = (index: number) => {
-      tableData.value.splice(index, 0, {
+      tableData.value.splice(index + 1, 0, {
         name: '',
         method: '',
         url: '',

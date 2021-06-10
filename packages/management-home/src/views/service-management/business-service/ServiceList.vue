@@ -24,7 +24,7 @@
       </div>
       <div class="service-list_right">
         <el-input
-          placeholder="请输入服务名称/标签/分类"
+          placeholder="请输入服务名称"
           style="width: 500px"
           v-model="pageInfo.keyword"
           suffix-icon="el-icon-search"

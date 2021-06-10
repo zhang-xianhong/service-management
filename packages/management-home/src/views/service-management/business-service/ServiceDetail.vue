@@ -107,6 +107,7 @@
                   :tags="tags"
                   :classifications="classifications"
                   :id="currentServiceId"
+                  v-if="reloadCom"
                 ></component>
               </keep-alive>
             </template>
@@ -437,11 +438,16 @@ export default {
       componentName.value === 'ServerBaseInfo' ? serverInfo.value : modelInfo.value,
     );
 
+    const { proxy } = getCurrentInstance() as any;
+    const reloadCom = ref(true);
     watch(modelInfo, (nn: any) => {
       console.log(nn, 'this is nn');
+      reloadCom.value = false;
+      proxy.$nextTick(() => {
+        reloadCom.value = true;
+      });
     });
 
-    const { proxy } = getCurrentInstance() as any;
     // 切换服务
     const selectService = (value: number) => {
       currentServiceId.value = value;
@@ -525,6 +531,7 @@ export default {
       sqlLoadings,
       getShowBool,
       pageLoading,
+      reloadCom,
     };
   },
 };
