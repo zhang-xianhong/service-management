@@ -9,12 +9,12 @@ export function checkMail(szMail: string): boolean {
 }
 // 中文姓名校验2-16字以上
 export function checkZNName(name: string): boolean {
-  const szReg = /[\u4e00-\u9fa5]{2,16}/;
+  const szReg = /[\u4e00-\u9fa5]{2,64}/;
   return szReg.test(name);
 }
 // 英文名称校验2个字符以上
 export function checkEnName(name: string): boolean {
-  const szReg = /[A-Za-z\d]{2,}/;
+  const szReg = /^[A-Za-z]{2,64}$/;
   return szReg.test(name);
 }
 // 手机号校验

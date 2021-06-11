@@ -54,7 +54,7 @@
         <template #default="scope">
           <template v-if="!scope.row.isSystem">
             <a class="operation-link" @click="openParamsModel(scope.$index, scope.row)">参数</a>
-            <a class="operation-link" @click="addItem(scope.$index)">添加</a>
+            <a class="operation-link" @click="addItem(scope.$index)" v-if="scope.$index === 0">添加</a>
             <a class="operation-link" @click="deleteItem(scope.$index, scope.row)">删除</a>
           </template>
         </template>
@@ -77,9 +77,24 @@
     </el-row>
     <el-row>
       <el-button-group>
-        <el-button @click="dialogState.paramType = ParamTypeEnum.REQUEST_PARAM">params</el-button>
-        <el-button @click="dialogState.paramType = ParamTypeEnum.PATH_VARIABLE">query</el-button>
-        <el-button v-if="dialogState.method === 1" @click="dialogState.paramType = ParamTypeEnum.REQUEST_BODY">
+        <el-button
+          @click="dialogState.paramType = ParamTypeEnum.REQUEST_PARAM"
+          plain
+          :type="dialogState.paramType === 0 ? 'primary' : 'info'"
+          >params</el-button
+        >
+        <el-button
+          @click="dialogState.paramType = ParamTypeEnum.PATH_VARIABLE"
+          plain
+          :type="dialogState.paramType === 2 ? 'primary' : 'info'"
+          >query</el-button
+        >
+        <el-button
+          v-if="dialogState.method == 1"
+          @click="dialogState.paramType = ParamTypeEnum.REQUEST_BODY"
+          plain
+          :type="dialogState.paramType === 1 ? 'primary' : 'info'"
+        >
           body
         </el-button>
       </el-button-group>
@@ -128,8 +143,9 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, reactive, watch, getCurrentInstance, SetupContext } from 'vue';
+import { defineComponent, ref, reactive, watch, getCurrentInstance, SetupContext, computed } from 'vue';
 import { getServiceApis, updateServiceApis } from '@/api/servers';
+import _ from 'lodash';
 
 // 参数类型枚举
 enum ParamTypeEnum {
@@ -201,7 +217,7 @@ export default defineComponent({
 
     // 添加属性
     const addItem = (index: number) => {
-      tableData.value.splice(index, 0, {
+      tableData.value.splice(index + 1, 0, {
         name: '',
         method: '',
         url: '',
@@ -238,13 +254,22 @@ export default defineComponent({
     // 参数列表表格数据
     const computedParams = ref([] as any[]);
 
+    const currentParams = computed(() =>
+      computedParams.value.filter((x: any) => x.paramType === dialogState.paramType),
+    );
+
+    const updateParamsData = () => {
+      dialogState.params = _.unionBy([...dialogState.params, ...computedParams.value], 'name');
+      const result = dialogState.params.filter((item: any) => item.paramType === dialogState.paramType);
+      result.push({ name: '', paramType: dialogState.paramType, required: '', type: '' });
+      computedParams.value = _.unionBy(result, 'name');
+    };
     // 监听参数类型变化切换参数列表数据
     watch(
       () => dialogState.paramType,
       () => {
-        const result = dialogState.params.filter((item: any) => item.paramType === dialogState.paramType);
-        result.push({ name: '', paramType: dialogState.paramType, required: '', type: '' });
-        computedParams.value = result;
+        updateParamsData();
+        console.log(dialogState.paramType);
       },
       {
         immediate: true,
@@ -260,6 +285,8 @@ export default defineComponent({
       dialogState.url = rowData.url;
       dialogState.type = rowData.type;
       dialogState.params = rowData.params || [];
+      computedParams.value = rowData.params.filter((x: any) => x.paramType === 0);
+      computedParams.value.push({ name: '', paramType: 0, required: '', type: '' });
     };
 
     // 添加参数
@@ -280,12 +307,14 @@ export default defineComponent({
 
     // 参数配置修改
     const handleParamsModify = () => {
-      const params = computedParams.value
+      updateParamsData();
+      const params = dialogState.params
         .map((param: any, index: number) => ({
           ...param,
           ...{ paramOrder: index, description: '' },
         }))
         .filter((item: any) => item.name !== '');
+      console.log(params, 'this is params');
       tableData.value[currentItemIndex.value].params = params;
       dialogVisible.value = false;
     };
@@ -337,6 +366,7 @@ export default defineComponent({
       cancelChange,
       dataTypeOptions,
       tableRowClassName,
+      currentParams,
     };
   },
 });
