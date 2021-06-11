@@ -20,7 +20,11 @@
           <el-input v-model.trim="formData.displayName" :disabled="disable" placeholder="请输入中文姓名"></el-input>
         </el-form-item>
         <el-form-item label="手机" prop="phoneNumber" :label-width="labelWidth">
-          <el-input v-model.trim="formData.phoneNumber" :disabled="disable" placeholder="请输入中国大陆手机号">
+          <el-input
+            v-model.trim="formData.phoneNumber"
+            :disabled="disable"
+            placeholder="请输入中国大陆手机号"
+          >
             <template #prepend>+86</template>
           </el-input>
         </el-form-item>
@@ -166,7 +170,7 @@ export default defineComponent({
     // 中文姓名校验
     const validatorZNNamePass = (rule: any, value: string, callback: Function) => {
       if (!checkZNName(value)) {
-        callback(new Error('请输入长度至少2个最大16个字的中文格式名称'));
+        callback(new Error('请输入长度为2-64个中文格式名称'));
       }
       callback();
     };
@@ -178,7 +182,7 @@ export default defineComponent({
         callback();
       }
       if (!checkEnName(value)) {
-        callback(new Error('请输入长度至少2个英文字母的账户名称'));
+        callback(new Error('请输入长度为2-64个英文字母的账户名称'));
       }
       // 继续后台校验
       const { code, data } = await checkUserInfo({
