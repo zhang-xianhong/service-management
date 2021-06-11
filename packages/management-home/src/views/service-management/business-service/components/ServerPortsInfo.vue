@@ -21,9 +21,9 @@
           <template v-else>{{ getMethodName(scope.row.method) }}</template>
         </template>
       </el-table-column>
-      <el-table-column label="数据模型" prop="modelId">
+      <el-table-column label="数据对象" prop="modelId">
         <template #default="scope">
-          <el-select v-if="!scope.row.isSystem" v-model="scope.row.modelId" placeholder="请选择数据模型">
+          <el-select v-if="!scope.row.isSystem" v-model="scope.row.modelId" placeholder="请选择数据对象">
             <el-option
               v-for="(model, index) in modelList"
               :key="index"
