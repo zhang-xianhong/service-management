@@ -306,6 +306,7 @@ export default defineComponent({
               type: parseInt(configForm.formData.type, 10),
             });
             if (code === 0) {
+              ElMessage.success('编辑配置成功');
               getTableData();
             } else {
               (instance as any).proxy.$message({

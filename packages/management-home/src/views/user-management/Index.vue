@@ -80,6 +80,9 @@ export default defineComponent({
       if (!userSetInfo[prop]) {
         return ElMessage.error(`${labels[id]} 不得为空！`);
       }
+      if (userSetInfo.displayName.length > 20) {
+        return ElMessage.warning('用户姓名不能超过20个字符');
+      }
       const item = {} as any;
       item[prop] = userSetInfo[prop];
       updateUserProfile(item).then((res) => {
@@ -102,14 +105,16 @@ export default defineComponent({
     };
     const formRef = ref(null as any);
     const sendPass = () => {
-      formRef.value.validate((valid: boolean) => {
-        if (valid) {
-          updateUserPassword({ ...passForm }).then((res) => {
-            dialogFormVisible.value = false;
-            console.log(res);
-          });
-        }
+      let viva = true;
+      formRef.value.validate((res: any) => {
+        viva = res;
       });
+      if (viva) {
+        updateUserPassword({ ...passForm }).then((res) => {
+          dialogFormVisible.value = false;
+          console.log(res);
+        });
+      }
     };
     // 初始密码校验
     const validatePass = (rule: any, value: string, callback: Function) => {

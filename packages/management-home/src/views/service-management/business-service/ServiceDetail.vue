@@ -69,7 +69,7 @@
           <el-col :span="componentName ? 20 : 24" style="height: 100%">
             <el-row>
               <!-- 服务下拉选择框 -->
-              <el-select v-model="currentServiceId" placeholder="请选择" @change="selectService">
+              <el-select v-model="currentServiceId" placeholder="请选择" @change="selectService" style="width: 200px">
                 <el-option
                   v-for="server in serverList"
                   :key="server.id"
@@ -107,6 +107,7 @@
                   :tags="tags"
                   :classifications="classifications"
                   :id="currentServiceId"
+                  v-if="reloadCom"
                 ></component>
               </keep-alive>
             </template>
@@ -437,11 +438,17 @@ export default {
       componentName.value === 'ServerBaseInfo' ? serverInfo.value : modelInfo.value,
     );
 
+    const { proxy } = getCurrentInstance() as any;
+    const reloadCom = ref(true);
     watch(modelInfo, (nn: any) => {
       console.log(nn, 'this is nn');
+      reloadCom.value = false;
+      proxy.$nextTick(() => {
+        reloadCom.value = true;
+      });
+      proxy.$forceUpdate();
     });
 
-    const { proxy } = getCurrentInstance() as any;
     // 切换服务
     const selectService = (value: number) => {
       currentServiceId.value = value;
@@ -525,6 +532,7 @@ export default {
       sqlLoadings,
       getShowBool,
       pageLoading,
+      reloadCom,
     };
   },
 };
