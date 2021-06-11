@@ -14,7 +14,7 @@ export function checkZNName(name: string): boolean {
 }
 // 英文名称校验2个字符以上
 export function checkEnName(name: string): boolean {
-  const szReg = /[A-Za-z\d]{2,}/;
+  const szReg = /^[A-Za-z]{2,64}$/;
   return szReg.test(name);
 }
 // 手机号校验
