@@ -23,7 +23,7 @@
       @mousedown.stop="drawRelationStart($event, index)"
     ></div>
     <div class="operations">
-      <i class="el-icon-circle-close" @click.stop="removeModel(table)" v-if="serverInfo.initTimes"></i>
+      <i class="el-icon-circle-close" @click.stop="removeModel(table)" v-if="!serverInfo.initTimes"></i>
       <!--      <i class="el-icon-link"></i>-->
     </div>
   </div>

@@ -69,7 +69,7 @@
           <el-col :span="componentName ? 20 : 24" style="height: 100%">
             <el-row>
               <!-- 服务下拉选择框 -->
-              <el-select v-model="currentServiceId" placeholder="请选择" @change="selectService">
+              <el-select v-model="currentServiceId" placeholder="请选择" @change="selectService" style="width: 200px">
                 <el-option
                   v-for="server in serverList"
                   :key="server.id"
