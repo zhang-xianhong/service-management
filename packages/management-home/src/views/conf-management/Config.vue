@@ -182,7 +182,7 @@ export default defineComponent({
         keyword: '',
         page: 1,
         pageSize: 10,
-        sortField: 'createTime',
+        sortField: '',
         sortType: 'descending',
       },
     });
@@ -354,10 +354,13 @@ export default defineComponent({
 
     // 变更历史
     const changeHistory = async (rowData: any) => {
-      const { code, data } = await getHistory(rowData.id);
+      const searchProps = {
+        page: 1,
+        pageSize: 20,
+      };
+      const { code, data } = await getHistory(rowData.id, searchProps);
       if (code === 0) {
         tableState.historyData = data.rows || [];
-        console.log('data.rows', data.rows);
         changeHistoryDialog.value = true;
       } else {
         (instance as any).proxy.$message({

@@ -11,4 +11,7 @@ export default {
   VALIDATE_LICENSE: ['/tenants/license/usable', 'mock/services/validate.json'],
   VALIDATE_ENGABBR: ['/tenants/engAbbr/usable', 'mock/services/validate.json'],
   VALIDATE_ACCOUNT: ['/tenants/account/usable', 'mock/services/validate.json'],
+  UPDATE_TENANT_PASSWD: ['/users/update/password', '/mock/services/delete.json'],
+  SEND_MAIL_FOR_RESET_PASSWORD: ['/users/send/email', '/mock/services/delete.json'],
+  VERIFY_CODE_VALID_FOR_RESET_PASSWORD: ['/users/verify/password/code', '/mock/services/delete.json'],
 };

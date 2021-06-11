@@ -188,7 +188,11 @@ export default {
 
     // 打开变更历史弹窗
     const openHistoryDialog = async (rowData: any) => {
-      const { data } = await getHistory(rowData.id);
+      const searchProps = {
+        page: 1,
+        pageSize: 20,
+      };
+      const { data } = await getHistory(rowData.id, searchProps);
       state.historyInfo = data.rows;
       state.isOpenHistoryDialog = true;
     };

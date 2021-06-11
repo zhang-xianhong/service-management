@@ -3,6 +3,16 @@
     <router-view />
   </div>
 </template>
+<script lang="ts">
+import { defineComponent } from 'vue';
+import { getUser } from '@/shared/userinfo';
+
+export default defineComponent({
+  setup() {
+    getUser();
+  },
+});
+</script>
 
 <style lang="scss">
 * {
