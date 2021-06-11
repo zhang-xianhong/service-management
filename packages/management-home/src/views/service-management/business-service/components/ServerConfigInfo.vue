@@ -73,10 +73,10 @@
         </el-select>
         <template v-else>{{ detailInfo.type === 0 ? '应用类型' : '系统类型' }}</template>
       </el-form-item>
-      <el-form-item label="配置描述" prop="description">
-        <el-input v-if="isEditable"></el-input>
-        <template v-else>{{ detailInfo.description }}</template>
-      </el-form-item>
+      <!--      <el-form-item label="配置描述" prop="description">-->
+      <!--        <el-input v-if="isEditable"></el-input>-->
+      <!--        <template v-else>{{ detailInfo.description }}</template>-->
+      <!--      </el-form-item>-->
       <el-form-item>
         <template v-if="isEditable">
           <el-button @click="submitDetailModify" type="primary">提交</el-button>

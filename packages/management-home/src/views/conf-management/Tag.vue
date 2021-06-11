@@ -17,7 +17,7 @@
     </el-row>
     <el-row style="background: #fff">
       <el-table :data="tagList" @selection-change="handleSelectionChange" @sort-change="sortChange" v-loading="loading">
-        <el-table-column type="selection" width="45" />
+        <el-table-column type="selection" width="45" v-if="getShowBool('delete')" />
         <el-table-column type="index" label="序号" width="50" />
         <el-table-column
           v-for="col in columns"
@@ -31,7 +31,7 @@
             <!-- <el-button type="primary" @click="detail(row)" size="mini">详情</el-button> -->
             <!--            <el-button type="primary" @click="disabled(row)" size="mini" v-if="getShowBool('update')">禁用</el-button>-->
             <!-- <el-button type="primary" @click="enabled(row)" size="mini">启用</el-button> -->
-            <el-button type="primary" @click="rename(row)" size="mini" v-if="getShowBool('update')">修改</el-button>
+            <el-button type="primary" @click="rename(row)" size="mini" v-if="getShowBool('update')">编辑</el-button>
             <el-button @click="groupRemove([row.id])" v-if="getShowBool('delete')">删除</el-button>
           </template>
         </el-table-column>
@@ -51,11 +51,14 @@
       <el-form :model="form" :rules="rules" ref="formRef">
         <el-form-item
           label="标签名称"
-          :label-width="80"
+          label-width="80px"
           prop="name"
-          :rules="[{ min: 1, max: 25, message: '内容过长，最多不能超过25个字符', trigger: 'blur' }]"
+          :rules="[
+            { required: true, message: '内容不能为空', trigger: 'blur' },
+            { min: 1, max: 25, message: '内容过长，最多不能超过25个字符', trigger: 'blur' },
+          ]"
         >
-          <el-input v-model="form.name" autocomplete="off"></el-input>
+          <el-input v-model="form.name" autocomplete="off" ref="tagName"></el-input>
         </el-form-item>
       </el-form>
       <template #footer>
@@ -206,6 +209,7 @@ export default defineComponent({
 
     // 编辑弹窗
     const formRef: any = ref(null);
+    const tagName = ref(null as any);
     const dialogVisible = ref(false);
     const dialogTitle = ref('');
     const form = ref({
@@ -218,7 +222,7 @@ export default defineComponent({
     const rename = (row: any) => {
       form.value.name = row.name;
       dialogVisible.value = true;
-      dialogTitle.value = '修改标签';
+      dialogTitle.value = '编辑标签';
       id = row.id;
     };
     const add = () => {
@@ -227,8 +231,9 @@ export default defineComponent({
       dialogTitle.value = '新增标签';
     };
     const save = () => {
-      if (form.value.name.length > 25) {
-        return false;
+      tagName.value.handleBlur();
+      if (form.value.name.length > 25 || form.value.name.length < 1) {
+        return;
       }
       formRef.value.validate(async (isValid: boolean) => {
         if (isValid) {
@@ -240,6 +245,7 @@ export default defineComponent({
           loading.value = false;
           if (code === 0) {
             dialogVisible.value = false;
+            dialogTitle.value === '新增标签' ? ElMessage.success('新增标签成功') : ElMessage.success('编辑标签成功');
             getTagList();
           }
         }
@@ -247,6 +253,7 @@ export default defineComponent({
     };
     const cancel = () => {
       dialogVisible.value = false;
+      formRef.value.resetFields();
     };
 
     onMounted(getTagList);
@@ -272,6 +279,7 @@ export default defineComponent({
       save,
       cancel,
       formRef,
+      tagName,
       loading,
       sortChange,
       disabled,

@@ -190,6 +190,7 @@ import {
   clearSql,
   getTreaceId,
   thenRefresh,
+  serverInfo,
 } from './utils/service-detail-data';
 import _ from 'lodash/fp';
 import {
@@ -245,7 +246,6 @@ export default {
     getServerList();
 
     // 服务详情信息
-    const serverInfo = ref({} as any);
 
     // erd图组件参数构造
     provide('serviceId', currentServiceId.value);
@@ -278,14 +278,15 @@ export default {
       tables.forEach((table: any, index: number) => {
         const tablePosition = serverInfo.value?.config?.coordinate[table.id];
         const oldTablePosition = modelList.value.tables[index]?.position;
-        if (oldTablePosition || tablePosition) {
+        if ((oldTablePosition && !oldTablePosition.temp) || (tablePosition && !tablePosition.temp)) {
           // eslint-disable-next-line no-param-reassign
           table.position = oldTablePosition || tablePosition;
         } else {
           // eslint-disable-next-line no-param-reassign
           table.position = {
-            x: 200 + offset * 10,
-            y: 20 + offset * 10,
+            x: 200 + offset * 20,
+            y: 20 + offset * 20,
+            temp: true,
           };
           offset += 1;
         }
@@ -360,7 +361,7 @@ export default {
         label: (statusmaps as any)[status],
         color: (statusColor as any)[status],
       };
-      if (+status === 20 || +status === 30) {
+      if (+status === 30) {
         updateServiceStatus([id]);
       }
     });
@@ -420,7 +421,7 @@ export default {
           isShowDownDrawer.value = false;
         } else {
           const { data } = await getModelDetail(model.id);
-          componentName.value = 'ModelBaseInfo';
+          // componentName.value = 'ModelBaseInfo';
           modelInfo.value = { ...data, fields: model.fields };
           isShowDownDrawer.value = true;
           drawerName.value = 'ModelFieldForm';
@@ -435,6 +436,10 @@ export default {
     const computedComponentData = computed(() =>
       componentName.value === 'ServerBaseInfo' ? serverInfo.value : modelInfo.value,
     );
+
+    watch(modelInfo, (nn: any) => {
+      console.log(nn, 'this is nn');
+    });
 
     const { proxy } = getCurrentInstance() as any;
     // 切换服务

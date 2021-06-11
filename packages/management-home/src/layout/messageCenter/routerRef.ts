@@ -34,7 +34,7 @@ export const getPermissionRoutes = function(config = getComputedRoutes() as any)
   config.forEach((item: any) => {
     let obj = Object.assign({}, item);
     // 存在meta和permission属性
-    if (item.meta && item.meta.id) {
+    if (item?.meta?.id) {
       // 有权限
       // TODO 权限校验规则待定
       // eslint-disable-next-line no-constant-condition

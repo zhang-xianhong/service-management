@@ -1,7 +1,11 @@
 <template>
   <el-dialog :title="isEditable ? '编辑应用' : '应用基本信息'" v-model="isVisable" width="500px">
     <el-form :model="detailInfo" label-width="120px" label-position="left">
-      <el-form-item label="应用中文名称" prop="description">
+      <el-form-item
+        label="应用中文名称"
+        prop="description"
+        :rules="[{ required: true, message: '内容不能为空', trigger: 'blur' }]"
+      >
         <el-input v-if="isEditable" v-model="detailInfo.description" placeholder="请输入中文名称"></el-input>
         <template v-else>{{ detailInfo.description }}</template>
       </el-form-item>
@@ -130,6 +134,10 @@ export default defineComponent({
     };
 
     const updateAppDetail = async () => {
+      const descriptionLength = detailInfo.value.description.length;
+      if (descriptionLength < 3 || descriptionLength > 20) {
+        return false;
+      }
       const { code } = await updateAppById(detailInfo.value.id, {
         ...detailInfo.value,
         ...{ services: serviceIds.value },

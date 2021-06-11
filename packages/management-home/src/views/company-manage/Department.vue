@@ -155,7 +155,7 @@
 <script lang="ts">
 import { defineComponent, reactive, toRefs, ref, Ref, getCurrentInstance, watchEffect, nextTick } from 'vue';
 import _ from 'lodash/fp';
-import { getTenentDepartment, createDept, delDept, delUser, updateDept } from '@/api/company/dept';
+import { getTenantDepartment, createDept, delDept, delUser, updateDept } from '@/api/company/dept';
 import { getUserList } from '@/api/company/users';
 import TreeSelector from './components/TreeSelector.vue';
 import { ElMessageBox, ElMessage } from 'element-plus';
@@ -261,7 +261,7 @@ export default defineComponent({
     // 获取部门数据
     const initDepartments = async () => {
       treeData.loading = true;
-      const { code, data } = await getTenentDepartment({ deptId: 0, level: 9 });
+      const { code, data } = await getTenantDepartment({ deptId: 0, level: 9 });
       if (code === 0) {
         const deptTree = [
           {
@@ -388,7 +388,7 @@ export default defineComponent({
     const handleDel = () => {
       if (treeData.currentNodeData._children) {
         if (treeData.currentNodeData._children.length) {
-          msgTips('warning', '该部门下有人员，无法删除！');
+          msgTips('warning', '该部门下不为空，无法删除！');
           return;
         }
         // 判断部门中是否有人员
@@ -622,11 +622,13 @@ export default defineComponent({
     // 页面size改变
     const handlePageSizeChange = (data: any) => {
       const { page } = tableData.searchProps;
+      tableData.searchProps.pageSize = data;
       getCurrentTableData(treeData.currentNodeUsers, page, data);
     };
     // 页面改变
     const handlePageChange = (data: any) => {
       const { pageSize } = tableData.searchProps;
+      tableData.searchProps.page = data;
       getCurrentTableData(treeData.currentNodeUsers, data, pageSize);
     };
 

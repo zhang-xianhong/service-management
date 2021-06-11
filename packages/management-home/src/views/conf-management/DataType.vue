@@ -21,7 +21,7 @@
       @selection-change="handleSelectionChange"
       @sort-change="sortChange"
     >
-      <el-table-column type="selection" width="45" />
+      <el-table-column type="selection" width="45" v-if="getShowBool('delete')" />
       <el-table-column type="index" label="序号" width="50" />
       <el-table-column label="类型名称" prop="name" sortable></el-table-column>
       <el-table-column label="描述" prop="description" sortable></el-table-column>
@@ -130,28 +130,21 @@ export default {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning',
-      })
-        .then(async () => {
-          const { code }: any = await deleteDataType({ ids: [rowData.id] });
-          if (code === 0) {
-            (instance as any).proxy.$message({
-              type: 'success',
-              message: '删除成功',
-            });
-            getTableData();
-          } else {
-            (instance as any).proxy.$message({
-              type: 'error',
-              message: '删除失败',
-            });
-          }
-        })
-        .catch(() => {
-          ElMessage({
-            type: 'info',
-            message: '已取消操作',
+      }).then(async () => {
+        const { code }: any = await deleteDataType({ ids: [rowData.id] });
+        if (code === 0) {
+          (instance as any).proxy.$message({
+            type: 'success',
+            message: '删除成功',
           });
-        });
+          getTableData();
+        } else {
+          (instance as any).proxy.$message({
+            type: 'error',
+            message: '删除失败',
+          });
+        }
+      });
     };
 
     // 批量删除数据类型

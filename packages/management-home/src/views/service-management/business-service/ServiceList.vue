@@ -42,7 +42,7 @@
         v-if="refreshMess"
         v-loading="tableLoading"
       >
-        <el-table-column type="selection" width="55"></el-table-column>
+        <el-table-column type="selection" width="55" v-if="getShowBool('delete')"></el-table-column>
         <el-table-column type="index" width="50" label="序号"></el-table-column>
         <el-table-column property="name" label="服务英文名">
           <template #default="scope">
@@ -130,7 +130,7 @@
           >
             <el-input
               v-model.trim="serviceDetail.name"
-              placeholder='请输入英文名称，如"project1"，创建后无法修改'
+              placeholder="请输入英文名称，如'project1'，创建后无法修改"
               @blur="checkEnglishName"
             >
               <template #prepend>srv-</template>
@@ -147,7 +147,7 @@
           >
             <el-input
               v-model.trim="serviceDetail.description"
-              placeholder='请输入中文服务描述，如"项目管理服务"，创建后无法修改'
+              placeholder="请输入中文服务描述，如项'目管理服务'，创建后无法修改"
             ></el-input>
           </el-form-item>
           <el-form-item label="负责人" :label-width="labelWidth">
@@ -351,7 +351,7 @@ export default defineComponent({
     }
     function addServiceByForm() {
       const senddata = { ...serviceDetail };
-      senddata.tags = serviceDetail.tags ? serviceDetail.tags.join(',') : '';
+      senddata.tag = serviceDetail.tags ? serviceDetail.tags.join(',') : '';
       senddata.dependencies = serviceDetail.dependencies
         ? serviceDetail.dependencies.map((x: any) => ({
             id: x,
@@ -553,7 +553,7 @@ export default defineComponent({
       (nn) => {
         let ids = [];
         if (nn.length) {
-          ids = nn.filter((x: any) => x.status === 20 || x.status === 30).map((x: any) => x.id);
+          ids = nn.filter((x: any) => x.status === 30).map((x: any) => x.id);
           if (ids.length) {
             updateServiceStatus(ids);
           }

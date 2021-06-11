@@ -2,10 +2,11 @@ import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { getToken, removeToken, getCookies } from '@/utils/todoToken';
 import { ElMessage } from 'element-plus';
 import router, { baseRoutes } from '@/router';
+import Message from 'element-plus/es/el-message';
 
 const service = axios.create({
   baseURL: process.env.VUE_APP_BASE_API,
-  timeout: 5000,
+  timeout: 30000,
 });
 
 const TOKEN = 'token';
@@ -36,6 +37,10 @@ service.interceptors.request.use(
 service.interceptors.response.use(
   (response: AxiosResponse) => response.data,
   (error) => {
+    if (error.toString().includes('timeout')) {
+      Message.error('请求超时');
+      return Promise.reject(error);
+    }
     // 如果没有error.response返回，则当做服务器异常处理
     if (!error.response) {
       ElMessage({
@@ -55,6 +60,9 @@ service.interceptors.response.use(
     }
     if (error.response.status === 403) {
       ElMessage.error('暂无此权限，请联系管理员添加权限');
+    }
+    if (error.code === 'ECONNABORTED') {
+      return Message.error('请求超时！');
     }
     const { data } = error.response; // status
     const { httpStatus, message } = data;

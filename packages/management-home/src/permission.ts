@@ -41,7 +41,7 @@ router.beforeEach(async (to, from, next) => {
       return next(`/router-loading?redirect=${to.path}`);
     }
   }
-  if (to.matched.length > 0 || whiteList.includes(to.path)) {
+  if (to.matched.length >= 1 || whiteList.includes(to.path)) {
     next();
     localStorage.setItem('currentPathId', to.meta.id as any);
   } else {

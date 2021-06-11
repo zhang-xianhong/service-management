@@ -81,7 +81,7 @@ import TreeSelector from './components/TreeSelector.vue';
 import BasicInfoForm from './components/BasicInfoForm.vue';
 import { ElMessageBox } from 'element-plus';
 import { getMemberList, getProjectDetail, deleteMember } from '@/api/project/project';
-import { getTenentDepartment } from '@/api/tenant';
+import { getTenantDepartment } from '@/api/tenant';
 import { userProjectList } from '@/layout/messageCenter/user-info';
 import { getShowBool } from '@/utils/permission-show-module';
 
@@ -194,18 +194,36 @@ export default {
         userList.value = allUsers.value;
       }
     };
+    const findParent = (arr: any, id: any, parentNode: any): any => {
+      console.log(arr, id, parentNode);
+      for (let i = 0; i <= arr.length; i++) {
+        if (arr[i].id === id) {
+          return parentNode;
+        }
+        if (arr[i].children) {
+          return findParent(arr[i].children, id, arr[i]);
+        }
+        return parentNode;
+      }
+    };
     const removeUser = (row: any) => {
-      ElMessageBox.confirm(`是否将${row.displayName}从${row.deptName}中移除？`, '提示', {
+      const group = findParent(treeData.value, row.id, null);
+      const rowId =
+        userTreeRef.value.getCurrentKey() === row.id
+          ? group.id || treeData.value[0].id
+          : userTreeRef.value.getCurrentKey();
+      console.log(rowId, 'this is id');
+      ElMessageBox.confirm(`是否将 ${row.displayName} 从 ${group.label || treeData.value[0].label} 中移除？`, '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning',
       }).then(async () => {
         const { code } = await deleteMember({
           projectId: Number(props.id),
-          roleId: userTreeRef.value.getCurrentKey(),
+          roleId: rowId,
           ids: [row.id],
         });
-        if (code === 0) reloadUserList({ id: userTreeRef.value.getCurrentKey() });
+        if (code === 0) reloadUserList({ id: rowId });
       });
     };
     // 初始化项目信息
@@ -234,7 +252,7 @@ export default {
     };
 
     const initDepartments = async () => {
-      const { code, data } = await getTenentDepartment({ deptId: 0, level: 9 });
+      const { code, data } = await getTenantDepartment({ deptId: 0, level: 9 });
       if (code === 0) {
         const deptTree = [
           {

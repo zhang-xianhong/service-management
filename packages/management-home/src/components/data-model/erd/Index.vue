@@ -8,7 +8,7 @@
           v-for="(table, $index) in tables"
           :key="$index"
           :index="$index"
-          :dragging="table.dragging"
+          :dragging="logs(table.dragging)"
           :class="{ selected: table.selected }"
           :tableAttr="table"
           :types="allTypes"
@@ -223,6 +223,8 @@ export default defineComponent({
         switch (evType) {
           case 'DragTable':
             await dragTableEnd();
+            clearNewRelation();
+            clearSelected();
             break;
           case 'ClickTable':
             selectTable();
@@ -235,6 +237,7 @@ export default defineComponent({
             break;
           case 'RelationRevert':
             revertRelation();
+            selectRelation();
             break;
           default:
             clearSelect();
@@ -266,6 +269,7 @@ export default defineComponent({
         closestScroll.removeEventListener('scroll', calcSvgPosition);
       }
     });
+    const logs = (item: any) => item;
     return {
       tables,
       drag,
@@ -277,6 +281,7 @@ export default defineComponent({
       allTypes,
       leaveErd,
       handlers,
+      logs,
     };
   },
 });

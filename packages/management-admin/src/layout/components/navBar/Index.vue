@@ -46,7 +46,7 @@
         <template #dropdown>
           <el-dropdown-menu>
             <el-dropdown-item icon="el-icon-edit" @click="openPersonalCenter">个人中心</el-dropdown-item>
-            <el-dropdown-item icon="el-icon-info">关于</el-dropdown-item>
+            <el-dropdown-item icon="el-icon-info" @click="toAboutInfo">关于</el-dropdown-item>
             <el-dropdown-item icon="el-icon-switch-button" @click="handleLogout">登出</el-dropdown-item>
           </el-dropdown-menu>
         </template>
@@ -92,6 +92,10 @@ export default defineComponent({
       router.push('/user-info');
     };
 
+    const toAboutInfo = () => {
+      router.push('/about-info');
+    };
+
     const openEditDialog = (): void => {
       (refManageDialog.value as RefDialog).openDialog();
     };
@@ -114,6 +118,7 @@ export default defineComponent({
       projectList,
       refManageDialog,
       openPersonalCenter,
+      toAboutInfo,
       closeDialog,
       openEditDialog,
       handleLogout,

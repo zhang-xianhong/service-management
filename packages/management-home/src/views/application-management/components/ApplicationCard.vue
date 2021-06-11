@@ -13,11 +13,12 @@
         <img v-if="imageUrl" class="application-info__image" :src="imageUrl" alt="" />
         <div v-else class="application-info__content">
           <i class="el-icon-plus"></i>
-          <div style="font-size: 12px">上传Logo</div>
+          <div style="font-size: 12px;transform: scale(.8);transform-origin: center;">上传Logo</div>
         </div>
       </el-upload>
-      <div class="application-detail">
+      <div class="application-detail" @click.prevent="jump2AppDetail">
         <div class="application-detail__name">{{ detailInfo.description }}</div>
+        <div class="application-detail__englishname">{{ detailInfo.name }}</div>
         <div class="application-detail__desc">{{ detailInfo.remark }}</div>
       </div>
       <div class="application-operation">
@@ -47,6 +48,8 @@ import ApplicationDetail from './ApplicationDetail.vue';
 import { SuccessResponse } from '@/types/response';
 import { updateAppById, deleteAppById } from '@/api/app';
 import { getShowBool } from '@/utils/permission-show-module';
+import { ElMessage, ElMessageBox } from 'element-plus';
+import { useRouter } from 'vue-router';
 
 interface PropsInterface {
   id: string;
@@ -92,14 +95,32 @@ export default defineComponent({
     };
 
     const onClose = async () => {
-      const { code } = await deleteAppById(detailInfo.value.id);
-      ctx.emit('update');
-      if (code === 0) {
-        (instance as any).proxy.$message({
-          type: 'success',
-          message: '应用删除成功！',
+      ElMessageBox.confirm(`是否删除该应用？`, '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+      })
+        .then(async () => {
+          const { code } = await deleteAppById(detailInfo.value.id);
+          ctx.emit('update');
+          if (code === 0) {
+            (instance as any).proxy.$message({
+              type: 'success',
+              message: '应用删除成功！',
+            });
+          } else {
+            (instance as any).proxy.$message({
+              type: 'error',
+              message: '应用删除失败！',
+            });
+          }
+        })
+        .catch(() => {
+          ElMessage({
+            type: 'info',
+            message: '已取消操作',
+          });
         });
-      }
     };
 
     const beforeUpload = (file: { size: number }) => {
@@ -129,6 +150,17 @@ export default defineComponent({
       }
     };
 
+    const router = useRouter();
+    const jump2AppDetail = () => {
+      console.log(111);
+      router.push({
+        path: '/application/application-detail',
+        query: {
+          appId: props.data.id,
+        },
+      });
+    };
+
     return {
       IMAGE_UPLOAD,
       isDetailVisable,
@@ -141,6 +173,7 @@ export default defineComponent({
       logoUploadSuccess,
       logoUploadError,
       getShowBool,
+      jump2AppDetail,
     };
   },
 });
@@ -185,9 +218,11 @@ export default defineComponent({
     }
     .application-detail {
       display: inline-block;
+      margin-top: 20px;
       margin-left: 20px;
       width: 200px;
-      &__name {
+      &__name,
+      &__englishname {
         font-size: 12px;
         font-weight: bolder;
         width: 80%;
@@ -195,7 +230,7 @@ export default defineComponent({
         word-break: break-all;
         white-space: nowrap;
         text-overflow: ellipsis;
-        margin-bottom: 10px;
+        // margin-bottom: 10px;
       }
       &__desc {
         font-size: 12px;

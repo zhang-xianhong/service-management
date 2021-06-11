@@ -206,6 +206,7 @@ export default defineComponent({
         method: '',
         url: '',
         description: '',
+        isSystem: 0,
       });
     };
 
@@ -297,7 +298,9 @@ export default defineComponent({
     // 保存接口修改
     const updateApis = async () => {
       const { code } = await updateServiceApis(
-        { apis: tableData.value.filter((item: any) => item.name !== '' && item.isSystem === 0) },
+        {
+          apis: tableData.value.filter((item: any) => item.name !== '' && item.isSystem === 0),
+        },
         props.id,
       );
       if (code === 0) {
