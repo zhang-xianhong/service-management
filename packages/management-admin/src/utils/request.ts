@@ -1,12 +1,12 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
-import { getToken, getCookies, removeToken } from '@/utils/todoToken';
+import { getToken, removeToken, getCookies } from '@/utils/todoToken';
 import { ElMessage } from 'element-plus';
 import router, { baseRoutes } from '@/router';
 import Message from 'element-plus/es/el-message';
 
 const service = axios.create({
   baseURL: process.env.VUE_APP_BASE_API,
-  timeout: 5000,
+  timeout: 30000,
 });
 
 const TOKEN = 'token';
@@ -53,7 +53,7 @@ service.interceptors.response.use(
     if (error.response.status === 401) {
       let currentPath = router?.currentRoute?.value?.path || '/';
       const whiteList = baseRoutes.map((x) => x.path);
-      if (whiteList.includes(currentPath) && currentPath !== 'resetpassword') {
+      if (whiteList.includes(currentPath) && currentPath !== '/reset-password') {
         currentPath = '/';
         router.push(`/login?redirect=${currentPath}`);
       }
@@ -85,4 +85,5 @@ service.interceptors.response.use(
     }
   },
 );
+
 export default service;

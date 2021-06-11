@@ -3,7 +3,7 @@
     <h1>重置CityBase密码</h1>
     <el-form :model="formData" :rules="rules" ref="form" label-width="100px" class="password-reset__form">
       <el-form-item label="邮箱" prop="email" size="large">
-        <el-input :model-value="formData.email" type="email" placeholder="请输入您的邮箱地址"></el-input>
+        <el-input :model-value="formData.email" type="email" placeholder="请输入您的邮箱地址" readonly></el-input>
       </el-form-item>
       <el-form-item label="设置登录密码" prop="password" size="large">
         <el-input v-model="formData.password" type="password" placeholder="请输入您的新密码"></el-input>

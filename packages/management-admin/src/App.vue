@@ -9,7 +9,9 @@ import { getUser } from '@/shared/userinfo';
 
 export default defineComponent({
   setup() {
-    getUser();
+    if (window.location.pathname !== '/reset-password') {
+      getUser();
+    }
   },
 });
 </script>
