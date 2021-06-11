@@ -53,7 +53,9 @@ service.interceptors.response.use(
     if (error.response.status === 401) {
       let currentPath = router?.currentRoute?.value?.path || '/';
       const whiteList = baseRoutes.map((x) => x.path);
-      if (whiteList.includes(currentPath) && currentPath !== 'resetpassword') {
+      console.log(currentPath);
+
+      if (whiteList.includes(currentPath) && currentPath !== '/reset-password') {
         currentPath = '/';
         router.push(`/login?redirect=${currentPath}`);
       }
