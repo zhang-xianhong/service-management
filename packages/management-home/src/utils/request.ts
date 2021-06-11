@@ -51,10 +51,10 @@ service.interceptors.response.use(
       return Promise.reject(error);
     }
     if (error.response.status === 401) {
-      const currentPath = router?.currentRoute?.value?.path || '/';
+      let currentPath = router?.currentRoute?.value?.path || '/';
       const whiteList = baseRoutes.map((x) => x.path);
-      if (!whiteList.includes(currentPath)) {
-        // currentPath = '/';
+      if (whiteList.includes(currentPath) && currentPath !== 'resetpassword') {
+        currentPath = '/';
         router.push(`/login?redirect=${currentPath}`);
       }
     }
