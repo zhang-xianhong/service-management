@@ -80,6 +80,9 @@ export default defineComponent({
       if (!userSetInfo[prop]) {
         return ElMessage.error(`${labels[id]} 不得为空！`);
       }
+      if (userSetInfo.displayName.length > 20) {
+        return ElMessage.warning('用户姓名不能超过20个字符');
+      }
       const item = {} as any;
       item[prop] = userSetInfo[prop];
       updateUserProfile(item).then((res) => {
