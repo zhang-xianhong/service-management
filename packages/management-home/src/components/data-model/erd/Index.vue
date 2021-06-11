@@ -237,6 +237,7 @@ export default defineComponent({
             break;
           case 'RelationRevert':
             revertRelation();
+            selectRelation();
             break;
           default:
             clearSelect();
