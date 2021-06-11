@@ -1720,6 +1720,17 @@
     "estree-walker" "^2.0.1"
     "source-map" "^0.6.1"
 
+"@vue/compiler-core@3.1.0-beta.7":
+  version "3.1.0-beta.7"
+  resolved "http://mirrors.tencent.com/npm/@vue%2fcompiler-core/-/compiler-core-3.1.0-beta.7.tgz#a72d3298193b50616be3957d6d9c8573d81367be"
+  integrity sha512-P1QQdK4lKuySGEOoLu6vhajMKVguLyR7Oc5Rqio0JPRKpdBNO6CWrD52S+kkkAssbE+rilr0Rf1ar58SqWS01Q==
+  dependencies:
+    "@babel/parser" "^7.12.0"
+    "@babel/types" "^7.12.0"
+    "@vue/shared" "3.1.0-beta.7"
+    estree-walker "^2.0.1"
+    source-map "^0.6.1"
+
 "@vue/compiler-dom@3.0.11":
   "integrity" "sha512-+3xB50uGeY5Fv9eMKVJs2WSRULfgwaTJsy23OIltKgMrynnIj8hTYY2UL97HCoz78aDw1VDXdrBQ4qepWjnQcw=="
   "resolved" "http://mirrors.tencent.com/npm/@vue%2fcompiler-dom/-/compiler-dom-3.0.11.tgz"
@@ -1805,15 +1816,15 @@
   "resolved" "http://mirrors.tencent.com/npm/@vue%2freactivity/-/reactivity-3.0.11.tgz"
   "version" "3.0.11"
   dependencies:
-    "@vue/shared" "3.0.11"
+    "@vue/shared" "3.1.0-beta.7"
 
 "@vue/runtime-core@3.0.11":
   "integrity" "sha512-87XPNwHfz9JkmOlayBeCCfMh9PT2NBnv795DSbi//C/RaAnc/bGZgECjmkD7oXJ526BZbgk9QZBPdFT8KMxkAg=="
   "resolved" "http://mirrors.tencent.com/npm/@vue%2fruntime-core/-/runtime-core-3.0.11.tgz"
   "version" "3.0.11"
   dependencies:
-    "@vue/reactivity" "3.0.11"
-    "@vue/shared" "3.0.11"
+    "@vue/reactivity" "3.1.0-beta.7"
+    "@vue/shared" "3.1.0-beta.7"
 
 "@vue/runtime-dom@3.0.11":
   "integrity" "sha512-jm3FVQESY3y2hKZ2wlkcmFDDyqaPyU3p1IdAX92zTNeCH7I8zZ37PtlE1b9NlCtzV53WjB4TZAYh9yDCMIEumA=="
@@ -1828,6 +1839,11 @@
   "integrity" "sha512-b+zB8A2so8eCE0JsxjL24J7vdGl8rzPQ09hZNhystm+KqSbKcAej1A+Hbva1rCMmTTqA+hFnUSDc5kouEo0JzA=="
   "resolved" "http://mirrors.tencent.com/npm/@vue%2fshared/-/shared-3.0.11.tgz"
   "version" "3.0.11"
+
+"@vue/shared@3.1.0-beta.7":
+  version "3.1.0-beta.7"
+  resolved "http://mirrors.tencent.com/npm/@vue%2fshared/-/shared-3.1.0-beta.7.tgz#e88f37db4c68448258c480f7f1d619195209cbb3"
+  integrity sha512-FoEjKGCbDDte7Bmevakf0zZlFuDBGJKUHGK4rJGaVBIe5jtCSzrwenC1Wt52BqGveux3RUh9uBWpsSDAprBy2Q==
 
 "@vue/web-component-wrapper@^1.2.0":
   "integrity" "sha512-Iu8Tbg3f+emIIMmI2ycSI8QcEuAUgPTgHwesDU1eKMLE4YC/c/sFbGc70QgMq31ijRftV0R7vCm9co6rldCeOA=="
@@ -10104,9 +10120,9 @@
   "resolved" "http://mirrors.tencent.com/npm/vue/-/vue-3.0.11.tgz"
   "version" "3.0.11"
   dependencies:
-    "@vue/compiler-dom" "3.0.11"
-    "@vue/runtime-dom" "3.0.11"
-    "@vue/shared" "3.0.11"
+    "@vue/compiler-dom" "3.1.0-beta.7"
+    "@vue/runtime-dom" "3.1.0-beta.7"
+    "@vue/shared" "3.1.0-beta.7"
 
 "vuex@^4.0.0-0":
   "integrity" "sha512-MddakQTAnImDkK1YhEESowKSU5KcjqHH3L1ScPx1lj6NzDDX0FuRBZqJoME5O7/nvj9puudDf6xnWU2w/cqI7g=="

@@ -60,37 +60,7 @@
       ></packaged-pagination>
     </el-row>
     <AddPerson ref="refAddDialog" />
-    <el-dialog
-      title="重置密码"
-      v-model="resetDialogVisible"
-      width="500px"
-      @closed="closeResetDialog"
-      :close-on-click-modal="false"
-      :destroy-on-close="true"
-    >
-      <div>
-        <el-form :model="resetFormData" ref="resetDiagFormRef" :rules="resetFormRules">
-          <el-form-item label="新密码" prop="newPassword" label-width="100px" style="position: relative">
-            <!-- <el-tooltip
-              :content="passwdMsg"
-              placement="top"
-              effect="light"
-              style="margin-right: 5px"
-            >
-              <svg-icon icon-name="wenhao" icon-class="detail-icons__item"></svg-icon>
-            </el-tooltip>-->
-            <el-input v-model.trim="resetFormData.newPassword" placeholder="请输入新的密码" show-password></el-input>
-            <el-button type="text" @click="handleCopy" class="btn-copy">复制</el-button>
-          </el-form-item>
-        </el-form>
-      </div>
-      <template #footer>
-        <span class="dialog-footer">
-          <el-button type="primary" @click="submitResetForm">保存</el-button>
-          <el-button @click="closeResetDialog">返回</el-button>
-        </span>
-      </template>
-    </el-dialog>
+    <ResetPassword ref="resetPassword" />
   </div>
 </template>
 
@@ -100,15 +70,15 @@ import { debounce } from 'lodash';
 import { ElMessageBox, ElMessage } from 'element-plus';
 import AddPerson from './components/AddPerson.vue';
 import PackagedPagination from '@/components/pagination/Index.vue';
-import { generatePasswd, copyFun } from './utils';
 import { getShowBool } from '@/utils/permission-show-module';
-import { getUserList, createUser, updateUser, delUser, updateUserStatus, resetPassWd } from '@/api/company/users';
-import { checkPasswd } from '@/utils/validate';
+import { getUserList, createUser, updateUser, delUser, updateUserStatus } from '@/api/company/users';
+import ResetPassword from './ResetPassword.vue';
 // 用户状态
 enum UserStatus {
   禁用 = -1,
   启用 = 0,
 }
+
 // 状态码
 enum ResCode {
   Success,
@@ -134,23 +104,9 @@ interface ResetFormState {
   newPassword: any[];
 }
 const passwdMsg = '长度在 8 到 16 个字符,只能输入大小写字母、数字、特殊字符（(!@#$%^&),至少1个大写字母，1个小写字母';
-// 密码校验
-const validatorPasswdPass = (rule: any, value: string, callback: Function) => {
-  if (!checkPasswd(value)) {
-    callback(new Error(passwdMsg));
-  }
-  callback();
-};
-const resetFormRules: ResetFormState = {
-  newPassword: [
-    { required: true, message: '请输入新的密码', trigger: 'blur' },
-    { validator: validatorPasswdPass, trigger: 'blur' },
-  ],
-};
-
 export default defineComponent({
   name: 'Person',
-  components: { AddPerson, PackagedPagination },
+  components: { AddPerson, PackagedPagination, ResetPassword },
   setup() {
     // 表单相关状态
     const tableState: TableState = reactive({
@@ -167,7 +123,7 @@ export default defineComponent({
     });
 
     const refAddDialog: Ref<RefAddDialog | null> = ref(null);
-
+    const resetPassword = ref<InstanceType<typeof ResetPassword>>();
     // 获取组件实例
     const instance = getCurrentInstance();
 
@@ -198,14 +154,6 @@ export default defineComponent({
       (refAddDialog.value as RefAddDialog).initDialog();
     };
 
-    // 重置密码
-    const resetDialog = reactive({
-      resetDialogVisible: false,
-      resetFormData: {
-        newPassword: '',
-        userId: 0,
-      },
-    });
     // 获取列表
     const getList = async () => {
       tableState.loading = true;
@@ -294,7 +242,6 @@ export default defineComponent({
       }
       closeDialog();
     };
-
     provide('handleCreate', handleCreate);
     provide('handleEdit', handleEdit);
     // 每页条数改变
@@ -307,47 +254,13 @@ export default defineComponent({
       tableState.searchProps.page = pageNum;
       getList();
     };
-
-    // 重置密码
     const handleResetPasswd = (data: any) => {
       const { id } = data;
-      resetDialog.resetFormData = {
-        userId: id,
-        newPassword: generatePasswd(12),
-      };
-      resetDialog.resetDialogVisible = true;
-    };
-    // 关闭重置密码
-    const closeResetDialog = () => {
-      resetDialog.resetDialogVisible = false;
-    };
-    const resetDiagFormRef: any = ref(null);
-    const submitResetForm = () => {
-      resetDiagFormRef.value.validate(async (valid: boolean) => {
-        if (valid) {
-          const { userId, newPassword } = resetDialog.resetFormData;
-          const { code } = await resetPassWd({
-            userId,
-            newPassword,
-          });
-          if (code === ResCode.Success) {
-            // 复制到剪切板上
-            msgTips('success', '密码重置成功');
-          } else {
-            msgTips('error', '密码重置失败');
-          }
-          closeResetDialog();
-        }
-      });
-    };
-    // 复制密码
-    const handleCopy = () => {
-      const { newPassword } = resetDialog.resetFormData;
-      copyFun(newPassword);
+      // eslint-disable-next-line no-unused-expressions
+      resetPassword.value?.open(id);
     };
     return {
       ...toRefs(tableState),
-      ...toRefs(resetDialog),
       handleUpdateStatus,
       openAddDialog,
       openEditDialog,
@@ -355,31 +268,14 @@ export default defineComponent({
       selChange,
       handlePageSizeChange,
       handlePageChange,
-      handleResetPasswd,
-      closeResetDialog,
-      submitResetForm,
       filterAccount,
       refAddDialog,
       UserStatus,
-      resetFormRules,
-      resetDiagFormRef,
       passwdMsg,
-      handleCopy,
       getShowBool,
+      resetPassword,
+      handleResetPasswd,
     };
   },
 });
 </script>
-<style lang="scss" scoped>
-.dialog-footer {
-  width: 100%;
-  display: block;
-  text-align: center;
-  margin-bottom: 20px;
-}
-.btn-copy {
-  position: absolute;
-  right: 50px;
-  top: 0;
-}
-</style>

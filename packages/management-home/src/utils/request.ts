@@ -51,12 +51,12 @@ service.interceptors.response.use(
       return Promise.reject(error);
     }
     if (error.response.status === 401) {
-      let currentPath = router?.currentRoute?.value?.fullPath || '/';
+      let currentPath = router?.currentRoute?.value?.path || '/';
       const whiteList = baseRoutes.map((x) => x.path);
-      if (whiteList.includes(currentPath)) {
+      if (whiteList.includes(currentPath) && currentPath !== 'resetpassword') {
         currentPath = '/';
+        router.push(`/login?redirect=${currentPath}`);
       }
-      router.push(`/login?redirect=${currentPath}`);
     }
     if (error.response.status === 403) {
       ElMessage.error('暂无此权限，请联系管理员添加权限');

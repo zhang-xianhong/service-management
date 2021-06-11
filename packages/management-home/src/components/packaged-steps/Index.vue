@@ -17,14 +17,14 @@
 </template>
 
 <script lang="ts">
-import { computed } from 'vue';
+import { computed, defineComponent } from 'vue';
 
 // 步骤信息接口
 interface StepInterface {
   title?: string;
   icon?: string;
 }
-export default {
+export default defineComponent({
   name: 'PackagedSteps',
   emits: ['change'],
   props: {
@@ -47,7 +47,7 @@ export default {
       computedStepWidth,
     };
   },
-};
+});
 </script>
 
 <style lang="scss" scoped>
