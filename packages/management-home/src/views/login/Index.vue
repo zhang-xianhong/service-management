@@ -24,17 +24,17 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
-import LoginForm from "./components/LoginForm.vue";
+import { defineComponent } from 'vue';
+import LoginForm from './components/LoginForm.vue';
 
 export default defineComponent({
-  name: "Login",
+  name: 'Login',
   components: {
     LoginForm,
   },
   setup() {
     const backToHead = () => {
-      window.location.href = "https://citybase.qq.com";
+      window.location.href = 'https://citybase.qq.com';
       // window.location.reload();
     };
     return {
@@ -73,7 +73,7 @@ $image: url(~@/assets/img/citybase-login.jpg);
     &-introduce {
       margin: auto 40px 80px 50px;
       &__title {
-        font-family: "PingFangSC-Semibold";
+        font-family: 'PingFangSC-Semibold';
         font-size: 18px;
         color: #fff;
       }
@@ -83,7 +83,7 @@ $image: url(~@/assets/img/citybase-login.jpg);
         margin-top: 24px;
         line-height: 24px;
         list-style: none;
-        font-family: "PingFangSC-Regular";
+        font-family: 'PingFangSC-Regular';
         font-size: 14px;
         color: #fff;
       }

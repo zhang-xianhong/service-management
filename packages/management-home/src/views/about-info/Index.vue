@@ -21,16 +21,16 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from "vue";
-import { useRouter } from "vue-router";
+import { defineComponent, ref } from 'vue';
+import { useRouter } from 'vue-router';
 export default defineComponent({
-  name: "AboutInfo",
+  name: 'AboutInfo',
   setup() {
     const router = useRouter();
     const dialogVisible = ref(true);
     const handleClose = () => {
       dialogVisible.value = false;
-      router.push("/");
+      router.push('/');
     };
     return {
       dialogVisible,
