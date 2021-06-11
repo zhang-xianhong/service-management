@@ -78,7 +78,7 @@
             :label-width="labelWidth"
             prop="description"
             :rules="[
-              { required: true, message: '请输入项目描述', trigger: 'blur' },
+              { required: true, message: '请输入项目中文名称', trigger: 'blur' },
               { min: 3, max: 20, message: '请输入3到20个字符', trigger: 'blur' },
             ]"
           >
@@ -158,6 +158,7 @@ import {
 import fetchOwnersSelect from '@/components/fetchOwnersSelect/Index.vue';
 import { projectNameTest } from '@/api/project/project';
 import { userProjectList, userInfo } from '@/layout/messageCenter/user-info';
+import { ElMessage } from 'element-plus';
 
 export default defineComponent({
   name: 'ProjectList',
@@ -204,20 +205,29 @@ export default defineComponent({
     const submitProjectDetail = () => {
       projectNameInput.value.handleBlur();
       projectDescriptionInput.value.handleBlur();
+      const nameLength = projectDetail.name.length;
+      const descriptionLengh = projectDetail.description;
+      const ownerArr = projectDetail.owner.split(',');
       if (submitLoading.value) {
         return;
       }
-      if (!projectDetail.name) {
+      // if (!projectDetail.name) {
+      //   return false;
+      // }
+      if (nameLength < 3 || nameLength > 20) {
         return false;
       }
-      if (projectDetail.name.length > 20) {
-        return false;
-      }
-      if (!projectDetail.description) {
+      // if (!projectDetail.description) {
+      //   return false;
+      // }
+      if (descriptionLengh < 3 || descriptionLengh > 20) {
         return false;
       }
       if (!projectDetail.templateId) {
         return false;
+      }
+      if (ownerArr.length > 10) {
+        return ElMessage.warning('最多支持10个负责人');
       }
       if (projectDetail.remark && projectDetail.remark.length > 255) {
         return false;

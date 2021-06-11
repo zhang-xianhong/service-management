@@ -12,4 +12,7 @@ export default {
   UPDATE_USER_PASSWD: ['/users/update/password', '/mock/company/create.json'],
   DEL_DEPT_USER: ['/departments/delete/members', '/mock/company/create.json'],
   CHECK_INPUT: ['/users/useable', '/mock/company/able.json'],
+  SEND_MAIL_FOR_RESET_PASSWORD: ['/users/send/email'],
+  VERIFY_CODE_VALID_FOR_RESET_PASSWORD: ['/users/verify/password/code'],
+  RESET_USER_PASSWD: ['/users/reset/password', '/mock/company/create.json'],
 };
