@@ -446,6 +446,7 @@ export default {
       proxy.$nextTick(() => {
         reloadCom.value = true;
       });
+      proxy.$forceUpdate();
     });
 
     // 切换服务

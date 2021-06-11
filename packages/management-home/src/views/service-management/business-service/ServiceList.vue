@@ -273,7 +273,6 @@ export default defineComponent({
         label: 'name',
         value: 'id',
         emitPath: false,
-        multiple: true,
       },
     };
   },
@@ -392,7 +391,7 @@ export default defineComponent({
         return false;
       }
       senddata.name = `srv-${senddata.name}`;
-      senddata.classification = serviceDetail.classification ? serviceDetail.classification.join(',') : '';
+      senddata.classification = `${senddata.classification}`;
       addService(senddata)
         .then(() => {
           refreshServiceList(pageInfo);
