@@ -19,7 +19,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType, reactive, ref } from 'vue';
+import { computed, defineComponent, PropType, reactive, ref } from 'vue';
 import { PasswordRules } from '@/utils/validate';
 import { resetPassWord } from '@/api/company/users';
 import useMsg from '../useMsg';
@@ -43,7 +43,7 @@ export default defineComponent({
     const formData = reactive({
       password: '',
       confirmationPassword: '',
-      email: props.email,
+      email: computed(() => props.email),
     });
     const form: any = ref(null);
     const disableSubmit = ref(false);
