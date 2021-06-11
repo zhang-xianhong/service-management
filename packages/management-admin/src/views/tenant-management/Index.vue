@@ -70,6 +70,7 @@
 
 <script lang="ts">
 import { reactive, toRefs, getCurrentInstance, ref, Ref, watch } from 'vue';
+import { ElMessageBox, ElMessage } from 'element-plus';
 import { getTenantList, deleteTenant, freezeTenant, enableTenant } from '@/api/tenant';
 import { debounce } from 'lodash';
 import { useRouter } from 'vue-router';
@@ -85,6 +86,7 @@ interface TenantItemInterface {
   contactName: string;
   contactTel: string;
   contactEmail: string;
+  managerId: number;
   managerAccount: string;
   managerName: string;
   managerTel: string;
@@ -124,7 +126,7 @@ export default {
     const isPublic = ref(true);
 
     watch(userInfo, () => {
-      isPublic.value = userInfo.value?.deployEnv !== 'public';
+      isPublic.value = userInfo.value?.deployEnv === 'public';
     });
     const tableState: TableStateInterface = reactive({
       tableData: [],
@@ -149,9 +151,10 @@ export default {
         contactName: item.contact?.name,
         contactTel: item.contact?.phone,
         contactEmail: item.contact?.email,
-        managerName: item.manager?.name,
-        managerAccount: item.manager?.account,
-        managerTel: item.manager?.phone,
+        managerId: item.manager?.userId,
+        managerName: item.manager?.displayName,
+        managerAccount: item.manager?.userName,
+        managerTel: item.manager?.phoneNumber,
       }));
       tableState.total = data.count;
       tableState.loading = false;
@@ -217,15 +220,28 @@ export default {
     };
 
     // 租户冻结
-    const onFreeze = async (id: string) => {
-      const { code } = await freezeTenant(id);
-      if (code === 0) {
-        (instance as any).proxy.$message({
-          type: 'success',
-          message: '冻结成功',
+    const onFreeze = async (data: any) => {
+      ElMessageBox.confirm(`是否冻结【${data.name}】租户?`, '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+      })
+        .then(async () => {
+          const { code } = await freezeTenant(data.id);
+          if (code === 0) {
+            (instance as any).proxy.$message({
+              type: 'success',
+              message: '冻结成功',
+            });
+            getTableData();
+          }
+        })
+        .catch(() => {
+          ElMessage({
+            type: 'info',
+            message: '冻结失败',
+          });
         });
-        getTableData();
-      }
     };
 
     // 租户启动
@@ -242,11 +258,11 @@ export default {
 
     // 重置租户密码
     const onResetPWD = async (data: any) => {
-      const { userId } = data.manager;
+      const { managerId } = data;
       if (isPublic.value) {
-        publicResetPassword.value.handleResetPasswd(userId);
+        publicResetPassword.value.handleResetPasswd(managerId);
       } else {
-        privateResetPassword.value.handleResetPasswd(userId);
+        privateResetPassword.value.handleResetPasswd(managerId);
       }
     };
 

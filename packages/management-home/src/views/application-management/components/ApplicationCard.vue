@@ -16,7 +16,7 @@
           <div style="font-size: 12px;transform: scale(.8);transform-origin: center;">上传Logo</div>
         </div>
       </el-upload>
-      <div class="application-detail">
+      <div class="application-detail" @click.prevent="jump2AppDetail">
         <div class="application-detail__name">{{ detailInfo.description }}</div>
         <div class="application-detail__englishname">{{ detailInfo.name }}</div>
         <div class="application-detail__desc">{{ detailInfo.remark }}</div>
@@ -49,6 +49,7 @@ import { SuccessResponse } from '@/types/response';
 import { updateAppById, deleteAppById } from '@/api/app';
 import { getShowBool } from '@/utils/permission-show-module';
 import { ElMessage, ElMessageBox } from 'element-plus';
+import { useRouter } from 'vue-router';
 
 interface PropsInterface {
   id: string;
@@ -149,6 +150,17 @@ export default defineComponent({
       }
     };
 
+    const router = useRouter();
+    const jump2AppDetail = () => {
+      console.log(111);
+      router.push({
+        path: '/application/application-detail',
+        query: {
+          appId: props.data.id,
+        },
+      });
+    };
+
     return {
       IMAGE_UPLOAD,
       isDetailVisable,
@@ -161,6 +173,7 @@ export default defineComponent({
       logoUploadSuccess,
       logoUploadError,
       getShowBool,
+      jump2AppDetail,
     };
   },
 });

@@ -9,6 +9,7 @@ module.exports = {
         libraryName: 'element-plus',
         styleLibraryName: 'theme-chalk'
       }
-    ]
+    ],
+    "@vue/babel-plugin-jsx"
   ],
 };

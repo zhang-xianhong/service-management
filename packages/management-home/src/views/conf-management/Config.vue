@@ -50,7 +50,7 @@
       ></packaged-pagination>
     </el-row>
     <el-dialog
-      :title="configForm.isEdit ? '配置详情' : '新建配置'"
+      :title="configForm.isEdit ? '编辑配置' : '新建配置'"
       v-model="addConfigDialog"
       width="600px"
       @closed="closeConfigForm"
@@ -58,7 +58,10 @@
       <div class="add-config-set">
         <el-form :model="configForm.formData" :rules="configRules" ref="configFormRef">
           <el-form-item label="键" :label-width="labelWidth" prop="name">
-            <el-input v-model.trim="configForm.formData.name" :disabled="configForm.disabled"></el-input>
+            <el-input
+              v-model.trim="configForm.formData.name"
+              :disabled="configForm.disabled || configForm.isEdit"
+            ></el-input>
           </el-form-item>
           <el-form-item label="值" prop="value" :label-width="labelWidth">
             <el-input v-model.trim="configForm.formData.value" :disabled="configForm.disabled"></el-input>

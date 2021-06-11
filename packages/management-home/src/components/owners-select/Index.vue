@@ -10,6 +10,7 @@
     :loading="loading"
     @change="onChange"
     v-bind="$attrs"
+    clearable
   >
     <el-option v-for="item in owners" :key="item.id" :label="item.displayName" :value="item.id"> </el-option>
   </el-select>
@@ -42,14 +43,14 @@ export default {
     const loading: Ref<boolean> = ref(false);
 
     async function getOwners(keyword = '') {
-      owners.value = await getOwnerList(keyword, owners.value, props.useProject);
+      owners.value = await getOwnerList(keyword || ' ', owners.value, props.useProject);
+      console.log(owners.value);
     }
 
     getOwners();
 
     function onChange(value: number[]) {
       const ownerData = value.map((id: number) => getOwnerById(id));
-      owners.value = ownerData;
       ctx.emit('change', {
         ownerUsers: ownerData,
         owner: value.join(','),
@@ -59,13 +60,9 @@ export default {
     }
 
     async function remoteMethod(query: string) {
-      if (query !== '') {
-        loading.value = true;
-        await getOwners(query);
-        loading.value = false;
-      } else {
-        owners.value = [];
-      }
+      loading.value = true;
+      await getOwners(query);
+      loading.value = false;
     }
 
     return {

@@ -3,13 +3,13 @@
     <div>
       <el-form :model="formData" ref="resetForm" :rules="rules">
         <el-form-item label-width="100px" label="重置方式">
-          <el-select placeholder="请选择重置密码的方式" v-model="configuration.current" style="width: 100%">
-            <el-option v-for="item in configuration.options" :key="item.value" :label="item.label" :value="item.value">
+          <el-select placeholder="请选择重置密码的方式" v-model="configuraion.current" style="width: 100%">
+            <el-option v-for="item in configuraion.options" :key="item.value" :label="item.label" :value="item.value">
               {{ item.label }}
             </el-option>
           </el-select>
         </el-form-item>
-        <template v-if="configuration.isRandom">
+        <template v-if="configuraion.isRandom">
           <el-form-item prop="newPassword" label-width="100px">
             <template v-slot:label>
               <span> 新密码 </span>
@@ -18,12 +18,7 @@
               </el-tooltip>
             </template>
 
-            <el-input
-              v-if="formData.newPassword"
-              v-model.trim="formData.newPassword"
-              placeholder="请输入新的密码"
-              show-password
-            ></el-input>
+            <el-input v-model.trim="formData.newPassword" placeholder="请输入新的密码" show-password></el-input>
             <el-button type="text" @click="handleCopy" class="btn-copy">复制</el-button>
           </el-form-item>
         </template>
@@ -40,9 +35,11 @@
 
 <script lang="ts">
 import { defineComponent, reactive, ref, watch, getCurrentInstance } from 'vue';
-import { useResetOptions } from '../utils/ResetOptions';
-import { generatePasswd, copyFun } from '@/utils';
-import { resetPassWd, sendMailForResetPassword, MailType } from '@/api/tenant';
+import { useResetOptions } from './ResetOptions';
+import { generatePasswd, copyFun } from './utils';
+import { resetPassWd, sendMailForResetPassword, MailType } from '@/api/company/users';
+import { PasswordRules, HELP_MSG } from '@/utils/validate';
+
 // 状态码
 enum ResCode {
   Success,
@@ -51,36 +48,20 @@ enum ResCode {
 interface ResetFormState {
   newPassword: any[];
 }
-// 自定义密码校验  长度在 8 到 16 个字符,只能输入大小写字母、数字、特殊字符（(!@#$%^&),至少1个大写字母，1个小写字母
-function checkPasswd(passwd: string): boolean {
-  const szReg = /^(?=.*[a-z])(?=.*[A-Z])[A-Za-z\d（!@#$%^&)]{8,16}/;
-  return szReg.test(passwd);
-}
-const HELP_MSG = '长度在 8 到 16 个字符,只能输入大小写字母、数字、特殊字符（(!@#$%^&),至少1个大写字母，1个小写字母';
-// 密码校验
-const validatorPasswdPass = (rule: any, value: string, callback: Function) => {
-  if (!checkPasswd(value)) {
-    callback(new Error(HELP_MSG));
-  }
-  callback();
-};
-
 export default defineComponent({
-  name: 'PublicResetPassword',
+  name: 'ResetPasswordDialog',
   setup() {
     const visible = ref(false);
+    // ----------------------------
     const userId = ref(0);
     const newPassword = ref('');
     const formData = reactive({
       newPassword,
     });
     const rules: ResetFormState = {
-      newPassword: [
-        { required: true, message: '请输入新的密码', trigger: 'blur' },
-        { validator: validatorPasswdPass, trigger: 'blur' },
-      ],
+      newPassword: PasswordRules,
     };
-    const { configuration } = useResetOptions();
+    const { configuraion } = useResetOptions();
     const resetForm: any = ref(null);
     // 获取组件实例
     const instance = getCurrentInstance();
@@ -95,18 +76,6 @@ export default defineComponent({
     const handleCopy = () => {
       copyFun(newPassword.value);
     };
-    // 打开重置密码弹框
-    const handleResetPasswd = (id: number) => {
-      userId.value = id;
-      visible.value = true;
-    };
-    const open = (id: number) => {
-      userId.value = id;
-      visible.value = true;
-    };
-    const close = () => {
-      visible.value = false;
-    };
     // 保存密码
     const savePassword = () => {
       // 校验密码-》保存密码-》copy 密码
@@ -120,15 +89,13 @@ export default defineComponent({
           if (code === ResCode.Success) {
             // 复制到剪切板上
             handleCopy();
-            // msgTips('success', '密码重置成功');
+            msgTips('success', '密码重置成功');
           } else {
             msgTips('error', '密码重置失败');
           }
-          close();
         }
       });
     };
-    // 发送邮件
     // 发送邮件
     const sendMail = async () => {
       const RESET_PASSWORD_PATH = '/reset-password';
@@ -142,10 +109,9 @@ export default defineComponent({
       } else {
         msgTips('error', '重置邮件发送失败');
       }
-      close();
     };
     watch(
-      () => configuration.isRandom,
+      () => configuraion.isRandom,
       (v) => {
         if (v) {
           // 如果当前选择的是随机密码
@@ -156,7 +122,7 @@ export default defineComponent({
       },
     );
     const resetData = () => {
-      configuration.current = '';
+      configuraion.current = '';
     };
     // 每次打开新的对话框重置
     watch(visible, (v) => {
@@ -164,13 +130,16 @@ export default defineComponent({
         resetData();
       }
     });
-
+    //
+    const open = (id: number) => {
+      userId.value = id;
+      visible.value = true;
+    };
+    const close = () => {
+      visible.value = false;
+    };
     const submit = () => {
-      if (!configuration.current) {
-        msgTips('error', '请选择重置密码方式');
-        return;
-      }
-      if (configuration.isRandom) {
+      if (configuraion.isRandom) {
         // 提交随机密码
         savePassword();
       } else {
@@ -191,11 +160,10 @@ export default defineComponent({
       userId,
       formData,
       rules,
-      configuration,
+      configuraion,
       handleCopy,
       helper: HELP_MSG,
       resetForm,
-      handleResetPasswd,
     };
   },
 });
@@ -210,7 +178,7 @@ export default defineComponent({
 }
 .btn-copy {
   position: absolute;
-  right: 35px;
+  right: 50px;
   top: 0;
 }
 </style>

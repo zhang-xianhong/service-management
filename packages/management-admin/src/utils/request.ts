@@ -1,8 +1,8 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
-import { getToken, getCookies } from '@/utils/todoToken';
+import { getToken, getCookies, removeToken } from '@/utils/todoToken';
 import { ElMessage } from 'element-plus';
-import router from '@/router';
-import { useRoute } from 'vue-router';
+import router, { baseRoutes } from '@/router';
+import Message from 'element-plus/es/el-message';
 
 const service = axios.create({
   baseURL: process.env.VUE_APP_BASE_API,
@@ -37,6 +37,10 @@ service.interceptors.request.use(
 service.interceptors.response.use(
   (response: AxiosResponse) => response.data,
   (error) => {
+    if (error.toString().includes('timeout')) {
+      Message.error('请求超时');
+      return Promise.reject(error);
+    }
     // 如果没有error.response返回，则当做服务器异常处理
     if (!error.response) {
       ElMessage({
@@ -47,23 +51,38 @@ service.interceptors.response.use(
       return Promise.reject(error);
     }
     if (error.response.status === 401) {
-      const route = useRoute();
-      console.log(route, 'route');
-      if (route?.path) {
-        router.push(`/login?redirect=${route.path}`);
-      } else {
-        router.push('/login');
+      let currentPath = router?.currentRoute?.value?.path || '/';
+      const whiteList = baseRoutes.map((x) => x.path);
+      if (whiteList.includes(currentPath) && currentPath !== 'resetpassword') {
+        currentPath = '/';
+        router.push(`/login?redirect=${currentPath}`);
       }
-    } else if (error.response.status === 422) {
-      const { data } = error.response; // status
-      // 错误状态处理
+    }
+    if (error.response.status === 403) {
+      ElMessage.error('暂无此权限，请联系管理员添加权限');
+    }
+    if (error.code === 'ECONNABORTED') {
+      return Message.error('请求超时！');
+    }
+    const { data } = error.response; // status
+    const { httpStatus, message } = data;
+    // 错误状态处理
+    if (httpStatus) {
       ElMessage({
-        message: data.message || '接口异常',
+        message,
         type: 'error',
         duration: 5 * 1000,
+        onClose() {
+          // 登录失效处理
+          if (httpStatus === 401) {
+            removeToken();
+            location.reload();
+          }
+        },
       });
+    } else {
+      return Promise.reject(data);
     }
   },
 );
-
 export default service;

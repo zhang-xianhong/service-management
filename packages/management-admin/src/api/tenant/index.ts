@@ -55,3 +55,10 @@ export const sendMailForResetPassword: (params: {
 export const verifyCouldResetPassword: (params: { code: string; userId: number }) => Promise<SuccessResponse<any>> = (
   params,
 ) => request.post(getUrl(URL.tenant.VERIFY_CODE_VALID_FOR_RESET_PASSWORD), params);
+
+// 重置密码
+export const resetPassWord: (payload?: {
+  newPassword: string;
+  resetCode: string;
+  userId: number;
+}) => Promise<SuccessResponse<any>> = (payload: any) => request.post(getUrl(URL.tenant.RESET_USER_PASSWD), payload);

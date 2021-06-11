@@ -237,6 +237,7 @@ export default defineComponent({
             break;
           case 'RelationRevert':
             revertRelation();
+            selectRelation();
             break;
           default:
             clearSelect();
@@ -268,10 +269,7 @@ export default defineComponent({
         closestScroll.removeEventListener('scroll', calcSvgPosition);
       }
     });
-    const logs = (item: any) => {
-      console.log(item, 'this is log');
-      return item;
-    };
+    const logs = (item: any) => item;
     return {
       tables,
       drag,
