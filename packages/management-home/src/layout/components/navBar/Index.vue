@@ -135,7 +135,7 @@ export default defineComponent({
       userInfo,
       handleLogout,
       jump2UserCenter,
-      toAboutInfo,
+      toAboutInfo
     };
   },
 });
