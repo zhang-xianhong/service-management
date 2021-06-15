@@ -59,7 +59,7 @@ service.interceptors.response.use(
         if (whiteList.includes(currentPath)) {
           currentPath = '/';
         }
-        router.push(`/login?redirect=${currentPath}`);
+        router.replace(`/login?redirect=${currentPath}`);
       }
     }
     if (error.response.status === 403) {
