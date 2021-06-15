@@ -24,7 +24,7 @@
       </div>
       <div class="service-list_right">
         <el-input
-          placeholder="请输入服务名称/标签/分类"
+          placeholder="请输入服务名称"
           style="width: 500px"
           v-model="pageInfo.keyword"
           suffix-icon="el-icon-search"
@@ -273,7 +273,6 @@ export default defineComponent({
         label: 'name',
         value: 'id',
         emitPath: false,
-        multiple: true,
       },
     };
   },
@@ -392,7 +391,7 @@ export default defineComponent({
         return false;
       }
       senddata.name = `srv-${senddata.name}`;
-      senddata.classification = serviceDetail.classification ? serviceDetail.classification.join(',') : '';
+      senddata.classification = `${senddata.classification}`;
       addService(senddata)
         .then(() => {
           refreshServiceList(pageInfo);

@@ -1,6 +1,6 @@
 <template>
   <div style="background: #fff">
-    <div style="width: 100%; height=330px; position: relative;">
+    <div style="width: 100%; height: 330px; position: relative">
       <el-table :data="fields" :height="330">
         <el-table-column type="index" width="50"></el-table-column>
         <el-table-column prop="name" label="属性名称">
@@ -47,7 +47,7 @@
         </el-table-column>
         <el-table-column prop="operations" label="操作" width="180">
           <template #default="scope">
-            <a @click="add(scope.$index)" class="operator">添加</a>
+            <a @click="add(scope.$index)" class="operator" v-if="scope.$index === 0">添加</a>
             <a @click="remove(scope.$index)" class="operator" :disabled="isFieldDisabled(scope)">删除</a>
           </template>
         </el-table-column>
@@ -79,7 +79,8 @@ export default defineComponent({
     });
     const modelId = currentModel.value.id;
     const add = (index: number) => {
-      fields.value.splice(index + 1, 0, {
+      console.log(index);
+      fields.value.splice(0, 0, {
         name: '',
         description: '',
         type: '',

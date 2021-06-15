@@ -18,3 +18,24 @@ export const uploadValidate = (instance: any, file: { size: number; name: string
     return false;
   }
 };
+
+// 自定义密码校验  长度在 8 到 16 个字符,只能输入大小写字母、数字、特殊字符（(!@#$%^&),至少1个大写字母，1个小写字母
+export function checkPasswd(passwd: string): boolean {
+  const szReg = /^(?=.*[a-z])(?=.*[A-Z])[A-Za-z\d（!@#$%^&)]{8,16}/;
+  return szReg.test(passwd);
+}
+// 组件库form表单校验器 async-valitor
+export const HELP_MSG =
+  '长度在 8 到 16 个字符,只能输入大小写字母、数字、特殊字符（(!@#$%^&),至少1个大写字母，1个小写字母';
+// 密码校验
+const validatorPassword = (rule: any, value: string, callback: Function) => {
+  if (!checkPasswd(value)) {
+    callback(new Error(HELP_MSG));
+  }
+  callback();
+};
+
+export const PasswordRules = [
+  { required: true, message: '请输入新的密码', trigger: 'blur' },
+  { validator: validatorPassword, trigger: 'blur' },
+];

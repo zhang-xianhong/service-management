@@ -23,15 +23,6 @@ export const baseRoutes: Array<RouteRecordRaw> = [
     },
   },
   {
-    path: '/forget-password',
-    name: 'password',
-    component: () => import('@/views/login/ForgetPassword.vue'),
-    meta: {
-      isRootLevel: false,
-      title: '密码找回',
-    },
-  },
-  {
     path: '/not-found',
     name: 'notFound',
     component: () => import('@/views/not-found/Index.vue'),
@@ -47,6 +38,26 @@ export const baseRoutes: Array<RouteRecordRaw> = [
     meta: {
       isRootLevel: false,
       title: '信息获取中...',
+    },
+  },
+  {
+    path: '/reset-password',
+    component: () => import('@/views/login/ResetPassword.vue'),
+    name: 'resetPassword',
+    meta: {
+      title: '重置密码',
+      icon: 'el-icon-eleme',
+      isRootLevel: true,
+      hidden: true,
+    },
+  },
+  {
+    path: '/forget-password',
+    name: 'password',
+    component: () => import('@/views/login/ForgetPassword.vue'),
+    meta: {
+      isRootLevel: false,
+      title: '密码找回',
     },
   },
 ];
@@ -308,7 +319,7 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import(/* webpackChunkName: "classification" */ '@/views/conf-management/Classification.vue'),
         name: 'Classification',
         meta: {
-          title: '分类信息',
+          title: '分类配置',
           icon: 'el-icon-eleme',
           isRootLevel: false,
           id: 17,
@@ -319,7 +330,7 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import(/* webpackChunkName: "tag" */ '@/views/conf-management/Tag.vue'),
         name: 'Tag',
         meta: {
-          title: '标签信息',
+          title: '标签配置',
           icon: 'el-icon-eleme',
           isRootLevel: false,
           id: 18,
@@ -401,6 +412,54 @@ const routes: Array<RouteRecordRaw> = [
         name: 'UserCenter',
         meta: {
           title: '个人中心',
+          icon: 'el-icon-eleme',
+          isRootLevel: false,
+          hidden: true,
+        },
+      },
+    ],
+  },
+  {
+    path: '/about-info',
+    name: 'AboutInfo',
+    redirect: '/about',
+    component: Layout,
+    meta: {
+      isRootLevel: true,
+      hidden: true,
+      node: true,
+    },
+    children: [
+      {
+        path: 'about',
+        component: () => import(/* webpackChunkName: "userinfo" */ '@/views/about-info/Index.vue'),
+        name: 'About',
+        meta: {
+          title: '关于信息',
+          icon: 'el-icon-eleme',
+          isRootLevel: false,
+          hidden: true,
+        },
+      },
+    ],
+  },
+  {
+    path: '/about-info',
+    name: 'AboutInfo',
+    redirect: '/about',
+    component: Layout,
+    meta: {
+      isRootLevel: true,
+      hidden: true,
+      node: true,
+    },
+    children: [
+      {
+        path: 'about',
+        component: () => import(/* webpackChunkName: "userinfo" */ '@/views/about-info/Index.vue'),
+        name: 'About',
+        meta: {
+          title: '关于信息',
           icon: 'el-icon-eleme',
           isRootLevel: false,
           hidden: true,

@@ -1,5 +1,11 @@
 <template>
-  <el-dialog :title="isEditable ? '编辑应用' : '应用基本信息'" v-model="isVisable" width="500px">
+  <el-dialog
+    :title="isEditable ? '编辑应用' : '应用基本信息'"
+    v-model="isVisable"
+    width="500px"
+    destroy-on-close
+    v-on:open="onOpen"
+  >
     <el-form :model="detailInfo" label-width="120px" label-position="left">
       <el-form-item
         label="应用中文名称"
@@ -31,7 +37,7 @@
           <i v-if="!detailInfo.imageUrl" class="el-icon-plus avatar-uploader-icon"></i>
           <img v-else style="width: 110px; height: 110px" :src="detailInfo.imageUrl" alt />
         </el-upload>
-        <img v-else style="width: 110px; height: 110px" :src="detailInfo.imageUrl" alt />
+        <img v-else v-show="detailInfo.imageUrl" style="width: 110px; height: 110px" :src="detailInfo.imageUrl" alt />
       </el-form-item>
       <el-form-item label="应用简介">
         <el-input
@@ -100,7 +106,11 @@ export default defineComponent({
     const isEditable: Ref<boolean> = ref(false);
 
     const isVisable: any = computed(() => props.visable);
-
+    // 每次打开会保留上一次的数据，需要重置
+    const onOpen = () => {
+      detailInfo.value = props.detail;
+      isEditable.value = false;
+    };
     getAllService();
 
     const serviceIds = ref(props.detail.services.map((item: any) => item.serviceId));
@@ -173,6 +183,7 @@ export default defineComponent({
       updateAppDetail,
       handleCloseDialog,
       getShowBool,
+      onOpen,
     };
   },
 });

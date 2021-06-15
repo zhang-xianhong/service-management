@@ -23,6 +23,17 @@ export const baseRoutes: Array<RouteRecordRaw> = [
     },
   },
   {
+    path: '/reset-password',
+    component: () => import('@/views/login/ResetPassword.vue'),
+    name: 'resetPassword',
+    meta: {
+      title: '重置密码',
+      icon: 'el-icon-eleme',
+      isRootLevel: true,
+      hidden: true,
+    },
+  },
+  {
     path: '/no-right',
     name: 'noRight',
     component: () => import('@/views/no-right/Index.vue'),

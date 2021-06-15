@@ -2,6 +2,9 @@ import request from '@/utils/request';
 import URL from '@/shared/constant/url';
 import { getUrl } from '../utils';
 import { SuccessResponse } from '@/types/response';
+export const enum MailType {
+  resetPassword = 'resetPassword',
+}
 
 export const getTenantList: (payload?: object) => Promise<SuccessResponse<any>> = (payload: any) =>
   request.get(getUrl(URL.tenant.GET_TENANT_LIST), { params: payload });
@@ -35,3 +38,27 @@ export const validateEngAbbr: (engAbbr: string) => Promise<SuccessResponse<any>>
 
 export const validateAccount: (account: string) => Promise<SuccessResponse<any>> = (account: string) =>
   request.post(getUrl(URL.tenant.VALIDATE_ACCOUNT), { account });
+
+// 重置密码
+export const resetPassWd: (payload?: object) => Promise<SuccessResponse<any>> = (payload: any) =>
+  request.post(getUrl(URL.tenant.UPDATE_TENANT_PASSWD), payload);
+
+// 发送重置密码邮件
+export const sendMailForResetPassword: (params: {
+  type: MailType.resetPassword;
+  userId: number;
+  url: URL;
+  email?: string;
+}) => Promise<SuccessResponse<any>> = (params) => request.post(getUrl(URL.tenant.SEND_MAIL_FOR_RESET_PASSWORD), params);
+
+// 验证是否可以重置密码
+export const verifyCouldResetPassword: (params: { code: string; userId: number }) => Promise<SuccessResponse<any>> = (
+  params,
+) => request.post(getUrl(URL.tenant.VERIFY_CODE_VALID_FOR_RESET_PASSWORD), params);
+
+// 重置密码
+export const resetPassWord: (payload?: {
+  newPassword: string;
+  resetCode: string;
+  userId: number;
+}) => Promise<SuccessResponse<any>> = (payload: any) => request.post(getUrl(URL.tenant.RESET_USER_PASSWD), payload);

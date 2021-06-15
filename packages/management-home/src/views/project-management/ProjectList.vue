@@ -78,7 +78,7 @@
             :label-width="labelWidth"
             prop="description"
             :rules="[
-              { required: true, message: '请输入项目描述', trigger: 'blur' },
+              { required: true, message: '请输入项目中文名称', trigger: 'blur' },
               { min: 3, max: 20, message: '请输入3到20个字符', trigger: 'blur' },
             ]"
           >

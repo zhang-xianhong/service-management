@@ -57,7 +57,7 @@
         <template #dropdown>
           <el-dropdown-menu>
             <el-dropdown-item icon="el-icon-info" @click="jump2UserCenter">个人中心</el-dropdown-item>
-            <el-dropdown-item icon="el-icon-info">关于</el-dropdown-item>
+            <el-dropdown-item icon="el-icon-info" @click="toAboutInfo">关于</el-dropdown-item>
             <el-dropdown-item icon="el-icon-switch-button" @click="handleLogout">登出</el-dropdown-item>
           </el-dropdown-menu>
         </template>
@@ -105,6 +105,10 @@ export default defineComponent({
       router.push('/user-management');
     };
 
+    const toAboutInfo = () => {
+      router.push('/about-info');
+    };
+
     let intervalLogout = null as any;
 
     const handleLogout = () => {
@@ -131,6 +135,7 @@ export default defineComponent({
       userInfo,
       handleLogout,
       jump2UserCenter,
+      toAboutInfo,
     };
   },
 });

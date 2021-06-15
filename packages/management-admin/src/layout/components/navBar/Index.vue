@@ -5,42 +5,12 @@
       <span>|</span>
       <img src="./citybase.png" />
     </a>
-    <div class="bread-bar">
-      <!--      <bread-curmb></bread-curmb>-->
-    </div>
+    <div class="bread-bar"></div>
     <div class="position-right-bar">
-      <!-- TODO: 此版本暂无提醒，无项目 -->
-      <!-- <el-dropdown trigger="click" class="header-title">
-        <el-badge :value="5" :max="99" class="item">
-          <i class="el-icon-message-solid header-title-message-icon"></i>
-        </el-badge>
-        <template #dropdown>
-          <el-dropdown-menu>
-            <el-dropdown-item icon="el-icon-message"
-              >升级公告<span class="el-badge__content el-badge__content--primary">2</span></el-dropdown-item
-            >
-            <el-dropdown-item icon="el-icon-s-flag">待办任务</el-dropdown-item>
-            <el-dropdown-item icon="el-icon-tickets">待办工单</el-dropdown-item>
-            <el-dropdown-item icon="el-icon-date"
-              >今日日程<span class="el-badge__content el-badge__content--primary">3</span></el-dropdown-item
-            >
-            <el-dropdown-item icon="el-icon-edit-outline">待批申请</el-dropdown-item>
-            <el-dropdown-item icon="el-icon-bell">系统通知</el-dropdown-item>
-          </el-dropdown-menu>
-        </template>
-      </el-dropdown>-->
-      <!-- <el-dropdown trigger="click" class="header-title">
-        <span class="el-dropdown-link"> <i class="el-icon-s-unfold header-title-object-icon3"></i>项目 </span>
-        <template #dropdown>
-          <el-dropdown-menu>
-            <el-dropdown-item v-for="(project, index) in projectList" :key="index">{{ project.name }}</el-dropdown-item>
-          </el-dropdown-menu>
-        </template>
-      </el-dropdown>-->
       <el-dropdown trigger="click" class="header-title">
         <span class="el-dropdown-link">
           <i class="el-icon-user-solid"></i>
-          admin
+          {{ userInfo?.displayName }}
           <i class="el-icon-arrow-down el-icon--right"></i>
         </span>
         <template #dropdown>
@@ -63,6 +33,7 @@ import { defineComponent, reactive, ref, Ref } from 'vue';
 import { useRouter } from 'vue-router';
 import ManageDialog from './ManageDialog.vue';
 // import breadCurmb from '@/components/bread-curmb/Index.vue';
+import { userInfo } from '@/layout/messageCenter/user-info';
 
 interface RefDialog {
   openDialog: Function;
@@ -115,6 +86,7 @@ export default defineComponent({
       });
     };
     return {
+      userInfo,
       projectList,
       refManageDialog,
       openPersonalCenter,
