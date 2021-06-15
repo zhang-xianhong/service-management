@@ -224,7 +224,7 @@ export default {
       if (code === 0) {
         (instance as any).proxy.$message({
           type: 'success',
-          message: '冻结成功',
+          message: '禁用成功',
         });
         getTableData();
       }

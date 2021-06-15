@@ -100,13 +100,23 @@ export default {
     const isShowMode = ref(true);
 
     const computedServices = computed(() => allService.value.filter((service: any) => service.id !== props.id));
+    const ownersArr = props.data.owners?.map((x: any) => x.userId) || [];
+    const allOwnersArr = props.data.ownerUsers?.map((x: any) => x.id) || [];
+    const realOwners = ownersArr
+      // eslint-disable-next-line array-callback-return
+      .map((x: any) => {
+        if (allOwnersArr.includes(x)) {
+          return { userId: x };
+        }
+      })
+      .filter((x: any) => x);
 
     // 表单数据
     const formData = reactive({
       name: props.data.name,
       description: props.data.description,
       owner: props.data.owner,
-      owners: props.data.owners,
+      owners: realOwners,
       ownerUsers: props.data.ownerUsers,
       classification: props.data.classification,
       tag: props.data.tag,
