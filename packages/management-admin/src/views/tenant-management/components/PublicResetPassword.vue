@@ -1,29 +1,30 @@
 <template>
-  <el-dialog title="重置密码" v-model="visible" width="500px" :close-on-click-modal="false" :destroy-on-close="true">
+  <el-dialog
+    title="重置密码"
+    v-model="visible"
+    width="500px"
+    :close-on-click-modal="false"
+    :destroy-on-close="true"
+  >
     <div>
       <el-form :model="formData" ref="resetForm" :rules="rules">
         <el-form-item label-width="100px" label="重置方式">
           <el-select placeholder="请选择重置密码的方式" v-model="configuration.current" style="width: 100%">
-            <el-option v-for="item in configuration.options" :key="item.value" :label="item.label" :value="item.value">
-              {{ item.label }}
-            </el-option>
+            <el-option
+              v-for="item in configuration.options"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            >{{ item.label }}</el-option>
           </el-select>
         </el-form-item>
         <template v-if="configuration.isRandom">
           <el-form-item prop="newPassword" label-width="100px">
             <template v-slot:label>
-              <span> 新密码 </span>
-              <el-tooltip :content="helper" placement="top" effect="light" style="margin-right: 5px">
-                <svg-icon icon-name="wenhao" icon-class="detail-icons__item"></svg-icon>
-              </el-tooltip>
+              <span>新密码</span>
             </template>
 
-            <el-input
-              v-if="formData.newPassword"
-              v-model.trim="formData.newPassword"
-              placeholder="请输入新的密码"
-              show-password
-            ></el-input>
+            <el-input v-model.trim="formData.newPassword" placeholder="请输入新的密码" show-password></el-input>
             <el-button type="text" @click="handleCopy" class="btn-copy">复制</el-button>
           </el-form-item>
         </template>
