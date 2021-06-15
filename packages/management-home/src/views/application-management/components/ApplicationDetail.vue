@@ -1,10 +1,19 @@
 <template>
-  <el-dialog :title="isEditable ? '编辑应用' : '应用基本信息'" v-model="isVisable" width="500px">
+  <el-dialog
+    :title="isEditable ? '编辑应用' : '应用基本信息'"
+    v-model="isVisable"
+    width="500px"
+    destroy-on-close
+    v-on:open="onOpen"
+  >
     <el-form :model="detailInfo" label-width="120px" label-position="left">
       <el-form-item
         label="应用中文名称"
         prop="description"
-        :rules="[{ required: true, message: '内容不能为空', trigger: 'blur' }]"
+        :rules="[
+          { required: true, message: '内容不能为空', trigger: 'blur' },
+          { min: 3, max: 20, message: '限制 3 - 20 个字符' },
+        ]"
       >
         <el-input v-if="isEditable" v-model="detailInfo.description" placeholder="请输入中文名称"></el-input>
         <template v-else>{{ detailInfo.description }}</template>
@@ -76,7 +85,6 @@ interface DetailInterface {
   services: any[];
   imageUrl: string;
 }
-
 export default defineComponent({
   name: 'ApplicationDetail',
   inheritAttrs: false,
@@ -97,7 +105,11 @@ export default defineComponent({
     const isEditable: Ref<boolean> = ref(false);
 
     const isVisable: any = computed(() => props.visable);
-
+    // 每次打开会保留上一次的数据，需要重置
+    const onOpen = () => {
+      detailInfo.value = props.detail;
+      isEditable.value = false;
+    };
     getAllService();
 
     const serviceIds = ref(props.detail.services.map((item: any) => item.serviceId));
@@ -170,6 +182,7 @@ export default defineComponent({
       updateAppDetail,
       handleCloseDialog,
       getShowBool,
+      onOpen,
     };
   },
 });
