@@ -39,26 +39,18 @@
       </el-table-column>
       <el-table-column label="操作" width="200">
         <template #default="scope">
-          <el-button
-            type="text"
-            v-if="scope.row.status === statusEnum.ENABLE"
-            @click="onFreeze(scope.row)"
-          >禁用</el-button>
-          <el-button
-            type="text"
-            v-if="scope.row.status === statusEnum.FREEZE"
-            @click="onEnable(scope.row.id)"
-          >启用</el-button>
-          <el-button
-            type="text"
-            :disabled="scope.row.status === statusEnum.FREEZE"
-            @click="onResetPWD(scope.row)"
-          >重置密码</el-button>
-          <el-button
-            type="text"
-            :disabled="scope.row.status === statusEnum.ENABLE"
-            @click="onDelete(scope.row)"
-          >删除</el-button>
+          <el-button type="text" v-if="scope.row.status === statusEnum.ENABLE" @click="onFreeze(scope.row)"
+            >禁用</el-button
+          >
+          <el-button type="text" v-if="scope.row.status === statusEnum.FREEZE" @click="onEnable(scope.row.id)"
+            >启用</el-button
+          >
+          <el-button type="text" :disabled="scope.row.status === statusEnum.FREEZE" @click="onResetPWD(scope.row)"
+            >重置密码</el-button
+          >
+          <el-button type="text" :disabled="scope.row.status === statusEnum.ENABLE" @click="onDelete(scope.row)"
+            >删除</el-button
+          >
         </template>
       </el-table-column>
     </el-table>

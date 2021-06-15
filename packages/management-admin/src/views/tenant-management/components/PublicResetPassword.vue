@@ -17,14 +17,8 @@
                 <svg-icon icon-name="wenhao" icon-class="detail-icons__item"></svg-icon>
               </el-tooltip>
             </template>
-
-            <el-input
-              v-if="formData.newPassword"
-              v-model.trim="formData.newPassword"
-              placeholder="请输入新的密码"
-              show-password
-            ></el-input>
-            <el-button type="text" @click="handleCopy" class="btn-copy">复制</el-button>
+            <el-input v-model.trim="formData.newPassword" placeholder="请输入新的密码" show-password></el-input>
+            <el-button type="text" v-if="formData.newPassword" @click="handleCopy" class="btn-copy">复制</el-button>
           </el-form-item>
         </template>
       </el-form>
