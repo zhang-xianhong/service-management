@@ -42,7 +42,7 @@
           <el-button
             type="text"
             v-if="scope.row.status === statusEnum.ENABLE"
-            @click="onFreeze(scope.row.id)"
+            @click="onFreeze(scope.row)"
           >禁用</el-button>
           <el-button
             type="text"
