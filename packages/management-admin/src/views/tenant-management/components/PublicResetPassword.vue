@@ -1,11 +1,5 @@
 <template>
-  <el-dialog
-    title="重置密码"
-    v-model="visible"
-    width="500px"
-    :close-on-click-modal="false"
-    :destroy-on-close="true"
-  >
+  <el-dialog title="重置密码" v-model="visible" width="500px" :close-on-click-modal="false" :destroy-on-close="true">
     <div>
       <el-form :model="formData" ref="resetForm" :rules="rules">
         <el-form-item label-width="100px" label="重置方式">
@@ -15,7 +9,8 @@
               :key="item.value"
               :label="item.label"
               :value="item.value"
-            >{{ item.label }}</el-option>
+              >{{ item.label }}</el-option
+            >
           </el-select>
         </el-form-item>
         <template v-if="configuration.isRandom">

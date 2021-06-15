@@ -456,10 +456,7 @@ const routes: Array<RouteRecordRaw> = [
     children: [
       {
         path: 'about',
-        component: () =>
-          import(
-            /* webpackChunkName: "userinfo" */ '@/views/about-info/Index.vue'
-          ),
+        component: () => import(/* webpackChunkName: "userinfo" */ '@/views/about-info/Index.vue'),
         name: 'About',
         meta: {
           title: '关于信息',

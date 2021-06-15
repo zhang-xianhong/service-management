@@ -13,7 +13,7 @@
         <img v-if="imageUrl" class="application-info__image" :src="imageUrl" alt="" />
         <div v-else class="application-info__content">
           <i class="el-icon-plus"></i>
-          <div style="font-size: 12px;transform: scale(.8);transform-origin: center;">上传Logo</div>
+          <div style="font-size: 12px; transform: scale(0.8); transform-origin: center">上传Logo</div>
         </div>
       </el-upload>
       <div class="application-detail" @click.prevent="jump2AppDetail">
