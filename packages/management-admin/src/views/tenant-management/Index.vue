@@ -64,15 +64,19 @@
       @current-change="handlePageChange"
     ></packaged-pagination>
   </el-row>
+  <PublicResetPassword ref="publicResetPassword"></PublicResetPassword>
+  <PrivateResetPassword ref="privateResetPassword"></PrivateResetPassword>
 </template>
 
 <script lang="ts">
-import { reactive, toRefs, getCurrentInstance } from 'vue';
+import { reactive, toRefs, getCurrentInstance, ref, Ref, watch } from 'vue';
 import { getTenantList, deleteTenant, freezeTenant, enableTenant } from '@/api/tenant';
 import { debounce } from 'lodash';
 import { useRouter } from 'vue-router';
 import PackagedPagination from '@/components/packaged-pagination/Index.vue';
-
+import { userInfo } from '@/layout/messageCenter/user-info';
+import PublicResetPassword from './components/PublicResetPassword.vue';
+import PrivateResetPassword from './components/PrivateResetPassword.vue';
 // 租户数据接口
 interface TenantItemInterface {
   id: number;
@@ -81,6 +85,7 @@ interface TenantItemInterface {
   contactName: string;
   contactTel: string;
   contactEmail: string;
+  managerId: number;
   managerAccount: string;
   managerName: string;
   managerTel: string;
@@ -109,12 +114,19 @@ export default {
   name: 'Tenant',
   components: {
     PackagedPagination,
+    PublicResetPassword,
+    PrivateResetPassword,
   },
   setup() {
     const router = useRouter();
-
     const instance = getCurrentInstance();
+    const publicResetPassword: Ref<any> = ref(null);
+    const privateResetPassword: Ref<any> = ref(null);
+    const isPublic = ref(true);
 
+    watch(userInfo, () => {
+      isPublic.value = userInfo.value?.deployEnv === 'public';
+    });
     const tableState: TableStateInterface = reactive({
       tableData: [],
       loading: false,
@@ -138,9 +150,10 @@ export default {
         contactName: item.contact?.name,
         contactTel: item.contact?.phone,
         contactEmail: item.contact?.email,
-        managerName: item.manager?.name,
-        managerAccount: item.manager?.account,
-        managerTel: item.manager?.phone,
+        managerId: item.manager?.userId,
+        managerName: item.manager?.displayName,
+        managerAccount: item.manager?.userName,
+        managerTel: item.manager?.phoneNumber,
       }));
       tableState.total = data.count;
       tableState.loading = false;
@@ -230,14 +243,21 @@ export default {
     };
 
     // 重置租户密码
-    const onResetPWD = async (id: string) => {
-      // TODO
-      console.log(id);
+    const onResetPWD = async (data: any) => {
+      const { managerId } = data;
+      if (isPublic.value) {
+        publicResetPassword.value.handleResetPasswd(managerId);
+      } else {
+        privateResetPassword.value.handleResetPasswd(managerId);
+      }
     };
 
     return {
       ...toRefs(tableState),
       statusEnum,
+      publicResetPassword,
+      privateResetPassword,
+      isPublic,
       handlePageSizeChange,
       handlePageChange,
       handleComputerNameInput,
