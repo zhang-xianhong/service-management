@@ -53,7 +53,7 @@ service.interceptors.response.use(
     if (error.response.status === 401) {
       let currentPath = router?.currentRoute?.value?.path || '/';
       if (currentPath === '/reset-password') {
-        // 
+        //
       } else {
         const whiteList = baseRoutes.map((x) => x.path);
         if (whiteList.includes(currentPath)) {
