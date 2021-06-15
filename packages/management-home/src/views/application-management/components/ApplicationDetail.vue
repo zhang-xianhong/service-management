@@ -4,7 +4,10 @@
       <el-form-item
         label="应用中文名称"
         prop="description"
-        :rules="[{ required: true, message: '内容不能为空', trigger: 'blur' }]"
+        :rules="[
+          { required: true, message: '内容不能为空', trigger: 'blur' },
+          { min: 3, max: 20, message: '应用中文名称长度在3到20个字符之间' },
+        ]"
       >
         <el-input v-if="isEditable" v-model="detailInfo.description" placeholder="请输入中文名称"></el-input>
         <template v-else>{{ detailInfo.description }}</template>
