@@ -18,7 +18,7 @@
       </el-upload>
       <div class="application-detail">
         <div class="application-detail__name">{{ detailInfo.description }}</div>
-        <div class="application-detail__englishname">{{detailInfo.name}}</div>
+        <div class="application-detail__englishname">{{ detailInfo.name }}</div>
         <div class="application-detail__desc">{{ detailInfo.remark }}</div>
       </div>
       <div class="application-operation">

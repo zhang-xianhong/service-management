@@ -14,23 +14,21 @@
       <img src="./citybase.png" />
     </div>
     <div class="about__edition">版本 1.0.0</div>
-    <div class="about__footer">
-      Copyright @ 1998 - 2021 Tencent All Rights Reserved 腾讯公司 版权所有
-    </div>
+    <div class="about__footer">Copyright @ 1998 - 2021 Tencent All Rights Reserved 腾讯公司 版权所有</div>
   </el-dialog>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from "vue";
-import { useRouter } from "vue-router";
+import { defineComponent, ref } from 'vue';
+import { useRouter } from 'vue-router';
 export default defineComponent({
-  name: "AboutInfo",
+  name: 'AboutInfo',
   setup() {
     const router = useRouter();
     const dialogVisible = ref(true);
     const handleClose = () => {
       dialogVisible.value = false;
-      router.push("/");
+      router.push('/');
     };
     return {
       dialogVisible,
