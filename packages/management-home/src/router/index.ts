@@ -319,7 +319,7 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import(/* webpackChunkName: "classification" */ '@/views/conf-management/Classification.vue'),
         name: 'Classification',
         meta: {
-          title: '分类信息',
+          title: '分类配置',
           icon: 'el-icon-eleme',
           isRootLevel: false,
           id: 17,
@@ -330,7 +330,7 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import(/* webpackChunkName: "tag" */ '@/views/conf-management/Tag.vue'),
         name: 'Tag',
         meta: {
-          title: '标签信息',
+          title: '标签配置',
           icon: 'el-icon-eleme',
           isRootLevel: false,
           id: 18,
