@@ -68,10 +68,10 @@
   <el-dialog title="新建应用" v-model="createDialogVisible" width="500px">
     <el-form :model="appInfo" :rules="rules" label-width="120px" label-position="left">
       <el-form-item label="应用中文名称" prop="description">
-        <el-input v-model="appInfo.description" placeholder="请输入中文名称" ref="descriptionName"></el-input>
+        <el-input v-model.trim="appInfo.description" placeholder="请输入中文名称" ref="descriptionName"></el-input>
       </el-form-item>
       <el-form-item label="应用英文名称" prop="name">
-        <el-input v-model="appInfo.name" placeholder="请输入英文名称" ref="englishName"></el-input>
+        <el-input v-model.trim="appInfo.name" placeholder="请输入英文名称" ref="englishName"></el-input>
       </el-form-item>
       <el-form-item>
         <template v-slot:label>应用图标<i class="el-icon-question info-icon"></i></template>

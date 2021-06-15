@@ -1,7 +1,7 @@
 <template>
   <el-form :model="typeForm" ref="formRef" :rules="formRules" label-width="120px">
     <el-form-item label="类型名称" prop="name" required>
-      <el-input v-model="typeForm.name" placeholder="请选择"></el-input>
+      <el-input v-model.trim="typeForm.name" placeholder="请选择"></el-input>
     </el-form-item>
     <el-form-item label="数据类型" prop="type" required>
       <el-select v-model="typeForm.type" placeholder="请选择">
