@@ -56,6 +56,8 @@ service.interceptors.response.use(
       if (whiteList.includes(currentPath) && currentPath !== '/reset-password') {
         currentPath = '/';
         router.push(`/login?redirect=${currentPath}`);
+      } else {
+        router.push('/login')
       }
     }
     if (error.response.status === 403) {
