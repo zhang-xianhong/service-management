@@ -1,70 +1,80 @@
-import { createRouter, createWebHistory, Router, RouteRecordRaw, createRouterMatcher, RouterMatcher } from 'vue-router';
+import {
+  createRouter,
+  createWebHistory,
+  Router,
+  RouteRecordRaw,
+  createRouterMatcher,
+  RouterMatcher,
+} from "vue-router";
 
-import Layout from '@/layout/Index.vue';
-import { setRouterRef, getPermissionRoutes } from '@/layout/messageCenter/routerRef';
+import Layout from "@/layout/Index.vue";
+import {
+  setRouterRef,
+  getPermissionRoutes,
+} from "@/layout/messageCenter/routerRef";
 
 export const baseRoutes: Array<RouteRecordRaw> = [
   {
-    path: '/no-right',
-    name: 'noRight',
-    component: () => import('@/views/no-right/Index.vue'),
+    path: "/no-right",
+    name: "noRight",
+    component: () => import("@/views/no-right/Index.vue"),
     meta: {
       isRootLevel: false,
-      title: '没有权限',
+      title: "没有权限",
     },
   },
   {
-    path: '/login',
-    name: 'login',
-    component: () => import('@/views/login/Index.vue'),
+    path: "/login",
+    name: "login",
+    component: () => import("@/views/login/Index.vue"),
     meta: {
       isRootLevel: false,
-      title: '登录',
+      title: "登录",
     },
   },
   {
-    path: '/forget-password',
-    name: 'password',
-    component: () => import('@/views/login/ForgetPassword.vue'),
+    path: "/forget-password",
+    name: "password",
+    component: () => import("@/views/login/ForgetPassword.vue"),
     meta: {
       isRootLevel: false,
-      title: '密码找回',
+      title: "密码找回",
     },
   },
   {
-    path: '/not-found',
-    name: 'notFound',
-    component: () => import('@/views/not-found/Index.vue'),
+    path: "/not-found",
+    name: "notFound",
+    component: () => import("@/views/not-found/Index.vue"),
     meta: {
       isRootLevel: false,
-      title: '404',
+      title: "404",
     },
   },
   {
-    path: '/router-loading',
-    name: 'RouterLoading',
-    component: () => import('@/views/router-loading/Index.vue'),
+    path: "/router-loading",
+    name: "RouterLoading",
+    component: () => import("@/views/router-loading/Index.vue"),
     meta: {
       isRootLevel: false,
-      title: '信息获取中...',
+      title: "信息获取中...",
     },
   },
 ];
 
 const routes: Array<RouteRecordRaw> = [
   {
-    path: '/',
-    redirect: '/tenant-management',
-    name: 'Dashboard',
+    path: "/",
+    redirect: "/tenant-management",
+    name: "Dashboard",
     meta: {
       isRootLevel: true,
       hidden: true,
     },
   },
   {
-    path: '/tenant-management',
-    redirect: '/tenant-detail',
-    name: 'TenantManagement',
+    path: "/tenant-management",
+    redirect: "/tenant-detail",
+    name: "TenantManagement",
     component: Layout,
     meta: {
       isRootLevel: true,
@@ -73,12 +83,15 @@ const routes: Array<RouteRecordRaw> = [
     },
     children: [
       {
-        path: 'tenant-detail',
-        component: () => import(/* webpackChunkName: "tenant" */ '@/views/tenant-management/Index.vue'),
-        name: 'TenantList',
+        path: "tenant-detail",
+        component: () =>
+          import(
+            /* webpackChunkName: "tenant" */ "@/views/tenant-management/Index.vue"
+          ),
+        name: "TenantList",
         meta: {
-          title: '租户管理',
-          icon: 'el-icon-eleme',
+          title: "租户管理",
+          icon: "el-icon-eleme",
           isRootLevel: false,
           id: 10,
           hidden: false,
@@ -87,41 +100,41 @@ const routes: Array<RouteRecordRaw> = [
     ],
   },
   {
-    path: '/project-management',
-    redirect: '/project-list',
-    name: 'ProjectManagement',
+    path: "/project-management",
+    redirect: "/project-list",
+    name: "ProjectManagement",
     component: Layout,
     meta: {
       isRootLevel: true,
-      title: '项目管理',
-      icon: 'el-icon-eleme',
+      title: "项目管理",
+      icon: "el-icon-eleme",
       id: 4,
       hidden: false,
       node: true,
     },
     children: [
       {
-        path: 'project-list',
-        component: () => import('@/views/project-management/ProjectList.vue'),
-        name: 'ProjectList',
+        path: "project-list",
+        component: () => import("@/views/project-management/ProjectList.vue"),
+        name: "ProjectList",
         meta: {
-          title: '项目列表',
-          icon: 'el-icon-eleme',
+          title: "项目列表",
+          icon: "el-icon-eleme",
           isRootLevel: false,
           id: 13,
           hidden: false,
         },
       },
       {
-        path: 'project-detail/:id',
-        component: () => import('@/views/project-management/ProjectDetail.vue'),
-        name: 'ProjectDetail',
+        path: "project-detail/:id",
+        component: () => import("@/views/project-management/ProjectDetail.vue"),
+        name: "ProjectDetail",
         meta: {
-          title: '项目详情',
-          icon: 'el-icon-eleme',
+          title: "项目详情",
+          icon: "el-icon-eleme",
           isRootLevel: false,
           hidden: true,
-          activeMenu: '/project-management/project-list',
+          activeMenu: "/project-management/project-list",
           id: 21,
         },
         props: true,
@@ -129,40 +142,44 @@ const routes: Array<RouteRecordRaw> = [
     ],
   },
   {
-    path: '/service-management',
-    redirect: '/service-list',
-    name: 'ServiceManagement',
+    path: "/service-management",
+    redirect: "/service-list",
+    name: "ServiceManagement",
     component: Layout,
     meta: {
-      title: '服务管理',
-      icon: 'el-icon-eleme',
+      title: "服务管理",
+      icon: "el-icon-eleme",
       isRootLevel: true,
       id: 16,
       node: true,
     },
     children: [
       {
-        path: 'service-list',
-        component: () => import('@/views/service-management/business-service/ServiceList.vue'),
-        name: 'ServiceList',
+        path: "service-list",
+        component: () =>
+          import("@/views/service-management/business-service/ServiceList.vue"),
+        name: "ServiceList",
         meta: {
-          title: '业务服务',
-          icon: 'el-icon-eleme',
+          title: "业务服务",
+          icon: "el-icon-eleme",
           isRootLevel: false,
           id: 16,
           hidden: false,
         },
       },
       {
-        path: 'service-list/detail/:id',
-        component: () => import('@/views/service-management/business-service/ServiceDetail.vue'),
-        name: 'ServiceDetail',
+        path: "service-list/detail/:id",
+        component: () =>
+          import(
+            "@/views/service-management/business-service/ServiceDetail.vue"
+          ),
+        name: "ServiceDetail",
         meta: {
-          title: '业务服务详情',
-          icon: 'el-icon-eleme',
+          title: "业务服务详情",
+          icon: "el-icon-eleme",
           isRootLevel: false,
           hidden: true,
-          activeMenu: '/service-management/service-list',
+          activeMenu: "/service-management/service-list",
           id: 16,
         },
       },
@@ -179,25 +196,28 @@ const routes: Array<RouteRecordRaw> = [
     ],
   },
   {
-    path: '/application',
-    name: 'ApplicationManagement',
-    redirect: '/application-list',
+    path: "/application",
+    name: "ApplicationManagement",
+    redirect: "/application-list",
     component: Layout,
     meta: {
-      title: '应用编排',
-      icon: 'el-icon-eleme',
+      title: "应用编排",
+      icon: "el-icon-eleme",
       isRootLevel: true,
       id: 22,
       node: true,
     },
     children: [
       {
-        path: 'application-list',
-        component: () => import(/* webpackChunkName: "classification" */ '@/views/application-management/Index.vue'),
-        name: 'ApplicationList',
+        path: "application-list",
+        component: () =>
+          import(
+            /* webpackChunkName: "classification" */ "@/views/application-management/Index.vue"
+          ),
+        name: "ApplicationList",
         meta: {
-          title: '应用列表',
-          icon: 'el-icon-eleme',
+          title: "应用列表",
+          icon: "el-icon-eleme",
           isRootLevel: false,
           id: 23,
         },
@@ -205,69 +225,84 @@ const routes: Array<RouteRecordRaw> = [
     ],
   },
   {
-    path: '/settings',
-    name: 'Settings',
+    path: "/settings",
+    name: "Settings",
     component: Layout,
     meta: {
-      title: '配置管理',
-      icon: 'el-icon-eleme',
+      title: "配置管理",
+      icon: "el-icon-eleme",
       isRootLevel: true,
       id: 8,
       node: true,
     },
     children: [
       {
-        path: 'classification',
-        component: () => import(/* webpackChunkName: "classification" */ '@/views/conf-management/Classification.vue'),
-        name: 'Classification',
+        path: "classification",
+        component: () =>
+          import(
+            /* webpackChunkName: "classification" */ "@/views/conf-management/Classification.vue"
+          ),
+        name: "Classification",
         meta: {
-          title: '分类信息',
-          icon: 'el-icon-eleme',
+          title: "分类信息",
+          icon: "el-icon-eleme",
           isRootLevel: false,
           id: 17,
         },
       },
       {
-        path: 'tag',
-        component: () => import(/* webpackChunkName: "tag" */ '@/views/conf-management/Tag.vue'),
-        name: 'Tag',
+        path: "tag",
+        component: () =>
+          import(
+            /* webpackChunkName: "tag" */ "@/views/conf-management/Tag.vue"
+          ),
+        name: "Tag",
         meta: {
-          title: '标签信息',
-          icon: 'el-icon-eleme',
+          title: "标签信息",
+          icon: "el-icon-eleme",
           isRootLevel: false,
           id: 18,
         },
       },
       {
-        path: 'datatype',
-        component: () => import(/* webpackChunkName: "datatype" */ '@/views/conf-management/DataType.vue'),
-        name: 'DataType',
+        path: "datatype",
+        component: () =>
+          import(
+            /* webpackChunkName: "datatype" */ "@/views/conf-management/DataType.vue"
+          ),
+        name: "DataType",
         meta: {
-          title: '数据类型',
-          icon: 'el-icon-eleme',
+          title: "数据类型",
+          icon: "el-icon-eleme",
           isRootLevel: false,
           id: 19,
         },
       },
       {
-        path: 'datatype/edit/:id',
-        component: () => import(/* webpackChunkName: "datatype-edit" */ '@/views/conf-management/DataTypeEdit.vue'),
-        name: 'DataTypeEdit',
+        path: "datatype/edit/:id",
+        component: () =>
+          import(
+            /* webpackChunkName: "datatype-edit" */ "@/views/conf-management/DataTypeEdit.vue"
+          ),
+        name: "DataTypeEdit",
         meta: {
-          title: '新增数据类型',
-          icon: 'el-icon-eleme',
+          title: "新增数据类型",
+          icon: "el-icon-eleme",
           hidden: true,
           isRootLevel: false,
           id: 19,
         },
       },
       {
-        path: 'config',
-        component: () => import(/* webpackChunkName: "general" */ '@/views/conf-management/Config.vue'),
-        name: 'Config',
+        path: "config",
+        component: () =>
+          import(
+            /* webpackChunkName: "general" */ "@/views/conf-management/Config.vue"
+          ),
+        name: "Config",
         meta: {
-          title: '通用配置',
-          icon: 'el-icon-eleme',
+          title: "通用配置",
+          icon: "el-icon-eleme",
           isRootLevel: false,
           id: 20,
         },
@@ -298,35 +333,41 @@ const routes: Array<RouteRecordRaw> = [
   //   ],
   // },
   {
-    path: '/company-manage',
-    name: 'Company',
+    path: "/company-manage",
+    name: "Company",
     component: Layout,
     meta: {
-      title: '公司管理',
-      icon: 'el-icon-eleme',
+      title: "公司管理",
+      icon: "el-icon-eleme",
       isRootLevel: true,
       id: 3,
       node: true,
     },
     children: [
       {
-        path: 'person',
-        component: () => import(/* webpackChunkName: "tenant" */ '@/views/company-manage/Person.vue'),
-        name: 'Person',
+        path: "person",
+        component: () =>
+          import(
+            /* webpackChunkName: "tenant" */ "@/views/company-manage/Person.vue"
+          ),
+        name: "Person",
         meta: {
-          title: '人员管理',
-          icon: 'el-icon-eleme',
+          title: "人员管理",
+          icon: "el-icon-eleme",
           isRootLevel: false,
           id: 11,
         },
       },
       {
-        path: 'department',
-        component: () => import(/* webpackChunkName: "tenant" */ '@/views/company-manage/Department.vue'),
-        name: 'Department',
+        path: "department",
+        component: () =>
+          import(
+            /* webpackChunkName: "tenant" */ "@/views/company-manage/Department.vue"
+          ),
+        name: "Department",
         meta: {
-          title: '部门管理',
-          icon: 'el-icon-eleme',
+          title: "部门管理",
+          icon: "el-icon-eleme",
           isRootLevel: false,
           id: 12,
         },
@@ -334,35 +375,41 @@ const routes: Array<RouteRecordRaw> = [
     ],
   },
   {
-    path: '/publish',
-    name: 'Publish',
+    path: "/publish",
+    name: "Publish",
     component: Layout,
     meta: {
-      title: '发布管理',
-      icon: 'el-icon-eleme',
+      title: "发布管理",
+      icon: "el-icon-eleme",
       isRootLevel: true,
       id: 6,
       node: true,
     },
     children: [
       {
-        path: 'apply',
-        component: () => import(/* webpackChunkName: "general" */ '@/views/demands/publish/Apply.vue'),
-        name: 'PublishApply',
+        path: "apply",
+        component: () =>
+          import(
+            /* webpackChunkName: "general" */ "@/views/demands/publish/Apply.vue"
+          ),
+        name: "PublishApply",
         meta: {
-          title: '发布申请',
-          icon: 'el-icon-eleme',
+          title: "发布申请",
+          icon: "el-icon-eleme",
           isRootLevel: false,
           id: 14,
         },
       },
       {
-        path: 'review',
-        component: () => import(/* webpackChunkName: "general" */ '@/views/demands/publish/Review.vue'),
-        name: 'PublishReview',
+        path: "review",
+        component: () =>
+          import(
+            /* webpackChunkName: "general" */ "@/views/demands/publish/Review.vue"
+          ),
+        name: "PublishReview",
         meta: {
-          title: '发布审核',
-          icon: 'el-icon-eleme',
+          title: "发布审核",
+          icon: "el-icon-eleme",
           isRootLevel: false,
           id: 15,
         },
@@ -370,9 +417,9 @@ const routes: Array<RouteRecordRaw> = [
     ],
   },
   {
-    path: '/user-management',
-    redirect: '/user-center',
-    name: 'UserManagement',
+    path: "/user-management",
+    redirect: "/user-center",
+    name: "UserManagement",
     component: Layout,
     meta: {
       isRootLevel: true,
@@ -381,36 +428,15 @@ const routes: Array<RouteRecordRaw> = [
     },
     children: [
       {
-        path: 'user-detail',
-        component: () => import(/* webpackChunkName: "tenant" */ '@/views/user-management/Index.vue'),
-        name: 'UserCenter',
+        path: "user-detail",
+        component: () =>
+          import(
+            /* webpackChunkName: "tenant" */ "@/views/user-management/Index.vue"
+          ),
+        name: "UserCenter",
         meta: {
-          title: '个人中心',
-          icon: 'el-icon-eleme',
-          isRootLevel: false,
-          hidden: true,
-        },
-      },
-    ],
-  },
-  {
-    path: '/about-info',
-    name: 'AboutInfo',
-    redirect: '/about',
-    component: Layout,
-    meta: {
-      isRootLevel: true,
-      hidden: true,
-      node: true,
-    },
-    children: [
-      {
-        path: 'about',
-        component: () => import(/* webpackChunkName: "userinfo" */ '@/views/about-info/Index.vue'),
-        name: 'About',
-        meta: {
-          title: '关于信息',
-          icon: 'el-icon-eleme',
+          title: "个人中心",
+          icon: "el-icon-eleme",
           isRootLevel: false,
           hidden: true,
         },
@@ -425,7 +451,9 @@ export const reCreateRouter = (routes: Array<RouteRecordRaw>): Router =>
     routes,
   });
 
-export const reCreateRouterMatcher = (routes: Array<RouteRecordRaw>): RouterMatcher => createRouterMatcher(routes, {});
+export const reCreateRouterMatcher = (
+  routes: Array<RouteRecordRaw>
+): RouterMatcher => createRouterMatcher(routes, {});
 
 // eslint-disable-next-line
 let router = reCreateRouter([...baseRoutes]);
