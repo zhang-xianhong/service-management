@@ -24,6 +24,7 @@
 <script lang="ts">
 import { defineComponent, Ref, ref, watch, watchEffect, getCurrentInstance, SetupContext } from 'vue';
 import { updateProfile } from '@/api/user';
+import { ElMessage } from 'element-plus';
 
 export default defineComponent({
   name: 'Item',
@@ -66,6 +67,9 @@ export default defineComponent({
     });
 
     const onSave = async () => {
+      if (props.prop === 'displayName' || recentValue.value.length > 20) {
+        return ElMessage.warning('管理员姓名长度在2-20个字符之间');
+      }
       const { code } = await updateProfile({ [props.prop]: recentValue.value });
       if (code === 0) {
         (instance as any).proxy.$message({
