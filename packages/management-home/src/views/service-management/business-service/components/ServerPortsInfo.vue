@@ -316,6 +316,7 @@ export default defineComponent({
         .filter((item: any) => item.name !== '');
       console.log(params, 'this is params');
       tableData.value[currentItemIndex.value].params = params;
+      tableData.value[currentItemIndex.value].url = dialogState.url;
       dialogVisible.value = false;
     };
 
