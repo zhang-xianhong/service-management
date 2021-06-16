@@ -464,7 +464,9 @@ export default {
         path: `/service-management/service-list/detail/${value}`,
         query: { detailName: name },
       });
-      window.location.reload();
+      getServerInfo();
+      initModelList();
+      proxy.$forceUpdate();
     };
 
     const logs = (res: any) => {

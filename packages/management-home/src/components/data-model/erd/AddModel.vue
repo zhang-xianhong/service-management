@@ -50,7 +50,12 @@ export default defineComponent({
     const addModel = async () => {
       objectName.value.handleBlur();
       objectDescription.value.handleBlur();
-      if (!form.value.name || !form.value.description) {
+      if (
+        !form.value.name ||
+        !form.value.description ||
+        form.value.name?.length > 36 ||
+        form.value.description?.length > 255
+      ) {
         return false;
       }
       const reg = /^([A-Z][a-z]+)+$/;
@@ -72,8 +77,12 @@ export default defineComponent({
       name: [
         { required: true, message: '请输入对象名称', trigger: 'blur' },
         { pattern: /^([A-Z][a-z]+)+$/, message: '名称必须是大驼峰格式，均为英文字母，请重新输入', trigger: 'blur' },
+        { max: 36, message: '长度不可超过36个字符', trigger: 'blur' },
       ],
-      description: [{ required: true, message: '请输入对象描述', trigger: 'blur' }],
+      description: [
+        { required: true, message: '请输入对象描述', trigger: 'blur' },
+        { max: 255, message: '长度不可超过255个字符', trigger: 'blur' },
+      ],
     };
     return {
       form,
