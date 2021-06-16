@@ -8,7 +8,7 @@
       <div class="login-sidebar-introduce">
         <div class="login-sidebar-introduce__title">腾讯云CityBase积木平台</div>
         <ul class="login-sidebar-introduce__content">
-          <li>腾讯云CityBase积木平台是腾讯云CityBase数据、应用及服务建模开发中心，以模型微核心，主要提供如下能力：</li>
+          <li>是腾讯云CityBase数据、应用及服务建模开发中心，以模型为核心，主要提供如下能力：</li>
           <li>• 多源异构数据的快速接入、转换、融合；</li>
           <li>• 城市大体量二维、三维模型的轻量化；</li>
           <li>• 游戏级高逼真的云渲染；</li>

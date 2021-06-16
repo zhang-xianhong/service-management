@@ -23,21 +23,14 @@
               :props="treeProps"
             >
               <template #default="{ data, node }">
-                <div
-                  class="node-bg"
-                  :class="{ 'checked-node': data.checked }"
-                ></div>
+                <div class="node-bg" :class="{ 'checked-node': data.checked }"></div>
                 <el-checkbox
                   v-model="data.checked"
                   :disabled="data.disabled"
                   :indeterminate="data.isIndeterminate"
                   @change="checkUser(data, node)"
                 ></el-checkbox>
-                <el-tooltip
-                  effect="light"
-                  :content="data.name"
-                  placement="right-end"
-                >
+                <el-tooltip effect="light" :content="data.name" placement="right-end">
                   <span
                     style="
                       z-index: 1;
@@ -80,11 +73,7 @@
           <div class="list-wrapper">
             <div v-for="(user, $index) in selectedUser" :key="$index">
               <span>{{ user.displayName || user.name }}</span>
-              <el-tooltip
-                effect="light"
-                :content="user.deptName"
-                placement="right-end"
-              >
+              <el-tooltip effect="light" :content="user.deptName" placement="right-end">
                 <span
                   style="
                     width: 130px;
@@ -97,11 +86,7 @@
                   >{{ user.deptName }}</span
                 >
               </el-tooltip>
-              <i
-                class="el-icon-error"
-                style="float: right"
-                @click="remove(user)"
-              ></i>
+              <i class="el-icon-error" style="float: right" @click="remove(user)"></i>
             </div>
           </div>
         </div>
@@ -118,11 +103,11 @@
 
 <script lang="ts">
 /* eslint-disable no-param-reassign */
-import _ from "lodash/fp";
-import { computed, inject, ref, Ref, watchEffect, nextTick } from "vue";
-import { updateMembers } from "@/api/project/project";
+import _ from 'lodash/fp';
+import { computed, inject, ref, Ref, watchEffect, nextTick } from 'vue';
+import { updateMembers } from '@/api/project/project';
 export default {
-  name: "TreeSelector",
+  name: 'TreeSelector',
   props: {
     option: {
       required: true,
@@ -151,19 +136,19 @@ export default {
       default: () => [],
     },
   },
-  emits: ["userChanged"],
+  emits: ['userChanged'],
   setup(props: any, context: any) {
     const dialogVisible = ref(false);
-    const projectId = inject("projectId") as string;
-    const searchStr = ref("");
+    const projectId = inject('projectId') as string;
+    const searchStr = ref('');
     const selectedUser: Ref<Array<any>> = ref([]);
     const show = () => {
       dialogVisible.value = true;
     };
     const treeProps = {
-      label: "name",
-      children: "children",
-      isLeaf: "isLeaf",
+      label: 'name',
+      children: 'children',
+      isLeaf: 'isLeaf',
     };
     const dataDone = ref(true);
     const syncStatus = (node: any) => {
@@ -171,44 +156,27 @@ export default {
         node.parent.checked = false;
         node.parent.isIndeterminate = false;
         if (
-          _.some((item: any) => item.isIndeterminate || item.checked)(
-            node.parent._children || node.parent.children
-          )
+          _.some((item: any) => item.isIndeterminate || item.checked)(node.parent._children || node.parent.children)
         ) {
           node.parent.isIndeterminate = true;
         }
-        if (
-          _.every({ checked: true })(
-            node.parent._children || node.parent.children
-          )
-        ) {
+        if (_.every({ checked: true })(node.parent._children || node.parent.children)) {
           node.parent.checked = true;
           node.parent.isIndeterminate = false;
         }
-        if (
-          _.some({ disabled: true, checked: false })(
-            node.parent._children || node.parent.children
-          )
-        ) {
+        if (_.some({ disabled: true, checked: false })(node.parent._children || node.parent.children)) {
           node.parent.disabled = true;
         }
         syncStatus(node.parent);
       }
     };
-    const valueLabel = computed(
-      () => `${props.option[0]?.name} - ${props.role?.label}`
-    );
-    const setChecked = (
-      treeOption: Array<any>,
-      ids: Array<number>,
-      notAllowIds: Array<number>
-    ) => {
+    const valueLabel = computed(() => `${props.option[0]?.name} - ${props.role?.label}`);
+    const setChecked = (treeOption: Array<any>, ids: Array<number>, notAllowIds: Array<number>) => {
       treeOption.forEach((treeNode: any) => {
         if (treeNode.isLeaf) {
           treeNode.isIndeterminate = false;
           treeNode.checked = ids.includes(treeNode.id);
-          treeNode.disabled =
-            treeNode.checked || notAllowIds.includes(treeNode.id);
+          treeNode.disabled = treeNode.checked || notAllowIds.includes(treeNode.id);
         } else {
           setChecked(treeNode._children, ids, notAllowIds);
         }
@@ -218,8 +186,8 @@ export default {
     let copyOption: any;
     watchEffect(() => {
       dataDone.value = false;
-      const selectedUserId = _.map("id")(props.checked);
-      const notAllowUserId = _.map("id")(props.notAllow);
+      const selectedUserId = _.map('id')(props.checked);
+      const notAllowUserId = _.map('id')(props.notAllow);
       selectedUser.value = [];
       copyOption = _.cloneDeep(props.option);
       setChecked(copyOption, selectedUserId, notAllowUserId);
@@ -269,12 +237,10 @@ export default {
       const groupMembers: any[] = [];
       getEditableMember(group.children || group._children, groupMembers);
       if (!group.checked) {
-        selectedUser.value = _.differenceBy("id")(selectedUser.value)(
-          groupMembers
-        );
+        selectedUser.value = _.differenceBy('id')(selectedUser.value)(groupMembers);
         group.isIndeterminate = hasCheckedDisabled;
       } else {
-        selectedUser.value = _.unionBy("id")(selectedUser.value)(groupMembers);
+        selectedUser.value = _.unionBy('id')(selectedUser.value)(groupMembers);
         group.isIndeterminate = hasUncheckedDisabled;
         group.checked = !hasUncheckedDisabled;
       }
@@ -292,16 +258,16 @@ export default {
       const { code } = await updateMembers({
         projectId,
         roleId: props.role.id,
-        members: _.map("id")(selectedUser.value.concat(props.checked)),
+        members: _.map('id')(selectedUser.value.concat(props.checked)),
       });
       if (code === 0) {
         dialogVisible.value = false;
-        context.emit("userChanged", props.role);
+        context.emit('userChanged', props.role);
       }
     };
     const cancel = () => {
       dialogVisible.value = false;
-      context.emit("userChanged", props.role);
+      context.emit('userChanged', props.role);
     };
 
     const searchResult: Ref<any> = ref([]);
@@ -311,12 +277,7 @@ export default {
       if (!searchStr.value) return;
       const userArr: any[] = [];
       const deptArr: any[] = [];
-      const getSearchRes = (
-        searchStr: string,
-        users: any[],
-        depts: any[],
-        nodeList: any[]
-      ) => {
+      const getSearchRes = (searchStr: string, users: any[], depts: any[], nodeList: any[]) => {
         nodeList.forEach((node: any) => {
           if (RegExp(searchStr).test(node.name)) {
             if (node.isLeaf) {
@@ -325,13 +286,7 @@ export default {
               depts.push(node);
             }
           }
-          node.isLeaf ||
-            getSearchRes(
-              searchStr,
-              users,
-              depts,
-              node.children || node._children
-            );
+          node.isLeaf || getSearchRes(searchStr, users, depts, node.children || node._children);
         });
       };
       getSearchRes(searchStr.value, userArr, deptArr, copyOption);
