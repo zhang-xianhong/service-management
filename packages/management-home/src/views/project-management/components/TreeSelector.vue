@@ -32,7 +32,14 @@
                 ></el-checkbox>
                 <el-tooltip effect="light" :content="data.name" placement="right-end">
                   <span
-                    style="z-index: 1; background: transparent; width: 150px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis"
+                    style="
+                      z-index: 1;
+                      background: transparent;
+                      width: 150px;
+                      overflow: hidden;
+                      white-space: nowrap;
+                      text-overflow: ellipsis;
+                    "
                     >{{ data.name }}</span
                   >
                 </el-tooltip>
@@ -68,7 +75,14 @@
               <span>{{ user.displayName || user.name }}</span>
               <el-tooltip effect="light" :content="user.deptName" placement="right-end">
                 <span
-                  style="width: 130px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; display: inline-block; vertical-align: bottom"
+                  style="
+                    width: 130px;
+                    overflow: hidden;
+                    white-space: nowrap;
+                    text-overflow: ellipsis;
+                    display: inline-block;
+                    vertical-align: bottom;
+                  "
                   >{{ user.deptName }}</span
                 >
               </el-tooltip>
