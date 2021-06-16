@@ -15,30 +15,20 @@
           <el-dropdown-menu>
             <el-dropdown-item icon="el-icon-message">
               升级公告
-              <span class="el-badge__content el-badge__content--primary"
-                >2</span
-              >
+              <span class="el-badge__content el-badge__content--primary">2</span>
             </el-dropdown-item>
             <el-dropdown-item icon="el-icon-s-flag">待办任务</el-dropdown-item>
             <el-dropdown-item icon="el-icon-tickets">待办工单</el-dropdown-item>
             <el-dropdown-item icon="el-icon-date">
               今日日程
-              <span class="el-badge__content el-badge__content--primary"
-                >3</span
-              >
+              <span class="el-badge__content el-badge__content--primary">3</span>
             </el-dropdown-item>
-            <el-dropdown-item icon="el-icon-edit-outline"
-              >待批申请</el-dropdown-item
-            >
+            <el-dropdown-item icon="el-icon-edit-outline">待批申请</el-dropdown-item>
             <el-dropdown-item icon="el-icon-bell">系统通知</el-dropdown-item>
           </el-dropdown-menu>
         </template>
       </el-dropdown>
-      <span
-        class="el-dropdown-link"
-        v-if="!userCurrentProject.name"
-        style="font-size: 14px; margin-right: 10px"
-      >
+      <span class="el-dropdown-link" v-if="!userCurrentProject.name" style="font-size: 14px; margin-right: 10px">
         <i class="el-icon-s-unfold header-title-object-icon3"></i> 暂无项目
       </span>
       <el-dropdown trigger="click" class="header-title" v-else>
@@ -52,9 +42,7 @@
               v-for="(project, index) in userProjectList"
               :key="index"
               @click="handleDropClick(project)"
-              :icon="
-                project.id === userCurrentProject.id ? 'el-icon-check' : ''
-              "
+              :icon="project.id === userCurrentProject.id ? 'el-icon-check' : ''"
               >{{ project.name }}</el-dropdown-item
             >
           </el-dropdown-menu>
@@ -68,26 +56,14 @@
         </span>
         <template #dropdown>
           <el-dropdown-menu>
-            <el-dropdown-item icon="el-icon-info" @click="jump2UserCenter"
-              >个人中心</el-dropdown-item
-            >
-            <el-dropdown-item icon="el-icon-info" @click="toAboutInfo"
-              >关于</el-dropdown-item
-            >
-            <el-dropdown-item icon="el-icon-switch-button" @click="handleLogout"
-              >登出</el-dropdown-item
-            >
+            <el-dropdown-item icon="el-icon-info" @click="jump2UserCenter">个人中心</el-dropdown-item>
+            <el-dropdown-item icon="el-icon-info" @click="toAboutInfo">关于</el-dropdown-item>
+            <el-dropdown-item icon="el-icon-switch-button" @click="handleLogout">登出</el-dropdown-item>
           </el-dropdown-menu>
         </template>
       </el-dropdown>
     </div>
-    <el-dialog
-      title="关于"
-      v-model="dialogVisible"
-      width="40%"
-      top="25vh"
-      @close="handleClose"
-    >
+    <el-dialog title="关于" v-model="dialogVisible" width="40%" top="25vh" @close="handleClose">
       <div class="about__divider"></div>
       <div class="about__logo">
         <img src="~@/assets/img/tcloud.png" />
@@ -95,27 +71,21 @@
         <img src="~@/assets/img/citybase.png" />
       </div>
       <div class="about__edition">版本 1.0.0</div>
-      <div class="about__footer">
-        Copyright @ 1998 - 2021 Tencent All Rights Reserved 腾讯公司 版权所有
-      </div>
+      <div class="about__footer">Copyright @ 1998 - 2021 Tencent All Rights Reserved 腾讯公司 版权所有</div>
     </el-dialog>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, onBeforeUnmount, reactive, ref } from "vue";
+import { defineComponent, onBeforeUnmount, reactive, ref } from 'vue';
 // import breadCurmb from '@/components/bread-curmb/Index.vue';
-import {
-  userCurrentProject,
-  userProjectList,
-  userInfo,
-} from "@/layout/messageCenter/user-info";
-import { postCurrentProject, logout } from "@/api/auth";
-import Message from "element-plus/es/el-message";
-import { useRouter } from "vue-router";
+import { userCurrentProject, userProjectList, userInfo } from '@/layout/messageCenter/user-info';
+import { postCurrentProject, logout } from '@/api/auth';
+import Message from 'element-plus/es/el-message';
+import { useRouter } from 'vue-router';
 
 export default defineComponent({
-  name: "navBar",
+  name: 'navBar',
   components: {
     // breadCurmb,
   },
@@ -123,19 +93,19 @@ export default defineComponent({
     const projectList = reactive([
       {
         id: 1,
-        name: "测试项目1",
+        name: '测试项目1',
       },
       {
         id: 2,
-        name: "测试项目2",
+        name: '测试项目2',
       },
     ]);
     const handleDropClick = (project: any) => {
       if (project.id !== userCurrentProject.value.id) {
         postCurrentProject({ id: project.id }).then(() => {
           userCurrentProject.value = project;
-          localStorage.setItem("projectId", project.id);
-          window.location.href = "/";
+          localStorage.setItem('projectId', project.id);
+          window.location.href = '/';
         });
       }
     };
@@ -143,7 +113,7 @@ export default defineComponent({
 
     const router = useRouter();
     const jump2UserCenter = () => {
-      router.push("/user-management");
+      router.push('/user-management');
     };
 
     const toAboutInfo = () => {
@@ -162,7 +132,7 @@ export default defineComponent({
         if (urls) {
           window.location.href = urls;
         } else {
-          Message.error("登出失败");
+          Message.error('登出失败');
         }
       });
     };
