@@ -32,6 +32,21 @@
       <el-table-column property="managerName" label="管理员姓名"></el-table-column>
       <el-table-column property="managerTel" label="管理员电话"></el-table-column>
       <el-table-column property="status" label="状态">
+        <template #header>
+          <div class="statusStyle">
+            <span>状态</span>
+            <el-dropdown @command="handleFilter">
+              <span class="filter-btn"></span>
+              <template #dropdown>
+                <el-dropdown-menu>
+                  <el-dropdown-item :command="statusEnum.ENABLE">启用</el-dropdown-item>
+                  <el-dropdown-item :command="statusEnum.FREEZE">禁用</el-dropdown-item>
+                  <el-dropdown-item :command="''">全部</el-dropdown-item>
+                </el-dropdown-menu>
+              </template>
+            </el-dropdown>
+          </div>
+        </template>
         <template #default="scope">
           <template v-if="scope.row.status === statusEnum.ENABLE">启用</template>
           <template v-else>禁用</template>
@@ -100,6 +115,7 @@ interface TableStateInterface {
     page: number;
     pageSize: number;
     keyword: string;
+    status?: any;
   };
   selections: any[];
   total: number;
@@ -135,6 +151,7 @@ export default {
         page: 1,
         pageSize: 10,
         keyword: '',
+        status: '',
       },
       total: 0,
       selections: [],
@@ -265,7 +282,10 @@ export default {
         privateResetPassword.value.handleResetPasswd(managerId);
       }
     };
-
+    const handleFilter = (data: any) => {
+      tableState.searchProps.status = data;
+      getTableData();
+    };
     return {
       ...toRefs(tableState),
       statusEnum,
@@ -282,9 +302,24 @@ export default {
       onFreeze,
       onEnable,
       onResetPWD,
+      handleFilter,
     };
   },
 };
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+$image: url(~@/assets/img/filter.svg);
+.statusStyle {
+  display: flex;
+  align-items: center;
+}
+.filter-btn {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  margin-left: 5px;
+  background: $image no-repeat;
+  cursor: pointer;
+}
+</style>
