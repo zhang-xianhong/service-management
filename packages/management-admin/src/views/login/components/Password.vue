@@ -114,7 +114,7 @@ export default defineComponent({
   }
   .password-reset__form {
     .el-form-item {
-      margin-bottom: 2em;
+      margin-bottom: 3em;
     }
     .reset-btn {
       width: 100%;
