@@ -77,25 +77,31 @@ export default defineComponent({
       copyFun(newPassword.value);
     };
     // 保存密码
-    const savePassword = () => {
+    const savePassword = () =>
       // 校验密码-》保存密码-》copy 密码
-      // eslint-disable-next-line no-unused-expressions
-      resetForm.value?.validate(async (valid: boolean) => {
-        if (valid) {
-          const { code } = await resetPassWd({
-            userId: userId.value,
-            newPassword: newPassword.value,
-          });
-          if (code === ResCode.Success) {
-            // 复制到剪切板上
-            handleCopy();
-            msgTips('success', '密码重置成功');
+
+      new Promise<boolean>((resolve, reject) => {
+        resetForm.value.validate(async (valid: boolean) => {
+          if (valid) {
+            const { code } = await resetPassWd({
+              userId: userId.value,
+              newPassword: newPassword.value,
+            });
+            if (code === ResCode.Success) {
+              // 复制到剪切板上
+              handleCopy();
+              msgTips('success', '密码重置成功');
+              resolve(true);
+            } else {
+              msgTips('error', '密码重置失败');
+              reject(new Error('密码重置失败'));
+            }
           } else {
-            msgTips('error', '密码重置失败');
+            reject(new Error('校验未通过'));
           }
-        }
+        });
       });
-    };
+
     // 发送邮件
     const sendMail = async () => {
       const RESET_PASSWORD_PATH = '/reset-password';
@@ -106,9 +112,10 @@ export default defineComponent({
       });
       if (code === ResCode.Success) {
         msgTips('success', '重置邮件已发送到邮箱，请及时更新');
-      } else {
-        msgTips('error', '重置邮件发送失败');
+        return true;
       }
+      msgTips('error', '重置邮件发送失败');
+      return false;
     };
     watch(
       () => configuraion.isRandom,
@@ -138,13 +145,19 @@ export default defineComponent({
     const close = () => {
       visible.value = false;
     };
-    const submit = () => {
-      if (configuraion.isRandom) {
-        // 提交随机密码
-        savePassword();
-      } else {
-        // 发送重置邮件
-        sendMail();
+    const submit = async () => {
+      try {
+        if (configuraion.isRandom) {
+          // 提交随机密码
+          await savePassword();
+        } else {
+          // 发送重置邮件
+          await sendMail();
+        }
+      } catch (error) {
+        console.log(error);
+      } finally {
+        visible.value = false;
       }
     };
 
