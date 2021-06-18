@@ -171,7 +171,7 @@ const routes: Array<RouteRecordRaw> = [
           hidden: true,
           activeMenu: '/project-management/project-list',
           id: 21,
-          showBackButton: true
+          showBackButton: true,
         },
         props: true,
       },
@@ -300,7 +300,7 @@ const routes: Array<RouteRecordRaw> = [
           id: 23,
           hidden: true,
           activeMenu: '/application/application-list',
-          showBackButton: true
+          showBackButton: true,
         },
       },
     ],

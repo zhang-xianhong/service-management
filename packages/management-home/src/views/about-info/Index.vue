@@ -14,9 +14,7 @@
       <img src="./citybase.png" />
     </div>
     <div class="about__edition">版本 1.0.0</div>
-    <div class="about__footer">
-      Copyright @ 1998 - 2021 Tencent All Rights Reserved 腾讯公司 版权所有
-    </div>
+    <div class="about__footer">Copyright @ 1998 - 2021 Tencent All Rights Reserved 腾讯公司 版权所有</div>
   </el-dialog>
 </template>
 

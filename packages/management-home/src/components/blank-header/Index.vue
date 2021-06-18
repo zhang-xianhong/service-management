@@ -31,13 +31,13 @@ export default defineComponent({
     const proxy = (getCurrentInstance() as any).proxy as any;
     const getBread = () => {
       title.value = route.meta.title || '';
-      back.value = route.meta.showBackButton as boolean
+      back.value = route.meta.showBackButton as boolean;
       detailName.value = route.query.detailName;
     };
     getBread();
 
     function jumpBack() {
-      const backPath = route.meta.activeMenu
+      const backPath = route.meta.activeMenu;
       backPath ? proxy.$router.push(backPath) : proxy.$router.back();
     }
     watch(
