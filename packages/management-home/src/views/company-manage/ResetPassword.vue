@@ -79,8 +79,7 @@ export default defineComponent({
     // 保存密码
     const savePassword = () =>
       // 校验密码-》保存密码-》copy 密码
-
-      new Promise<boolean>((resolve, reject) => {
+      new Promise<string>((resolve, reject) => {
         resetForm.value.validate(async (valid: boolean) => {
           if (valid) {
             const { code } = await resetPassWd({
@@ -90,10 +89,8 @@ export default defineComponent({
             if (code === ResCode.Success) {
               // 复制到剪切板上
               handleCopy();
-              msgTips('success', '密码重置成功');
-              resolve(true);
+              resolve('密码重置成功');
             } else {
-              msgTips('error', '密码重置失败');
               reject(new Error('密码重置失败'));
             }
           } else {
@@ -111,11 +108,9 @@ export default defineComponent({
         url: new URL(RESET_PASSWORD_PATH, window.location.origin),
       });
       if (code === ResCode.Success) {
-        msgTips('success', '重置邮件已发送到邮箱，请及时更新');
-        return true;
+        return Promise.resolve('重置邮件已发送到邮箱，请及时更新');
       }
-      msgTips('error', '重置邮件发送失败');
-      return false;
+      throw new Error('重置邮件发送失败');
     };
     watch(
       () => configuraion.isRandom,
@@ -147,15 +142,18 @@ export default defineComponent({
     };
     const submit = async () => {
       try {
+        let msg = '';
         if (configuraion.isRandom) {
           // 提交随机密码
-          await savePassword();
+          msg = await savePassword();
         } else {
           // 发送重置邮件
-          await sendMail();
+          msg = await sendMail();
         }
+        msgTips('success', msg);
       } catch (error) {
         console.log(error);
+        msgTips('error', (error as Error).message);
       } finally {
         visible.value = false;
       }
