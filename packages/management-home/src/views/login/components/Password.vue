@@ -6,13 +6,18 @@
         <el-input :model-value="formData.email" type="email" placeholder="请输入您的邮箱地址" readonly></el-input>
       </el-form-item>
       <el-form-item label="设置登录密码" prop="password" size="large">
-        <el-input v-model="formData.password" type="password" placeholder="请输入您的新密码"></el-input>
+        <el-input v-model="formData.password" type="password" placeholder="请输入您的新密码" show-password></el-input>
       </el-form-item>
       <el-form-item label="确认登录密码" prop="confirmationPassword" size="large">
-        <el-input v-model="formData.confirmationPassword" type="password" placeholder="请再次输入您的新密码"></el-input>
+        <el-input
+          v-model="formData.confirmationPassword"
+          type="password"
+          placeholder="请再次输入您的新密码"
+          show-password
+        ></el-input>
       </el-form-item>
       <el-form-item size="large">
-        <el-button class="reset-btn" type="primary" @click="submit" :disabled="disableSubmit">重置</el-button>
+        <el-button class="reset-btn" type="primary" @click="submit">重置</el-button>
       </el-form-item>
     </el-form>
   </div>
@@ -28,7 +33,7 @@ export default defineComponent({
   props: {
     email: {
       type: String as PropType<string>,
-      default: '',
+      default: 'hi@1990',
     },
     userId: {
       type: Number as PropType<number>,
@@ -46,7 +51,7 @@ export default defineComponent({
       email: computed(() => props.email),
     });
     const form: any = ref(null);
-    const disableSubmit = ref(false);
+
     // 获取组件实例
     const { msgTips, goLoginPages } = useMsg();
     const validatePassword = (rule: any, value: string, callback: Function) => {
@@ -70,37 +75,39 @@ export default defineComponent({
       }
     };
     const rules = {
-      email: [
-        {
-          required: true,
-          message: '请输入新的邮箱',
-          trigger: 'blur',
-        },
-      ],
       password: [...PasswordRules, { validator: validatePassword, trigger: 'blur' }],
-      confirmationPassword: [{ validator: validateConfirmationPassword, trigger: 'blur' }],
+      confirmationPassword: [
+        { required: true, message: '请再次输入新的密码', trigger: 'blur' },
+        { validator: validateConfirmationPassword, trigger: 'blur' },
+      ],
     };
-    const submit = async () => {
+
+    const submit = () => {
       // disable submit
-      disableSubmit.value = true;
-      const { code } = await resetPassWord({
-        resetCode: props.code,
-        newPassword: formData.password,
-        userId: props.userId,
+      // eslint-disable-next-line no-unused-expressions
+      form.value?.validate(async (valid: boolean) => {
+        if (valid) {
+          const { code } = await resetPassWord({
+            resetCode: props.code,
+            newPassword: formData.password,
+            userId: props.userId,
+          });
+          if (code === 0) {
+            msgTips('success', '密码重置成功');
+          } else {
+            msgTips('error', '密码重置失败');
+          }
+          goLoginPages();
+        } else {
+          return false;
+        }
       });
-      if (code === 0) {
-        msgTips('success', '密码重置成功');
-      } else {
-        msgTips('error', '密码重置失败');
-      }
-      goLoginPages();
     };
     return {
       formData,
       rules,
       form,
       submit,
-      disableSubmit,
     };
   },
 });
