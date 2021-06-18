@@ -53,6 +53,16 @@
       </el-dropdown>
     </div>
     <ManageDialog ref="refManageDialog" />
+    <el-dialog title="关于" v-model="dialogVisible" width="40%" top="25vh" @close="handleClose">
+      <div class="about__divider"></div>
+      <div class="about__logo">
+        <img src="~@/assets/img/tcloud.png" />
+        <div></div>
+        <img src="~@/assets/img/citybase.png" />
+      </div>
+      <div class="about__edition">版本 1.0.0</div>
+      <div class="about__footer">Copyright @ 1998 - 2021 Tencent All Rights Reserved 腾讯公司 版权所有</div>
+    </el-dialog>
   </div>
 </template>
 
@@ -87,13 +97,18 @@ export default defineComponent({
       },
     ]);
     const refManageDialog: Ref<RefDialog | null> = ref(null);
+    const dialogVisible = ref(false);
 
     const openPersonalCenter = () => {
       router.push('/user-info');
     };
 
     const toAboutInfo = () => {
-      router.push("/about-info");
+      dialogVisible.value = true;
+    };
+
+    const handleClose = () => {
+      dialogVisible.value = false;
     };
 
     const openEditDialog = (): void => {
@@ -122,6 +137,8 @@ export default defineComponent({
       closeDialog,
       openEditDialog,
       handleLogout,
+      dialogVisible,
+      handleClose,
     };
   },
 });
@@ -189,5 +206,45 @@ export default defineComponent({
     background: rgba(0, 0, 0, 0.2);
     cursor: pointer;
   }
+}
+.about__divider {
+  height: 2px;
+  background-color: #eee;
+}
+.about__logo {
+  width: 350px;
+  height: 80px;
+  text-align: center;
+  margin: 0 auto;
+  > img,
+  > div {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+  > img:first-child {
+    left: 36%;
+  }
+  > img:last-child {
+    left: 64%;
+  }
+  > div {
+    display: inline-block;
+    width: 2px;
+    height: 28px;
+    background-color: #eee;
+  }
+}
+.about__edition {
+  margin: 30px 0;
+  font-size: 14px;
+  font-weight: bolder;
+  text-align: center;
+}
+.about__footer {
+  text-align: center;
+  font-size: 13px;
+  color: #bbb;
 }
 </style>
