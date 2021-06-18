@@ -12,7 +12,7 @@
         <el-input v-model="formData.confirmationPassword" type="password" placeholder="请再次输入您的新密码"></el-input>
       </el-form-item>
       <el-form-item size="large">
-        <el-button class="reset-btn" type="primary" @click="submit" :disabled="disableSubmit">重置</el-button>
+        <el-button class="reset-btn" type="primary" @click="submit">重置</el-button>
       </el-form-item>
     </el-form>
   </div>
@@ -46,7 +46,6 @@ export default defineComponent({
       email: computed(() => props.email),
     });
     const form: any = ref(null);
-    const disableSubmit = ref(false);
     // 获取组件实例
     const { msgTips, goLoginPages } = useMsg();
     const validatePassword = (rule: any, value: string, callback: Function) => {
@@ -80,27 +79,29 @@ export default defineComponent({
       password: [...PasswordRules, { validator: validatePassword, trigger: 'blur' }],
       confirmationPassword: [{ validator: validateConfirmationPassword, trigger: 'blur' }],
     };
-    const submit = async () => {
-      // disable submit
-      disableSubmit.value = true;
-      const { code } = await resetPassWord({
-        resetCode: props.code,
-        newPassword: formData.password,
-        userId: props.userId,
+    const submit = () => {
+      // 增加校验
+      form.value.validate(async (valid: boolean) => {
+        if (valid) {
+          const { code } = await resetPassWord({
+            resetCode: props.code,
+            newPassword: formData.password,
+            userId: props.userId,
+          });
+          if (code === 0) {
+            msgTips('success', '密码重置成功');
+          } else {
+            msgTips('error', '密码重置失败');
+          }
+          goLoginPages();
+        }
       });
-      if (code === 0) {
-        msgTips('success', '密码重置成功');
-      } else {
-        msgTips('error', '密码重置失败');
-      }
-      goLoginPages();
     };
     return {
       formData,
       rules,
       form,
       submit,
-      disableSubmit,
     };
   },
 });
