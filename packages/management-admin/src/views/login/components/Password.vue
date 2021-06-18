@@ -6,10 +6,10 @@
         <el-input :model-value="formData.email" type="email" placeholder="请输入您的邮箱地址" readonly></el-input>
       </el-form-item>
       <el-form-item label="设置登录密码" prop="password" size="large">
-        <el-input v-model="formData.password" type="password" placeholder="请输入您的新密码"></el-input>
+        <el-input v-model="formData.password" placeholder="请输入您的新密码" show-password></el-input>
       </el-form-item>
       <el-form-item label="确认登录密码" prop="confirmationPassword" size="large">
-        <el-input v-model="formData.confirmationPassword" type="password" placeholder="请再次输入您的新密码"></el-input>
+        <el-input v-model="formData.confirmationPassword" placeholder="请再次输入您的新密码" show-password></el-input>
       </el-form-item>
       <el-form-item size="large">
         <el-button class="reset-btn" type="primary" @click="submit">重置</el-button>
@@ -77,7 +77,14 @@ export default defineComponent({
         },
       ],
       password: [...PasswordRules, { validator: validatePassword, trigger: 'blur' }],
-      confirmationPassword: [{ validator: validateConfirmationPassword, trigger: 'blur' }],
+      confirmationPassword: [
+        {
+          required: true,
+          message: '请再次输入密码',
+          trigger: 'blur',
+        },
+        { validator: validateConfirmationPassword, trigger: 'blur' },
+      ],
     };
     const submit = () => {
       // 增加校验
