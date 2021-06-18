@@ -24,9 +24,9 @@ async function getOwnerList(keyword = '', owners: Array<any> = [], projects = fa
   //   }
   //   return false;
   // });
-  // users.forEach((user: any) => {
-  //   ownerMap.set(user.id, user);
-  // });
+  users.forEach((user: any) => {
+    ownerMap.set(user.id, user);
+  });
   return users;
 }
 
