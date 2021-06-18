@@ -112,7 +112,9 @@ export default defineComponent({
       if (viva) {
         updateUserPassword({ ...passForm }).then((res) => {
           dialogFormVisible.value = false;
-          console.log(res);
+          if (res.code === 0) {
+            ElMessage.success('修改成功');
+          }
         });
       }
     };
