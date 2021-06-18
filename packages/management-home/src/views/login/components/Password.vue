@@ -33,7 +33,7 @@ export default defineComponent({
   props: {
     email: {
       type: String as PropType<string>,
-      default: 'hi@1990',
+      default: '',
     },
     userId: {
       type: Number as PropType<number>,
