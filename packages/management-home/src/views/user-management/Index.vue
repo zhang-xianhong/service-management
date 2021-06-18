@@ -88,6 +88,7 @@ export default defineComponent({
       updateUserProfile(item).then((res) => {
         if (res.code === 0) {
           checkStatus(id);
+          ElMessage.success('修改成功');
         }
       });
     };
