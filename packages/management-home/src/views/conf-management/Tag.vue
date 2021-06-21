@@ -2,12 +2,14 @@
   <div>
     <el-row>
       <el-col :span="6" style="text-align: left">
-        <el-button type="primary" @click="add" style="width: 90px" v-if="getShowBool('add')">新增</el-button>
+        <el-button type="primary" @click="add" icon="el-icon-plus" style="width: 90px" v-if="getShowBool('add')"
+          >新建</el-button
+        >
         <el-button @click="groupRemove()" :disabled="disabled" v-if="getShowBool('delete')">删除</el-button>
       </el-col>
       <el-col :offset="8" :span="10" style="text-align: right">
         <el-input
-          style="width: 500px"
+          style="width: 300px"
           placeholder="请输入标签名称"
           suffix-icon="el-icon-search"
           @input="filterTag"
@@ -31,8 +33,8 @@
             <!-- <el-button type="primary" @click="detail(row)" size="mini">详情</el-button> -->
             <!--            <el-button type="primary" @click="disabled(row)" size="mini" v-if="getShowBool('update')">禁用</el-button>-->
             <!-- <el-button type="primary" @click="enabled(row)" size="mini">启用</el-button> -->
-            <el-button type="primary" @click="rename(row)" size="mini" v-if="getShowBool('update')">编辑</el-button>
-            <el-button @click="groupRemove([row.id])" v-if="getShowBool('delete')">删除</el-button>
+            <el-button type="text" @click="rename(row)" size="mini" v-if="getShowBool('update')">编辑</el-button>
+            <el-button @click="groupRemove([row.id])" v-if="getShowBool('delete')" type="text">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -47,7 +49,7 @@
         @current-change="handlePageChange"
       ></packaged-pagination>
     </el-row>
-    <el-dialog :title="dialogTitle" v-model="dialogVisible">
+    <el-dialog :title="dialogTitle" v-model="dialogVisible" width="500px">
       <el-form :model="form" :rules="rules" ref="formRef">
         <el-form-item
           label="标签名称"
@@ -62,8 +64,10 @@
         </el-form-item>
       </el-form>
       <template #footer>
-        <el-button type="primary" @click="save()" size="mini">确认</el-button>
-        <el-button @click="cancel()">取消</el-button>
+        <div class="dialog-footer">
+          <el-button type="primary" @click="save()" size="mini">确定</el-button>
+          <el-button @click="cancel()">取消</el-button>
+        </div>
       </template>
     </el-dialog>
   </div>
@@ -289,4 +293,14 @@ export default defineComponent({
 });
 </script>
 
-<style lang="sass" scoped></style>
+<style lang="scss" scoped>
+.dialog-footer {
+  width: 100%;
+  display: block;
+  text-align: center;
+  margin-bottom: 20px;
+}
+.el-row {
+  margin-bottom: 10px;
+}
+</style>

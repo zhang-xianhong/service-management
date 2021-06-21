@@ -57,23 +57,27 @@
             </el-popover>
           </template>
         </el-table-column>
-        <el-table-column label="发布版本" prop="version"></el-table-column>
         <el-table-column label="申请时间" prop="createTime">
           <template #default="scope">{{ dateFormat(scope.row.createTime) }}</template>
         </el-table-column>
-        <el-table-column label="状态">
+        <el-table-column label="审核结果" prop="auditResults">
           <template #default="scope">
-            <span>{{ getNameByCode(scope.row.status, 'status') }}</span>
+            <span>{{ getNameByCode(scope.row.auditResults, 'auditResults') }}</span>
           </template>
           <template #header>
             <i class="el-icon-search"></i>
-            <el-popover placement="bottom" :width="200" trigger="manual" :visible="statusTitleVisiable">
+            <el-popover placement="bottom" :width="200" trigger="manual" :visible="auditResultsTitleVisiable">
               <template #reference>
-                <el-button type="text" @click="statusTitleClick">状态</el-button>
+                <el-button type="text" @click="auditResultsTitleClick">审核结果</el-button>
               </template>
-              <el-select v-model="searchProps.status" placeholder="请选择状态" clearable @change="statusChange">
+              <el-select
+                v-model="searchProps.auditResults"
+                placeholder="请选择审核结果"
+                clearable
+                @change="auditResultsChange"
+              >
                 <el-option
-                  v-for="(item, index) in statusFilters"
+                  v-for="(item, index) in auditResultsFilters"
                   :key="index"
                   :label="item.name"
                   :value="item.id"
@@ -109,6 +113,7 @@
             </el-popover>
           </template>
         </el-table-column>
+        <el-table-column label="发布版本" prop="version"></el-table-column>
         <el-table-column label="发布时间" prop="publishTime">
           <template #default="scope">{{ dateFormat(scope.row.publishTime) }}</template>
         </el-table-column>

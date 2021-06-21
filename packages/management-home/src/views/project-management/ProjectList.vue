@@ -16,7 +16,7 @@
       <div class="project-list_right">
         <el-input
           placeholder="请输入名称"
-          style="width: 500px"
+          style="width: 300px"
           v-model="pageInfo.keyword"
           suffix-icon="el-icon-search"
           @input="searchProject"
@@ -25,7 +25,6 @@
       </div>
     </div>
     <div
-      style="background: #fff"
       v-loading="!userProjectList.length"
       element-loading-text="暂无项目，请联系管理员添加项目"
       element-loading-spinner="el-icon-loading"
@@ -41,7 +40,12 @@
           :delete-or-not="getShowBool('delete')"
           :update-or-not="getShowBool('update')"
         ></project-item>
-        <div v-if="!projectList.length && !loadings" class="placeholders">暂无数据</div>
+        <div v-if="!projectList.length && !loadings" class="placeholders">
+          暂无数据，请前往
+          <button class="new-project" :type="userInfo.admin ? 'primary' : 'info'" @click="addDialogVisible = true">
+            新建
+          </button>
+        </div>
       </div>
       <packaged-pagination
         v-if="projectList.length"
@@ -148,6 +152,7 @@ import { getShowBool } from '@/utils/permission-show-module';
 import {
   getProjectListData,
   projectDetail,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   projectList,
   addProjectData,
   getAllTems,
@@ -298,7 +303,7 @@ export default defineComponent({
       persons,
       submitProjectDetail,
       closeDialog,
-      projectList,
+      projectList: [],
       deleteProject,
       handleSizeChange,
       handleCurrentChange,
@@ -336,11 +341,24 @@ export default defineComponent({
   &_right {
     flex: 1;
     text-align: right;
+    .el-input--small .el-input__inner {
+      height: 30px;
+      line-height: 30px;
+    }
   }
   &_content {
     width: 100%;
     padding: 10px;
     margin-top: 10px;
+    .new-project {
+      margin: 0;
+      padding: 0;
+      border: none;
+      outline: none;
+      background-color: transparent;
+      font-size: 16px;
+      color: #006eff;
+    }
   }
   .add-project-dialog {
     width: 80%;

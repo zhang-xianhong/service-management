@@ -129,6 +129,7 @@ export default defineComponent({
   height: 310px;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
   margin: 10px;
+  background-color: #fff;
   &:hover {
     box-shadow: 0 0 8px #409eff;
     cursor: pointer;
