@@ -70,6 +70,7 @@ import useTags from '../utils/service-baseinfo-tag';
 import { updateService } from '@/api/servers';
 import { allService, getAllService } from '../utils/service-data-utils';
 import OwnerSelect from '@/components/owners-select/Index.vue';
+import { ElMessage } from 'element-plus';
 
 export default {
   name: 'ServerBaseInfo',
@@ -178,6 +179,10 @@ export default {
     const saveFormData = async () => {
       console.log(formData);
       const data = { ...formData };
+      const ownerArr = data.owner.split(',');
+      if (ownerArr.length > 10) {
+        return ElMessage.warning('负责人最多支持10个');
+      }
       data.dependencies = formData.dependencies.map((x: any) => ({ id: x }));
       const { code } = await updateService(String(props.id), data);
       if (code === 0) {

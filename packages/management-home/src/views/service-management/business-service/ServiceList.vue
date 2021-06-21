@@ -350,6 +350,7 @@ export default defineComponent({
     }
     function addServiceByForm() {
       const senddata = { ...serviceDetail };
+      const ownerArr = senddata.owner.split(',');
       senddata.tag = serviceDetail.tags ? serviceDetail.tags.join(',') : '';
       senddata.dependencies = serviceDetail.dependencies
         ? serviceDetail.dependencies.map((x: any) => ({
@@ -370,6 +371,10 @@ export default defineComponent({
           message: '服务名称不得超过32个字符',
           type: 'error',
         });
+      }
+
+      if (ownerArr.length > 10) {
+        return ElMessage.warning('负责人最多支持10个');
       }
 
       const regux = /^[a-z0-9-]+(?<!-)$/;
