@@ -233,11 +233,13 @@ export default defineComponent({
         return false;
       }
       submitLoading.value = true;
-      addProjectData().then(() => {
-        pageInfo.page = 1;
-        getProjectListData();
-        closeDialog();
-        window.location.reload();
+      addProjectData().then((res: any) => {
+        if (res?.code === 0) {
+          pageInfo.page = 1;
+          getProjectListData();
+          closeDialog();
+          window.location.reload();
+        }
         submitLoading.value = false;
       });
     };
