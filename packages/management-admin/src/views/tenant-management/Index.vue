@@ -4,12 +4,10 @@
       <el-button style="width: 90px" type="primary" @click="onAdd">
         <i class="el-icon-plus" style="font-weight: bloder; margin-right: 2px"></i>新建
       </el-button>
-      <!-- TODO：待确定 -->
-      <!-- <el-button @click="freezeInBatches">冻结</el-button>
-      <el-button @click="deleteInBatches">删除</el-button>-->
     </el-col>
     <el-col :offset="14" :span="6" style="text-align: right">
       <el-input
+        class="search-input"
         placeholder="请输入公司名称"
         suffix-icon="el-icon-search"
         @input="handleComputerNameInput"

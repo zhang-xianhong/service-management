@@ -17,9 +17,13 @@
         </div>
       </el-upload>
       <div class="application-detail" @click.prevent="jump2AppDetail">
-        <div class="application-detail__name">{{ detailInfo.description }}</div>
-        <div class="application-detail__englishname">{{ detailInfo.name }}</div>
-        <div class="application-detail__desc">{{ detailInfo.remark }}</div>
+        <div class="application-detail__name">
+          <tooltip :content="detailInfo.description"></tooltip>
+        </div>
+        <div class="application-detail__englishname">
+          <tooltip :content="detailInfo.name"></tooltip>
+        </div>
+        <!-- <div class="application-detail__desc">{{ detailInfo.remark }}</div> -->
       </div>
       <div class="application-operation">
         <!-- TODO:应用状态暂时屏蔽，后续开发 -->
@@ -191,18 +195,24 @@ export default defineComponent({
 
 <style scoped lang="scss">
 .application-card {
-  width: 300px;
+  width: 100%;
+  max-width: 300px;
   height: 90px;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
-  margin: 10px;
   padding: 10px;
-  display: inline-flex;
+  display: flex;
+  align-items: center;
   &:hover {
     box-shadow: 0 0 8px #409eff;
     cursor: pointer;
   }
   .application-info {
     position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
     &__image {
       display: inline-block;
       width: 60px;
@@ -210,6 +220,7 @@ export default defineComponent({
       border-radius: 50%;
       overflow: hidden;
       background: #e3f0fc;
+      flex-shrink: 0;
     }
     &__content {
       display: inline-block;
@@ -217,10 +228,8 @@ export default defineComponent({
       padding: 10px 0;
     }
     .application-detail {
-      display: inline-block;
-      margin-top: 20px;
-      margin-left: 20px;
-      width: 200px;
+      flex: 1;
+      padding: 20px 0 20px 20px;
       &__name,
       &__englishname {
         font-size: 12px;

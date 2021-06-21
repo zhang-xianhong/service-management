@@ -35,18 +35,6 @@ body {
   overflow-y: auto;
   margin: 0;
   padding: 0;
-  .el-popper.is-dark {
-    background: #fff;
-    border: 1px solid #e4e7ed;
-    color: #606266;
-    line-height: 1.8;
-    max-width: 50%;
-    .el-popper__arrow::before {
-      border: 1px solid #e4e7ed;
-      background: #fff;
-      right: 0;
-    }
-  }
 }
 #app {
   font-family: 'Microsoft YaHei', 'PingFang SC', 'Avenir', Helvetica, Arial, sans-serif;
