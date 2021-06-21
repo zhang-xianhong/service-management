@@ -106,8 +106,8 @@
       </el-form-item>
     </el-form>
     <div class="dialog-footer">
-      <el-button type="primary" @click="submitAppCreate">提交</el-button>
-      <el-button @click="closeAppCreate">关闭</el-button>
+      <el-button type="primary" @click="submitAppCreate">保存</el-button>
+      <el-button @click="closeAppCreate">取消</el-button>
     </div>
   </el-dialog>
 </template>
@@ -324,12 +324,16 @@ export default defineComponent({
 <style lang="scss">
 .avatar-uploader .el-upload {
   border: 1px dashed #d9d9d9;
-  border-radius: 6px;
+  border-radius: 0;
   cursor: pointer;
   position: relative;
   overflow: hidden;
   width: 110px;
   height: 110px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
   &:hover {
     border-color: #409eff;
   }

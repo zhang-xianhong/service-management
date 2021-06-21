@@ -1,0 +1,14 @@
+// 该文件用来覆盖el-plus的样式
+// /node_modules/element-plus/packages/theme-chalk/src/common/var.scss
+
+// 变量覆盖
+$--border-radius-base: 0px !default;
+$--border-radius-small: 0px !default;
+
+
+
+
+// 直接覆盖样式
+.el-textarea__inner {
+  border-radius: 0;
+}

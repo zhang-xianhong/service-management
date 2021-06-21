@@ -60,10 +60,10 @@
     </el-form>
     <div class="dialog-footer">
       <template v-if="getShowBool('update')">
-        <el-button v-if="isEditable" type="primary" @click="updateAppDetail">提交</el-button>
+        <el-button v-if="isEditable" type="primary" @click="updateAppDetail">保存</el-button>
         <el-button v-else type="primary" @click="isEditable = true">编辑</el-button>
       </template>
-      <el-button @click="handleCloseDialog">关闭</el-button>
+      <el-button @click="handleCloseDialog('cancel')">{{ isEditable ? '取消' : '关闭' }}</el-button>
     </div>
   </el-dialog>
 </template>
@@ -163,9 +163,10 @@ export default defineComponent({
         ctx.emit('close');
       }
     };
-    const handleCloseDialog = () => {
+
+    const handleCloseDialog = (type: string) => {
       isEditable.value = false;
-      ctx.emit('close');
+      ctx.emit('close', type);
     };
 
     return {

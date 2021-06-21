@@ -52,7 +52,7 @@ import ApplicationDetail from './ApplicationDetail.vue';
 import { SuccessResponse } from '@/types/response';
 import { updateAppById, deleteAppById } from '@/api/app';
 import { getShowBool } from '@/utils/permission-show-module';
-import { ElMessage, ElMessageBox } from 'element-plus';
+import { ElMessageBox } from 'element-plus';
 import { useRouter } from 'vue-router';
 
 interface PropsInterface {
@@ -93,8 +93,11 @@ export default defineComponent({
 
     const computedDetail = computed(() => ({ ...detailInfo.value, imageUrl }));
 
-    const onCloseDetail = () => {
+    const onCloseDetail = (type?: string) => {
       isDetailVisable.value = false;
+      if (type === 'cancel') {
+        return;
+      }
       ctx.emit('update');
     };
 
@@ -118,12 +121,6 @@ export default defineComponent({
               message: '应用删除失败！',
             });
           }
-        })
-        .catch(() => {
-          ElMessage({
-            type: 'info',
-            message: '已取消操作',
-          });
         });
     };
 
