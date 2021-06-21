@@ -38,12 +38,14 @@
         element-loading-background="rgba(255, 255, 255, 1)"
         :style="{ minHeight: applicationList.length && !loading ? '180px' : '130px' }"
       >
-        <application-card
-          v-for="item in applicationList"
-          :key="item.id"
-          :data="item"
-          @update="onUpdate"
-        ></application-card>
+        <div class="application-cards">
+          <application-card
+            v-for="item in applicationList"
+            :key="item.id"
+            :data="item"
+            @update="onUpdate"
+          ></application-card>
+        </div>
       </div>
       <packaged-pagination
         v-if="applicationList.length && !loading"
@@ -360,5 +362,30 @@ export default defineComponent({
 .dialog-footer {
   display: flex;
   justify-content: center;
+}
+
+.application-cards {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  grid-gap: 10px;
+  justify-items: center;
+}
+
+@media screen and (max-width: 1560px) {
+  .application-cards {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media screen and (max-width: 1366px) {
+  .application-cards {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media screen and (max-width: 1024px) {
+  .application-cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 </style>
