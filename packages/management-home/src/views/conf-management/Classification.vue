@@ -39,10 +39,15 @@
         <el-button @click="remove" v-if="getShowBool('delete')">删除</el-button>
         <el-form :model="currentNode" label-position="top" :rules="rules" class="mt20" ref="classFormRef">
           <el-form-item prop="name" label="分类名称">
-            <el-input v-model="currentNode.name"></el-input>
+            <el-input v-model="currentNode.name" :disabled="!getShowBool('update')"></el-input>
           </el-form-item>
           <el-form-item label="描述" prop="description">
-            <el-input type="textarea" :rows="10" v-model="currentNode.description"></el-input>
+            <el-input
+              type="textarea"
+              :rows="10"
+              v-model="currentNode.description"
+              :disabled="!getShowBool('update')"
+            ></el-input>
           </el-form-item>
         </el-form>
       </el-col>

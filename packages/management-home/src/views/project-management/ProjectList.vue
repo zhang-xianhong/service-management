@@ -70,7 +70,7 @@
               { min: 3, max: 20, message: '请输入3到20个字符', trigger: 'blur' },
               {
                 validator: validatorPass,
-                message: '[字母][字母/数字/中横线][字母/数字]（字母为小写）',
+                message: '输入小写字母/数字/中横线，字母开头，字母/数字结尾',
                 trigger: 'blur',
               },
             ]"
@@ -235,11 +235,13 @@ export default defineComponent({
         return false;
       }
       submitLoading.value = true;
-      addProjectData().then(() => {
-        pageInfo.page = 1;
-        getProjectListData();
-        closeDialog();
-        window.location.reload();
+      addProjectData().then((res: any) => {
+        if (res?.code === 0) {
+          pageInfo.page = 1;
+          getProjectListData();
+          closeDialog();
+          window.location.reload();
+        }
         submitLoading.value = false;
       });
     };

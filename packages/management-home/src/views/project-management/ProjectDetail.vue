@@ -171,8 +171,8 @@ export default {
             children: _.map((member: any) => {
               const user: any = _.find({ id: member.userId })(data.users);
               return {
-                label: user.displayName,
-                id: user.id,
+                label: user?.displayName,
+                id: user?.id,
               };
             })(role.members),
           })),

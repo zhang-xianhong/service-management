@@ -50,9 +50,9 @@
               <svg-icon icon-name="gitlab" icon-class="detail-icons__item" @click="openGitlab"></svg-icon>
             </el-tooltip>
             <!-- 文档下载 -->
-            <el-tooltip effect="light" content="文档下载" placement="bottom">
+            <!-- <el-tooltip effect="light" content="文档下载" placement="bottom">
               <svg-icon icon-name="daily" icon-class="detail-icons__item detail-icons__item--disabled"></svg-icon>
-            </el-tooltip>
+            </el-tooltip> -->
             <!-- 服务配置 -->
             <el-tooltip effect="light" content="服务配置" placement="bottom">
               <svg-icon
@@ -373,10 +373,16 @@ export default {
 
     // 右侧组件名称
     const componentName = ref('');
-
+    const modelInfo = ref(null);
     // 打开基本信息
     const openBaseInfo = () => {
-      componentName.value = 'ServerBaseInfo';
+      if (componentName.value === 'ServerBaseInfo') {
+        modelInfo.value = null;
+        isShowDownDrawer.value = false;
+        componentName.value = '';
+      } else {
+        componentName.value = 'ServerBaseInfo';
+      }
     };
 
     // 下侧组件名称
@@ -384,14 +390,26 @@ export default {
 
     // 打开接口配置
     const openPropertyInfo = () => {
-      isShowDownDrawer.value = true;
-      drawerName.value = 'ServerPortsInfo';
+      if (isShowDownDrawer.value) {
+        modelInfo.value = null;
+        isShowDownDrawer.value = false;
+        componentName.value = '';
+      } else {
+        isShowDownDrawer.value = true;
+        drawerName.value = 'ServerPortsInfo';
+      }
     };
 
     // 打开服务配置
     const openConfigInfo = () => {
-      isShowDownDrawer.value = true;
-      drawerName.value = 'ServerConfigInfo';
+      if (isShowDownDrawer.value) {
+        modelInfo.value = null;
+        isShowDownDrawer.value = false;
+        componentName.value = '';
+      } else {
+        isShowDownDrawer.value = true;
+        drawerName.value = 'ServerConfigInfo';
+      }
     };
 
     // 打开gitlab页面
@@ -400,7 +418,6 @@ export default {
     };
 
     // 模型、关联详情数据
-    const modelInfo = ref(null);
     provide('currentModel', modelInfo);
     provide('configs', { allTypes, tags, classifications });
     provide('afterRemove', () => {
@@ -464,7 +481,9 @@ export default {
         path: `/service-management/service-list/detail/${value}`,
         query: { detailName: name },
       });
-      window.location.reload();
+      getServerInfo();
+      initModelList();
+      proxy.$forceUpdate();
     };
 
     const logs = (res: any) => {

@@ -10,8 +10,8 @@
       label-width="140px"
       label-position="left"
     >
-      <el-form-item prop="account" class="form-item" label="管理员账号" required>
-        {{ managerInfo.account }}
+      <el-form-item prop="userName" class="form-item" label="管理员账号" required>
+        {{ managerInfo.userName }}
       </el-form-item>
 
       <el-form-item prop="displayName" class="form-item" label="管理员姓名" required>
@@ -32,7 +32,7 @@
 import { computed, ref, SetupContext, WritableComputedRef } from 'vue';
 
 interface ManagerInfoInterface {
-  account: string;
+  userName: string;
   displayName: string;
   primaryMail: string;
   phoneNumber: string;
@@ -85,7 +85,7 @@ export default {
 
     // 表单校验规则
     const rules = {
-      account: [
+      userName: [
         { required: true, message: '请输入管理员账号' },
         { min: 3, max: 20, message: '管理员账号长度在2到40个字符之间', trigger: 'blur' },
         { pattern: /^[a-zA-Z0-9-]+$/g, message: '包含非法字符，只能输入小写字母、数字、中划线', trigger: 'blur' },

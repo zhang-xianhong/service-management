@@ -30,6 +30,21 @@
       <el-table-column property="managerName" label="管理员姓名"></el-table-column>
       <el-table-column property="managerTel" label="管理员电话"></el-table-column>
       <el-table-column property="status" label="状态">
+        <template #header>
+          <div class="statusStyle">
+            <span>状态</span>
+            <el-dropdown @command="handleFilter">
+              <span class="filter-btn"></span>
+              <template #dropdown>
+                <el-dropdown-menu>
+                  <el-dropdown-item :command="statusEnum.ENABLE">启用</el-dropdown-item>
+                  <el-dropdown-item :command="statusEnum.FREEZE">禁用</el-dropdown-item>
+                  <el-dropdown-item :command="''">全部</el-dropdown-item>
+                </el-dropdown-menu>
+              </template>
+            </el-dropdown>
+          </div>
+        </template>
         <template #default="scope">
           <template v-if="scope.row.status === statusEnum.ENABLE">启用</template>
           <template v-else>禁用</template>
@@ -37,7 +52,7 @@
       </el-table-column>
       <el-table-column label="操作" width="200">
         <template #default="scope">
-          <el-button type="text" v-if="scope.row.status === statusEnum.ENABLE" @click="onFreeze(scope.row.id)"
+          <el-button type="text" v-if="scope.row.status === statusEnum.ENABLE" @click="onFreeze(scope.row)"
             >禁用</el-button
           >
           <el-button type="text" v-if="scope.row.status === statusEnum.FREEZE" @click="onEnable(scope.row.id)"
@@ -68,6 +83,7 @@
 
 <script lang="ts">
 import { reactive, toRefs, getCurrentInstance, ref, Ref, watch } from 'vue';
+import { ElMessageBox, ElMessage } from 'element-plus';
 import { getTenantList, deleteTenant, freezeTenant, enableTenant } from '@/api/tenant';
 import { debounce } from 'lodash';
 import { useRouter } from 'vue-router';
@@ -97,6 +113,7 @@ interface TableStateInterface {
     page: number;
     pageSize: number;
     keyword: string;
+    status?: any;
   };
   selections: any[];
   total: number;
@@ -132,6 +149,7 @@ export default {
         page: 1,
         pageSize: 10,
         keyword: '',
+        status: '',
       },
       total: 0,
       selections: [],
@@ -217,17 +235,30 @@ export default {
     };
 
     // 租户冻结
-    const onFreeze = async (id: string) => {
-      const { code } = await freezeTenant(id);
-      if (code === 0) {
-        (instance as any).proxy.$message({
-          type: 'success',
-          message: '冻结成功',
+    const onFreeze = async (data: any) => {
+      ElMessageBox.confirm(`是否禁用【${data.name}】租户?`, '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+      })
+        .then(async () => {
+          const { code } = await freezeTenant(data.id);
+          if (code === 0) {
+            (instance as any).proxy.$message({
+              type: 'success',
+              message: '禁用成功',
+            });
+            getTableData();
+          }
+        })
+        .catch(() => {
+          ElMessage({
+            type: 'info',
+            message: '禁用失败',
+          });
         });
-        getTableData();
-      }
+      getTableData();
     };
-
     // 租户启动
     const onEnable = async (id: string) => {
       const { code } = await enableTenant(id);
@@ -249,7 +280,10 @@ export default {
         privateResetPassword.value.handleResetPasswd(managerId);
       }
     };
-
+    const handleFilter = (data: any) => {
+      tableState.searchProps.status = data;
+      getTableData();
+    };
     return {
       ...toRefs(tableState),
       statusEnum,
@@ -266,9 +300,24 @@ export default {
       onFreeze,
       onEnable,
       onResetPWD,
+      handleFilter,
     };
   },
 };
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+$image: url(~@/assets/img/filter.svg);
+.statusStyle {
+  display: flex;
+  align-items: center;
+}
+.filter-btn {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  margin-left: 5px;
+  background: $image no-repeat;
+  cursor: pointer;
+}
+</style>

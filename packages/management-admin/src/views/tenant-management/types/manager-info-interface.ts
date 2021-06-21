@@ -1,6 +1,6 @@
 // 管理员信息接口
 export default interface ManagerInfoInterface {
-  account: string;
+  userName: string;
   displayName: string;
   phoneNumber: string;
   primaryMail: string;
