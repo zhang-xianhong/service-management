@@ -207,7 +207,7 @@ export default defineComponent({
       projectDescriptionInput.value.handleBlur();
       const nameLength = projectDetail.name.length;
       const descriptionLengh = projectDetail.description;
-      const ownerArr = projectDetail.owner.split(',');
+      const ownerArr = projectDetail.owner?.split(',') || '';
       if (submitLoading.value) {
         return;
       }
@@ -233,11 +233,13 @@ export default defineComponent({
         return false;
       }
       submitLoading.value = true;
-      addProjectData().then(() => {
-        pageInfo.page = 1;
-        getProjectListData();
-        closeDialog();
-        window.location.reload();
+      addProjectData().then((res: any) => {
+        if (res?.code === 0) {
+          pageInfo.page = 1;
+          getProjectListData();
+          closeDialog();
+          window.location.reload();
+        }
         submitLoading.value = false;
       });
     };
