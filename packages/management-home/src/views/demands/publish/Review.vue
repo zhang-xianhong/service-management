@@ -117,7 +117,7 @@
         <el-table-column label="操作" width="300">
           <template #default="scope">
             <el-button
-              type="primary"
+              type="text"
               size="mini"
               :disabled="scope.row.auditResults !== 0"
               @click="onReview(scope.row)"
@@ -262,7 +262,6 @@ export default {
         const publishData = rows.map((item: any) => ({
           ...item,
           moduleType: getModuleType(item.moduleType),
-          applicantName: `${userInfo.value.displayName}_${userInfo.value.userName}`,
         }));
         tableState.tableData = publishData;
       } catch (error) {

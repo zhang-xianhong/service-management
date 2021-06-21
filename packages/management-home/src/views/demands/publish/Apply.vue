@@ -115,17 +115,18 @@
         <el-table-column label="操作" width="300">
           <template #default="scope">
             <el-button
-              type="primary"
+              type="text"
               size="mini"
               @click="onEdit(scope.row)"
-              :disabled="scope.row.status !== 0"
+              :disabled="getRowOptionStatus(scope.row)"
               v-if="getShowBool('update')"
               >编辑</el-button
             >
             <el-button
+              type="text"
               size="mini"
               @click="onDelete(scope.row)"
-              :disabled="scope.row.status !== 0"
+              :disabled="getRowOptionStatus(scope.row)"
               v-if="getShowBool('delete')"
               >删除</el-button
             >
@@ -367,7 +368,6 @@ export default {
         const publishData = rows.map((item: any) => ({
           ...item,
           moduleType: getModuleType(item.moduleType),
-          applicantName: `${userInfo.value.displayName}_${userInfo.value.userName}`,
         }));
         tableState.tableData = publishData;
       } catch (error) {
@@ -617,6 +617,10 @@ export default {
       blackHoverclick();
     });
 
+    function getRowOptionStatus(row: any) {
+      return userInfo.value.userId !== row.applicant || row.status !== 0;
+    }
+
     return {
       ...toRefs(tableState),
       addNewpublish,
@@ -654,6 +658,7 @@ export default {
       applicantTitleClick,
       applicantChange,
       getShowBool,
+      getRowOptionStatus,
     };
   },
 };
