@@ -1,8 +1,8 @@
 <template>
   <div>
     <el-row>
-      <el-col :span="10" style="text-align: left">
-        <el-button type="primary" style="width: 90px" @click="openAddDialog" v-if="getShowBool('add')">新建</el-button>
+      <el-col :span="10" style="text-align: left" class="page_head-menu">
+        <el-button   icon="el-icon-plus" type="primary" style="width: 90px" @click="openAddDialog" v-if="getShowBool('add')">新建</el-button>
         <el-button @click="handleUpdateStatus(0)" :disabled="!multipleSelection.length" v-if="getShowBool('update')"
           >启用</el-button
         >
@@ -15,6 +15,7 @@
       </el-col>
       <el-col :offset="10" :span="4" style="text-align: right">
         <el-input
+         style="width: 300px"
           placeholder="请输入姓名"
           suffix-icon="el-icon-search"
           @input="filterAccount"
@@ -39,10 +40,10 @@
         <el-table-column label="部门" prop="deptName"></el-table-column>
         <el-table-column label="操作" width="300">
           <template #default="scope">
-            <el-button type="primary" size="mini" @click="openEditDialog(scope.row)" v-if="getShowBool('update')"
+            <el-button type="text" size="mini" @click="openEditDialog(scope.row)" v-if="getShowBool('update')"
               >编辑</el-button
             >
-            <el-button type="primary" size="mini" @click="handleResetPasswd(scope.row)" v-if="getShowBool('update')"
+            <el-button type="text" size="mini" @click="handleResetPasswd(scope.row)" v-if="getShowBool('update')"
               >重置密码</el-button
             >
           </template>
@@ -279,3 +280,16 @@ export default defineComponent({
   },
 });
 </script>
+<style lang="scss">
+  .page_head-menu{
+    .el-button+.el-button{
+      margin-left:5px;
+    }
+    .el-button:nth-child(2){
+      margin-left:10px;
+    }
+  }
+  .el-row {
+    margin-bottom: 10px;
+  }
+</style>

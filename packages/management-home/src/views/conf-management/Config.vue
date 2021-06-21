@@ -2,10 +2,11 @@
   <div class="general">
     <el-row>
       <el-col :span="6" style="text-align: left">
-        <el-button type="primary" @click="addNewConfig" style="width: 90px" v-if="getShowBool('add')">新建</el-button>
+        <el-button type="primary" @click="addNewConfig" style="width: 90px" v-if="getShowBool('add')"  icon="el-icon-plus">新建</el-button>
       </el-col>
       <el-col :offset="8" :span="10" style="text-align: right">
         <el-input
+          style="width: 300px"
           placeholder="请输入键名称"
           suffix-icon="el-icon-search"
           @input="filterConfig"
@@ -15,7 +16,6 @@
     </el-row>
     <el-row style="background: #fff">
       <el-table :data="tableData" v-loading="loading" style="width: 100%" @selection-change="handleSelectionChange">
-        <el-table-column type="selection" width="45" v-if="getShowBool('update') || getShowBool('delete')" />
         <el-table-column type="index" label="序号" width="50" />
         <el-table-column label="键" prop="name"></el-table-column>
         <el-table-column label="值" prop="value"></el-table-column>
@@ -28,13 +28,13 @@
         <el-table-column label="配置版本" prop="version" width="100"></el-table-column>
         <el-table-column label="操作" width="300">
           <template #default="scope">
-            <el-button type="primary" size="mini" @click="onEdit(scope.row)" v-if="getShowBool('update')"
+            <el-button type="text" size="mini" @click="onEdit(scope.row)" v-if="getShowBool('update')"
               >编辑</el-button
             >
-            <el-button type="primary" size="mini" @click="changeHistory(scope.row)" v-if="getShowBool('selectDetail')"
+            <el-button type="text" size="mini" @click="changeHistory(scope.row)" v-if="getShowBool('selectDetail')"
               >变更历史</el-button
             >
-            <el-button size="mini" @click="onDelete(scope.row)" v-if="getShowBool('delete')">删除</el-button>
+            <el-button size="mini" @click="onDelete(scope.row)" v-if="getShowBool('delete')" type="text">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -82,8 +82,8 @@
       </div>
       <template #footer>
         <span class="dialog-footer" v-if="!configForm.disabled">
-          <el-button type="primary" @click="submitConfigForm">提 交</el-button>
-          <el-button @click="closeConfigForm">关 闭</el-button>
+          <el-button type="primary" @click="submitConfigForm">确定</el-button>
+          <el-button @click="closeConfigForm">取消</el-button>
         </span>
         <span class="dialog-footer" v-else>
           <el-button type="primary" @click="ableEdit">编辑</el-button>
@@ -468,4 +468,7 @@ export default defineComponent({
   text-align: center;
   margin-bottom: 20px;
 }
+.el-row {
+    margin-bottom: 10px;
+  }
 </style>

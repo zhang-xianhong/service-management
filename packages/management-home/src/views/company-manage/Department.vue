@@ -16,6 +16,7 @@
       </el-col>
       <el-col :offset="10" :span="4" style="text-align: right">
         <el-input
+          style="width: 300px"
           placeholder="请输入用户姓名"
           suffix-icon="el-icon-search"
           @input="filterAccount"
@@ -24,7 +25,7 @@
       </el-col>
     </el-row>
     <el-row>
-      <el-col :span="6" style="background: #fff">
+      <el-col :span="7" style="background: #fff">
         <div class="user-tree" v-loading="loading">
           <el-scrollbar>
             <el-tree
@@ -97,7 +98,7 @@
             </el-table-column>
             <el-table-column label="操作" width="100">
               <template #default="scope">
-                <el-button type="primary" size="mini" @click="handleDelPerson(scope.row)" v-if="getShowBool('delete')"
+                <el-button type="text" size="mini" @click="handleDelPerson(scope.row)" v-if="getShowBool('delete')"
                   >删除</el-button
                 >
               </template>
@@ -670,7 +671,7 @@ export default defineComponent({
 });
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .dept {
   height: calc(100vh - 130px);
   .user-tree {
@@ -715,5 +716,8 @@ export default defineComponent({
 .content-style {
   overflow: hidden;
   text-overflow: ellipsis;
+}
+.el-row {
+  margin-bottom: 10px;
 }
 </style>
