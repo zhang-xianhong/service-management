@@ -126,7 +126,7 @@
             label="项目简介"
             :label-width="labelWidth"
             prop="remark"
-            :rules="[{ min: 0, max: 255, message: '最多支持255个字符', trigger: 'blur' }]"
+            :rules="[{ min: 0, max: 512, message: '最多支持512个字符', trigger: 'blur' }]"
           >
             <el-input v-model="projectDetail.remark" type="textarea" :rows="5"></el-input>
           </el-form-item>
@@ -207,29 +207,26 @@ export default defineComponent({
       projectDescriptionInput.value.handleBlur();
       const nameLength = projectDetail.name.length;
       const descriptionLengh = projectDetail.description;
-      const ownerArr = projectDetail.owner.split(',');
       if (submitLoading.value) {
         return;
       }
-      // if (!projectDetail.name) {
-      //   return false;
-      // }
       if (nameLength < 3 || nameLength > 20) {
         return false;
       }
-      // if (!projectDetail.description) {
-      //   return false;
-      // }
       if (descriptionLengh < 3 || descriptionLengh > 20) {
         return false;
       }
       if (!projectDetail.templateId) {
         return false;
       }
-      if (ownerArr.length > 10) {
-        return ElMessage.warning('最多支持10个负责人');
+      if (projectDetail.owner) {
+        const ownerArr = projectDetail.owner.split(',');
+        if (ownerArr.length > 10) {
+          return ElMessage.warning('最多支持10个负责人');
+        }
+        return;
       }
-      if (projectDetail.remark && projectDetail.remark.length > 255) {
+      if (projectDetail.remark && projectDetail.remark.length > 512) {
         return false;
       }
       submitLoading.value = true;

@@ -71,8 +71,8 @@ export default defineComponent({
     const src = ref('');
     const changeSelectPic = (res: any) => {
       const { files } = res.target;
-      if (files[0].size > 10 * 1024 * 1024) {
-        return Message.warning('上传图片不得大于10Mb');
+      if (files[0].size > 3 * 1024 * 1024) {
+        return Message.warning('上传图片不得大于3Mb');
       }
       if (!(files[0].type.includes('jpeg') || files[0].type.includes('png'))) {
         return Message.warning('图片格式必须为png/jpeg');
