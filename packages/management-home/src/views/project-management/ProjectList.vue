@@ -207,7 +207,7 @@ export default defineComponent({
       projectDescriptionInput.value.handleBlur();
       const nameLength = projectDetail.name.length;
       const descriptionLengh = projectDetail.description;
-      const ownerArr = projectDetail.owner.split(',');
+      const ownerArr = projectDetail.owner?.split(',') || '';
       if (submitLoading.value) {
         return;
       }
