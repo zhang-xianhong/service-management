@@ -1,7 +1,7 @@
 <template>
   <div class="erd-container-wrapper" :style="{ width, height }" v-on="handlers">
     <div :style="`width: ${viewWidth}px; height: ${viewHeight}px; position: relative;`">
-      <add-model></add-model>
+      <add-model v-if="getShowBool('add')"></add-model>
       <erd-relation></erd-relation>
       <template v-if="allTypes.length">
         <erd-table
@@ -41,6 +41,7 @@ import ErdTable from './Table.vue';
 import ErdRelation from './Relation.vue';
 import AddModel from './AddModel.vue';
 import { updateConfig, createRelation, updateRelation } from '@/api/schema/model';
+import { getShowBool } from '@/utils/permission-show-module';
 export default defineComponent({
   name: 'Erd',
   props: {
@@ -282,6 +283,7 @@ export default defineComponent({
       leaveErd,
       handlers,
       logs,
+      getShowBool,
     };
   },
 });
