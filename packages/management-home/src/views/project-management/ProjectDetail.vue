@@ -41,7 +41,7 @@
                 <svg-icon v-if="node.level === 3" icon-name="member" icon-class="tree-node-member"></svg-icon>
                 <span>{{ node.label }}</span>
                 <i
-                  v-if="node.level === 2"
+                  v-if="node.level === 2 && getShowBool('update') && include"
                   class="el-icon-circle-plus"
                   style="float: right"
                   @click.stop="addMember(node, data)"
@@ -55,7 +55,7 @@
         <el-table :data="userList" height="100%">
           <el-table-column type="index" width="55"></el-table-column>
           <el-table-column v-for="column in columns" :key="column.prop" v-bind="column"></el-table-column>
-          <el-table-column prop="operator" width="55">
+          <el-table-column prop="operator" width="55" v-if="getShowBool('update') && include">
             <template #default="{ row, $index }">
               <i class="el-icon-error remove-user-icon" @click="removeUser(row, $index)"></i>
             </template>
