@@ -190,7 +190,7 @@ export default defineComponent({
     };
     const groupRemove = async (ids = selection) => {
       ElMessageBox.confirm(`是否删除选中标签?`, '提示', {
-        confirmButtonText: '确定',
+        confirmButtonText: '确定删除',
         cancelButtonText: '取消',
         type: 'warning',
       }).then(async () => {
