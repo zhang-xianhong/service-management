@@ -231,7 +231,6 @@ export default defineComponent({
         if (ownerArr.length > 10) {
           return ElMessage.warning('最多支持10个负责人');
         }
-        return;
       }
       if (projectDetail.remark && projectDetail.remark.length > 512) {
         return false;

@@ -10,7 +10,9 @@
       <div>
         <div class="title">
           项目信息
-          <span class="edit-btn" v-if="!editMode && getShowBool('update')" @click="editMode = true">编辑</span>
+          <span class="edit-btn" v-if="!editMode && getShowBool('update') && include" @click="editMode = true"
+            >编辑</span
+          >
         </div>
         <basic-info-form
           :project-detail="projectDetail"
@@ -82,7 +84,7 @@ import BasicInfoForm from './components/BasicInfoForm.vue';
 import { ElMessageBox } from 'element-plus';
 import { getMemberList, getProjectDetail, deleteMember } from '@/api/project/project';
 import { getTenantDepartment } from '@/api/tenant';
-import { userProjectList } from '@/layout/messageCenter/user-info';
+import { userInfo, userProjectList } from '@/layout/messageCenter/user-info';
 import { getShowBool } from '@/utils/permission-show-module';
 
 const userStatus = {
@@ -228,6 +230,7 @@ export default {
     };
     // 初始化项目信息
     const projectDetail = ref({});
+    const include = ref(true);
     const getProjectInfo = async () => {
       const { code, data } = await getProjectDetail(props.id);
       if (code === 0) {
@@ -236,6 +239,8 @@ export default {
         projectInfo.templateName = data.template.name;
         projectDetail.value = projectInfo;
         treeData.value[0].label = data.name;
+        const userArr = projectInfo.owners.map((x: any) => x.userId);
+        include.value = userArr.includes(userInfo.value.userId);
       }
     };
     getProjectInfo();
@@ -321,6 +326,7 @@ export default {
       otherRoleUser,
       userProjectList,
       getShowBool,
+      include,
     };
   },
 };

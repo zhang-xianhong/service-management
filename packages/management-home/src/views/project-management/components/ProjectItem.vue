@@ -41,6 +41,7 @@ import { defineComponent, getCurrentInstance, ref } from 'vue';
 import { imgUpload, updateProject } from '@/api/project/project';
 import Message from 'element-plus/es/el-message';
 import { ElMessage } from 'element-plus';
+import { userInfo } from '@/layout/messageCenter/user-info';
 
 export default defineComponent({
   name: 'ProjectItem',
@@ -88,9 +89,10 @@ export default defineComponent({
         .then((res) => updateProject(props.dataObj.id, { thumbnail: res.data.fileKey }))
         .then(() => ctx.emit('reload-projects'));
     };
-    const changePic = (res: any) => {
-      console.log('change picture', res);
-      if (props.updateOrNot) {
+    const changePic = () => {
+      const ownerArr = props.dataObj.owners.map((x: any) => x.userId);
+      const includes = ownerArr.includes(userInfo.value.userId);
+      if (props.updateOrNot && includes) {
         selectPic.value.click();
       } else {
         ElMessage.warning('暂无更新权限');

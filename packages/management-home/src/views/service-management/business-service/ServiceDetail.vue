@@ -701,7 +701,8 @@ export default {
 </style>
 <style lang="scss" scoped>
 .is-show-drawer {
-  .erd-container-wrapper {
+  .erd-container-wrapper,
+  .right-config {
     padding-bottom: 400px;
   }
 }
