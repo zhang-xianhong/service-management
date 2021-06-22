@@ -29,7 +29,11 @@
         </el-table-column>
         <el-table-column type="index" label="序号" width="50" />
         <el-table-column label="发布类型" prop="moduleType"></el-table-column>
-        <el-table-column label="发布名称" prop="name"></el-table-column>
+        <el-table-column label="发布名称" prop="name">
+          <template #default="props">
+           {{props.row.name}}
+          </template>
+        </el-table-column>
         <el-table-column label="申请账号" prop="applicantName">
           <template #header>
             <i class="el-icon-search"></i>
