@@ -33,7 +33,7 @@
       </span>
       <el-dropdown trigger="click" class="header-title" v-else>
         <span class="el-dropdown-link">
-          <svg-icon icon-name="project-list" style="margin-right: 2px;vertical-align: bottom"></svg-icon>
+          <svg-icon icon-name="project-list" style="margin-right: 2px; vertical-align: bottom"></svg-icon>
           {{ userCurrentProject.name }}
         </span>
         <template #dropdown>
