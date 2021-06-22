@@ -199,11 +199,11 @@ export default defineComponent({
 
 <style scoped lang="scss">
 .application-card {
-  width: 100%;
-  min-width: 200px;
+  width: 284px;
   height: 90px;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
   padding: 10px;
+  margin: 10px;
   display: flex;
   align-items: center;
   &:hover {

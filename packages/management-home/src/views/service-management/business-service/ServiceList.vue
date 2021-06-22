@@ -1,11 +1,5 @@
 <template>
-  <div
-    class="service-list"
-    v-loading="!userProjectList.length"
-    element-loading-text="暂无项目，请联系管理员添加项目"
-    element-loading-spinner="el-icon-loading"
-    element-loading-background="rgba(255, 255, 255, 1)"
-  >
+  <div class="service-list">
     <div class="service-list_header">
       <el-button
         icon="el-icon-plus"
@@ -32,6 +26,7 @@
       <list-wrap
         :loading="tableLoading"
         :handleCreate="toggleServiceDialog"
+        :hasCreateAuth="getShowBool('add')"
         :empty="serviceTableList.list.length === 0"
       >
         <template v-slot:default>
@@ -333,6 +328,7 @@ export default defineComponent({
             (serverMuitable.value as any).toggleRowSelection(x, true);
           });
         rememberMutiArray.value = [];
+        tableLoading.value = false;
       });
     };
 
@@ -345,11 +341,17 @@ export default defineComponent({
 
     const handleSizeChange = (res: number) => {
       pageInfo.pageSize = res;
-      refreshServiceList(pageInfo);
+      tableLoading.value = true;
+      refreshServiceList(pageInfo).then(() => {
+        tableLoading.value = false;
+      });
     };
     const handleCurrentChange = (res: number) => {
       pageInfo.page = res;
-      refreshServiceList(pageInfo);
+      tableLoading.value = true;
+      refreshServiceList(pageInfo).then(() => {
+        tableLoading.value = false;
+      });
     };
     function clearDialog() {
       const keys = Object.keys(serviceDetail);
@@ -489,7 +491,10 @@ export default defineComponent({
       pageInfo.page = 1;
       const infos = { ...pageInfo };
       infos.classification = Object.values(pageInfo.classification).join(',');
-      refreshServiceList(infos);
+      tableLoading.value = true;
+      refreshServiceList(infos).then(() => {
+        tableLoading.value = false;
+      });
     };
 
     const getSortClassification = (res: any) => {

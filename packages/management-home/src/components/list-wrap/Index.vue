@@ -70,6 +70,9 @@ export default defineComponent({
 }
 </style>
 <style lang="scss">
+.sa-list-wrap .el-table__empty-block {
+  display: none;
+}
 .sa-list-wrap .el-loading-spinner {
   display: flex;
   align-items: center;
