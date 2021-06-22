@@ -386,6 +386,6 @@ export default defineComponent({
 .ports-configuration__operations {
   display: flex;
   padding: 12px;
-  justify-content: flex-end;
+  place-content: center;
 }
 </style>
