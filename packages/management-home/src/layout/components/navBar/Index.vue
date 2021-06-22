@@ -33,7 +33,7 @@
       </span>
       <el-dropdown trigger="click" class="header-title" v-else>
         <span class="el-dropdown-link">
-          <i class="el-icon-s-unfold header-title-object-icon3"></i>
+          <svg-icon icon-name="project-list" style="margin-right: 2px;vertical-align: bottom"></svg-icon>
           {{ userCurrentProject.name }}
         </span>
         <template #dropdown>
@@ -43,20 +43,21 @@
               :key="index"
               @click="handleDropClick(project)"
               :icon="project.id === userCurrentProject.id ? 'el-icon-check' : ''"
-              >{{ project.name }}</el-dropdown-item
             >
+              {{ project.name }}
+            </el-dropdown-item>
           </el-dropdown-menu>
         </template>
       </el-dropdown>
       <el-dropdown trigger="click" class="header-title">
         <span class="el-dropdown-link">
-          <i class="el-icon-user-solid"></i>
+          <i class="el-icon-user-solid" style="margin-right: 2px"></i>
           {{ userInfo.userName }}
           <i class="el-icon-arrow-down el-icon--right"></i>
         </span>
         <template #dropdown>
           <el-dropdown-menu>
-            <el-dropdown-item icon="el-icon-info" @click="jump2UserCenter">个人中心</el-dropdown-item>
+            <el-dropdown-item icon="el-icon-user" @click="jump2UserCenter">个人中心</el-dropdown-item>
             <el-dropdown-item icon="el-icon-info" @click="toAboutInfo">关于</el-dropdown-item>
             <el-dropdown-item icon="el-icon-switch-button" @click="handleLogout">登出</el-dropdown-item>
           </el-dropdown-menu>

@@ -79,7 +79,7 @@ const routes: Array<RouteRecordRaw> = [
     component: Layout,
     meta: {
       isRootLevel: true,
-      id: 10,
+      id: 2,
       hidden: false,
       title: '租户管理',
     },
@@ -90,7 +90,7 @@ const routes: Array<RouteRecordRaw> = [
         name: 'TenantDetail',
         meta: {
           title: '租户详情',
-          icon: 'el-icon-eleme',
+          icon: 'tenant',
           isRootLevel: false,
           id: 10,
           hidden: false,
@@ -104,7 +104,7 @@ const routes: Array<RouteRecordRaw> = [
     component: Layout,
     meta: {
       title: '公司管理',
-      icon: 'el-icon-eleme',
+      icon: 'compony',
       isRootLevel: true,
       id: 3,
       node: true,
@@ -116,7 +116,6 @@ const routes: Array<RouteRecordRaw> = [
         name: 'Person',
         meta: {
           title: '人员管理',
-          icon: 'el-icon-eleme',
           isRootLevel: false,
           id: 11,
         },
@@ -127,7 +126,6 @@ const routes: Array<RouteRecordRaw> = [
         name: 'Department',
         meta: {
           title: '部门管理',
-          icon: 'el-icon-eleme',
           isRootLevel: false,
           id: 12,
         },
@@ -142,7 +140,7 @@ const routes: Array<RouteRecordRaw> = [
     meta: {
       isRootLevel: true,
       title: '项目管理',
-      icon: 'el-icon-eleme',
+      icon: 'project-list',
       id: 4,
       hidden: false,
       node: true,
@@ -154,7 +152,7 @@ const routes: Array<RouteRecordRaw> = [
         name: 'ProjectList',
         meta: {
           title: '项目列表',
-          icon: 'el-icon-eleme',
+          icon: 'project-list',
           isRootLevel: false,
           id: 13,
           hidden: false,
@@ -166,7 +164,6 @@ const routes: Array<RouteRecordRaw> = [
         name: 'ProjectDetail',
         meta: {
           title: '项目详情',
-          icon: 'el-icon-eleme',
           isRootLevel: false,
           hidden: true,
           activeMenu: '/project-management/project-list',
@@ -182,8 +179,8 @@ const routes: Array<RouteRecordRaw> = [
     name: 'Publish',
     component: Layout,
     meta: {
-      title: '发布管理',
-      icon: 'el-icon-eleme',
+      title: '部署管理',
+      icon: 'publish',
       isRootLevel: true,
       id: 6,
       node: true,
@@ -194,8 +191,7 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import(/* webpackChunkName: "general" */ '@/views/demands/publish/Apply.vue'),
         name: 'PublishApply',
         meta: {
-          title: '发布申请',
-          icon: 'el-icon-eleme',
+          title: '部署申请',
           isRootLevel: false,
           id: 14,
         },
@@ -205,8 +201,7 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import(/* webpackChunkName: "general" */ '@/views/demands/publish/Review.vue'),
         name: 'PublishReview',
         meta: {
-          title: '发布审核',
-          icon: 'el-icon-eleme',
+          title: '部署审核',
           isRootLevel: false,
           id: 15,
         },
@@ -220,9 +215,9 @@ const routes: Array<RouteRecordRaw> = [
     component: Layout,
     meta: {
       title: '服务管理',
-      icon: 'el-icon-eleme',
+      icon: 'service',
       isRootLevel: true,
-      id: 16,
+      id: 7,
       node: true,
     },
     children: [
@@ -232,7 +227,6 @@ const routes: Array<RouteRecordRaw> = [
         name: 'ServiceList',
         meta: {
           title: '业务服务',
-          icon: 'el-icon-eleme',
           isRootLevel: false,
           id: 16,
           hidden: false,
@@ -244,7 +238,6 @@ const routes: Array<RouteRecordRaw> = [
         name: 'ServiceDetail',
         meta: {
           title: '业务服务详情',
-          icon: 'el-icon-eleme',
           isRootLevel: false,
           hidden: true,
           activeMenu: '/service-management/service-list',
@@ -271,7 +264,7 @@ const routes: Array<RouteRecordRaw> = [
     component: Layout,
     meta: {
       title: '应用编排',
-      icon: 'el-icon-eleme',
+      icon: 'application',
       isRootLevel: true,
       id: 22,
       node: true,
@@ -283,7 +276,6 @@ const routes: Array<RouteRecordRaw> = [
         name: 'ApplicationList',
         meta: {
           title: '应用列表',
-          icon: 'el-icon-eleme',
           isRootLevel: false,
           id: 23,
         },
@@ -295,7 +287,6 @@ const routes: Array<RouteRecordRaw> = [
         name: 'ApplicationDetail',
         meta: {
           title: '应用详情',
-          icon: 'el-icon-eleme',
           isRootLevel: false,
           id: 23,
           hidden: true,
@@ -311,7 +302,7 @@ const routes: Array<RouteRecordRaw> = [
     component: Layout,
     meta: {
       title: '配置管理',
-      icon: 'el-icon-eleme',
+      icon: 'config',
       isRootLevel: true,
       id: 8,
       node: true,
@@ -322,8 +313,7 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import(/* webpackChunkName: "classification" */ '@/views/conf-management/Classification.vue'),
         name: 'Classification',
         meta: {
-          title: '分类信息',
-          icon: 'el-icon-eleme',
+          title: '分类配置',
           isRootLevel: false,
           id: 17,
         },
@@ -333,8 +323,7 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import(/* webpackChunkName: "tag" */ '@/views/conf-management/Tag.vue'),
         name: 'Tag',
         meta: {
-          title: '标签信息',
-          icon: 'el-icon-eleme',
+          title: '标签配置',
           isRootLevel: false,
           id: 18,
         },
@@ -345,7 +334,6 @@ const routes: Array<RouteRecordRaw> = [
         name: 'DataType',
         meta: {
           title: '数据类型',
-          icon: 'el-icon-eleme',
           isRootLevel: false,
           id: 19,
         },
@@ -356,7 +344,6 @@ const routes: Array<RouteRecordRaw> = [
         name: 'DataTypeEdit',
         meta: {
           title: '新增数据类型',
-          icon: 'el-icon-eleme',
           hidden: true,
           isRootLevel: false,
           id: 19,
@@ -368,7 +355,6 @@ const routes: Array<RouteRecordRaw> = [
         name: 'Config',
         meta: {
           title: '通用配置',
-          icon: 'el-icon-eleme',
           isRootLevel: false,
           id: 20,
         },
