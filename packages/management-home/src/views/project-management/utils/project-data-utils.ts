@@ -2,7 +2,6 @@ import { reactive, ref } from 'vue';
 import { addProject, getProjectList, deleteProjects } from '@/api/project';
 import { getAllTemplates } from '@/api/settings/templates';
 import { ElMessageBox } from 'element-plus';
-import Message from 'element-plus/es/el-message';
 
 export const projectDetail = reactive({
   license: 1,
@@ -49,7 +48,7 @@ export const deleteProject = (id: number) => {
     cancelButtonText: '取消',
     type: 'warning',
   }).then(async () => {
-    deleteProjects([id]).then((res) => {
+    deleteProjects([id]).then(() => {
       window.location.reload();
     });
   });
