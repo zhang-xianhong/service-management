@@ -6,7 +6,7 @@
         <slot />
       </div>
       <div class="sa-list-wrap__empty" v-if="empty && !loading">
-        <slot name="empty" v-if="$slots.emit" />
+        <slot name="empty" v-if="$slots.empty" />
         <span v-else>
           暂无数据<span v-if="hasCreateAuth">，立即<a @click="handleCreate">新建</a></span>
         </span>

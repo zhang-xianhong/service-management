@@ -10,7 +10,7 @@
         ></el-input>
       </el-col>
     </el-row>
-    <list-wrap :loading="loading" :empty="total === 0">
+    <list-wrap :loading="loading" :empty="total === 0" :hasCreateAuth="false">
       <el-table :data="tableData" class="publish-table" @selection-change="handleSelectionChange">
         <el-table-column type="expand">
           <template #default="props">
