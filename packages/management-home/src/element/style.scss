@@ -4,10 +4,19 @@
 // 变量覆盖
 $--border-radius-base: 0px !default;
 $--border-radius-small: 0px !default;
+$--button-border-radius: 0px !default;
+$--button-medium-border-radius: 0px !default;
+$--button-small-border-radius: 0px !default;
+$--button-mini-border-radius: 0px !default;
+$--pagination-border-radius: 0px !default;
+$--tag-border-radius: 0px !default;
 $--color-primary: #006eff !default;
+
+
 // 直接覆盖样式
-.el-textarea__inner {
-  border-radius: 0;
+.el-textarea__inner,
+.el-button {
+  border-radius: 0 !important;
 }
 .el-button--primary {
   background-color: #006eff !important;
