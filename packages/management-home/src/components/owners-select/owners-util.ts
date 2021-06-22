@@ -13,17 +13,17 @@ async function getOwnerList(keyword = '', owners: Array<any> = [], projects = fa
     item.projectId = localStorage.getItem('projectId');
   }
   const { data } = await queryInTenant(item);
-  let users = data;
+  const users = data;
   // Object.assign(users, owners);
   console.log(owners);
-  const userIds = Array.from(new Set(users.map((item: any) => item.id)));
-  users = users.filter((item: any, index: number) => {
-    if (userIds.indexOf(item.id) > -1) {
-      userIds.splice(index, 1);
-      return true;
-    }
-    return false;
-  });
+  // const userIds = Array.from(new Set(users.map((item: any) => item.id)));
+  // users = users.filter((item: any, index: number) => {
+  //   if (userIds.indexOf(item.id) > -1) {
+  //     userIds.splice(index, 1);
+  //     return true;
+  //   }
+  //   return false;
+  // });
   users.forEach((user: any) => {
     ownerMap.set(user.id, user);
   });

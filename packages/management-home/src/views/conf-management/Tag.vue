@@ -60,7 +60,7 @@
             { min: 1, max: 25, message: '内容过长，最多不能超过25个字符', trigger: 'blur' },
           ]"
         >
-          <el-input v-model="form.name" autocomplete="off" ref="tagName"></el-input>
+          <el-input v-model.trim="form.name" autocomplete="off"></el-input>
         </el-form-item>
       </el-form>
       <template #footer>

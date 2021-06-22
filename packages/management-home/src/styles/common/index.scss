@@ -9,3 +9,10 @@ a, [role="button"] {
   cursor: pointer;
   text-decoration: none;
 }
+.el-input--small .el-input__inner {
+  height: 30px;
+  line-height: 30px;
+}
+.el-button--small {
+  min-height: 30px;
+}

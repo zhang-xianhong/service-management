@@ -7,31 +7,26 @@
     element-loading-background="rgba(255, 255, 255, 1)"
   >
     <div class="service-list_header">
-      <div class="service-list_left">
-        <el-button
-          icon="el-icon-plus"
-          v-if="getShowBool('add')"
-          type="primary"
-          @click="toggleServiceDialog"
-          style="width: 90px"
-          >新建</el-button
-        >
-        <el-button @click="runService" :disabled="computedDisabled" v-if="false">启动</el-button>
-        <el-button @click="stopService" :disabled="computedDisabled" v-if="false">停止</el-button>
-        <el-button @click="deleteHandler" :disabled="computedDisabledForSS" v-if="getShowBool('delete')"
-          >删除</el-button
-        >
-      </div>
-      <div class="service-list_right">
-        <el-input
-          placeholder="请输入服务名称"
-          style="width: 500px"
-          v-model="pageInfo.keyword"
-          suffix-icon="el-icon-search"
-          @input="searchForList"
-          @keyup.enter="searchForList"
-        ></el-input>
-      </div>
+      <el-button
+        icon="el-icon-plus"
+        v-if="getShowBool('add')"
+        type="primary"
+        @click="toggleServiceDialog"
+        style="width: 90px"
+        >新建</el-button
+      >
+      <el-button @click="runService" :disabled="computedDisabled" v-if="false">启动</el-button>
+      <el-button @click="stopService" :disabled="computedDisabled" v-if="false">停止</el-button>
+      <el-button @click="deleteHandler" :disabled="computedDisabledForSS" v-if="getShowBool('delete')">删除</el-button>
+
+      <el-input
+        placeholder="请输入服务名称"
+        style="max-width: 300px; margin-left: auto"
+        v-model="pageInfo.keyword"
+        suffix-icon="el-icon-search"
+        @input="searchForList"
+        @keyup.enter="searchForList"
+      ></el-input>
     </div>
     <div class="service-list_content">
       <el-table
@@ -350,6 +345,7 @@ export default defineComponent({
     }
     function addServiceByForm() {
       const senddata = { ...serviceDetail };
+      const ownerArr = senddata.owner.split(',');
       senddata.tag = serviceDetail.tags ? serviceDetail.tags.join(',') : '';
       senddata.dependencies = serviceDetail.dependencies
         ? serviceDetail.dependencies.map((x: any) => ({
@@ -370,6 +366,10 @@ export default defineComponent({
           message: '服务名称不得超过32个字符',
           type: 'error',
         });
+      }
+
+      if (ownerArr.length > 10) {
+        return ElMessage.warning('负责人最多支持10个');
       }
 
       const regux = /^[a-z0-9-]+(?<!-)$/;
@@ -641,7 +641,6 @@ export default defineComponent({
     width: 100%;
     height: 40px;
     padding-bottom: 10px;
-    margin-bottom: 10px;
     display: flex;
     & > div {
       flex: 1;
@@ -657,8 +656,6 @@ export default defineComponent({
 .add-service-set {
   width: 400px;
   .el-input--small .el-input__inner {
-    height: 32px;
-    line-height: 32px;
     width: 400px;
   }
   .el-textarea__inner {
