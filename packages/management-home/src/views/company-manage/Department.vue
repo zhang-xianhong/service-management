@@ -1,7 +1,7 @@
 <template>
   <div class="dept">
     <el-row>
-      <el-col :span="10" style="text-align: left">
+      <el-col :span="6" style="text-align: left">
         <el-button
           type="primary"
           style="width: 90px"
@@ -14,7 +14,7 @@
           >删除</el-button
         >
       </el-col>
-      <el-col :offset="10" :span="4" style="text-align: right">
+      <el-col :offset="8" :span="10" style="text-align: right">
         <el-input
           style="width: 300px"
           placeholder="请输入用户姓名"

@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-row>
-      <el-col :span="10" style="text-align: left" class="page_head-menu">
+      <el-col :span="6" style="text-align: left" class="page_head-menu">
         <el-button
           icon="el-icon-plus"
           type="primary"
@@ -20,7 +20,7 @@
           >删除</el-button
         >
       </el-col>
-      <el-col :offset="10" :span="4" style="text-align: right">
+      <el-col :offset="8" :span="10" style="text-align: right">
         <el-input
           style="width: 300px"
           placeholder="请输入姓名"
