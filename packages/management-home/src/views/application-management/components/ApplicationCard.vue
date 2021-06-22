@@ -111,7 +111,7 @@ export default defineComponent({
 
     const onClose = async () => {
       ElMessageBox.confirm(`是否删除该应用？`, '提示', {
-        confirmButtonText: '确定',
+        confirmButtonText: '确定删除',
         cancelButtonText: '取消',
         type: 'warning',
       }).then(async () => {
