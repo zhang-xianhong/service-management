@@ -372,9 +372,15 @@ export default defineComponent({
 
 .application-cards {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(6, 1fr);
   grid-gap: 10px;
   justify-items: center;
+}
+
+@media screen and (max-width: 1800px) {
+  .application-cards {
+    grid-template-columns: repeat(5, 1fr);
+  }
 }
 
 @media screen and (max-width: 1560px) {

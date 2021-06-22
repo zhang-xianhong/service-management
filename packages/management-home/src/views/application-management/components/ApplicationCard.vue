@@ -200,7 +200,7 @@ export default defineComponent({
 <style scoped lang="scss">
 .application-card {
   width: 100%;
-  max-width: 300px;
+  min-width: 200px;
   height: 90px;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
   padding: 10px;
