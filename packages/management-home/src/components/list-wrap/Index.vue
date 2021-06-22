@@ -61,11 +61,13 @@ export default defineComponent({
   &__empty,
   &__content {
     min-height: 200px;
+    overflow: hidden;
   }
   &__empty {
     display: flex;
     align-items: center;
     justify-content: center;
+    margin: 20px 0;
   }
 }
 </style>
