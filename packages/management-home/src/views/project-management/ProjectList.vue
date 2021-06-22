@@ -305,7 +305,7 @@ export default defineComponent({
       persons,
       submitProjectDetail,
       closeDialog,
-      projectList: [],
+      projectList,
       deleteProject,
       handleSizeChange,
       handleCurrentChange,
