@@ -22,7 +22,13 @@
       </el-col>
     </el-row>
     <el-row style="background: #fff">
-      <list-wrap :in-project="false" :loading="loading" :empty="!total" :handleCreate="addNewConfig" :hasCreateAuth="getShowBool('add')">
+      <list-wrap
+        :in-project="false"
+        :loading="loading"
+        :empty="!total"
+        :handleCreate="addNewConfig"
+        :hasCreateAuth="getShowBool('add')"
+      >
         <el-table :data="tableData" style="width: 100%" @selection-change="handleSelectionChange">
           <el-table-column type="index" label="序号" width="50" />
           <el-table-column label="键" prop="name"></el-table-column>
@@ -242,8 +248,14 @@ export default defineComponent({
         { min: 1, max: 255, message: '长度在 1 到 255 个字符', trigger: 'blur' },
         { validator: validatorKeyPass, trigger: 'blur' },
       ],
-      value: [{ required: true, message: '请输入值（Value）', trigger: 'blur' }],
-      defaultValue: [{ required: true, message: '请输入值（DefaultValue）', trigger: 'blur' }],
+      value: [
+        { required: true, message: '请输入值（Value）', trigger: 'blur' },
+        { min: 1, max: 20, message: '长度在 1 到 20个字符', trigger: 'blur' },
+      ],
+      defaultValue: [
+        { required: true, message: '请输入值（DefaultValue）', trigger: 'blur' },
+        { min: 1, max: 20, message: '长度在 1 到 20个字符', trigger: 'blur' },
+      ],
       type: [{ required: true, message: '请选则类型', trigger: 'change' }],
     };
 

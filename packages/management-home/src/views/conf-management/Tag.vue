@@ -18,7 +18,13 @@
       </el-col>
     </el-row>
     <el-row style="background: #fff">
-      <list-wrap :in-project="false" :loading="loading" :empty="!total" :handleCreate="add" :hasCreateAuth="getShowBool('add')">
+      <list-wrap
+        :in-project="false"
+        :loading="loading"
+        :empty="!total"
+        :handleCreate="add"
+        :hasCreateAuth="getShowBool('add')"
+      >
         <el-table :data="tagList" @selection-change="handleSelectionChange" @sort-change="sortChange">
           <el-table-column type="selection" width="45" v-if="getShowBool('delete')" />
           <el-table-column type="index" label="序号" width="50" />
@@ -59,7 +65,7 @@
           prop="name"
           :rules="[
             { required: true, message: '内容不能为空', trigger: 'blur' },
-            { min: 1, max: 25, message: '内容过长，最多不能超过25个字符', trigger: 'blur' },
+            { min: 1, max: 20, message: '内容过长，最多不能超过20个字符', trigger: 'blur' },
           ]"
         >
           <el-input v-model.trim="form.name" autocomplete="off"></el-input>
