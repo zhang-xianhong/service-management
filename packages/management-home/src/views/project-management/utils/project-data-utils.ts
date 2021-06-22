@@ -53,8 +53,6 @@ export const deleteProject = (id: number) => {
       confirmButtonText: '确认删除',
       showCancelButton: true,
       cancelButtonText: '取消',
-      confirmButtonClass: 'confirmButton',
-      cancelButtonClass: 'cancelButton',
     },
   )
     .then(() => {

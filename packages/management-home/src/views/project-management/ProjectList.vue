@@ -386,16 +386,4 @@ export default defineComponent({
 .project-list-dialog-footer {
   text-align: center;
 }
-
-.confirmButton {
-  padding: 8px !important;
-  margin-left: -120px !important;
-  font-size: 12px;
-  color: #ffffff;
-}
-.cancelButton {
-  padding: 8px !important;
-  font-size: 12px;
-  color: #000000;
-}
 </style>
