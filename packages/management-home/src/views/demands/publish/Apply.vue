@@ -13,8 +13,14 @@
         ></el-input>
       </el-col>
     </el-row>
-    <el-row style="background: #fff">
-      <el-table :data="tableData" v-loading="loading" class="publish-table" @selection-change="handleSelectionChange">
+
+    <list-wrap
+      :loading="loading"
+      :empty="total === 0"
+      :handleCreate="addNewpublish"
+      :hasCreateAuth="getShowBool('add')"
+    >
+      <el-table :data="tableData" class="publish-table" @selection-change="handleSelectionChange">
         <el-table-column type="expand">
           <template #default="props">
             <el-form label-position="left" class="publish-table-expand">
@@ -31,7 +37,7 @@
         <el-table-column label="发布类型" prop="moduleType"></el-table-column>
         <el-table-column label="发布名称" prop="name">
           <template #default="props">
-           {{props.row.name}}
+            {{ props.row.name }}
           </template>
         </el-table-column>
         <el-table-column label="申请账号" prop="applicantName">
@@ -143,6 +149,7 @@
         </el-table-column>
       </el-table>
       <packaged-pagination
+        v-if="total"
         :current-page="searchProps.page"
         :page-size="searchProps.pageSize"
         :page-sizes="[10, 20, 50]"
@@ -151,7 +158,8 @@
         @size-change="handlePageSizeChange"
         @current-change="handlePageChange"
       ></packaged-pagination>
-    </el-row>
+    </list-wrap>
+
     <el-dialog
       :title="publishForm.isEdit ? '编辑' : '新建'"
       v-model="addpublishDialog"
