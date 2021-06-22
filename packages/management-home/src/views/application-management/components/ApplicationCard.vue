@@ -1,7 +1,11 @@
 <template>
   <div class="application-card">
     <div class="application-info">
+      <div class="application-info__image" v-if="!getShowBool('add')">
+        <img v-if="imageUrl" class="application-info__image" :src="imageUrl" alt="logo" />
+      </div>
       <el-upload
+        v-else
         class="application-info__image"
         :action="IMAGE_UPLOAD"
         accept=".jpg,.png,.jpeg"
@@ -10,7 +14,7 @@
         @success="logoUploadSuccess"
         @error="logoUploadError"
       >
-        <img v-if="imageUrl" class="application-info__image" :src="imageUrl" alt="" />
+        <img v-if="imageUrl" class="application-info__image" :src="imageUrl" alt="logo" title="点击上传Logo" />
         <div v-else class="application-info__content">
           <i class="el-icon-plus"></i>
           <div style="font-size: 12px; transform: scale(0.8); transform-origin: center">上传Logo</div>
@@ -28,12 +32,16 @@
       <div class="application-operation">
         <!-- TODO:应用状态暂时屏蔽，后续开发 -->
         <!-- <div class="application-operation__status"></div> -->
-        <svg-icon
-          :icon-name="isDetailVisable ? 'list-hover' : 'list'"
-          icon-class="application-operation__icon"
-          @click="isDetailVisable = !isDetailVisable"
-        ></svg-icon>
-        <i class="el-icon-close application-operation__close" @click="onClose"></i>
+        <el-tooltip content="应用详情" placement="top" effect="light">
+          <svg-icon
+            :icon-name="isDetailVisable ? 'list-hover' : 'list'"
+            icon-class="application-operation__icon"
+            @click="isDetailVisable = !isDetailVisable"
+          ></svg-icon>
+        </el-tooltip>
+        <el-tooltip content="删除应用" placement="top" effect="light">
+          <i class="el-icon-close application-operation__close" @click="onClose"></i>
+        </el-tooltip>
       </div>
     </div>
   </div>

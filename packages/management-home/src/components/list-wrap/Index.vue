@@ -1,10 +1,8 @@
 <template>
   <div class="sa-list-wrap" :style="{ backgroundColor: backgroundColor }">
-    <div class="sa-list-wrap__empty" v-if="isEmptyProject">
-      暂无项目，请联系管理员添加项目
-    </div>
+    <div class="sa-list-wrap__empty" v-if="isEmptyProject">暂无项目，请联系管理员添加项目</div>
     <div class="sa-list-wrap__content" v-else v-loading="loading" element-loading-text="加载中...">
-      <div class="sa-list-wrap__empty" v-if="empty">
+      <div class="sa-list-wrap__empty" v-if="empty && !loading">
         <slot name="empty" v-if="$slots.emit" />
         <span v-else> 暂无数据，立即<a @click="handleCreate" v-if="hasCreateAuth">新建</a> </span>
       </div>
