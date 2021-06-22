@@ -22,7 +22,7 @@
       </el-col>
     </el-row>
     <el-row style="background: #fff">
-      <ListWrap :loading="loading" :empty="!total" :handleCreate="addNewConfig" :hasCreateAuth="getShowBool('add')">
+      <list-wrap :in-project="false" :loading="loading" :empty="!total" :handleCreate="addNewConfig" :hasCreateAuth="getShowBool('add')">
         <el-table :data="tableData" style="width: 100%" @selection-change="handleSelectionChange">
           <el-table-column type="index" label="序号" width="50" />
           <el-table-column label="键" prop="name"></el-table-column>
@@ -58,7 +58,7 @@
           @size-change="handlePageSizeChange"
           @current-change="handlePageChange"
         ></packaged-pagination>
-      </ListWrap>
+      </list-wrap>
     </el-row>
     <el-dialog
       :title="configForm.isEdit ? '编辑配置' : '新建配置'"

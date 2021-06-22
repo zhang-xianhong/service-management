@@ -25,6 +25,7 @@
       </div>
     </div>
     <list-wrap
+      :in-project="false"
       :loading="loadings"
       :empty="projectList.length === 0"
       :type="userInfo.admin ? 'primary' : 'info'"

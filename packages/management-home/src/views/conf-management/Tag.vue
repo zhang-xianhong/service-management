@@ -18,7 +18,7 @@
       </el-col>
     </el-row>
     <el-row style="background: #fff">
-      <ListWrap :loading="loading" :empty="!total" :handleCreate="add" :hasCreateAuth="getShowBool('add')">
+      <list-wrap :in-project="false" :loading="loading" :empty="!total" :handleCreate="add" :hasCreateAuth="getShowBool('add')">
         <el-table :data="tagList" @selection-change="handleSelectionChange" @sort-change="sortChange">
           <el-table-column type="selection" width="45" v-if="getShowBool('delete')" />
           <el-table-column type="index" label="序号" width="50" />
@@ -49,7 +49,7 @@
           @size-change="handlePageSizeChange"
           @current-change="handlePageChange"
         ></packaged-pagination>
-      </ListWrap>
+      </list-wrap>
     </el-row>
     <el-dialog :title="dialogTitle" v-model="dialogVisible" width="500px">
       <el-form :model="form" :rules="rules" ref="formRef">

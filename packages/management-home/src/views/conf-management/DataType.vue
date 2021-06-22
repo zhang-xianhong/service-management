@@ -17,7 +17,7 @@
     </el-col>
   </el-row>
   <el-row style="background: #fff">
-    <ListWrap :loading="loading" :empty="!total" :handleCreate="addDataType" :hasCreateAuth="getShowBool('add')">
+    <list-wrap :in-project="false" :loading="loading" :empty="!total" :handleCreate="addDataType" :hasCreateAuth="getShowBool('add')">
       <el-table
         :data="tableData"
         style="width: 100%"
@@ -52,7 +52,7 @@
         @size-change="handlePageSizeChange"
         @current-change="handlePageChange"
       ></packaged-pagination>
-    </ListWrap>
+    </list-wrap>
   </el-row>
 </template>
 
