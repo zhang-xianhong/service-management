@@ -106,22 +106,21 @@ export default defineComponent({
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning',
-      })
-        .then(async () => {
-          const { code } = await deleteAppById(detailInfo.value.id);
-          ctx.emit('update');
-          if (code === 0) {
-            (instance as any).proxy.$message({
-              type: 'success',
-              message: '应用删除成功！',
-            });
-          } else {
-            (instance as any).proxy.$message({
-              type: 'error',
-              message: '应用删除失败！',
-            });
-          }
-        });
+      }).then(async () => {
+        const { code } = await deleteAppById(detailInfo.value.id);
+        ctx.emit('update');
+        if (code === 0) {
+          (instance as any).proxy.$message({
+            type: 'success',
+            message: '应用删除成功！',
+          });
+        } else {
+          (instance as any).proxy.$message({
+            type: 'error',
+            message: '应用删除失败！',
+          });
+        }
+      });
     };
 
     const beforeUpload = (file: { size: number }) => {

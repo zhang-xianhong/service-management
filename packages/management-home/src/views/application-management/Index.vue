@@ -21,31 +21,20 @@
       ></el-input>
     </el-col>
   </el-row>
-  <el-row style="background: #fff">
-    <div
-      style="background: #fff; width: 100%; min-height: 180px"
-      v-loading="!userProjectList.length"
-      element-loading-text="暂无项目，请联系管理员添加项目"
-      element-loading-spinner="el-icon-loading"
-      element-loading-background="rgba(255, 255, 255, 1)"
-    >
-      <div
-        class="application-list_content"
-        v-loading="loading"
-        v-if="userProjectList.length && applicationList.length"
-        element-loading-text="数据更新中..."
-        element-loading-spinner="el-icon-loading"
-        element-loading-background="rgba(255, 255, 255, 1)"
-        :style="{ minHeight: applicationList.length && !loading ? '180px' : '130px' }"
-      >
-        <div class="application-cards">
-          <application-card
-            v-for="item in applicationList"
-            :key="item.id"
-            :data="item"
-            @update="onUpdate"
-          ></application-card>
-        </div>
+  <list-wrap
+    :loading="loading"
+    :empty="applicationList.length === 0"
+    :handleCreate="openCreateDialog"
+    :hasCreateAuth="getShowBool('add')"
+  >
+    <div class="application-list_content">
+      <div class="application-cards">
+        <application-card
+          v-for="item in applicationList"
+          :key="item.id"
+          :data="item"
+          @update="onUpdate"
+        ></application-card>
       </div>
       <packaged-pagination
         v-if="applicationList.length && !loading"
@@ -57,16 +46,9 @@
         @size-change="handlePageSizeChange"
         @current-change="handlePageChange"
       ></packaged-pagination>
-      <div
-        style="background: #fff; width: 100%; min-height: 180px"
-        v-if="!applicationList.length && !loading"
-        v-loading="true"
-        element-loading-text="暂无数据"
-        element-loading-spinner="el-icon-loading"
-        element-loading-background="rgba(255, 255, 255, 1)"
-      ></div>
     </div>
-  </el-row>
+  </list-wrap>
+
   <el-dialog title="新建应用" v-model="createDialogVisible" width="500px">
     <el-form :model="appInfo" :rules="rules" label-width="120px" label-position="left" ref="form">
       <el-form-item label="应用中文名称" prop="description">
@@ -129,7 +111,13 @@ interface StateInterface {
   total: number;
   loading: boolean;
   createDialogVisible: boolean;
-  appInfo: { name: string; description: string; remark: string; thumbnail: string; services: number[] };
+  appInfo: {
+    name: string;
+    description: string;
+    remark: string;
+    thumbnail: string;
+    services: number[];
+  };
   imageUrl: string;
   statusLabel: string;
 }
@@ -171,12 +159,26 @@ export default defineComponent({
     const rules = {
       description: [
         { required: true, message: '请输入应用中文名称', trigger: 'blur' },
-        { min: 3, max: 20, message: '应用中文名称长度在3到20个字符之间', trigger: 'blur' },
+        {
+          min: 3,
+          max: 20,
+          message: '应用中文名称长度在3到20个字符之间',
+          trigger: 'blur',
+        },
       ],
       name: [
         { required: true, message: '请输入应用英文名称', trigger: 'blur' },
-        { min: 3, max: 16, message: '应用英文名称长度在3到16个字符之间', trigger: 'blur' },
-        { pattern: /^[a-zA-Z]+$/g, message: '该应用英文名称包含非法字符，请重新输入', trigger: 'blur' },
+        {
+          min: 3,
+          max: 16,
+          message: '应用英文名称长度在3到16个字符之间',
+          trigger: 'blur',
+        },
+        {
+          pattern: /^[a-zA-Z]+$/g,
+          message: '该应用英文名称包含非法字符，请重新输入',
+          trigger: 'blur',
+        },
       ],
     };
 

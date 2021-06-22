@@ -4,3 +4,8 @@
 .el-row {
   margin-bottom: 16px;
 }
+
+a, [role="button"] {
+  cursor: pointer;
+  text-decoration: none;
+}
