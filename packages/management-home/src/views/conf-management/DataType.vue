@@ -139,7 +139,7 @@ export default {
     // 删除数据类型
     const onDelete = async (rowData: any) => {
       ElMessageBox.confirm(`是否删除选中?`, '提示', {
-        confirmButtonText: '确定',
+        confirmButtonText: '确定删除',
         cancelButtonText: '取消',
         type: 'warning',
       }).then(async () => {
@@ -162,7 +162,7 @@ export default {
     // 批量删除数据类型
     const groupDelete = async () => {
       ElMessageBox.confirm(`是否删除选中?`, '提示', {
-        confirmButtonText: '确定',
+        confirmButtonText: '确定删除',
         cancelButtonText: '取消',
         type: 'warning',
       }).then(async () => {
