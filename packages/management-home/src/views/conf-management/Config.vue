@@ -22,39 +22,43 @@
       </el-col>
     </el-row>
     <el-row style="background: #fff">
-      <el-table :data="tableData" v-loading="loading" style="width: 100%" @selection-change="handleSelectionChange">
-        <el-table-column type="index" label="序号" width="50" />
-        <el-table-column label="键" prop="name"></el-table-column>
-        <el-table-column label="值" prop="value"></el-table-column>
-        <el-table-column label="默认值" prop="defaultValue"></el-table-column>
-        <el-table-column label="类型" prop="type">
-          <template #default="scope">
-            <span>{{ scope.row.type === 0 ? '应用类型' : '系统类型' }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column label="配置版本" prop="version" width="100"></el-table-column>
-        <el-table-column label="操作" width="300">
-          <template #default="scope">
-            <el-button type="text" size="mini" @click="onEdit(scope.row)" v-if="getShowBool('update')">编辑</el-button>
-            <el-button type="text" size="mini" @click="changeHistory(scope.row)" v-if="getShowBool('selectDetail')"
-              >变更历史</el-button
-            >
-            <el-button size="mini" @click="onDelete(scope.row)" v-if="getShowBool('delete')" type="text"
-              >删除</el-button
-            >
-          </template>
-        </el-table-column>
-      </el-table>
-      <packaged-pagination
-        v-if="total"
-        :current-page="searchProps.page"
-        :page-size="searchProps.pageSize"
-        :page-sizes="[10, 20, 50]"
-        layout="sizes, prev, pager, next, jumper"
-        :total="total"
-        @size-change="handlePageSizeChange"
-        @current-change="handlePageChange"
-      ></packaged-pagination>
+      <ListWrap :loading="loading" :empty="!total" :handleCreate="addNewConfig" :hasCreateAuth="getShowBool('add')">
+        <el-table :data="tableData" style="width: 100%" @selection-change="handleSelectionChange">
+          <el-table-column type="index" label="序号" width="50" />
+          <el-table-column label="键" prop="name"></el-table-column>
+          <el-table-column label="值" prop="value"></el-table-column>
+          <el-table-column label="默认值" prop="defaultValue"></el-table-column>
+          <el-table-column label="类型" prop="type">
+            <template #default="scope">
+              <span>{{ scope.row.type === 0 ? '应用类型' : '系统类型' }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="配置版本" prop="version" width="100"></el-table-column>
+          <el-table-column label="操作" width="300">
+            <template #default="scope">
+              <el-button type="text" size="mini" @click="onEdit(scope.row)" v-if="getShowBool('update')"
+                >编辑</el-button
+              >
+              <el-button type="text" size="mini" @click="changeHistory(scope.row)" v-if="getShowBool('selectDetail')"
+                >变更历史</el-button
+              >
+              <el-button size="mini" @click="onDelete(scope.row)" v-if="getShowBool('delete')" type="text"
+                >删除</el-button
+              >
+            </template>
+          </el-table-column>
+        </el-table>
+        <packaged-pagination
+          v-if="total"
+          :current-page="searchProps.page"
+          :page-size="searchProps.pageSize"
+          :page-sizes="[10, 20, 50]"
+          layout="sizes, prev, pager, next, jumper"
+          :total="total"
+          @size-change="handlePageSizeChange"
+          @current-change="handlePageChange"
+        ></packaged-pagination>
+      </ListWrap>
     </el-row>
     <el-dialog
       :title="configForm.isEdit ? '编辑配置' : '新建配置'"

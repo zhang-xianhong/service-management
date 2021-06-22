@@ -17,39 +17,42 @@
     </el-col>
   </el-row>
   <el-row style="background: #fff">
-    <el-table
-      :data="tableData"
-      v-loading="loading"
-      style="width: 100%"
-      @selection-change="handleSelectionChange"
-      @sort-change="sortChange"
-    >
-      <el-table-column type="selection" width="45" v-if="getShowBool('delete')" />
-      <el-table-column type="index" label="序号" width="50" />
-      <el-table-column label="类型名称" prop="name" sortable></el-table-column>
-      <el-table-column label="描述" prop="description" sortable></el-table-column>
-      <!--      <el-table-column label="克隆源" prop="cloneBy" sortable></el-table-column>-->
-      <el-table-column label="操作" width="200">
-        <template #default="scope">
-          <template v-if="!scope.row.isSystem">
-            <el-button type="text" size="mini" @click="onEdit(scope.row)" v-if="getShowBool('update')">编辑</el-button>
-            <el-button type="text" size="mini" @click="onDelete(scope.row)" v-if="getShowBool('delete')"
-              >删除</el-button
-            >
+    <ListWrap :loading="loading" :empty="!total" :handleCreate="addDataType" :hasCreateAuth="getShowBool('add')">
+      <el-table
+        :data="tableData"
+        style="width: 100%"
+        @selection-change="handleSelectionChange"
+        @sort-change="sortChange"
+      >
+        <el-table-column type="selection" width="45" v-if="getShowBool('delete')" />
+        <el-table-column type="index" label="序号" width="50" />
+        <el-table-column label="类型名称" prop="name" sortable></el-table-column>
+        <el-table-column label="描述" prop="description" sortable></el-table-column>
+        <!--      <el-table-column label="克隆源" prop="cloneBy" sortable></el-table-column>-->
+        <el-table-column label="操作" width="200">
+          <template #default="scope">
+            <template v-if="!scope.row.isSystem">
+              <el-button type="text" size="mini" @click="onEdit(scope.row)" v-if="getShowBool('update')"
+                >编辑</el-button
+              >
+              <el-button type="text" size="mini" @click="onDelete(scope.row)" v-if="getShowBool('delete')"
+                >删除</el-button
+              >
+            </template>
           </template>
-        </template>
-      </el-table-column>
-    </el-table>
-    <packaged-pagination
-      v-if="total"
-      :current-page="searchProps.page"
-      :page-size="searchProps.pageSize"
-      :page-sizes="[10, 20, 50]"
-      layout="sizes, prev, pager, next, jumper"
-      :total="total"
-      @size-change="handlePageSizeChange"
-      @current-change="handlePageChange"
-    ></packaged-pagination>
+        </el-table-column>
+      </el-table>
+      <packaged-pagination
+        v-if="total"
+        :current-page="searchProps.page"
+        :page-size="searchProps.pageSize"
+        :page-sizes="[10, 20, 50]"
+        layout="sizes, prev, pager, next, jumper"
+        :total="total"
+        @size-change="handlePageSizeChange"
+        @current-change="handlePageChange"
+      ></packaged-pagination>
+    </ListWrap>
   </el-row>
 </template>
 

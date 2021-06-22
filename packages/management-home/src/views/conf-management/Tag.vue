@@ -18,36 +18,38 @@
       </el-col>
     </el-row>
     <el-row style="background: #fff">
-      <el-table :data="tagList" @selection-change="handleSelectionChange" @sort-change="sortChange" v-loading="loading">
-        <el-table-column type="selection" width="45" v-if="getShowBool('delete')" />
-        <el-table-column type="index" label="序号" width="50" />
-        <el-table-column
-          v-for="col in columns"
-          :key="col.prop"
-          :prop="col.prop"
-          :label="col.label"
-          sortable="custom"
-        ></el-table-column>
-        <el-table-column prop="operation" width="220" label="操作">
-          <template #default="{ row }">
-            <!-- <el-button type="primary" @click="detail(row)" size="mini">详情</el-button> -->
-            <!--            <el-button type="primary" @click="disabled(row)" size="mini" v-if="getShowBool('update')">禁用</el-button>-->
-            <!-- <el-button type="primary" @click="enabled(row)" size="mini">启用</el-button> -->
-            <el-button type="text" @click="rename(row)" size="mini" v-if="getShowBool('update')">编辑</el-button>
-            <el-button @click="groupRemove([row.id])" v-if="getShowBool('delete')" type="text">删除</el-button>
-          </template>
-        </el-table-column>
-      </el-table>
-      <packaged-pagination
-        v-if="total"
-        :current-page="page"
-        :page-size="pageSize"
-        :page-sizes="[10, 20, 50]"
-        layout="sizes, prev, pager, next, jumper"
-        :total="total"
-        @size-change="handlePageSizeChange"
-        @current-change="handlePageChange"
-      ></packaged-pagination>
+      <ListWrap :loading="loading" :empty="!total" :handleCreate="add" :hasCreateAuth="getShowBool('add')">
+        <el-table :data="tagList" @selection-change="handleSelectionChange" @sort-change="sortChange">
+          <el-table-column type="selection" width="45" v-if="getShowBool('delete')" />
+          <el-table-column type="index" label="序号" width="50" />
+          <el-table-column
+            v-for="col in columns"
+            :key="col.prop"
+            :prop="col.prop"
+            :label="col.label"
+            sortable="custom"
+          ></el-table-column>
+          <el-table-column prop="operation" width="220" label="操作">
+            <template #default="{ row }">
+              <!-- <el-button type="primary" @click="detail(row)" size="mini">详情</el-button> -->
+              <!--            <el-button type="primary" @click="disabled(row)" size="mini" v-if="getShowBool('update')">禁用</el-button>-->
+              <!-- <el-button type="primary" @click="enabled(row)" size="mini">启用</el-button> -->
+              <el-button type="text" @click="rename(row)" size="mini" v-if="getShowBool('update')">编辑</el-button>
+              <el-button @click="groupRemove([row.id])" v-if="getShowBool('delete')" type="text">删除</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+        <packaged-pagination
+          v-if="total"
+          :current-page="page"
+          :page-size="pageSize"
+          :page-sizes="[10, 20, 50]"
+          layout="sizes, prev, pager, next, jumper"
+          :total="total"
+          @size-change="handlePageSizeChange"
+          @current-change="handlePageChange"
+        ></packaged-pagination>
+      </ListWrap>
     </el-row>
     <el-dialog :title="dialogTitle" v-model="dialogVisible" width="500px">
       <el-form :model="form" :rules="rules" ref="formRef">
