@@ -44,11 +44,19 @@ export const getAllTems = () =>
   });
 
 export const deleteProject = (id: number) => {
-  ElMessageBox.confirm(`确定删除此项目，此操作不可恢复, 是否继续?`, '提示', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
-    type: 'warning',
-  })
+  ElMessageBox.alert(
+    '<b style="font-size: 16px; color: #000 ; margin-bottom: 15px">确定删除当前项目？</b> ' +
+      '<br> <span style="font-size: 12px;color: #444">此操作不可恢复, 是否继续</span>',
+    {
+      dangerouslyUseHTMLString: true,
+      showConfirmButton: true,
+      confirmButtonText: '确认删除',
+      showCancelButton: true,
+      cancelButtonText: '取消',
+      confirmButtonClass: 'confirmButton',
+      cancelButtonClass: 'cancelButton',
+    },
+  )
     .then(() => {
       deleteProjects([id]).then((res) => {
         console.log(res);
