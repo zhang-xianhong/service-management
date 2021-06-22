@@ -1,6 +1,6 @@
 <template>
   <div style="background: #fff">
-    <div style="width: 100%; height: 330px; position: relative">
+    <div style="width: 100%; height: 330px; position: relative" class="column-table">
       <el-table :data="fields" :height="330">
         <el-table-column type="index" width="50"></el-table-column>
         <el-table-column prop="name" label="属性名称">
@@ -176,5 +176,14 @@ export default defineComponent({
 .form-field__btns {
   padding: 5px;
   text-align: right;
+}
+.column-table {
+  &::v-deep {
+    .el-table {
+      .cell {
+        line-height: 30px;
+      }
+    }
+  }
 }
 </style>

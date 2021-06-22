@@ -50,7 +50,11 @@
               <svg-icon icon-name="gitlab" icon-class="detail-icons__item" @click="openGitlab"></svg-icon>
             </el-tooltip>
             <!-- 文档下载 -->
+<<<<<<< Updated upstream
             <!-- <el-tooltip effect="light" content="文档下载" placement="bottom">
+=======
+            <el-tooltip effect="light" content="文档下载" placement="bottom" class="hidden">
+>>>>>>> Stashed changes
               <svg-icon icon-name="daily" icon-class="detail-icons__item detail-icons__item--disabled"></svg-icon>
             </el-tooltip> -->
             <!-- 服务配置 -->
@@ -65,8 +69,15 @@
         </el-col>
       </el-row>
       <div :class="{ 'cannot-operate': !!maskText }">
-        <el-row :style="{ height: computedHeight, background: '#fff', padding: '12px', marginBottom: '10px' }">
-          <el-col :span="componentName ? 20 : 24" style="height: 100%">
+        <!-- <el-row :style="{ height: computedHeight, background: '#fff', padding: '12px', marginBottom: '10px' }">
+          <el-col :span="componentName ? 20 : 24" style="height: 100%"> </el-col>
+          <el-col v-if="componentName" :span="4" style="border-left: 1px solid #bbbbbb; height: 100%"> </el-col>
+        </el-row> -->
+        <div
+          class="main-container"
+          :style="{ height: computedHeight, background: '#fff', padding: '12px', marginBottom: '10px' }"
+        >
+          <div class="left-canvas" style="height: 100%">
             <el-row>
               <!-- 服务下拉选择框 -->
               <el-select v-model="currentServiceId" placeholder="请选择" @change="selectService" style="width: 200px">
@@ -97,8 +108,8 @@
                 }}</a>
               </div>
             </div> -->
-          </el-col>
-          <el-col v-if="componentName" :span="4" style="border-left: 1px solid #bbbbbb; height: 100%">
+          </div>
+          <div class="right-config" v-if="componentName" style="border-left: 1px solid #bbbbbb; height: 100%">
             <template v-if="componentName">
               <keep-alive>
                 <component
@@ -111,8 +122,8 @@
                 ></component>
               </keep-alive>
             </template>
-          </el-col>
-        </el-row>
+          </div>
+        </div>
         <transition name="slide-fade">
           <div v-if="isShowDownDrawer" class="detail-drawer__container">
             <keep-alive>
@@ -670,5 +681,20 @@ export default {
   position: absolute;
   z-index: 1;
   font-size: 22px;
+}
+.hidden {
+  display: none;
+}
+</style>
+<style lang="scss" scoped>
+.main-container {
+  display: flex;
+  .left-canvas {
+    flex: 1;
+  }
+  .right-config {
+    max-width: 230px;
+    overflow: auto;
+  }
 }
 </style>

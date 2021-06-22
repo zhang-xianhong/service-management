@@ -4,3 +4,10 @@
 .el-row {
   margin-bottom: 16px;
 }
+.el-input--small .el-input__inner {
+  height: 30px;
+  line-height: 30px;
+}
+.el-button--small {
+  min-height: 30px;
+}

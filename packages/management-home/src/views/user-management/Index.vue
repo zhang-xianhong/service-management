@@ -244,8 +244,6 @@ export default defineComponent({
         height: 30px;
       }
       .el-input--small .el-input__inner {
-        height: 28px;
-        line-height: 28px;
       }
     }
   }

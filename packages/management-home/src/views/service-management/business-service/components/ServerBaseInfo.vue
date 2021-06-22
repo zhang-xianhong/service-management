@@ -216,6 +216,7 @@ export default {
 .baseinfo-container {
   padding: 12px;
   height: 100%;
+  max-width: 230px;
 }
 .baseinfo-title {
   margin-bottom: 20px;
