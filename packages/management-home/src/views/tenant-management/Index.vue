@@ -2,7 +2,7 @@
   <div style="background: #fff; padding: 30px">
     <company-info :isEdit="isEdit" ref="companyRef" v-model="tenantDetail"></company-info>
     <user-info :isEdit="isEdit" v-model="tenantDetail" v-if="getShowBool('update')"></user-info>
-    <manager-info :isEdit="isEdit" v-model="tenantDetail" v-if="getShowBool('update')"></manager-info>
+    <manager-info :isEdit="isEdit" v-model="tenantDetail" v-if="false"></manager-info>
     <el-row v-if="getShowBool('update')">
       <el-button v-if="!isEdit" type="primary" @click="isEdit = true">编辑</el-button>
       <el-button v-else type="primary" @click="onSave">保存</el-button>

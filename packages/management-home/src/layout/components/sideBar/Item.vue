@@ -2,7 +2,7 @@
   <div>
     <span class="icon-wrap" v-if="icon">
       <i :class="[icon, 'sub-el-icon']" v-if="icon.includes('el-')"></i>
-      <svg-icon v-else :icon-name="icon" style="margin-right: 0; vertical-align: baseline"></svg-icon>
+      <svg-icon v-else :icon-name="icon" style="margin-right: 0; vertical-align: middle"></svg-icon>
       &nbsp;
     </span>
     <span v-else class="blank-span"></span>
