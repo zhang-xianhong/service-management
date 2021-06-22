@@ -59,7 +59,7 @@ import { useRouter } from 'vue-router';
 import { getDataTypes, deleteDataType } from '@/api/settings/data-types';
 import PackagedPagination from '@/components/pagination/Index.vue';
 import { debounce } from 'lodash';
-import { ElMessageBox, ElMessage } from 'element-plus';
+import { ElMessageBox } from 'element-plus';
 import { getShowBool } from '@/utils/permission-show-module';
 
 interface TableState {
@@ -156,37 +156,30 @@ export default {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning',
-      })
-        .then(async () => {
-          if (tableState.multipleSelection.every((item: any) => item.isSystem)) {
-            (instance as any).proxy.$message({
-              type: 'warn',
-              message: '系统默认数据类型不可删除',
-            });
-            return;
-          }
-          const { code }: any = await deleteDataType({
-            ids: [tableState.multipleSelection.map((item: any) => item.id)],
+      }).then(async () => {
+        if (tableState.multipleSelection.every((item: any) => item.isSystem)) {
+          (instance as any).proxy.$message({
+            type: 'warn',
+            message: '系统默认数据类型不可删除',
           });
-          if (code === 0) {
-            (instance as any).proxy.$message({
-              type: 'success',
-              message: '删除成功',
-            });
-            getTableData();
-          } else {
-            (instance as any).proxy.$message({
-              type: 'error',
-              message: '删除失败',
-            });
-          }
-        })
-        .catch(() => {
-          ElMessage({
-            type: 'info',
-            message: '已取消操作',
-          });
+          return;
+        }
+        const { code }: any = await deleteDataType({
+          ids: [tableState.multipleSelection.map((item: any) => item.id)],
         });
+        if (code === 0) {
+          (instance as any).proxy.$message({
+            type: 'success',
+            message: '删除成功',
+          });
+          getTableData();
+        } else {
+          (instance as any).proxy.$message({
+            type: 'error',
+            message: '删除失败',
+          });
+        }
+      });
     };
 
     // 数据类型筛选

@@ -392,28 +392,21 @@ export default defineComponent({
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning',
-      })
-        .then(async () => {
-          const { code }: any = await deleteConfig(rowData.id);
-          if (code === 0) {
-            (instance as any).proxy.$message({
-              type: 'success',
-              message: '删除成功',
-            });
-            getTableData();
-          } else {
-            (instance as any).proxy.$message({
-              type: 'error',
-              message: '删除失败',
-            });
-          }
-        })
-        .catch(() => {
-          ElMessage({
-            type: 'info',
-            message: '已取消操作',
+      }).then(async () => {
+        const { code }: any = await deleteConfig(rowData.id);
+        if (code === 0) {
+          (instance as any).proxy.$message({
+            type: 'success',
+            message: '删除成功',
           });
-        });
+          getTableData();
+        } else {
+          (instance as any).proxy.$message({
+            type: 'error',
+            message: '删除失败',
+          });
+        }
+      });
     };
 
     // 通用配置筛选

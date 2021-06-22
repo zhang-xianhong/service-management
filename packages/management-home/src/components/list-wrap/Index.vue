@@ -58,6 +58,7 @@ export default defineComponent({
 </script>
 <style lang="scss" scoped>
 .sa-list-wrap {
+  width: 100%;
   &__empty,
   &__content {
     min-height: 200px;

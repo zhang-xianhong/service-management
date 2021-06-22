@@ -222,7 +222,7 @@ export default defineComponent({
 
     const remove = async () => {
       ElMessageBox.confirm(`是否删除选中分类?`, '提示', {
-        confirmButtonText: '确定',
+        confirmButtonText: '确定删除',
         cancelButtonText: '取消',
         type: 'warning',
       })
