@@ -1,7 +1,7 @@
 <template>
   <div class="baseinfo-container">
     <div class="baseinfo-title">基本信息</div>
-    <el-form :model="formData" label-width="60px" label-position="left" style="height: 87%; overflow: auto">
+    <el-form :model="formData" label-width="60px" label-position="left" style="height: 87%">
       <el-form-item label="服务名称">
         <div class="baseinfo-content">{{ formData.name }}</div>
       </el-form-item>
@@ -216,7 +216,6 @@ export default {
 .baseinfo-container {
   padding: 12px;
   height: 100%;
-  max-width: 230px;
 }
 .baseinfo-title {
   margin-bottom: 20px;

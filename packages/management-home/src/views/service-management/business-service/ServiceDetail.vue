@@ -719,7 +719,7 @@ export default {
     flex-shrink: 0;
   }
   .right-config {
-    max-width: 230px;
+    width: 230px;
     overflow: auto;
     border-left: 1px solid #f0f0f0;
   }
