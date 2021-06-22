@@ -50,11 +50,7 @@
               <svg-icon icon-name="gitlab" icon-class="detail-icons__item" @click="openGitlab"></svg-icon>
             </el-tooltip>
             <!-- 文档下载 -->
-<<<<<<< Updated upstream
             <!-- <el-tooltip effect="light" content="文档下载" placement="bottom">
-=======
-            <el-tooltip effect="light" content="文档下载" placement="bottom" class="hidden">
->>>>>>> Stashed changes
               <svg-icon icon-name="daily" icon-class="detail-icons__item detail-icons__item--disabled"></svg-icon>
             </el-tooltip> -->
             <!-- 服务配置 -->
