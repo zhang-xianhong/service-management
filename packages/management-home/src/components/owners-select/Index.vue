@@ -5,7 +5,7 @@
     filterable
     remote
     reserve-keyword
-    multiple-limit=10
+    multiple-limit="10"
     placeholder="请输入关键词"
     :remote-method="remoteMethod"
     :loading="loading"
