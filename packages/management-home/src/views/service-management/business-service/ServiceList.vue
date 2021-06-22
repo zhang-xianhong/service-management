@@ -490,7 +490,10 @@ export default defineComponent({
     const searchForList = () => {
       pageInfo.page = 1;
       const infos = { ...pageInfo };
-      infos.classification = Object.values(pageInfo.classification).join(',');
+      infos.classification =
+        typeof pageInfo.classification === 'object'
+          ? Object.values(pageInfo.classification).join(',')
+          : pageInfo.classification;
       tableLoading.value = true;
       refreshServiceList(infos).then(() => {
         tableLoading.value = false;
