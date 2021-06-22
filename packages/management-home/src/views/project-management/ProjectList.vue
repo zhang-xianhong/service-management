@@ -24,11 +24,16 @@
         ></el-input>
       </div>
     </div>
-    <div
-      v-loading="!userProjectList.length"
-      element-loading-text="暂无项目，请联系管理员添加项目"
-      element-loading-spinner="el-icon-loading"
-      element-loading-background="rgba(255, 255, 255, 1)"
+    <list-wrap
+      :loading="loadings"
+      :empty="projectList.length === 0"
+      :type="userInfo.admin ? 'primary' : 'info'"
+      :handleCreate="
+        () => {
+          addDialogVisible = true;
+        }
+      "
+      :hasCreateAuth="getShowBool('add')"
     >
       <div class="project-list_content" ref="projectParentDiv" :style="{ paddingLeft: paddings }">
         <project-item
@@ -40,12 +45,6 @@
           :delete-or-not="getShowBool('delete')"
           :update-or-not="getShowBool('update')"
         ></project-item>
-        <div v-if="!projectList.length && !loadings" class="placeholders">
-          暂无数据，请前往
-          <button class="new-project" :type="userInfo.admin ? 'primary' : 'info'" @click="addDialogVisible = true">
-            新建
-          </button>
-        </div>
       </div>
       <packaged-pagination
         v-if="projectList.length"
@@ -57,7 +56,7 @@
         layout="total, sizes, prev, pager, next, jumper"
         :total="pageInfo.total"
       ></packaged-pagination>
-    </div>
+    </list-wrap>
     <el-dialog v-model="addDialogVisible" title="新建项目" width="520px" @close="closeDialog" destroy-on-close>
       <div class="add-project-dialog">
         <el-form :model="projectDetail">
@@ -164,10 +163,12 @@ import fetchOwnersSelect from '@/components/fetchOwnersSelect/Index.vue';
 import { projectNameTest } from '@/api/project/project';
 import { userProjectList, userInfo } from '@/layout/messageCenter/user-info';
 import { ElMessage } from 'element-plus';
+import ListWrap from '@/components/list-wrap/Index.vue';
 
 export default defineComponent({
   name: 'ProjectList',
   components: {
+    ListWrap,
     ProjectItem,
     fetchOwnersSelect,
     PackagedPagination,
