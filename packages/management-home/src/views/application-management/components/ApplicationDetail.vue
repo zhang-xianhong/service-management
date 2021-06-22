@@ -218,8 +218,12 @@ export default defineComponent({
     &::after {
       content: '建议尺寸110x110，支持png、jpg格式，小于50k';
       position: absolute;
-      margin-top: -20px;
+      margin-top: -30px;
       margin-left: -40px;
+      z-index: 11;
+      padding: 5px;
+      background-color: white;
+      box-shadow: 0 0 6px rgb(0 0 0 / 20%);
     }
   }
 }

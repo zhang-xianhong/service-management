@@ -1,8 +1,11 @@
 <template>
   <div>
-    <template v-if="icon">
+    <span class="icon-wrap" v-if="icon">
       <i :class="[icon, 'sub-el-icon']" v-if="icon.includes('el-')"></i>
-    </template>
+      <svg-icon v-else :icon-name="icon" style="margin-right: 0; vertical-align: middle"></svg-icon>
+      &nbsp;
+    </span>
+    <span v-else class="blank-span"></span>
     <span v-if="title">{{ title }}</span>
   </div>
 </template>
@@ -21,6 +24,10 @@ export default defineComponent({
       type: String,
       default: () => '',
     },
+    hover: {
+      type: Boolean,
+      default: () => false,
+    },
   },
 });
 </script>
@@ -30,5 +37,16 @@ export default defineComponent({
   color: currentColor;
   width: 1em;
   height: 1em;
+}
+.blank-span {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background-color: white;
+  display: inline-block;
+  margin: auto 12px auto auto;
+}
+.icon-wrap :hover {
+  color: red;
 }
 </style>
