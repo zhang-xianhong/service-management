@@ -12,7 +12,7 @@
         prop="description"
         :rules="[
           { required: true, message: '内容不能为空', trigger: 'blur' },
-          { min: 3, max: 20, message: '限制 3 - 20 个字符' },
+          { min: 3, max: 20, message: '应用中文名称长度在3到20个字符之间' },
         ]"
       >
         <el-input v-if="isEditable" v-model="detailInfo.description" placeholder="请输入中文名称"></el-input>
@@ -60,10 +60,10 @@
     </el-form>
     <div class="dialog-footer">
       <template v-if="getShowBool('update')">
-        <el-button v-if="isEditable" type="primary" @click="updateAppDetail">提交</el-button>
+        <el-button v-if="isEditable" type="primary" @click="updateAppDetail">保存</el-button>
         <el-button v-else type="primary" @click="isEditable = true">编辑</el-button>
       </template>
-      <el-button @click="handleCloseDialog">关闭</el-button>
+      <el-button @click="handleCloseDialog('cancel')">{{ isEditable ? '取消' : '关闭' }}</el-button>
     </div>
   </el-dialog>
 </template>
@@ -85,6 +85,7 @@ interface DetailInterface {
   services: any[];
   imageUrl: string;
 }
+
 export default defineComponent({
   name: 'ApplicationDetail',
   inheritAttrs: false,
@@ -163,9 +164,10 @@ export default defineComponent({
         ctx.emit('close');
       }
     };
-    const handleCloseDialog = () => {
+
+    const handleCloseDialog = (type: string) => {
       isEditable.value = false;
-      ctx.emit('close');
+      ctx.emit('close', type);
     };
 
     return {

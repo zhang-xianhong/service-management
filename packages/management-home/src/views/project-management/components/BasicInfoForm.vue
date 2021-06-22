@@ -43,7 +43,7 @@
           :rows="4"
           v-if="editMode"
           v-model="formData.remark"
-          placeholder="请输入中文项目简介，最多支持255个字"
+          placeholder="请输入中文项目简介，最多支持512个字"
         ></el-input>
       </el-form-item>
       <el-form-item label="许可类型" prop="license">
@@ -196,12 +196,11 @@ export default {
       formData.owner = value.owner;
       formData.owners = value.owners;
       formData.ownerUsers = value.ownerUsers;
-      console.log(value, 'this is value');
     };
 
     // 表单操作
     const save = async () => {
-      if (formData.remark.length > 255) {
+      if (formData.remark.length > 512) {
         return false;
       }
       const ownersArr = ownersName.value.split(',');
@@ -228,7 +227,7 @@ export default {
       templateId: [{ required: true, message: '请选择代码模板', trigger: 'blur' }],
       level: [{ required: true, message: '请选择项目级别', trigger: 'blur' }],
       status: [{ required: true, message: '请选择项目状态', trigger: 'blur' }],
-      remark: [{ max: 255, message: '最多支持255个字符', trigger: 'blur' }],
+      remark: [{ max: 512, message: '最多支持512个字符', trigger: 'blur' }],
     };
     return {
       detailInfo,

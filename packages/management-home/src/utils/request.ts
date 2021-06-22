@@ -60,6 +60,10 @@ service.interceptors.response.use(
           currentPath = '/';
         }
         router.replace(`/login?redirect=${currentPath}`);
+        console.dir(error.response, 'this is error response');
+        if (error.response?.data?.code === 1112001) {
+          ElMessage.error('您所输入的地址不存在或不可用，请联系管理员');
+        }
       }
     }
     if (error.response.status === 403) {

@@ -7,7 +7,7 @@
   >
     <div class="mask" v-if="maskText">{{ maskText }}</div>
     <div class="detail">
-      <el-row>
+      <el-row class="detail__head">
         <el-col :span="16" v-if="getShowBool('init')">
           <el-button
             v-for="(button, index) in buttons"
@@ -50,9 +50,9 @@
               <svg-icon icon-name="gitlab" icon-class="detail-icons__item" @click="openGitlab"></svg-icon>
             </el-tooltip>
             <!-- 文档下载 -->
-            <el-tooltip effect="light" content="文档下载" placement="bottom">
+            <!-- <el-tooltip effect="light" content="文档下载" placement="bottom">
               <svg-icon icon-name="daily" icon-class="detail-icons__item detail-icons__item--disabled"></svg-icon>
-            </el-tooltip>
+            </el-tooltip> -->
             <!-- 服务配置 -->
             <el-tooltip effect="light" content="服务配置" placement="bottom">
               <svg-icon
@@ -64,10 +64,14 @@
           </div>
         </el-col>
       </el-row>
-      <div :class="{ 'cannot-operate': !!maskText }">
-        <el-row :style="{ height: computedHeight, background: '#fff', padding: '12px', marginBottom: '10px' }">
-          <el-col :span="componentName ? 20 : 24" style="height: 100%">
-            <el-row>
+      <div class="detail__body" :class="{ 'cannot-operate': !!maskText, 'is-show-drawer': isShowDownDrawer }">
+        <!-- <el-row :style="{ height: computedHeight, background: '#fff', padding: '12px', marginBottom: '10px' }">
+          <el-col :span="componentName ? 20 : 24" style="height: 100%"> </el-col>
+          <el-col v-if="componentName" :span="4" style="border-left: 1px solid #bbbbbb; height: 100%"> </el-col>
+        </el-row> -->
+        <div class="main-container">
+          <div class="left-canvas" style="height: 100%">
+            <el-row class="project-switch">
               <!-- 服务下拉选择框 -->
               <el-select v-model="currentServiceId" placeholder="请选择" @change="selectService" style="width: 200px">
                 <el-option
@@ -97,8 +101,8 @@
                 }}</a>
               </div>
             </div> -->
-          </el-col>
-          <el-col v-if="componentName" :span="4" style="border-left: 1px solid #bbbbbb; height: 100%">
+          </div>
+          <div class="right-config" v-if="componentName">
             <template v-if="componentName">
               <keep-alive>
                 <component
@@ -111,8 +115,8 @@
                 ></component>
               </keep-alive>
             </template>
-          </el-col>
-        </el-row>
+          </div>
+        </div>
         <transition name="slide-fade">
           <div v-if="isShowDownDrawer" class="detail-drawer__container">
             <keep-alive>
@@ -373,10 +377,16 @@ export default {
 
     // 右侧组件名称
     const componentName = ref('');
-
+    const modelInfo = ref(null);
     // 打开基本信息
     const openBaseInfo = () => {
-      componentName.value = 'ServerBaseInfo';
+      if (componentName.value === 'ServerBaseInfo') {
+        modelInfo.value = null;
+        isShowDownDrawer.value = false;
+        componentName.value = '';
+      } else {
+        componentName.value = 'ServerBaseInfo';
+      }
     };
 
     // 下侧组件名称
@@ -384,14 +394,26 @@ export default {
 
     // 打开接口配置
     const openPropertyInfo = () => {
-      isShowDownDrawer.value = true;
-      drawerName.value = 'ServerPortsInfo';
+      if (isShowDownDrawer.value) {
+        modelInfo.value = null;
+        isShowDownDrawer.value = false;
+        componentName.value = '';
+      } else {
+        isShowDownDrawer.value = true;
+        drawerName.value = 'ServerPortsInfo';
+      }
     };
 
     // 打开服务配置
     const openConfigInfo = () => {
-      isShowDownDrawer.value = true;
-      drawerName.value = 'ServerConfigInfo';
+      if (isShowDownDrawer.value) {
+        modelInfo.value = null;
+        isShowDownDrawer.value = false;
+        componentName.value = '';
+      } else {
+        isShowDownDrawer.value = true;
+        drawerName.value = 'ServerConfigInfo';
+      }
     };
 
     // 打开gitlab页面
@@ -400,7 +422,6 @@ export default {
     };
 
     // 模型、关联详情数据
-    const modelInfo = ref(null);
     provide('currentModel', modelInfo);
     provide('configs', { allTypes, tags, classifications });
     provide('afterRemove', () => {
@@ -464,7 +485,9 @@ export default {
         path: `/service-management/service-list/detail/${value}`,
         query: { detailName: name },
       });
-      window.location.reload();
+      getServerInfo();
+      initModelList();
+      proxy.$forceUpdate();
     };
 
     const logs = (res: any) => {
@@ -540,7 +563,11 @@ export default {
 
 <style lang="scss" scoped>
 .detail {
-  height: calc(100vh - 170px);
+  height: calc(100vh - 140px);
+  overflow: hidden;
+  display: flex;
+  flex-flow: column;
+
   &-operation {
     text-align: right;
     height: 32px;
@@ -583,10 +610,26 @@ export default {
       margin-right: 4px;
     }
   }
-}
-.data-model__container {
-  width: 100%;
-  height: calc(100% - 120px);
+
+  &__head {
+    flex-shrink: 0;
+    overflow: hidden;
+  }
+  &__body {
+    flex: 1;
+    overflow: hidden;
+    background-color: white;
+    position: relative;
+  }
+  .detail-drawer__container {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    left: 0;
+    border-top: 8px solid #f2f2f2;
+    z-index: 10;
+    background-color: white;
+  }
 }
 .slide-fade-enter-active {
   transition: all 0.3s ease-in;
@@ -651,5 +694,41 @@ export default {
   position: absolute;
   z-index: 1;
   font-size: 22px;
+}
+.hidden {
+  display: none;
+}
+</style>
+<style lang="scss" scoped>
+.is-show-drawer {
+  .erd-container-wrapper {
+    padding-bottom: 400px;
+  }
+}
+.main-container {
+  display: flex;
+  height: 100%;
+  overflow: hidden;
+  .left-canvas {
+    flex: 1;
+    display: flex;
+    flex-flow: column;
+  }
+  .project-switch {
+    margin: 10px;
+    flex-shrink: 0;
+  }
+  .right-config {
+    width: 255px;
+    overflow: auto;
+    border-left: 1px solid #f0f0f0;
+  }
+
+  .data-model__container {
+    flex: 1;
+    overflow: hidden;
+    // width: 100%;
+    // height: calc(100% - 120px);
+  }
 }
 </style>

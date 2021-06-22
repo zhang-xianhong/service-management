@@ -29,6 +29,9 @@ body {
   margin: 0;
   padding: 0;
   font-size: 12px;
+  .search-input {
+    width: 300px;
+  }
 }
 #app {
   font-family: 'Microsoft YaHei', 'PingFang SC', 'Avenir', Helvetica, Arial, sans-serif;

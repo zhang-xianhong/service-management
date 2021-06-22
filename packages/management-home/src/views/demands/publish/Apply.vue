@@ -13,8 +13,14 @@
         ></el-input>
       </el-col>
     </el-row>
-    <el-row style="background: #fff">
-      <el-table :data="tableData" v-loading="loading" class="publish-table" @selection-change="handleSelectionChange">
+
+    <list-wrap
+      :loading="loading"
+      :empty="total === 0"
+      :handleCreate="addNewpublish"
+      :hasCreateAuth="getShowBool('add')"
+    >
+      <el-table :data="tableData" class="publish-table" @selection-change="handleSelectionChange">
         <el-table-column type="expand">
           <template #default="props">
             <el-form label-position="left" class="publish-table-expand">
@@ -29,7 +35,11 @@
         </el-table-column>
         <el-table-column type="index" label="序号" width="50" />
         <el-table-column label="发布类型" prop="moduleType"></el-table-column>
-        <el-table-column label="发布名称" prop="name"></el-table-column>
+        <el-table-column label="发布名称" prop="name">
+          <template #default="props">
+            {{ props.row.name }}
+          </template>
+        </el-table-column>
         <el-table-column label="申请账号" prop="applicantName">
           <template #header>
             <i class="el-icon-search"></i>
@@ -57,23 +67,27 @@
             </el-popover>
           </template>
         </el-table-column>
-        <el-table-column label="发布版本" prop="version"></el-table-column>
         <el-table-column label="申请时间" prop="createTime">
           <template #default="scope">{{ dateFormat(scope.row.createTime) }}</template>
         </el-table-column>
-        <el-table-column label="状态">
+        <el-table-column label="审核结果" prop="auditResults">
           <template #default="scope">
-            <span>{{ getNameByCode(scope.row.status, 'status') }}</span>
+            <span>{{ getNameByCode(scope.row.auditResults, 'auditResults') }}</span>
           </template>
           <template #header>
             <i class="el-icon-search"></i>
-            <el-popover placement="bottom" :width="200" trigger="manual" :visible="statusTitleVisiable">
+            <el-popover placement="bottom" :width="200" trigger="manual" :visible="auditResultsTitleVisiable">
               <template #reference>
-                <el-button type="text" @click="statusTitleClick">状态</el-button>
+                <el-button type="text" @click="auditResultsTitleClick">审核结果</el-button>
               </template>
-              <el-select v-model="searchProps.status" placeholder="请选择状态" clearable @change="statusChange">
+              <el-select
+                v-model="searchProps.auditResults"
+                placeholder="请选择审核结果"
+                clearable
+                @change="auditResultsChange"
+              >
                 <el-option
-                  v-for="(item, index) in statusFilters"
+                  v-for="(item, index) in auditResultsFilters"
                   :key="index"
                   :label="item.name"
                   :value="item.id"
@@ -109,23 +123,25 @@
             </el-popover>
           </template>
         </el-table-column>
+        <el-table-column label="发布版本" prop="version"></el-table-column>
         <el-table-column label="发布时间" prop="publishTime">
           <template #default="scope">{{ dateFormat(scope.row.publishTime) }}</template>
         </el-table-column>
         <el-table-column label="操作" width="300">
           <template #default="scope">
             <el-button
-              type="primary"
+              type="text"
               size="mini"
               @click="onEdit(scope.row)"
-              :disabled="scope.row.status !== 0"
+              :disabled="getRowOptionStatus(scope.row)"
               v-if="getShowBool('update')"
               >编辑</el-button
             >
             <el-button
+              type="text"
               size="mini"
               @click="onDelete(scope.row)"
-              :disabled="scope.row.status !== 0"
+              :disabled="getRowOptionStatus(scope.row)"
               v-if="getShowBool('delete')"
               >删除</el-button
             >
@@ -133,6 +149,7 @@
         </el-table-column>
       </el-table>
       <packaged-pagination
+        v-if="total"
         :current-page="searchProps.page"
         :page-size="searchProps.pageSize"
         :page-sizes="[10, 20, 50]"
@@ -141,7 +158,8 @@
         @size-change="handlePageSizeChange"
         @current-change="handlePageChange"
       ></packaged-pagination>
-    </el-row>
+    </list-wrap>
+
     <el-dialog
       :title="publishForm.isEdit ? '编辑' : '新建'"
       v-model="addpublishDialog"
@@ -367,7 +385,6 @@ export default {
         const publishData = rows.map((item: any) => ({
           ...item,
           moduleType: getModuleType(item.moduleType),
-          applicantName: `${userInfo.value.displayName}_${userInfo.value.userName}`,
         }));
         tableState.tableData = publishData;
       } catch (error) {
@@ -617,6 +634,10 @@ export default {
       blackHoverclick();
     });
 
+    function getRowOptionStatus(row: any) {
+      return userInfo.value.userId !== row.applicant || row.status !== 0;
+    }
+
     return {
       ...toRefs(tableState),
       addNewpublish,
@@ -654,6 +675,7 @@ export default {
       applicantTitleClick,
       applicantChange,
       getShowBool,
+      getRowOptionStatus,
     };
   },
 };

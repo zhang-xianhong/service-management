@@ -9,6 +9,8 @@ import Store from './store';
 import Router from './router';
 import DataList from './components/data-list/Index.vue';
 import FormPanel from './components/form-panel/Index.vue';
+import Tooltip from './components/tooltip/Index.vue';
+import ListWrap from './components/list-wrap/Index.vue';
 import { showModule } from '@/utils/permission-show-module';
 import { addHighLight } from '@/plugins/highlight';
 
@@ -16,6 +18,8 @@ const app: Vue.App = createApp(App);
 
 app.component('DataList', DataList);
 app.component('FormPanel', FormPanel);
+app.component('Tooltip', Tooltip);
+app.component('ListWrap', ListWrap);
 addHighLight(app);
 
 // element全局配置
