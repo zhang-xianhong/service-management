@@ -17,7 +17,13 @@
     </el-col>
   </el-row>
   <el-row style="background: #fff">
-    <list-wrap :in-project="false" :loading="loading" :empty="!total" :handleCreate="addDataType" :hasCreateAuth="getShowBool('add')">
+    <list-wrap
+      :in-project="false"
+      :loading="loading"
+      :empty="!total"
+      :handleCreate="addDataType"
+      :hasCreateAuth="getShowBool('add')"
+    >
       <el-table
         :data="tableData"
         style="width: 100%"

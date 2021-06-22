@@ -82,7 +82,7 @@
         ></el-input>
       </el-form-item>
       <el-form-item label="关联服务">
-        <el-select v-model="appInfo.services" multiple placeholder="请选择关联服务">
+        <el-select v-model="appInfo.services" multiple placeholder="请选择关联服务" style="width: 100%">
           <el-option v-for="item in allService" :key="item.id" :label="item.name" :value="item.id"></el-option>
         </el-select>
       </el-form-item>
@@ -357,8 +357,12 @@ export default defineComponent({
     &::after {
       content: '建议尺寸200x200，支持png、jpg格式，小于50k';
       position: absolute;
-      margin-top: -20px;
+      margin-top: -30px;
       margin-left: -40px;
+      z-index: 11;
+      padding: 5px;
+      background-color: white;
+      box-shadow: 0 0 6px rgb(0 0 0 / 20%);
     }
   }
 }

@@ -7,7 +7,7 @@
   >
     <div class="mask" v-if="maskText">{{ maskText }}</div>
     <div class="detail">
-      <el-row>
+      <el-row class="detail__head">
         <el-col :span="16" v-if="getShowBool('init')">
           <el-button
             v-for="(button, index) in buttons"
@@ -64,17 +64,14 @@
           </div>
         </el-col>
       </el-row>
-      <div :class="{ 'cannot-operate': !!maskText }">
+      <div class="detail__body" :class="{ 'cannot-operate': !!maskText, 'is-show-drawer': isShowDownDrawer }">
         <!-- <el-row :style="{ height: computedHeight, background: '#fff', padding: '12px', marginBottom: '10px' }">
           <el-col :span="componentName ? 20 : 24" style="height: 100%"> </el-col>
           <el-col v-if="componentName" :span="4" style="border-left: 1px solid #bbbbbb; height: 100%"> </el-col>
         </el-row> -->
-        <div
-          class="main-container"
-          :style="{ height: computedHeight, background: '#fff', padding: '12px', marginBottom: '10px' }"
-        >
+        <div class="main-container">
           <div class="left-canvas" style="height: 100%">
-            <el-row>
+            <el-row class="project-switch">
               <!-- 服务下拉选择框 -->
               <el-select v-model="currentServiceId" placeholder="请选择" @change="selectService" style="width: 200px">
                 <el-option
@@ -105,7 +102,7 @@
               </div>
             </div> -->
           </div>
-          <div class="right-config" v-if="componentName" style="border-left: 1px solid #bbbbbb; height: 100%">
+          <div class="right-config" v-if="componentName">
             <template v-if="componentName">
               <keep-alive>
                 <component
@@ -566,7 +563,11 @@ export default {
 
 <style lang="scss" scoped>
 .detail {
-  height: calc(100vh - 170px);
+  height: calc(100vh - 140px);
+  overflow: hidden;
+  display: flex;
+  flex-flow: column;
+
   &-operation {
     text-align: right;
     height: 32px;
@@ -609,10 +610,26 @@ export default {
       margin-right: 4px;
     }
   }
-}
-.data-model__container {
-  width: 100%;
-  height: calc(100% - 120px);
+
+  &__head {
+    flex-shrink: 0;
+    overflow: hidden;
+  }
+  &__body {
+    flex: 1;
+    overflow: hidden;
+    background-color: white;
+    position: relative;
+  }
+  .detail-drawer__container {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    left: 0;
+    border-top: 8px solid #f2f2f2;
+    z-index: 10;
+    background-color: white;
+  }
 }
 .slide-fade-enter-active {
   transition: all 0.3s ease-in;
@@ -683,14 +700,34 @@ export default {
 }
 </style>
 <style lang="scss" scoped>
+.is-show-drawer {
+  .erd-container-wrapper {
+    padding-bottom: 400px;
+  }
+}
 .main-container {
   display: flex;
+  height: 100%;
+  overflow: hidden;
   .left-canvas {
     flex: 1;
+    display: flex;
+    flex-flow: column;
+  }
+  .project-switch {
+    flex-shrink: 0;
   }
   .right-config {
     max-width: 230px;
     overflow: auto;
+    border-left: 1px solid #f0f0f0;
+  }
+
+  .data-model__container {
+    flex: 1;
+    overflow: hidden;
+    // width: 100%;
+    // height: calc(100% - 120px);
   }
 }
 </style>
