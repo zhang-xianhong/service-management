@@ -89,6 +89,7 @@ export default {
 }
 .form-item {
   width: 40%;
+  word-break: break-all;
 }
 .avatar-uploader .el-upload {
   border: 1px dashed #d9d9d9;
