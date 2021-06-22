@@ -79,21 +79,18 @@
       <el-button-group>
         <el-button
           @click="dialogState.paramType = ParamTypeEnum.REQUEST_PARAM"
-          plain
-          :type="dialogState.paramType === 0 ? 'primary' : 'info'"
+          :type="dialogState.paramType === 0 ? 'primary' : undefined"
           >params</el-button
         >
         <el-button
           @click="dialogState.paramType = ParamTypeEnum.PATH_VARIABLE"
-          plain
-          :type="dialogState.paramType === 2 ? 'primary' : 'info'"
+          :type="dialogState.paramType === 2 ? 'primary' : undefined"
           >query</el-button
         >
         <el-button
           v-if="dialogState.method == 1"
           @click="dialogState.paramType = ParamTypeEnum.REQUEST_BODY"
-          plain
-          :type="dialogState.paramType === 1 ? 'primary' : 'info'"
+          :type="dialogState.paramType === 1 ? 'primary' : undefined"
         >
           body
         </el-button>

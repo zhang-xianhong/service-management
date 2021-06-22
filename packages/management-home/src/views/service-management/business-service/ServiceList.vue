@@ -29,81 +29,93 @@
       ></el-input>
     </div>
     <div class="service-list_content">
-      <el-table
-        :data="serviceTableList.list"
-        style="margin-bottom: 20px"
-        ref="serverMuitable"
-        @selection-change="handleSelection"
-        v-if="refreshMess"
-        v-loading="tableLoading"
+      <list-wrap
+        :loading="tableLoading"
+        :handleCreate="toggleServiceDialog"
+        :empty="serviceTableList.list.length === 0"
       >
-        <el-table-column type="selection" width="55" v-if="getShowBool('delete')"></el-table-column>
-        <el-table-column type="index" width="50" label="序号"></el-table-column>
-        <el-table-column property="name" label="服务英文名">
-          <template #default="scope">
-            <router-link
-              v-if="getShowBool('selectDetail')"
-              :to="{ path: `service-list/detail/${scope.row.id}`, query: { detailName: scope.row.name } }"
-              >{{ scope.row.name }}</router-link
-            >
-            <el-button type="text" v-else>{{ scope.row.name }}</el-button>
-          </template>
-        </el-table-column>
-        <el-table-column property="description" label="服务中文名"></el-table-column>
-        <el-table-column property="ownerstr" label="负责人"></el-table-column>
-        <el-table-column property="status" label="服务状态">
-          <template #default="scope">
-            <span class="service-list-borders" :style="{ background: statusColor[scope.row.status] }"></span>
-            <span :style="{ color: statusColor[scope.row.status] }">{{
-              computeStatusLabel(scope.row.initTimes)[scope.row.status]
-            }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column property="classification" label="分类">
-          <template #header>
-            <i class="el-icon-search"></i>
-            <el-popover placement="bottom" :width="200" trigger="manual" :visible="sortTitleVisiable">
-              <template #reference>
-                <el-button type="text" @click="sortTitleClick">分类</el-button>
+        <template v-slot:default>
+          <el-table
+            :data="serviceTableList.list"
+            style="margin-bottom: 20px"
+            ref="serverMuitable"
+            @selection-change="handleSelection"
+            v-if="refreshMess"
+          >
+            <el-table-column type="selection" width="55" v-if="getShowBool('delete')"></el-table-column>
+            <el-table-column type="index" width="50" label="序号"></el-table-column>
+            <el-table-column property="name" label="服务英文名">
+              <template #default="scope">
+                <router-link
+                  v-if="getShowBool('selectDetail')"
+                  :to="{ path: `service-list/detail/${scope.row.id}`, query: { detailName: scope.row.name } }"
+                  >{{ scope.row.name }}</router-link
+                >
+                <el-button type="text" v-else>{{ scope.row.name }}</el-button>
               </template>
-              <el-cascader
-                v-model="pageInfo.classification"
-                :options="sorts"
-                :props="sortProps"
-                clearable
-                filterable
-                @change="getSortClassification"
-                placeholder="请选择分类"
-              ></el-cascader>
-            </el-popover>
-          </template>
-        </el-table-column>
-        <el-table-column property="tag" label="标签">
-          <template #header>
-            <i class="el-icon-search"></i>
-            <el-popover placement="bottom" :width="200" trigger="manual" :visible="tagTitleVisiable">
-              <template #reference>
-                <el-button type="text" @click="tagTitleClick">标签</el-button>
+            </el-table-column>
+            <el-table-column property="description" label="服务中文名"></el-table-column>
+            <el-table-column property="ownerstr" label="负责人"></el-table-column>
+            <el-table-column property="status" label="服务状态">
+              <template #default="scope">
+                <span class="service-list-borders" :style="{ background: statusColor[scope.row.status] }"></span>
+                <span :style="{ color: statusColor[scope.row.status] }">{{
+                  computeStatusLabel(scope.row.initTimes)[scope.row.status]
+                }}</span>
               </template>
-              <el-select v-model="pageInfo.tags" placeholder="请选择标签" clearable multiple>
-                <el-option v-for="(item, index) in tags" :key="index" :label="item.name" :value="item.id"></el-option>
-              </el-select>
-            </el-popover>
-          </template>
-        </el-table-column>
-        <el-table-column property="source" label="服务来源"></el-table-column>
-        <el-table-column property="version" label="服务版本"></el-table-column>
-      </el-table>
-      <packaged-pagination
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
-        :current-page="pageInfo.page"
-        :page-sizes="[1, 10, 15, 20, 50]"
-        :page-size="pageInfo.pageSize"
-        layout="sizes, prev, pager, next, jumper"
-        :total="serviceTableList.total"
-        v-if="serviceTableList.list.length"
-      ></packaged-pagination>
+            </el-table-column>
+            <el-table-column property="classification" label="分类">
+              <template #header>
+                <i class="el-icon-search"></i>
+                <el-popover placement="bottom" :width="200" trigger="manual" :visible="sortTitleVisiable">
+                  <template #reference>
+                    <el-button type="text" @click="sortTitleClick">分类</el-button>
+                  </template>
+                  <el-cascader
+                    v-model="pageInfo.classification"
+                    :options="sorts"
+                    :props="sortProps"
+                    clearable
+                    filterable
+                    @change="getSortClassification"
+                    placeholder="请选择分类"
+                  ></el-cascader>
+                </el-popover>
+              </template>
+            </el-table-column>
+            <el-table-column property="tag" label="标签">
+              <template #header>
+                <i class="el-icon-search"></i>
+                <el-popover placement="bottom" :width="200" trigger="manual" :visible="tagTitleVisiable">
+                  <template #reference>
+                    <el-button type="text" @click="tagTitleClick">标签</el-button>
+                  </template>
+                  <el-select v-model="pageInfo.tags" placeholder="请选择标签" clearable multiple>
+                    <el-option
+                      v-for="(item, index) in tags"
+                      :key="index"
+                      :label="item.name"
+                      :value="item.id"
+                    ></el-option>
+                  </el-select>
+                </el-popover>
+              </template>
+            </el-table-column>
+            <el-table-column property="source" label="服务来源"></el-table-column>
+            <el-table-column property="version" label="服务版本"></el-table-column>
+          </el-table>
+          <packaged-pagination
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
+            :current-page="pageInfo.page"
+            :page-sizes="[1, 10, 15, 20, 50]"
+            :page-size="pageInfo.pageSize"
+            layout="sizes, prev, pager, next, jumper"
+            :total="serviceTableList.total"
+            v-if="serviceTableList.list.length"
+          ></packaged-pagination>
+        </template>
+      </list-wrap>
     </div>
 
     <el-dialog title="新增服务" v-model="addServiceDialog" width="600px">
@@ -233,6 +245,7 @@
 
 <script lang="ts">
 import { defineComponent, reactive, ref, onBeforeUnmount, computed, watch } from 'vue';
+import ListWrap from '@/components/list-wrap/Index.vue';
 import PackagedPagination from '@/components/pagination/Index.vue';
 import { userProjectList } from '@/layout/messageCenter/user-info';
 import { getShowBool } from '@/utils/permission-show-module';
@@ -261,6 +274,7 @@ export default defineComponent({
   components: {
     fetchOwnersSelect,
     PackagedPagination,
+    ListWrap,
   },
   data() {
     return {

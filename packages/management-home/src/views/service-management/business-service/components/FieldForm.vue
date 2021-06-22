@@ -54,8 +54,8 @@
       </el-table>
     </div>
     <div class="form-field__btns">
-      <el-button type="primary" @click="save">保存</el-button>
-      <el-button @click="back">返回</el-button>
+      <el-button @click="back">取消</el-button>
+      <el-button type="primary" @click="save">确定</el-button>
     </div>
   </div>
 </template>
@@ -175,7 +175,7 @@ export default defineComponent({
 }
 .form-field__btns {
   padding: 5px;
-  text-align: right;
+  text-align: center;
 }
 .column-table {
   &::v-deep {
