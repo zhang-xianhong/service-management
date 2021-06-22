@@ -715,6 +715,7 @@ export default {
     flex-flow: column;
   }
   .project-switch {
+    margin: 10px;
     flex-shrink: 0;
   }
   .right-config {
