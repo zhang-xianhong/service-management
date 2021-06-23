@@ -23,6 +23,17 @@ export const baseRoutes: Array<RouteRecordRaw> = [
     },
   },
   {
+    path: '/reset-password',
+    component: () => import('@/views/login/ResetPassword.vue'),
+    name: 'resetPassword',
+    meta: {
+      title: '重置密码',
+      icon: 'el-icon-eleme',
+      isRootLevel: true,
+      hidden: true,
+    },
+  },
+  {
     path: '/no-right',
     name: 'noRight',
     component: () => import('@/views/no-right/Index.vue'),
@@ -106,28 +117,6 @@ const routes: Array<RouteRecordRaw> = [
           title: '租户管理',
           icon: 'el-icon-eleme',
           hidden: true,
-          isRootLevel: false,
-        },
-      },
-    ],
-  },
-  {
-    path: '/about-info',
-    redirect: '/about',
-    component: Layout,
-    meta: {
-      isRootLevel: true,
-      hidden: true,
-      title: '关于信息',
-    },
-    children: [
-      {
-        path: '/about',
-        component: () => import(/* webpackChunkName: "userinfo" */ '@/views/about-info/Index.vue'),
-        name: 'about',
-        meta: {
-          title: '关于信息',
-          icon: 'el-icon-eleme',
           isRootLevel: false,
         },
       },

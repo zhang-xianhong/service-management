@@ -1,6 +1,6 @@
 <template>
   <div style="background: #fff">
-    <el-table :data="tableData" style="width: 100%" height="290" :row-class-name="tableRowClassName">
+    <el-table :data="tableData" style="width: 100%" height="330" :row-class-name="tableRowClassName">
       <el-table-column label="序号" type="index" width="50"></el-table-column>
       <el-table-column label="接口名称" prop="name">
         <template #default="scope">
@@ -21,9 +21,9 @@
           <template v-else>{{ getMethodName(scope.row.method) }}</template>
         </template>
       </el-table-column>
-      <el-table-column label="数据模型" prop="modelId">
+      <el-table-column label="数据对象" prop="modelId">
         <template #default="scope">
-          <el-select v-if="!scope.row.isSystem" v-model="scope.row.modelId" placeholder="请选择数据模型">
+          <el-select v-if="!scope.row.isSystem" v-model="scope.row.modelId" placeholder="请选择数据对象">
             <el-option
               v-for="(model, index) in modelList"
               :key="index"
@@ -79,21 +79,18 @@
       <el-button-group>
         <el-button
           @click="dialogState.paramType = ParamTypeEnum.REQUEST_PARAM"
-          plain
-          :type="dialogState.paramType === 0 ? 'primary' : 'info'"
+          :type="dialogState.paramType === 0 ? 'primary' : undefined"
           >params</el-button
         >
         <el-button
           @click="dialogState.paramType = ParamTypeEnum.PATH_VARIABLE"
-          plain
-          :type="dialogState.paramType === 2 ? 'primary' : 'info'"
+          :type="dialogState.paramType === 2 ? 'primary' : undefined"
           >query</el-button
         >
         <el-button
           v-if="dialogState.method == 1"
           @click="dialogState.paramType = ParamTypeEnum.REQUEST_BODY"
-          plain
-          :type="dialogState.paramType === 1 ? 'primary' : 'info'"
+          :type="dialogState.paramType === 1 ? 'primary' : undefined"
         >
           body
         </el-button>
@@ -316,6 +313,7 @@ export default defineComponent({
         .filter((item: any) => item.name !== '');
       console.log(params, 'this is params');
       tableData.value[currentItemIndex.value].params = params;
+      tableData.value[currentItemIndex.value].url = dialogState.url;
       dialogVisible.value = false;
     };
 
@@ -388,6 +386,6 @@ export default defineComponent({
 .ports-configuration__operations {
   display: flex;
   padding: 12px;
-  justify-content: flex-end;
+  place-content: center;
 }
 </style>

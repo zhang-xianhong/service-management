@@ -1,6 +1,6 @@
 <template>
   <div style="background: #fff">
-    <div style="width: 100%; height:330px; position: relative;">
+    <div style="width: 100%; height: 330px; position: relative" class="column-table">
       <el-table :data="fields" :height="330">
         <el-table-column type="index" width="50"></el-table-column>
         <el-table-column prop="name" label="属性名称">
@@ -45,7 +45,7 @@
             <el-checkbox v-model="scope.row.isPinyinSupport" :disabled="isFieldDisabled(scope)"></el-checkbox>
           </template>
         </el-table-column>
-        <el-table-column prop="operations" label="操作" width="180">
+        <el-table-column prop="operations" label="操作" width="180" v-if="getShowBool('add')">
           <template #default="scope">
             <a @click="add(scope.$index)" class="operator" v-if="scope.$index === 0">添加</a>
             <a @click="remove(scope.$index)" class="operator" :disabled="isFieldDisabled(scope)">删除</a>
@@ -54,8 +54,8 @@
       </el-table>
     </div>
     <div class="form-field__btns">
-      <el-button type="primary" @click="save">保存</el-button>
-      <el-button @click="back">返回</el-button>
+      <el-button type="primary" @click="save" v-if="getShowBool('add')">确定</el-button>
+      <el-button @click="back">取消</el-button>
     </div>
   </div>
 </template>
@@ -64,6 +64,7 @@
 import { defineComponent, onMounted, ref, inject, Ref, watchEffect, getCurrentInstance } from 'vue';
 import { getDataTypesAll } from '@/api/settings/data-types';
 import { updateFields } from '@/api/schema/model';
+import { getShowBool } from '@/utils/permission-show-module';
 import _ from 'lodash/fp';
 export default defineComponent({
   name: 'ColumnForm',
@@ -161,6 +162,7 @@ export default defineComponent({
       back,
       save,
       isFieldDisabled,
+      getShowBool,
     };
   },
 });
@@ -175,6 +177,15 @@ export default defineComponent({
 }
 .form-field__btns {
   padding: 5px;
-  text-align: right;
+  text-align: center;
+}
+.column-table {
+  &::v-deep {
+    .el-table {
+      .cell {
+        line-height: 30px;
+      }
+    }
+  }
 }
 </style>

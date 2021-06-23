@@ -17,7 +17,7 @@ export const updateConfig = (id: string, payload: any): Promise<SuccessResponse<
   axios.post(getUrl(settings.UPDATE_CONFIG, id), payload);
 export const deleteConfig = (id: string): Promise<SuccessResponse<any>> =>
   axios.post(getUrl(settings.DELETE_CONFIG, id));
-export const getHistory = (id: string): Promise<SuccessResponse<any>> =>
-  axios.get(getUrl(settings.GET_CONFIG_HISTORY, id));
+export const getHistory = (id: string, payload: any): Promise<SuccessResponse<any>> =>
+  axios.get(getUrl(settings.GET_CONFIG_HISTORY, id), { params: payload });
 export const checkKeyRule = (payload: any): Promise<SuccessResponse<any>> =>
   axios.post(getUrl(settings.CHECK_KEY_RULE), payload);

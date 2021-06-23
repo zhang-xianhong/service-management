@@ -2,7 +2,6 @@ import { reactive, ref } from 'vue';
 import { addProject, getProjectList, deleteProjects } from '@/api/project';
 import { getAllTemplates } from '@/api/settings/templates';
 import { ElMessageBox } from 'element-plus';
-import Message from 'element-plus/es/el-message';
 
 export const projectDetail = reactive({
   license: 1,
@@ -44,22 +43,13 @@ export const getAllTems = () =>
   });
 
 export const deleteProject = (id: number) => {
-  ElMessageBox.confirm(`确定删除此项目，此操作不可恢复, 是否继续?`, '提示', {
-    confirmButtonText: '确定',
+  ElMessageBox.confirm(`确定删除当前项目？`, '提示', {
+    confirmButtonText: '确定删除',
     cancelButtonText: '取消',
     type: 'warning',
-  })
-    .then(() => {
-      deleteProjects([id]).then((res) => {
-        console.log(res);
-        // getProjectListData();
-        window.location.reload();
-      });
-    })
-    .catch(() => {
-      Message({
-        type: 'info',
-        message: '已取消操作',
-      });
+  }).then(async () => {
+    deleteProjects([id]).then(() => {
+      window.location.reload();
     });
+  });
 };

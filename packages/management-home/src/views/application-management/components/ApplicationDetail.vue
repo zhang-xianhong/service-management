@@ -1,10 +1,19 @@
 <template>
-  <el-dialog :title="isEditable ? '编辑应用' : '应用基本信息'" v-model="isVisable" width="500px">
+  <el-dialog
+    :title="isEditable ? '编辑应用' : '应用基本信息'"
+    v-model="isVisable"
+    width="500px"
+    destroy-on-close
+    v-on:open="onOpen"
+  >
     <el-form :model="detailInfo" label-width="120px" label-position="left">
       <el-form-item
         label="应用中文名称"
         prop="description"
-        :rules="[{ required: true, message: '内容不能为空', trigger: 'blur' }]"
+        :rules="[
+          { required: true, message: '内容不能为空', trigger: 'blur' },
+          { min: 3, max: 20, message: '应用中文名称长度在3到20个字符之间' },
+        ]"
       >
         <el-input v-if="isEditable" v-model="detailInfo.description" placeholder="请输入中文名称"></el-input>
         <template v-else>{{ detailInfo.description }}</template>
@@ -51,10 +60,10 @@
     </el-form>
     <div class="dialog-footer">
       <template v-if="getShowBool('update')">
-        <el-button v-if="isEditable" type="primary" @click="updateAppDetail">提交</el-button>
+        <el-button v-if="isEditable" type="primary" @click="updateAppDetail">保存</el-button>
         <el-button v-else type="primary" @click="isEditable = true">编辑</el-button>
       </template>
-      <el-button @click="handleCloseDialog">关闭</el-button>
+      <el-button @click="handleCloseDialog('cancel')">{{ isEditable ? '取消' : '关闭' }}</el-button>
     </div>
   </el-dialog>
 </template>
@@ -97,7 +106,11 @@ export default defineComponent({
     const isEditable: Ref<boolean> = ref(false);
 
     const isVisable: any = computed(() => props.visable);
-
+    // 每次打开会保留上一次的数据，需要重置
+    const onOpen = () => {
+      detailInfo.value = props.detail;
+      isEditable.value = false;
+    };
     getAllService();
 
     const serviceIds = ref(props.detail.services.map((item: any) => item.serviceId));
@@ -151,9 +164,10 @@ export default defineComponent({
         ctx.emit('close');
       }
     };
-    const handleCloseDialog = () => {
+
+    const handleCloseDialog = (type: string) => {
       isEditable.value = false;
-      ctx.emit('close');
+      ctx.emit('close', type);
     };
 
     return {
@@ -170,6 +184,7 @@ export default defineComponent({
       updateAppDetail,
       handleCloseDialog,
       getShowBool,
+      onOpen,
     };
   },
 });
@@ -203,8 +218,12 @@ export default defineComponent({
     &::after {
       content: '建议尺寸110x110，支持png、jpg格式，小于50k';
       position: absolute;
-      margin-top: -20px;
+      margin-top: -30px;
       margin-left: -40px;
+      z-index: 11;
+      padding: 5px;
+      background-color: white;
+      box-shadow: 0 0 6px rgb(0 0 0 / 20%);
     }
   }
 }

@@ -41,6 +41,7 @@ import { defineComponent, getCurrentInstance, ref } from 'vue';
 import { imgUpload, updateProject } from '@/api/project/project';
 import Message from 'element-plus/es/el-message';
 import { ElMessage } from 'element-plus';
+import { userInfo } from '@/layout/messageCenter/user-info';
 
 export default defineComponent({
   name: 'ProjectItem',
@@ -71,8 +72,8 @@ export default defineComponent({
     const src = ref('');
     const changeSelectPic = (res: any) => {
       const { files } = res.target;
-      if (files[0].size > 10 * 1024 * 1024) {
-        return Message.warning('上传图片不得大于10Mb');
+      if (files[0].size > 3 * 1024 * 1024) {
+        return Message.warning('上传图片不得大于3Mb');
       }
       if (!(files[0].type.includes('jpeg') || files[0].type.includes('png'))) {
         return Message.warning('图片格式必须为png/jpeg');
@@ -88,9 +89,10 @@ export default defineComponent({
         .then((res) => updateProject(props.dataObj.id, { thumbnail: res.data.fileKey }))
         .then(() => ctx.emit('reload-projects'));
     };
-    const changePic = (res: any) => {
-      console.log('change picture', res);
-      if (props.updateOrNot) {
+    const changePic = () => {
+      const ownerArr = props.dataObj.owners.map((x: any) => x.userId);
+      const includes = ownerArr.includes(userInfo.value.userId);
+      if (props.updateOrNot && includes) {
         selectPic.value.click();
       } else {
         ElMessage.warning('暂无更新权限');
@@ -129,6 +131,7 @@ export default defineComponent({
   height: 310px;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
   margin: 10px;
+  background-color: #fff;
   &:hover {
     box-shadow: 0 0 8px #409eff;
     cursor: pointer;

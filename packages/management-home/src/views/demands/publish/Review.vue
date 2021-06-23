@@ -10,8 +10,8 @@
         ></el-input>
       </el-col>
     </el-row>
-    <el-row style="background: #fff">
-      <el-table :data="tableData" v-loading="loading" class="publish-table" @selection-change="handleSelectionChange">
+    <list-wrap :loading="loading" :empty="total === 0" :hasCreateAuth="false">
+      <el-table :data="tableData" class="publish-table" @selection-change="handleSelectionChange">
         <el-table-column type="expand">
           <template #default="props">
             <el-form label-position="left" class="publish-table-expand">
@@ -117,7 +117,7 @@
         <el-table-column label="操作" width="300">
           <template #default="scope">
             <el-button
-              type="primary"
+              type="text"
               size="mini"
               :disabled="scope.row.auditResults !== 0"
               @click="onReview(scope.row)"
@@ -128,6 +128,7 @@
         </el-table-column>
       </el-table>
       <packaged-pagination
+        v-if="total"
         :current-page="searchProps.page"
         :page-size="searchProps.pageSize"
         :page-sizes="[10, 20, 50]"
@@ -136,7 +137,7 @@
         @size-change="handlePageSizeChange"
         @current-change="handlePageChange"
       ></packaged-pagination>
-    </el-row>
+    </list-wrap>
     <el-dialog title="发布审核" v-model="addpublishDialog" width="600px" @closed="closepublishForm">
       <div class="add-publish-set">
         <el-form :model="publishForm.formData" :rules="publishRules" ref="publishFormRef">
@@ -262,7 +263,6 @@ export default {
         const publishData = rows.map((item: any) => ({
           ...item,
           moduleType: getModuleType(item.moduleType),
-          applicantName: `${userInfo.value.displayName}_${userInfo.value.userName}`,
         }));
         tableState.tableData = publishData;
       } catch (error) {

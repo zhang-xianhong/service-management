@@ -21,23 +21,14 @@
       ></el-input>
     </el-col>
   </el-row>
-  <el-row style="background: #fff">
-    <div
-      style="background: #fff; width: 100%; min-height: 180px"
-      v-loading="!userProjectList.length"
-      element-loading-text="暂无项目，请联系管理员添加项目"
-      element-loading-spinner="el-icon-loading"
-      element-loading-background="rgba(255, 255, 255, 1)"
-    >
-      <div
-        class="application-list_content"
-        v-loading="loading"
-        v-if="userProjectList.length && applicationList.length"
-        element-loading-text="数据更新中..."
-        element-loading-spinner="el-icon-loading"
-        element-loading-background="rgba(255, 255, 255, 1)"
-        :style="{ minHeight: applicationList.length && !loading ? '180px' : '130px' }"
-      >
+  <list-wrap
+    :loading="loading"
+    :empty="applicationList.length === 0"
+    :handleCreate="openCreateDialog"
+    :hasCreateAuth="getShowBool('add')"
+  >
+    <div class="application-list_content">
+      <div class="application-cards">
         <application-card
           v-for="item in applicationList"
           :key="item.id"
@@ -55,23 +46,16 @@
         @size-change="handlePageSizeChange"
         @current-change="handlePageChange"
       ></packaged-pagination>
-      <div
-        style="background: #fff; width: 100%; min-height: 180px"
-        v-if="!applicationList.length && !loading"
-        v-loading="true"
-        element-loading-text="暂无数据"
-        element-loading-spinner="el-icon-loading"
-        element-loading-background="rgba(255, 255, 255, 1)"
-      ></div>
     </div>
-  </el-row>
+  </list-wrap>
+
   <el-dialog title="新建应用" v-model="createDialogVisible" width="500px">
     <el-form :model="appInfo" :rules="rules" label-width="120px" label-position="left" ref="form">
       <el-form-item label="应用中文名称" prop="description">
-        <el-input v-model="appInfo.description" placeholder="请输入中文名称" ref="descriptionName"></el-input>
+        <el-input v-model.trim="appInfo.description" placeholder="请输入中文名称" ref="descriptionName"></el-input>
       </el-form-item>
       <el-form-item label="应用英文名称" prop="name">
-        <el-input v-model="appInfo.name" placeholder="请输入英文名称" ref="englishName"></el-input>
+        <el-input v-model.trim="appInfo.name" placeholder="请输入英文名称" ref="englishName"></el-input>
       </el-form-item>
       <el-form-item>
         <template v-slot:label>应用图标<i class="el-icon-question info-icon"></i></template>
@@ -98,14 +82,14 @@
         ></el-input>
       </el-form-item>
       <el-form-item label="关联服务">
-        <el-select v-model="appInfo.services" multiple placeholder="请选择关联服务">
+        <el-select v-model="appInfo.services" multiple placeholder="请选择关联服务" style="width: 100%">
           <el-option v-for="item in allService" :key="item.id" :label="item.name" :value="item.id"></el-option>
         </el-select>
       </el-form-item>
     </el-form>
     <div class="dialog-footer">
-      <el-button type="primary" @click="submitAppCreate">提交</el-button>
-      <el-button @click="closeAppCreate">关闭</el-button>
+      <el-button type="primary" @click="submitAppCreate">保存</el-button>
+      <el-button @click="closeAppCreate">取消</el-button>
     </div>
   </el-dialog>
 </template>
@@ -127,7 +111,13 @@ interface StateInterface {
   total: number;
   loading: boolean;
   createDialogVisible: boolean;
-  appInfo: { name: string; description: string; remark: string; thumbnail: string; services: number[] };
+  appInfo: {
+    name: string;
+    description: string;
+    remark: string;
+    thumbnail: string;
+    services: number[];
+  };
   imageUrl: string;
   statusLabel: string;
 }
@@ -169,12 +159,26 @@ export default defineComponent({
     const rules = {
       description: [
         { required: true, message: '请输入应用中文名称', trigger: 'blur' },
-        { min: 3, max: 20, message: '应用中文名称长度在3到20个字符之间', trigger: 'blur' },
+        {
+          min: 3,
+          max: 20,
+          message: '应用中文名称长度在3到20个字符之间',
+          trigger: 'blur',
+        },
       ],
       name: [
         { required: true, message: '请输入应用英文名称', trigger: 'blur' },
-        { min: 3, max: 16, message: '应用英文名称长度在3到16个字符之间', trigger: 'blur' },
-        { pattern: /^[a-zA-Z]+$/g, message: '该应用英文名称包含非法字符，请重新输入', trigger: 'blur' },
+        {
+          min: 3,
+          max: 16,
+          message: '应用英文名称长度在3到16个字符之间',
+          trigger: 'blur',
+        },
+        {
+          pattern: /^[a-zA-Z]+$/g,
+          message: '该应用英文名称包含非法字符，请重新输入',
+          trigger: 'blur',
+        },
       ],
     };
 
@@ -322,12 +326,16 @@ export default defineComponent({
 <style lang="scss">
 .avatar-uploader .el-upload {
   border: 1px dashed #d9d9d9;
-  border-radius: 6px;
+  border-radius: 0;
   cursor: pointer;
   position: relative;
   overflow: hidden;
   width: 110px;
   height: 110px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
   &:hover {
     border-color: #409eff;
   }
@@ -349,8 +357,12 @@ export default defineComponent({
     &::after {
       content: '建议尺寸200x200，支持png、jpg格式，小于50k';
       position: absolute;
-      margin-top: -20px;
+      margin-top: -30px;
       margin-left: -40px;
+      z-index: 11;
+      padding: 5px;
+      background-color: white;
+      box-shadow: 0 0 6px rgb(0 0 0 / 20%);
     }
   }
 }
@@ -360,5 +372,34 @@ export default defineComponent({
 .dialog-footer {
   display: flex;
   justify-content: center;
+}
+
+.application-cards {
+  display: flex;
+  flex-flow: row wrap;
+}
+
+@media screen and (max-width: 1800px) {
+  .application-cards {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media screen and (max-width: 1560px) {
+  .application-cards {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media screen and (max-width: 1366px) {
+  .application-cards {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media screen and (max-width: 1024px) {
+  .application-cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 </style>

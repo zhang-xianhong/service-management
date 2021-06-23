@@ -1,7 +1,7 @@
 <template>
   <div class="baseinfo-container">
     <div class="baseinfo-title">基本信息</div>
-    <el-form :model="formData" label-width="60px" label-position="left" style="height: 87%; overflow: auto">
+    <el-form :model="formData" label-width="60px" label-position="left" style="height: 87%">
       <el-form-item label="服务名称">
         <div class="baseinfo-content">{{ formData.name }}</div>
       </el-form-item>
@@ -70,6 +70,7 @@ import useTags from '../utils/service-baseinfo-tag';
 import { updateService } from '@/api/servers';
 import { allService, getAllService } from '../utils/service-data-utils';
 import OwnerSelect from '@/components/owners-select/Index.vue';
+import { ElMessage } from 'element-plus';
 
 export default {
   name: 'ServerBaseInfo',
@@ -100,13 +101,23 @@ export default {
     const isShowMode = ref(true);
 
     const computedServices = computed(() => allService.value.filter((service: any) => service.id !== props.id));
+    const ownersArr = props.data.owners?.map((x: any) => x.userId) || [];
+    const allOwnersArr = props.data.ownerUsers?.map((x: any) => x.id) || [];
+    const realOwners = ownersArr
+      // eslint-disable-next-line array-callback-return
+      .map((x: any) => {
+        if (allOwnersArr.includes(x)) {
+          return { userId: x };
+        }
+      })
+      .filter((x: any) => x);
 
     // 表单数据
     const formData = reactive({
       name: props.data.name,
       description: props.data.description,
       owner: props.data.owner,
-      owners: props.data.owners,
+      owners: realOwners,
       ownerUsers: props.data.ownerUsers,
       classification: props.data.classification,
       tag: props.data.tag,
@@ -168,6 +179,10 @@ export default {
     const saveFormData = async () => {
       console.log(formData);
       const data = { ...formData };
+      const ownerArr = data.owner.split(',');
+      if (ownerArr.length > 10) {
+        return ElMessage.warning('负责人最多支持10个');
+      }
       data.dependencies = formData.dependencies.map((x: any) => ({ id: x }));
       const { code } = await updateService(String(props.id), data);
       if (code === 0) {
@@ -200,7 +215,6 @@ export default {
 <style lang="scss" scoped>
 .baseinfo-container {
   padding: 12px;
-  height: 100%;
 }
 .baseinfo-title {
   margin-bottom: 20px;

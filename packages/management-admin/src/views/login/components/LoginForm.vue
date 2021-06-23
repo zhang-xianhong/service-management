@@ -36,6 +36,7 @@
 import { defineComponent, reactive, ref, Ref, getCurrentInstance } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { getCaptcha, login, getCode, verifyCaptcha } from '@/api/auth';
+import { getUser } from '@/shared/userinfo';
 
 // 登录相关信息接口
 interface LoginInfoInterface {
@@ -116,6 +117,7 @@ export default defineComponent({
               secret: `${loginInfo.password}.${data.code}`,
             });
             if (code === 0) {
+              getUser();
               loading.value = false;
               // 如果路由携带redirect参数则直接跳转到目标页面
               if (route.params.redirect) {

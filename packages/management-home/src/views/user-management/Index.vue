@@ -80,11 +80,15 @@ export default defineComponent({
       if (!userSetInfo[prop]) {
         return ElMessage.error(`${labels[id]} 不得为空！`);
       }
+      if (userSetInfo.displayName.length > 20) {
+        return ElMessage.warning('用户姓名不能超过20个字符');
+      }
       const item = {} as any;
       item[prop] = userSetInfo[prop];
       updateUserProfile(item).then((res) => {
         if (res.code === 0) {
           checkStatus(id);
+          ElMessage.success('修改成功');
         }
       });
     };
@@ -109,7 +113,9 @@ export default defineComponent({
       if (viva) {
         updateUserPassword({ ...passForm }).then((res) => {
           dialogFormVisible.value = false;
-          console.log(res);
+          if (res.code === 0) {
+            ElMessage.success('修改成功');
+          }
         });
       }
     };
@@ -238,8 +244,6 @@ export default defineComponent({
         height: 30px;
       }
       .el-input--small .el-input__inner {
-        height: 28px;
-        line-height: 28px;
       }
     }
   }

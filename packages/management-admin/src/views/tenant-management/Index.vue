@@ -4,12 +4,10 @@
       <el-button style="width: 90px" type="primary" @click="onAdd">
         <i class="el-icon-plus" style="font-weight: bloder; margin-right: 2px"></i>新建
       </el-button>
-      <!-- TODO：待确定 -->
-      <!-- <el-button @click="freezeInBatches">冻结</el-button>
-      <el-button @click="deleteInBatches">删除</el-button>-->
     </el-col>
     <el-col :offset="14" :span="6" style="text-align: right">
       <el-input
+        class="search-input"
         placeholder="请输入公司名称"
         suffix-icon="el-icon-search"
         @input="handleComputerNameInput"
@@ -32,6 +30,21 @@
       <el-table-column property="managerName" label="管理员姓名"></el-table-column>
       <el-table-column property="managerTel" label="管理员电话"></el-table-column>
       <el-table-column property="status" label="状态">
+        <template #header>
+          <div class="statusStyle">
+            <span>状态</span>
+            <el-dropdown @command="handleFilter">
+              <span class="filter-btn"></span>
+              <template #dropdown>
+                <el-dropdown-menu>
+                  <el-dropdown-item :command="statusEnum.ENABLE">启用</el-dropdown-item>
+                  <el-dropdown-item :command="statusEnum.FREEZE">禁用</el-dropdown-item>
+                  <el-dropdown-item :command="''">全部</el-dropdown-item>
+                </el-dropdown-menu>
+              </template>
+            </el-dropdown>
+          </div>
+        </template>
         <template #default="scope">
           <template v-if="scope.row.status === statusEnum.ENABLE">启用</template>
           <template v-else>禁用</template>
@@ -39,7 +52,7 @@
       </el-table-column>
       <el-table-column label="操作" width="200">
         <template #default="scope">
-          <el-button type="text" v-if="scope.row.status === statusEnum.ENABLE" @click="onFreeze(scope.row.id)"
+          <el-button type="text" v-if="scope.row.status === statusEnum.ENABLE" @click="onFreeze(scope.row)"
             >禁用</el-button
           >
           <el-button type="text" v-if="scope.row.status === statusEnum.FREEZE" @click="onEnable(scope.row.id)"
@@ -64,15 +77,20 @@
       @current-change="handlePageChange"
     ></packaged-pagination>
   </el-row>
+  <PublicResetPassword ref="publicResetPassword"></PublicResetPassword>
+  <PrivateResetPassword ref="privateResetPassword"></PrivateResetPassword>
 </template>
 
 <script lang="ts">
-import { reactive, toRefs, getCurrentInstance } from 'vue';
+import { reactive, toRefs, getCurrentInstance, ref, Ref, watch } from 'vue';
+import { ElMessageBox, ElMessage } from 'element-plus';
 import { getTenantList, deleteTenant, freezeTenant, enableTenant } from '@/api/tenant';
 import { debounce } from 'lodash';
 import { useRouter } from 'vue-router';
 import PackagedPagination from '@/components/packaged-pagination/Index.vue';
-
+import { userInfo } from '@/layout/messageCenter/user-info';
+import PublicResetPassword from './components/PublicResetPassword.vue';
+import PrivateResetPassword from './components/PrivateResetPassword.vue';
 // 租户数据接口
 interface TenantItemInterface {
   id: number;
@@ -81,6 +99,7 @@ interface TenantItemInterface {
   contactName: string;
   contactTel: string;
   contactEmail: string;
+  managerId: number;
   managerAccount: string;
   managerName: string;
   managerTel: string;
@@ -94,6 +113,7 @@ interface TableStateInterface {
     page: number;
     pageSize: number;
     keyword: string;
+    status?: any;
   };
   selections: any[];
   total: number;
@@ -109,12 +129,19 @@ export default {
   name: 'Tenant',
   components: {
     PackagedPagination,
+    PublicResetPassword,
+    PrivateResetPassword,
   },
   setup() {
     const router = useRouter();
-
     const instance = getCurrentInstance();
+    const publicResetPassword: Ref<any> = ref(null);
+    const privateResetPassword: Ref<any> = ref(null);
+    const isPublic = ref(true);
 
+    watch(userInfo, () => {
+      isPublic.value = userInfo.value?.deployEnv === 'public';
+    });
     const tableState: TableStateInterface = reactive({
       tableData: [],
       loading: false,
@@ -122,6 +149,7 @@ export default {
         page: 1,
         pageSize: 10,
         keyword: '',
+        status: '',
       },
       total: 0,
       selections: [],
@@ -138,9 +166,10 @@ export default {
         contactName: item.contact?.name,
         contactTel: item.contact?.phone,
         contactEmail: item.contact?.email,
-        managerName: item.manager?.name,
-        managerAccount: item.manager?.account,
-        managerTel: item.manager?.phone,
+        managerId: item.manager?.userId,
+        managerName: item.manager?.displayName,
+        managerAccount: item.manager?.userName,
+        managerTel: item.manager?.phoneNumber,
       }));
       tableState.total = data.count;
       tableState.loading = false;
@@ -206,17 +235,30 @@ export default {
     };
 
     // 租户冻结
-    const onFreeze = async (id: string) => {
-      const { code } = await freezeTenant(id);
-      if (code === 0) {
-        (instance as any).proxy.$message({
-          type: 'success',
-          message: '冻结成功',
+    const onFreeze = async (data: any) => {
+      ElMessageBox.confirm(`是否禁用【${data.name}】租户?`, '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+      })
+        .then(async () => {
+          const { code } = await freezeTenant(data.id);
+          if (code === 0) {
+            (instance as any).proxy.$message({
+              type: 'success',
+              message: '禁用成功',
+            });
+            getTableData();
+          }
+        })
+        .catch(() => {
+          ElMessage({
+            type: 'info',
+            message: '禁用失败',
+          });
         });
-        getTableData();
-      }
+      getTableData();
     };
-
     // 租户启动
     const onEnable = async (id: string) => {
       const { code } = await enableTenant(id);
@@ -230,14 +272,24 @@ export default {
     };
 
     // 重置租户密码
-    const onResetPWD = async (id: string) => {
-      // TODO
-      console.log(id);
+    const onResetPWD = async (data: any) => {
+      const { managerId } = data;
+      if (isPublic.value) {
+        publicResetPassword.value.handleResetPasswd(managerId);
+      } else {
+        privateResetPassword.value.handleResetPasswd(managerId);
+      }
     };
-
+    const handleFilter = (data: any) => {
+      tableState.searchProps.status = data;
+      getTableData();
+    };
     return {
       ...toRefs(tableState),
       statusEnum,
+      publicResetPassword,
+      privateResetPassword,
+      isPublic,
       handlePageSizeChange,
       handlePageChange,
       handleComputerNameInput,
@@ -248,9 +300,24 @@ export default {
       onFreeze,
       onEnable,
       onResetPWD,
+      handleFilter,
     };
   },
 };
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+$image: url(~@/assets/img/filter.svg);
+.statusStyle {
+  display: flex;
+  align-items: center;
+}
+.filter-btn {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  margin-left: 5px;
+  background: $image no-repeat;
+  cursor: pointer;
+}
+</style>

@@ -7,7 +7,7 @@
       </div>
     </el-col>
     <el-col class="login-main" :span="16">
-      <login-form></login-form>
+      <slot> <login-form></login-form></slot>
     </el-col>
   </el-row>
 </template>

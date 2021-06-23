@@ -1,7 +1,7 @@
 <template>
   <div class="dept">
     <el-row>
-      <el-col :span="10" style="text-align: left">
+      <el-col :span="6" style="text-align: left">
         <el-button
           type="primary"
           style="width: 90px"
@@ -14,8 +14,9 @@
           >删除</el-button
         >
       </el-col>
-      <el-col :offset="10" :span="4" style="text-align: right">
+      <el-col :offset="8" :span="10" style="text-align: right">
         <el-input
+          style="width: 300px"
           placeholder="请输入用户姓名"
           suffix-icon="el-icon-search"
           @input="filterAccount"
@@ -24,7 +25,7 @@
       </el-col>
     </el-row>
     <el-row>
-      <el-col :span="6" style="background: #fff">
+      <el-col :span="7" style="background: #fff">
         <div class="user-tree" v-loading="loading">
           <el-scrollbar>
             <el-tree
@@ -84,35 +85,42 @@
           >
         </el-row>
         <el-row width="100%">
-          <el-table :data="tableDataSource" style="width: 100%">
-            <el-table-column type="index" label="序号" width="50" />
-            <el-table-column label="登录账号" prop="userName"></el-table-column>
-            <el-table-column label="姓名" prop="displayName"></el-table-column>
-            <el-table-column label="手机" prop="phoneNumber" width="200"></el-table-column>
-            <el-table-column label="邮箱" prop="primaryMail"></el-table-column>
-            <el-table-column label="账户状态" prop="status" width="100">
-              <template #default="scope">
-                <span>{{ UserStatus[scope.row.status] }}</span>
-              </template>
-            </el-table-column>
-            <el-table-column label="操作" width="100">
-              <template #default="scope">
-                <el-button type="primary" size="mini" @click="handleDelPerson(scope.row)" v-if="getShowBool('delete')"
-                  >删除</el-button
-                >
-              </template>
-            </el-table-column>
-          </el-table>
-          <packaged-pagination
-            v-if="total"
-            :current-page="searchProps.page"
-            :page-size="searchProps.pageSize"
-            :page-sizes="[10, 20, 50]"
-            layout="sizes, prev, pager, next, jumper"
-            :total="total"
-            @size-change="handlePageSizeChange"
-            @current-change="handlePageChange"
-          ></packaged-pagination>
+          <ListWrap
+            :loading="loading"
+            :empty="!total"
+            :handleCreate="handleAddPerson"
+            :hasCreateAuth="(currentNodeData.id === 0 ? false : isSel) && getShowBool('add')"
+          >
+            <el-table :data="tableDataSource" style="width: 100%">
+              <el-table-column type="index" label="序号" width="50" />
+              <el-table-column label="登录账号" prop="userName"></el-table-column>
+              <el-table-column label="姓名" prop="displayName"></el-table-column>
+              <el-table-column label="手机" prop="phoneNumber" width="200"></el-table-column>
+              <el-table-column label="邮箱" prop="primaryMail"></el-table-column>
+              <el-table-column label="账户状态" prop="status" width="100">
+                <template #default="scope">
+                  <span>{{ UserStatus[scope.row.status] }}</span>
+                </template>
+              </el-table-column>
+              <el-table-column label="操作" width="100">
+                <template #default="scope">
+                  <el-button type="text" size="mini" @click="handleDelPerson(scope.row)" v-if="getShowBool('delete')"
+                    >删除</el-button
+                  >
+                </template>
+              </el-table-column>
+            </el-table>
+            <packaged-pagination
+              v-if="total"
+              :current-page="searchProps.page"
+              :page-size="searchProps.pageSize"
+              :page-sizes="[10, 20, 50]"
+              layout="sizes, prev, pager, next, jumper"
+              :total="total"
+              @size-change="handlePageSizeChange"
+              @current-change="handlePageChange"
+            ></packaged-pagination>
+          </ListWrap>
         </el-row>
       </el-col>
     </el-row>
@@ -127,7 +135,7 @@
       @user-changed="reloadUserList"
     ></TreeSelector>
     <el-dialog
-      title="添加子部门"
+      :title="formData.isEdit ? '重命名子部门' : '添加子部门'"
       v-model="dialogVisible"
       width="500px"
       @closed="closeDialog"
@@ -158,7 +166,7 @@ import _ from 'lodash/fp';
 import { getTenantDepartment, createDept, delDept, delUser, updateDept } from '@/api/company/dept';
 import { getUserList } from '@/api/company/users';
 import TreeSelector from './components/TreeSelector.vue';
-import { ElMessageBox, ElMessage } from 'element-plus';
+import { ElMessageBox } from 'element-plus';
 import { debounce } from 'lodash';
 import PackagedPagination from '@/components/pagination/Index.vue';
 import { getShowBool } from '@/utils/permission-show-module';
@@ -360,28 +368,21 @@ export default defineComponent({
       const currentDept = treeData.currentNodeData._children
         ? treeData.currentNodeData
         : treeData.currentNodeData.parent;
-      ElMessageBox.confirm(`是否将【${data.displayName || data.name}】从【${currentDept.name}】删除?`, '提示', {
-        confirmButtonText: '确定',
+      ElMessageBox.confirm(`是否将【${data.displayName || data.name}】从【${currentDept.name}】删除`, '提示', {
+        confirmButtonText: '确定删除',
         cancelButtonText: '取消',
         type: 'warning',
-      })
-        .then(async () => {
-          // 待传参
-          const { code } = await delUser({ userIds: [data.id] });
-          if (code === ResCode.Success) {
-            removeNode(data);
-            removeTableRow(data);
-            msgTips('success', '删除成功');
-          } else {
-            msgTips('error', '删除失败');
-          }
-        })
-        .catch(() => {
-          ElMessage({
-            type: 'info',
-            message: '已取消操作',
-          });
-        });
+      }).then(async () => {
+        // 待传参
+        const { code } = await delUser({ userIds: [data.id] });
+        if (code === ResCode.Success) {
+          removeNode(data);
+          removeTableRow(data);
+          msgTips('success', '删除成功');
+        } else {
+          msgTips('error', '删除失败');
+        }
+      });
     };
 
     // 删除部门和人员
@@ -397,25 +398,18 @@ export default defineComponent({
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning',
-        })
-          .then(async () => {
-            // 删除部门
-            const { id } = treeData.currentNodeData;
-            const { code } = await delDept({ id });
-            if (code === ResCode.Success) {
-              msgTips('success', '删除成功');
-              removeNode(treeData.currentNodeData);
-              initTableData();
-            } else {
-              msgTips('error', '删除失败');
-            }
-          })
-          .catch(() => {
-            ElMessage({
-              type: 'info',
-              message: '已取消操作',
-            });
-          });
+        }).then(async () => {
+          // 删除部门
+          const { id } = treeData.currentNodeData;
+          const { code } = await delDept({ id });
+          if (code === ResCode.Success) {
+            msgTips('success', '删除成功');
+            removeNode(treeData.currentNodeData);
+            initTableData();
+          } else {
+            msgTips('error', '删除失败');
+          }
+        });
       } else {
         // 删除人员
         handleDelPerson(treeData.currentNodeData);
@@ -670,7 +664,7 @@ export default defineComponent({
 });
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .dept {
   height: calc(100vh - 130px);
   .user-tree {
@@ -715,5 +709,8 @@ export default defineComponent({
 .content-style {
   overflow: hidden;
   text-overflow: ellipsis;
+}
+.el-row {
+  margin-bottom: 10px;
 }
 </style>

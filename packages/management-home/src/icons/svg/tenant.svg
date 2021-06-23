@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="16px" height="16px" viewBox="0 0 16 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 56 (81588) - https://sketch.com -->
+    <title>用户管理 normal</title>
+    <desc>Created with Sketch.</desc>
+    <g id="ICON-已上线" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="用户管理">
+            <g id="用户管理-normal">
+                <rect id="矩形" fill="currentColor" opacity="0" x="0" y="0" width="16" height="16"></rect>
+                <path d="M7.0001,9.05790427 L7.0001,11.063361 C5.15118604,11.2872217 3.31991461,12.0549674 3,12.567 L3,13 L7.0001,13 L7.0001,15 L1,15 L1,12.5 C1,10.4708414 4.54343596,9.31994432 7.0001,9.05790427 Z M8,8 C5.79,8 4,6.21 4,4 C4,1.79 5.79,0 8,0 C10.21,0 12,1.79 12,4 C12,6.21 10.21,8 8,8 Z M8,6 C9.1054305,6 10,5.1054305 10,4 C10,2.8945695 9.1054305,2 8,2 C6.8945695,2 6,2.8945695 6,4 C6,5.1054305 6.8945695,6 8,6 Z M8,9 L11,9 L12,10 L16,10 L16,16 L8,16 L8,9 Z M10,14.001 L14.001,14.001 L14.001,12.001 L10,12.001 L10,14.001 Z" id="形状" fill="currentColor" fill-rule="nonzero"></path>
+            </g>
+        </g>
+    </g>
+</svg>
