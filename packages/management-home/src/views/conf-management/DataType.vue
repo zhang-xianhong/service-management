@@ -1,11 +1,14 @@
 <template>
   <el-row>
     <el-col :span="6" style="text-align: left">
-      <el-button type="primary" @click="addDataType" style="width: 90px" v-if="getShowBool('add')">新增</el-button>
+      <el-button type="primary" @click="addDataType" style="width: 90px" v-if="getShowBool('add')" icon="el-icon-plus"
+        >新建</el-button
+      >
       <el-button :disabled="!isDeletable" @click="groupDelete()" v-if="getShowBool('delete')">删除</el-button>
     </el-col>
     <el-col :offset="8" :span="10" style="text-align: right">
       <el-input
+        style="width: 300px"
         placeholder="请输入数据类型名称"
         suffix-icon="el-icon-search"
         @input="filterDataType"
@@ -14,39 +17,48 @@
     </el-col>
   </el-row>
   <el-row style="background: #fff">
-    <el-table
-      :data="tableData"
-      v-loading="loading"
-      style="width: 100%"
-      @selection-change="handleSelectionChange"
-      @sort-change="sortChange"
+    <list-wrap
+      :in-project="false"
+      :loading="loading"
+      :empty="!total"
+      :handleCreate="addDataType"
+      :hasCreateAuth="getShowBool('add')"
     >
-      <el-table-column type="selection" width="45" v-if="getShowBool('delete')" />
-      <el-table-column type="index" label="序号" width="50" />
-      <el-table-column label="类型名称" prop="name" sortable></el-table-column>
-      <el-table-column label="描述" prop="description" sortable></el-table-column>
-      <!--      <el-table-column label="克隆源" prop="cloneBy" sortable></el-table-column>-->
-      <el-table-column label="操作" width="200">
-        <template #default="scope">
-          <template v-if="!scope.row.isSystem">
-            <el-button type="primary" size="mini" @click="onEdit(scope.row)" v-if="getShowBool('update')"
-              >编辑</el-button
-            >
-            <el-button size="mini" @click="onDelete(scope.row)" v-if="getShowBool('delete')">删除</el-button>
+      <el-table
+        :data="tableData"
+        style="width: 100%"
+        @selection-change="handleSelectionChange"
+        @sort-change="sortChange"
+      >
+        <el-table-column type="selection" width="45" v-if="getShowBool('delete')" />
+        <el-table-column type="index" label="序号" width="50" />
+        <el-table-column label="类型名称" prop="name" sortable></el-table-column>
+        <el-table-column label="描述" prop="description" sortable></el-table-column>
+        <!--      <el-table-column label="克隆源" prop="cloneBy" sortable></el-table-column>-->
+        <el-table-column label="操作" width="200">
+          <template #default="scope">
+            <template v-if="!scope.row.isSystem">
+              <el-button type="text" size="mini" @click="onEdit(scope.row)" v-if="getShowBool('update')"
+                >编辑</el-button
+              >
+              <el-button type="text" size="mini" @click="onDelete(scope.row)" v-if="getShowBool('delete')"
+                >删除</el-button
+              >
+            </template>
           </template>
-        </template>
-      </el-table-column>
-    </el-table>
-    <packaged-pagination
-      v-if="total"
-      :current-page="searchProps.page"
-      :page-size="searchProps.pageSize"
-      :page-sizes="[10, 20, 50]"
-      layout="sizes, prev, pager, next, jumper"
-      :total="total"
-      @size-change="handlePageSizeChange"
-      @current-change="handlePageChange"
-    ></packaged-pagination>
+        </el-table-column>
+      </el-table>
+      <packaged-pagination
+        v-if="total"
+        :current-page="searchProps.page"
+        :page-size="searchProps.pageSize"
+        :page-sizes="[10, 20, 50]"
+        layout="sizes, prev, pager, next, jumper"
+        :total="total"
+        @size-change="handlePageSizeChange"
+        @current-change="handlePageChange"
+      ></packaged-pagination>
+    </list-wrap>
   </el-row>
 </template>
 
@@ -56,7 +68,7 @@ import { useRouter } from 'vue-router';
 import { getDataTypes, deleteDataType } from '@/api/settings/data-types';
 import PackagedPagination from '@/components/pagination/Index.vue';
 import { debounce } from 'lodash';
-import { ElMessageBox, ElMessage } from 'element-plus';
+import { ElMessageBox } from 'element-plus';
 import { getShowBool } from '@/utils/permission-show-module';
 
 interface TableState {
@@ -127,7 +139,7 @@ export default {
     // 删除数据类型
     const onDelete = async (rowData: any) => {
       ElMessageBox.confirm(`是否删除选中?`, '提示', {
-        confirmButtonText: '确定',
+        confirmButtonText: '确定删除',
         cancelButtonText: '取消',
         type: 'warning',
       }).then(async () => {
@@ -150,40 +162,33 @@ export default {
     // 批量删除数据类型
     const groupDelete = async () => {
       ElMessageBox.confirm(`是否删除选中?`, '提示', {
-        confirmButtonText: '确定',
+        confirmButtonText: '确定删除',
         cancelButtonText: '取消',
         type: 'warning',
-      })
-        .then(async () => {
-          if (tableState.multipleSelection.every((item: any) => item.isSystem)) {
-            (instance as any).proxy.$message({
-              type: 'warn',
-              message: '系统默认数据类型不可删除',
-            });
-            return;
-          }
-          const { code }: any = await deleteDataType({
-            ids: [tableState.multipleSelection.map((item: any) => item.id)],
+      }).then(async () => {
+        if (tableState.multipleSelection.every((item: any) => item.isSystem)) {
+          (instance as any).proxy.$message({
+            type: 'warn',
+            message: '系统默认数据类型不可删除',
           });
-          if (code === 0) {
-            (instance as any).proxy.$message({
-              type: 'success',
-              message: '删除成功',
-            });
-            getTableData();
-          } else {
-            (instance as any).proxy.$message({
-              type: 'error',
-              message: '删除失败',
-            });
-          }
-        })
-        .catch(() => {
-          ElMessage({
-            type: 'info',
-            message: '已取消操作',
-          });
+          return;
+        }
+        const { code }: any = await deleteDataType({
+          ids: [tableState.multipleSelection.map((item: any) => item.id)],
         });
+        if (code === 0) {
+          (instance as any).proxy.$message({
+            type: 'success',
+            message: '删除成功',
+          });
+          getTableData();
+        } else {
+          (instance as any).proxy.$message({
+            type: 'error',
+            message: '删除失败',
+          });
+        }
+      });
     };
 
     // 数据类型筛选
@@ -235,5 +240,8 @@ export default {
 .datatype-add {
   float: right;
   margin-bottom: 12px;
+}
+.el-row {
+  margin-bottom: 10px;
 }
 </style>

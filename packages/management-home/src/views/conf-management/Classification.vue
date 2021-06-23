@@ -1,17 +1,16 @@
 <template>
   <div>
-    <el-row class="classific-row">
+    <el-row class="classific-row page_head-menu">
       <el-button style="width: 120px" type="primary" @click="addTop" v-if="getShowBool('add')">新增顶级分类</el-button>
       <el-button
         style="width: 120px"
-        :type="currentNode.id === -1 || !treeFirstIdArray.includes(currentNode.id) ? 'info' : 'primary'"
         @click="addChild"
         :disabled="currentNode.id === -1 || !treeFirstIdArray.includes(currentNode.id)"
         v-if="getShowBool('update')"
         >新增子级分类</el-button
       >
-      <el-button type="primary" v-if="!allExpanded" @click="expandAll">展开所有</el-button>
-      <el-button type="primary" v-if="allExpanded" @click="collapseAll">折叠所有</el-button>
+      <el-button v-if="!allExpanded" @click="expandAll">展开所有</el-button>
+      <el-button v-if="allExpanded" @click="collapseAll">折叠所有</el-button>
     </el-row>
     <el-row class="classific-row" :gutter="20">
       <el-col :span="12">
@@ -20,6 +19,7 @@
           suffix-icon="el-icon-search"
           @input="filterTree"
           v-model="filterText"
+          style="width: 300px"
         ></el-input>
         <el-scrollbar class="tree">
           <el-tree
@@ -222,7 +222,7 @@ export default defineComponent({
 
     const remove = async () => {
       ElMessageBox.confirm(`是否删除选中分类?`, '提示', {
-        confirmButtonText: '确定',
+        confirmButtonText: '确定删除',
         cancelButtonText: '取消',
         type: 'warning',
       })
@@ -278,5 +278,8 @@ export default defineComponent({
 }
 .tree {
   height: calc(100vh - 250px);
+}
+.el-row {
+  margin-bottom: 10px;
 }
 </style>

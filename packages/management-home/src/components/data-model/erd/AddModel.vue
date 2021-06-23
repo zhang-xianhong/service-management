@@ -103,7 +103,6 @@ export default defineComponent({
   position: absolute;
   width: 140px;
   height: 100px;
-  border-radius: 10px;
   border: 1px dashed #ccc;
   margin: 20px 0 0 20px;
   text-align: center;

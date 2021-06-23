@@ -16,7 +16,7 @@
       <div class="project-list_right">
         <el-input
           placeholder="请输入名称"
-          style="width: 500px"
+          style="width: 300px"
           v-model="pageInfo.keyword"
           suffix-icon="el-icon-search"
           @input="searchProject"
@@ -24,12 +24,17 @@
         ></el-input>
       </div>
     </div>
-    <div
-      style="background: #fff"
-      v-loading="!userProjectList.length"
-      element-loading-text="暂无项目，请联系管理员添加项目"
-      element-loading-spinner="el-icon-loading"
-      element-loading-background="rgba(255, 255, 255, 1)"
+    <list-wrap
+      :in-project="false"
+      :loading="loadings"
+      :empty="projectList.length === 0"
+      :type="userInfo.admin ? 'primary' : 'info'"
+      :handleCreate="
+        () => {
+          addDialogVisible = true;
+        }
+      "
+      :hasCreateAuth="getShowBool('add')"
     >
       <div class="project-list_content" ref="projectParentDiv" :style="{ paddingLeft: paddings }">
         <project-item
@@ -41,7 +46,6 @@
           :delete-or-not="getShowBool('delete')"
           :update-or-not="getShowBool('update')"
         ></project-item>
-        <div v-if="!projectList.length && !loadings" class="placeholders">暂无数据</div>
       </div>
       <packaged-pagination
         v-if="projectList.length"
@@ -53,7 +57,7 @@
         layout="total, sizes, prev, pager, next, jumper"
         :total="pageInfo.total"
       ></packaged-pagination>
-    </div>
+    </list-wrap>
     <el-dialog v-model="addDialogVisible" title="新建项目" width="520px" @close="closeDialog" destroy-on-close>
       <div class="add-project-dialog">
         <el-form :model="projectDetail">
@@ -126,7 +130,7 @@
             label="项目简介"
             :label-width="labelWidth"
             prop="remark"
-            :rules="[{ min: 0, max: 255, message: '最多支持255个字符', trigger: 'blur' }]"
+            :rules="[{ min: 0, max: 512, message: '最多支持512个字符', trigger: 'blur' }]"
           >
             <el-input v-model="projectDetail.remark" type="textarea" :rows="5"></el-input>
           </el-form-item>
@@ -148,6 +152,7 @@ import { getShowBool } from '@/utils/permission-show-module';
 import {
   getProjectListData,
   projectDetail,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   projectList,
   addProjectData,
   getAllTems,
@@ -159,10 +164,12 @@ import fetchOwnersSelect from '@/components/fetchOwnersSelect/Index.vue';
 import { projectNameTest } from '@/api/project/project';
 import { userProjectList, userInfo } from '@/layout/messageCenter/user-info';
 import { ElMessage } from 'element-plus';
+import ListWrap from '@/components/list-wrap/Index.vue';
 
 export default defineComponent({
   name: 'ProjectList',
   components: {
+    ListWrap,
     ProjectItem,
     fetchOwnersSelect,
     PackagedPagination,
@@ -207,29 +214,25 @@ export default defineComponent({
       projectDescriptionInput.value.handleBlur();
       const nameLength = projectDetail.name.length;
       const descriptionLengh = projectDetail.description;
-      const ownerArr = projectDetail.owner?.split(',') || '';
       if (submitLoading.value) {
         return;
       }
-      // if (!projectDetail.name) {
-      //   return false;
-      // }
       if (nameLength < 3 || nameLength > 20) {
         return false;
       }
-      // if (!projectDetail.description) {
-      //   return false;
-      // }
       if (descriptionLengh < 3 || descriptionLengh > 20) {
         return false;
       }
       if (!projectDetail.templateId) {
         return false;
       }
-      if (ownerArr.length > 10) {
-        return ElMessage.warning('最多支持10个负责人');
+      if (projectDetail.owner) {
+        const ownerArr = projectDetail.owner.split(',');
+        if (ownerArr.length > 10) {
+          return ElMessage.warning('最多支持10个负责人');
+        }
       }
-      if (projectDetail.remark && projectDetail.remark.length > 255) {
+      if (projectDetail.remark && projectDetail.remark.length > 512) {
         return false;
       }
       submitLoading.value = true;
@@ -341,11 +344,24 @@ export default defineComponent({
   &_right {
     flex: 1;
     text-align: right;
+    .el-input--small .el-input__inner {
+      height: 30px;
+      line-height: 30px;
+    }
   }
   &_content {
     width: 100%;
     padding: 10px;
     margin-top: 10px;
+    .new-project {
+      margin: 0;
+      padding: 0;
+      border: none;
+      outline: none;
+      background-color: transparent;
+      font-size: 16px;
+      color: #006eff;
+    }
   }
   .add-project-dialog {
     width: 80%;

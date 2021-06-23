@@ -1,10 +1,10 @@
 <template>
   <el-form :model="typeForm" ref="formRef" :rules="formRules" label-width="120px">
     <el-form-item label="类型名称" prop="name" required>
-      <el-input v-model.trim="typeForm.name" placeholder="请选择"></el-input>
+      <el-input v-model="typeForm.name" placeholder="请输入类型名称" style="width: 300px"></el-input>
     </el-form-item>
     <el-form-item label="数据类型" prop="type" required>
-      <el-select v-model="typeForm.type" placeholder="请选择">
+      <el-select v-model="typeForm.type" placeholder="请选择" style="width: 300px">
         <el-option
           v-for="item in datatypeOptions"
           :key="item.value"
@@ -20,10 +20,10 @@
       <el-input-number v-model="typeForm.length" :min="1" :max="4294967295"></el-input-number>
     </el-form-item>
     <el-form-item label="类型描述" prop="description" required>
-      <el-input v-model="typeForm.description" placeholder="请选择"></el-input>
+      <el-input v-model="typeForm.description" placeholder="请输入描述" style="width: 300px"></el-input>
     </el-form-item>
     <el-form-item>
-      <el-button type="primary" @click="onSubmit" v-if="getShowBool('update')">保存</el-button>
+      <el-button type="primary" @click="onSubmit" v-if="getShowBool('update')">确定</el-button>
       <el-button @click="onCancel">取消</el-button>
     </el-form-item>
   </el-form>

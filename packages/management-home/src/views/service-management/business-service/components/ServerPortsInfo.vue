@@ -1,6 +1,6 @@
 <template>
   <div style="background: #fff">
-    <el-table :data="tableData" style="width: 100%" height="290" :row-class-name="tableRowClassName">
+    <el-table :data="tableData" style="width: 100%" height="330" :row-class-name="tableRowClassName">
       <el-table-column label="序号" type="index" width="50"></el-table-column>
       <el-table-column label="接口名称" prop="name">
         <template #default="scope">
@@ -79,21 +79,18 @@
       <el-button-group>
         <el-button
           @click="dialogState.paramType = ParamTypeEnum.REQUEST_PARAM"
-          plain
-          :type="dialogState.paramType === 0 ? 'primary' : 'info'"
+          :type="dialogState.paramType === 0 ? 'primary' : undefined"
           >params</el-button
         >
         <el-button
           @click="dialogState.paramType = ParamTypeEnum.PATH_VARIABLE"
-          plain
-          :type="dialogState.paramType === 2 ? 'primary' : 'info'"
+          :type="dialogState.paramType === 2 ? 'primary' : undefined"
           >query</el-button
         >
         <el-button
           v-if="dialogState.method == 1"
           @click="dialogState.paramType = ParamTypeEnum.REQUEST_BODY"
-          plain
-          :type="dialogState.paramType === 1 ? 'primary' : 'info'"
+          :type="dialogState.paramType === 1 ? 'primary' : undefined"
         >
           body
         </el-button>
@@ -389,6 +386,6 @@ export default defineComponent({
 .ports-configuration__operations {
   display: flex;
   padding: 12px;
-  justify-content: flex-end;
+  place-content: center;
 }
 </style>

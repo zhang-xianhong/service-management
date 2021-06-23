@@ -65,13 +65,13 @@
     </div>
     <template #footer>
       <span class="dialog-footer" v-if="!isEdit">
-        <el-button type="primary" @click="submitConfigForm">保存</el-button>
-        <el-button @click="closeDialog">返回</el-button>
+        <el-button type="primary" @click="submitConfigForm">确定</el-button>
+        <el-button @click="closeDialog">取消</el-button>
       </span>
       <span class="dialog-footer" v-else>
         <el-button type="primary" @click="enableEdit" v-if="disable">编辑</el-button>
-        <el-button type="primary" @click="submitConfigForm" v-else>保存</el-button>
-        <el-button @click="closeDialog">返回</el-button>
+        <el-button type="primary" @click="submitConfigForm" v-else>确定</el-button>
+        <el-button @click="closeDialog">取消</el-button>
       </span>
     </template>
   </el-dialog>

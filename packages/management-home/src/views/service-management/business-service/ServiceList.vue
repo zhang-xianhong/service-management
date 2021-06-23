@@ -1,114 +1,116 @@
 <template>
-  <div
-    class="service-list"
-    v-loading="!userProjectList.length"
-    element-loading-text="暂无项目，请联系管理员添加项目"
-    element-loading-spinner="el-icon-loading"
-    element-loading-background="rgba(255, 255, 255, 1)"
-  >
+  <div class="service-list">
     <div class="service-list_header">
-      <div class="service-list_left">
-        <el-button
-          icon="el-icon-plus"
-          v-if="getShowBool('add')"
-          type="primary"
-          @click="toggleServiceDialog"
-          style="width: 90px"
-          >新建</el-button
-        >
-        <el-button @click="runService" :disabled="computedDisabled" v-if="false">启动</el-button>
-        <el-button @click="stopService" :disabled="computedDisabled" v-if="false">停止</el-button>
-        <el-button @click="deleteHandler" :disabled="computedDisabledForSS" v-if="getShowBool('delete')"
-          >删除</el-button
-        >
-      </div>
-      <div class="service-list_right">
-        <el-input
-          placeholder="请输入服务名称"
-          style="width: 500px"
-          v-model="pageInfo.keyword"
-          suffix-icon="el-icon-search"
-          @input="searchForList"
-          @keyup.enter="searchForList"
-        ></el-input>
-      </div>
+      <el-button
+        icon="el-icon-plus"
+        v-if="getShowBool('add')"
+        type="primary"
+        @click="toggleServiceDialog"
+        style="width: 90px"
+        >新建</el-button
+      >
+      <el-button @click="runService" :disabled="computedDisabled" v-if="false">启动</el-button>
+      <el-button @click="stopService" :disabled="computedDisabled" v-if="false">停止</el-button>
+      <el-button @click="deleteHandler" :disabled="computedDisabledForSS" v-if="getShowBool('delete')">删除</el-button>
+
+      <el-input
+        placeholder="请输入服务名称"
+        style="max-width: 300px; margin-left: auto"
+        v-model="pageInfo.keyword"
+        suffix-icon="el-icon-search"
+        @input="searchForList"
+        @keyup.enter="searchForList"
+      ></el-input>
     </div>
     <div class="service-list_content">
-      <el-table
-        :data="serviceTableList.list"
-        style="margin-bottom: 20px"
-        ref="serverMuitable"
-        @selection-change="handleSelection"
-        v-if="refreshMess"
-        v-loading="tableLoading"
+      <list-wrap
+        :loading="tableLoading"
+        :handleCreate="toggleServiceDialog"
+        :hasCreateAuth="getShowBool('add')"
+        :empty="serviceTableList.list.length === 0"
       >
-        <el-table-column type="selection" width="55" v-if="getShowBool('delete')"></el-table-column>
-        <el-table-column type="index" width="50" label="序号"></el-table-column>
-        <el-table-column property="name" label="服务英文名">
-          <template #default="scope">
-            <router-link
-              v-if="getShowBool('selectDetail')"
-              :to="{ path: `service-list/detail/${scope.row.id}`, query: { detailName: scope.row.name } }"
-              >{{ scope.row.name }}</router-link
-            >
-            <el-button type="text" v-else>{{ scope.row.name }}</el-button>
-          </template>
-        </el-table-column>
-        <el-table-column property="description" label="服务中文名"></el-table-column>
-        <el-table-column property="ownerstr" label="负责人"></el-table-column>
-        <el-table-column property="status" label="服务状态">
-          <template #default="scope">
-            <span class="service-list-borders" :style="{ background: statusColor[scope.row.status] }"></span>
-            <span :style="{ color: statusColor[scope.row.status] }">{{
-              computeStatusLabel(scope.row.initTimes)[scope.row.status]
-            }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column property="classification" label="分类">
-          <template #header>
-            <i class="el-icon-search"></i>
-            <el-popover placement="bottom" :width="200" trigger="manual" :visible="sortTitleVisiable">
-              <template #reference>
-                <el-button type="text" @click="sortTitleClick">分类</el-button>
+        <template v-slot:default>
+          <el-table
+            :data="serviceTableList.list"
+            style="margin-bottom: 20px"
+            ref="serverMuitable"
+            @selection-change="handleSelection"
+            v-if="refreshMess"
+          >
+            <el-table-column type="selection" width="55" v-if="getShowBool('delete')"></el-table-column>
+            <el-table-column type="index" width="50" label="序号"></el-table-column>
+            <el-table-column property="name" label="服务英文名">
+              <template #default="scope">
+                <router-link
+                  v-if="getShowBool('selectDetail')"
+                  :to="{ path: `service-list/detail/${scope.row.id}`, query: { detailName: scope.row.name } }"
+                  >{{ scope.row.name }}</router-link
+                >
+                <el-button type="text" v-else>{{ scope.row.name }}</el-button>
               </template>
-              <el-cascader
-                v-model="pageInfo.classification"
-                :options="sorts"
-                :props="sortProps"
-                clearable
-                filterable
-                @change="getSortClassification"
-                placeholder="请选择分类"
-              ></el-cascader>
-            </el-popover>
-          </template>
-        </el-table-column>
-        <el-table-column property="tag" label="标签">
-          <template #header>
-            <i class="el-icon-search"></i>
-            <el-popover placement="bottom" :width="200" trigger="manual" :visible="tagTitleVisiable">
-              <template #reference>
-                <el-button type="text" @click="tagTitleClick">标签</el-button>
+            </el-table-column>
+            <el-table-column property="description" label="服务中文名"></el-table-column>
+            <el-table-column property="ownerstr" label="负责人"></el-table-column>
+            <el-table-column property="status" label="服务状态">
+              <template #default="scope">
+                <span class="service-list-borders" :style="{ background: statusColor[scope.row.status] }"></span>
+                <span :style="{ color: statusColor[scope.row.status] }">{{
+                  computeStatusLabel(scope.row.initTimes)[scope.row.status]
+                }}</span>
               </template>
-              <el-select v-model="pageInfo.tags" placeholder="请选择标签" clearable multiple>
-                <el-option v-for="(item, index) in tags" :key="index" :label="item.name" :value="item.id"></el-option>
-              </el-select>
-            </el-popover>
-          </template>
-        </el-table-column>
-        <el-table-column property="source" label="服务来源"></el-table-column>
-        <el-table-column property="version" label="服务版本"></el-table-column>
-      </el-table>
-      <packaged-pagination
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
-        :current-page="pageInfo.page"
-        :page-sizes="[1, 10, 15, 20, 50]"
-        :page-size="pageInfo.pageSize"
-        layout="sizes, prev, pager, next, jumper"
-        :total="serviceTableList.total"
-        v-if="serviceTableList.list.length"
-      ></packaged-pagination>
+            </el-table-column>
+            <el-table-column property="classification" label="分类">
+              <template #header>
+                <i class="el-icon-search"></i>
+                <el-popover placement="bottom" :width="200" trigger="manual" :visible="sortTitleVisiable">
+                  <template #reference>
+                    <el-button type="text" @click="sortTitleClick">分类</el-button>
+                  </template>
+                  <el-cascader
+                    v-model="pageInfo.classification"
+                    :options="sorts"
+                    :props="sortProps"
+                    clearable
+                    filterable
+                    @change="getSortClassification"
+                    placeholder="请选择分类"
+                  ></el-cascader>
+                </el-popover>
+              </template>
+            </el-table-column>
+            <el-table-column property="tag" label="标签">
+              <template #header>
+                <i class="el-icon-search"></i>
+                <el-popover placement="bottom" :width="200" trigger="manual" :visible="tagTitleVisiable">
+                  <template #reference>
+                    <el-button type="text" @click="tagTitleClick">标签</el-button>
+                  </template>
+                  <el-select v-model="pageInfo.tags" placeholder="请选择标签" clearable multiple>
+                    <el-option
+                      v-for="(item, index) in tags"
+                      :key="index"
+                      :label="item.name"
+                      :value="item.id"
+                    ></el-option>
+                  </el-select>
+                </el-popover>
+              </template>
+            </el-table-column>
+            <el-table-column property="source" label="服务来源"></el-table-column>
+            <el-table-column property="version" label="服务版本"></el-table-column>
+          </el-table>
+          <packaged-pagination
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
+            :current-page="pageInfo.page"
+            :page-sizes="[1, 10, 15, 20, 50]"
+            :page-size="pageInfo.pageSize"
+            layout="sizes, prev, pager, next, jumper"
+            :total="serviceTableList.total"
+            v-if="serviceTableList.list.length"
+          ></packaged-pagination>
+        </template>
+      </list-wrap>
     </div>
 
     <el-dialog title="新增服务" v-model="addServiceDialog" width="600px">
@@ -132,6 +134,7 @@
               v-model.trim="serviceDetail.name"
               placeholder="请输入英文名称，如'project1'，创建后无法修改"
               @blur="checkEnglishName"
+              ref="nameRef"
             >
               <template #prepend>srv-</template>
             </el-input>
@@ -148,6 +151,7 @@
             <el-input
               v-model.trim="serviceDetail.description"
               placeholder="请输入中文服务描述，如项'目管理服务'，创建后无法修改"
+              ref="desRef"
             ></el-input>
           </el-form-item>
           <el-form-item label="负责人" :label-width="labelWidth">
@@ -238,6 +242,7 @@
 
 <script lang="ts">
 import { defineComponent, reactive, ref, onBeforeUnmount, computed, watch } from 'vue';
+import ListWrap from '@/components/list-wrap/Index.vue';
 import PackagedPagination from '@/components/pagination/Index.vue';
 import { userProjectList } from '@/layout/messageCenter/user-info';
 import { getShowBool } from '@/utils/permission-show-module';
@@ -266,6 +271,7 @@ export default defineComponent({
   components: {
     fetchOwnersSelect,
     PackagedPagination,
+    ListWrap,
   },
   data() {
     return {
@@ -324,6 +330,7 @@ export default defineComponent({
             (serverMuitable.value as any).toggleRowSelection(x, true);
           });
         rememberMutiArray.value = [];
+        tableLoading.value = false;
       });
     };
 
@@ -336,11 +343,17 @@ export default defineComponent({
 
     const handleSizeChange = (res: number) => {
       pageInfo.pageSize = res;
-      refreshServiceList(pageInfo);
+      tableLoading.value = true;
+      refreshServiceList(pageInfo).then(() => {
+        tableLoading.value = false;
+      });
     };
     const handleCurrentChange = (res: number) => {
       pageInfo.page = res;
-      refreshServiceList(pageInfo);
+      tableLoading.value = true;
+      refreshServiceList(pageInfo).then(() => {
+        tableLoading.value = false;
+      });
     };
     function clearDialog() {
       const keys = Object.keys(serviceDetail);
@@ -348,9 +361,13 @@ export default defineComponent({
         serviceDetail[x] = '';
       });
     }
+    const nameRef = ref(null as any);
+    const desRef = ref(null as any);
     function addServiceByForm() {
+      nameRef.value.handleBlur();
+      desRef.value.handleBlur();
       const senddata = { ...serviceDetail };
-      const ownerArr = senddata.owner.split(',');
+      const ownerArr = senddata.owner?.split(',') || '';
       senddata.tag = serviceDetail.tags ? serviceDetail.tags.join(',') : '';
       senddata.dependencies = serviceDetail.dependencies
         ? serviceDetail.dependencies.map((x: any) => ({
@@ -358,19 +375,11 @@ export default defineComponent({
           }))
         : [];
       if (!senddata.name) {
-        return ElMessage({
-          showClose: true,
-          message: '请输入服务名称',
-          type: 'error',
-        });
+        return;
       }
 
       if (senddata.name.length > 32) {
-        return ElMessage({
-          showClose: true,
-          message: '服务名称不得超过32个字符',
-          type: 'error',
-        });
+        return;
       }
 
       if (ownerArr.length > 10) {
@@ -379,18 +388,10 @@ export default defineComponent({
 
       const regux = /^[a-z0-9-]+(?<!-)$/;
       if (!regux.test(serviceDetail.name)) {
-        return ElMessage({
-          showClose: true,
-          message: '服务名称不符合命名规范',
-          type: 'error',
-        });
+        return;
       }
       if (!senddata.description) {
-        return ElMessage({
-          showClose: true,
-          message: '请输入服务描述',
-          type: 'error',
-        });
+        return;
       }
       if (senddata.description.length > 60) {
         return false;
@@ -479,8 +480,14 @@ export default defineComponent({
     const searchForList = () => {
       pageInfo.page = 1;
       const infos = { ...pageInfo };
-      infos.classification = Object.values(pageInfo.classification).join(',');
-      refreshServiceList(infos);
+      infos.classification =
+        typeof pageInfo.classification === 'object'
+          ? Object.values(pageInfo.classification).join(',')
+          : pageInfo.classification;
+      tableLoading.value = true;
+      refreshServiceList(infos).then(() => {
+        tableLoading.value = false;
+      });
     };
 
     const getSortClassification = (res: any) => {
@@ -626,6 +633,8 @@ export default defineComponent({
       validatorPass,
       getShowBool,
       tableLoading,
+      nameRef,
+      desRef,
     };
   },
 });
@@ -646,7 +655,6 @@ export default defineComponent({
     width: 100%;
     height: 40px;
     padding-bottom: 10px;
-    margin-bottom: 10px;
     display: flex;
     & > div {
       flex: 1;
@@ -662,8 +670,6 @@ export default defineComponent({
 .add-service-set {
   width: 400px;
   .el-input--small .el-input__inner {
-    height: 32px;
-    line-height: 32px;
     width: 400px;
   }
   .el-textarea__inner {

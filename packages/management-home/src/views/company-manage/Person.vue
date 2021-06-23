@@ -1,8 +1,15 @@
 <template>
   <div>
     <el-row>
-      <el-col :span="10" style="text-align: left">
-        <el-button type="primary" style="width: 90px" @click="openAddDialog" v-if="getShowBool('add')">新建</el-button>
+      <el-col :span="6" style="text-align: left" class="page_head-menu">
+        <el-button
+          icon="el-icon-plus"
+          type="primary"
+          style="width: 90px"
+          @click="openAddDialog"
+          v-if="getShowBool('add')"
+          >新建</el-button
+        >
         <el-button @click="handleUpdateStatus(0)" :disabled="!multipleSelection.length" v-if="getShowBool('update')"
           >启用</el-button
         >
@@ -13,8 +20,9 @@
           >删除</el-button
         >
       </el-col>
-      <el-col :offset="10" :span="4" style="text-align: right">
+      <el-col :offset="8" :span="10" style="text-align: right">
         <el-input
+          style="width: 300px"
           placeholder="请输入姓名"
           suffix-icon="el-icon-search"
           @input="filterAccount"
@@ -23,41 +31,43 @@
       </el-col>
     </el-row>
     <el-row style="background: #fff">
-      <el-table :data="tableData" style="width: 100%" @selection-change="selChange" v-loading="loading">
-        <el-table-column type="selection" width="45" v-if="getShowBool('update') || getShowBool('delete')" />
-        <el-table-column type="index" label="序号" width="50" />
-        <el-table-column label="登录账号" prop="userName"></el-table-column>
-        <el-table-column label="姓名" prop="displayName"></el-table-column>
-        <el-table-column label="手机" prop="phoneNumber"></el-table-column>
-        <el-table-column label="邮箱" prop="primaryMail"></el-table-column>
-        <el-table-column label="账户状态" prop="status">
-          <template #default="scope">{{ UserStatus[scope.row.status] }}</template>
-        </el-table-column>
-        <el-table-column label="激活状态" prop="activate">
-          <template #default="scope">{{ scope.row.activate ? '已激活' : '未激活' }}</template>
-        </el-table-column>
-        <el-table-column label="部门" prop="deptName"></el-table-column>
-        <el-table-column label="操作" width="300">
-          <template #default="scope">
-            <el-button type="primary" size="mini" @click="openEditDialog(scope.row)" v-if="getShowBool('update')"
-              >编辑</el-button
-            >
-            <el-button type="primary" size="mini" @click="handleResetPasswd(scope.row)" v-if="getShowBool('update')"
-              >重置密码</el-button
-            >
-          </template>
-        </el-table-column>
-      </el-table>
-      <packaged-pagination
-        v-if="total"
-        :current-page="searchProps.page"
-        :page-size="searchProps.pageSize"
-        :page-sizes="[10, 20, 50]"
-        layout="sizes, prev, pager, next, jumper"
-        :total="total"
-        @size-change="handlePageSizeChange"
-        @current-change="handlePageChange"
-      ></packaged-pagination>
+      <ListWrap :loading="loading" :empty="!total" :handleCreate="openAddDialog" :hasCreateAuth="getShowBool('add')">
+        <el-table :data="tableData" style="width: 100%" @selection-change="selChange" element-loading-text="加载中...">
+          <el-table-column type="selection" width="45" v-if="getShowBool('update') || getShowBool('delete')" />
+          <el-table-column type="index" label="序号" width="50" />
+          <el-table-column label="登录账号" prop="userName"></el-table-column>
+          <el-table-column label="姓名" prop="displayName"></el-table-column>
+          <el-table-column label="手机" prop="phoneNumber"></el-table-column>
+          <el-table-column label="邮箱" prop="primaryMail"></el-table-column>
+          <el-table-column label="账户状态" prop="status">
+            <template #default="scope">{{ UserStatus[scope.row.status] }}</template>
+          </el-table-column>
+          <el-table-column label="激活状态" prop="activate">
+            <template #default="scope">{{ scope.row.activate ? '已激活' : '未激活' }}</template>
+          </el-table-column>
+          <el-table-column label="部门" prop="deptName"></el-table-column>
+          <el-table-column label="操作" width="300">
+            <template #default="scope">
+              <el-button type="text" size="mini" @click="openEditDialog(scope.row)" v-if="getShowBool('update')"
+                >编辑</el-button
+              >
+              <el-button type="text" size="mini" @click="handleResetPasswd(scope.row)" v-if="getShowBool('update')"
+                >重置密码</el-button
+              >
+            </template>
+          </el-table-column>
+        </el-table>
+        <packaged-pagination
+          v-if="total"
+          :current-page="searchProps.page"
+          :page-size="searchProps.pageSize"
+          :page-sizes="[10, 20, 50]"
+          layout="sizes, prev, pager, next, jumper"
+          :total="total"
+          @size-change="handlePageSizeChange"
+          @current-change="handlePageChange"
+        ></packaged-pagination>
+      </ListWrap>
     </el-row>
     <AddPerson ref="refAddDialog" />
     <ResetPassword ref="resetPassword" />
@@ -67,7 +77,7 @@
 <script lang="ts">
 import { defineComponent, ref, reactive, toRefs, Ref, provide, getCurrentInstance } from 'vue';
 import { debounce } from 'lodash';
-import { ElMessageBox, ElMessage } from 'element-plus';
+import { ElMessageBox } from 'element-plus';
 import AddPerson from './components/AddPerson.vue';
 import PackagedPagination from '@/components/pagination/Index.vue';
 import { getShowBool } from '@/utils/permission-show-module';
@@ -189,28 +199,21 @@ export default defineComponent({
 
     // 删除
     const handleDel = (): void => {
-      ElMessageBox.confirm(`是否删除已选项?`, '提示', {
-        confirmButtonText: '确定',
+      ElMessageBox.confirm(`确定删除当前所选的人员?`, '提示', {
+        confirmButtonText: '确定删除',
         cancelButtonText: '取消',
         type: 'warning',
-      })
-        .then(async () => {
-          const ids = tableState.multipleSelection.map((item) => item.id);
-          // 待传参
-          const { code } = await delUser({ ids });
-          if (code === ResCode.Success) {
-            msgTips('success', '删除成功');
-            getList();
-          } else {
-            msgTips('error', '删除失败');
-          }
-        })
-        .catch(() => {
-          ElMessage({
-            type: 'info',
-            message: '已取消操作',
-          });
-        });
+      }).then(async () => {
+        const ids = tableState.multipleSelection.map((item) => item.id);
+        // 待传参
+        const { code } = await delUser({ ids });
+        if (code === ResCode.Success) {
+          msgTips('success', '删除成功');
+          getList();
+        } else {
+          msgTips('error', '删除失败');
+        }
+      });
     };
 
     // 新建
@@ -279,3 +282,16 @@ export default defineComponent({
   },
 });
 </script>
+<style lang="scss">
+.page_head-menu {
+  .el-button + .el-button {
+    margin-left: 5px;
+  }
+  .el-button:nth-child(2) {
+    margin-left: 10px;
+  }
+}
+.el-row {
+  margin-bottom: 10px;
+}
+</style>

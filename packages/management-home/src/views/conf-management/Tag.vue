@@ -2,12 +2,14 @@
   <div>
     <el-row>
       <el-col :span="6" style="text-align: left">
-        <el-button type="primary" @click="add" style="width: 90px" v-if="getShowBool('add')">新增</el-button>
+        <el-button type="primary" @click="add" icon="el-icon-plus" style="width: 90px" v-if="getShowBool('add')"
+          >新建</el-button
+        >
         <el-button @click="groupRemove()" :disabled="disabled" v-if="getShowBool('delete')">删除</el-button>
       </el-col>
       <el-col :offset="8" :span="10" style="text-align: right">
         <el-input
-          style="width: 500px"
+          style="width: 300px"
           placeholder="请输入标签名称"
           suffix-icon="el-icon-search"
           @input="filterTag"
@@ -16,38 +18,46 @@
       </el-col>
     </el-row>
     <el-row style="background: #fff">
-      <el-table :data="tagList" @selection-change="handleSelectionChange" @sort-change="sortChange" v-loading="loading">
-        <el-table-column type="selection" width="45" v-if="getShowBool('delete')" />
-        <el-table-column type="index" label="序号" width="50" />
-        <el-table-column
-          v-for="col in columns"
-          :key="col.prop"
-          :prop="col.prop"
-          :label="col.label"
-          sortable="custom"
-        ></el-table-column>
-        <el-table-column prop="operation" width="220" label="操作">
-          <template #default="{ row }">
-            <!-- <el-button type="primary" @click="detail(row)" size="mini">详情</el-button> -->
-            <!--            <el-button type="primary" @click="disabled(row)" size="mini" v-if="getShowBool('update')">禁用</el-button>-->
-            <!-- <el-button type="primary" @click="enabled(row)" size="mini">启用</el-button> -->
-            <el-button type="primary" @click="rename(row)" size="mini" v-if="getShowBool('update')">编辑</el-button>
-            <el-button @click="groupRemove([row.id])" v-if="getShowBool('delete')">删除</el-button>
-          </template>
-        </el-table-column>
-      </el-table>
-      <packaged-pagination
-        v-if="total"
-        :current-page="page"
-        :page-size="pageSize"
-        :page-sizes="[10, 20, 50]"
-        layout="sizes, prev, pager, next, jumper"
-        :total="total"
-        @size-change="handlePageSizeChange"
-        @current-change="handlePageChange"
-      ></packaged-pagination>
+      <list-wrap
+        :in-project="false"
+        :loading="loading"
+        :empty="!total"
+        :handleCreate="add"
+        :hasCreateAuth="getShowBool('add')"
+      >
+        <el-table :data="tagList" @selection-change="handleSelectionChange" @sort-change="sortChange">
+          <el-table-column type="selection" width="45" v-if="getShowBool('delete')" />
+          <el-table-column type="index" label="序号" width="50" />
+          <el-table-column
+            v-for="col in columns"
+            :key="col.prop"
+            :prop="col.prop"
+            :label="col.label"
+            sortable="custom"
+          ></el-table-column>
+          <el-table-column prop="operation" width="220" label="操作">
+            <template #default="{ row }">
+              <!-- <el-button type="primary" @click="detail(row)" size="mini">详情</el-button> -->
+              <!--            <el-button type="primary" @click="disabled(row)" size="mini" v-if="getShowBool('update')">禁用</el-button>-->
+              <!-- <el-button type="primary" @click="enabled(row)" size="mini">启用</el-button> -->
+              <el-button type="text" @click="rename(row)" size="mini" v-if="getShowBool('update')">编辑</el-button>
+              <el-button @click="groupRemove([row.id])" v-if="getShowBool('delete')" type="text">删除</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+        <packaged-pagination
+          v-if="total"
+          :current-page="page"
+          :page-size="pageSize"
+          :page-sizes="[10, 20, 50]"
+          layout="sizes, prev, pager, next, jumper"
+          :total="total"
+          @size-change="handlePageSizeChange"
+          @current-change="handlePageChange"
+        ></packaged-pagination>
+      </list-wrap>
     </el-row>
-    <el-dialog :title="dialogTitle" v-model="dialogVisible">
+    <el-dialog :title="dialogTitle" v-model="dialogVisible" width="500px">
       <el-form :model="form" :rules="rules" ref="formRef">
         <el-form-item
           label="标签名称"
@@ -55,15 +65,17 @@
           prop="name"
           :rules="[
             { required: true, message: '内容不能为空', trigger: 'blur' },
-            { min: 1, max: 25, message: '内容过长，最多不能超过25个字符', trigger: 'blur' },
+            { min: 1, max: 20, message: '内容过长，最多不能超过20个字符', trigger: 'blur' },
           ]"
         >
           <el-input v-model.trim="form.name" autocomplete="off"></el-input>
         </el-form-item>
       </el-form>
       <template #footer>
-        <el-button type="primary" @click="save()" size="mini">确认</el-button>
-        <el-button @click="cancel()">取消</el-button>
+        <div class="dialog-footer">
+          <el-button type="primary" @click="save()" size="mini">确定</el-button>
+          <el-button @click="cancel()">取消</el-button>
+        </div>
       </template>
     </el-dialog>
   </div>
@@ -178,33 +190,26 @@ export default defineComponent({
     };
     const groupRemove = async (ids = selection) => {
       ElMessageBox.confirm(`是否删除选中标签?`, '提示', {
-        confirmButtonText: '确定',
+        confirmButtonText: '确定删除',
         cancelButtonText: '取消',
         type: 'warning',
-      })
-        .then(async () => {
-          loading.value = true;
-          const { code } = await deleteTags({ ids });
-          loading.value = false;
-          if (code === 0) {
-            (instance as any).proxy.$message({
-              type: 'success',
-              message: '删除成功',
-            });
-            getTagList();
-          } else {
-            (instance as any).proxy.$message({
-              type: 'error',
-              message: '删除失败',
-            });
-          }
-        })
-        .catch(() => {
-          ElMessage({
-            type: 'info',
-            message: '已取消操作',
+      }).then(async () => {
+        loading.value = true;
+        const { code } = await deleteTags({ ids });
+        loading.value = false;
+        if (code === 0) {
+          (instance as any).proxy.$message({
+            type: 'success',
+            message: '删除成功',
           });
-        });
+          getTagList();
+        } else {
+          (instance as any).proxy.$message({
+            type: 'error',
+            message: '删除失败',
+          });
+        }
+      });
     };
 
     // 编辑弹窗
@@ -289,4 +294,14 @@ export default defineComponent({
 });
 </script>
 
-<style lang="sass" scoped></style>
+<style lang="scss" scoped>
+.dialog-footer {
+  width: 100%;
+  display: block;
+  text-align: center;
+  margin-bottom: 20px;
+}
+.el-row {
+  margin-bottom: 10px;
+}
+</style>
