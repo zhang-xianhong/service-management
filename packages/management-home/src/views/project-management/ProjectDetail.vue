@@ -196,25 +196,32 @@ export default {
         userList.value = allUsers.value;
       }
     };
-    const findParent = (arr: any, id: any, parentNode: any): any => {
-      console.log(arr, id, parentNode);
-      for (let i = 0; i <= arr.length; i++) {
-        if (arr[i].id === id) {
+
+    const findParent = (data: any, id: any, parentNode: any): any => {
+      let result: any = {};
+      if (!data) {
+        return;
+      }
+      for (const item of data) {
+        if (item.id === id) {
           return parentNode;
         }
-        if (arr[i].children) {
-          return findParent(arr[i].children, id, arr[i]);
+        if (item.children && item.children.length > 0) {
+          result = findParent(item.children, id, item);
+          if (result.id) {
+            return result;
+          }
         }
-        return parentNode;
       }
+      return result;
     };
     const removeUser = (row: any) => {
-      const group = findParent(treeData.value, row.id, null);
+      const group = findParent(treeData.value[0].children, row.id, null);
       const rowId =
         userTreeRef.value.getCurrentKey() === row.id
           ? group.id || treeData.value[0].id
           : userTreeRef.value.getCurrentKey();
-      console.log(rowId, 'this is id');
+      console.log(rowId, 'this is id', group);
       ElMessageBox.confirm(`是否将 ${row.displayName} 从 ${group.label || treeData.value[0].label} 中移除？`, '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -240,7 +247,7 @@ export default {
         projectDetail.value = projectInfo;
         treeData.value[0].label = data.name;
         const userArr = projectInfo.owners.map((x: any) => x.userId);
-        include.value = userArr.includes(userInfo.value.userId);
+        include.value = userInfo.value.admin || userArr.includes(userInfo.value.userId);
       }
     };
     getProjectInfo();

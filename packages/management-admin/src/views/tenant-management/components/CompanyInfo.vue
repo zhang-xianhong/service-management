@@ -460,6 +460,9 @@ export default {
 .companyInfo-form {
   width: 100%;
 }
+.form-item {
+  word-break: break-all;
+}
 .info-icon {
   &:hover {
     &::after {
