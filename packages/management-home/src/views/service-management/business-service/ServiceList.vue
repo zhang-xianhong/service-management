@@ -134,6 +134,7 @@
               v-model.trim="serviceDetail.name"
               placeholder="请输入英文名称，如'project1'，创建后无法修改"
               @blur="checkEnglishName"
+              ref="nameRef"
             >
               <template #prepend>srv-</template>
             </el-input>
@@ -150,6 +151,7 @@
             <el-input
               v-model.trim="serviceDetail.description"
               placeholder="请输入中文服务描述，如项'目管理服务'，创建后无法修改"
+              ref="desRef"
             ></el-input>
           </el-form-item>
           <el-form-item label="负责人" :label-width="labelWidth">
@@ -359,9 +361,13 @@ export default defineComponent({
         serviceDetail[x] = '';
       });
     }
+    const nameRef = ref(null as any);
+    const desRef = ref(null as any);
     function addServiceByForm() {
+      nameRef.value.handleBlur();
+      desRef.value.handleBlur();
       const senddata = { ...serviceDetail };
-      const ownerArr = senddata.owner.split(',');
+      const ownerArr = senddata.owner?.split(',') || '';
       senddata.tag = serviceDetail.tags ? serviceDetail.tags.join(',') : '';
       senddata.dependencies = serviceDetail.dependencies
         ? serviceDetail.dependencies.map((x: any) => ({
@@ -369,19 +375,11 @@ export default defineComponent({
           }))
         : [];
       if (!senddata.name) {
-        return ElMessage({
-          showClose: true,
-          message: '请输入服务名称',
-          type: 'error',
-        });
+        return;
       }
 
       if (senddata.name.length > 32) {
-        return ElMessage({
-          showClose: true,
-          message: '服务名称不得超过32个字符',
-          type: 'error',
-        });
+        return;
       }
 
       if (ownerArr.length > 10) {
@@ -390,18 +388,10 @@ export default defineComponent({
 
       const regux = /^[a-z0-9-]+(?<!-)$/;
       if (!regux.test(serviceDetail.name)) {
-        return ElMessage({
-          showClose: true,
-          message: '服务名称不符合命名规范',
-          type: 'error',
-        });
+        return;
       }
       if (!senddata.description) {
-        return ElMessage({
-          showClose: true,
-          message: '请输入服务描述',
-          type: 'error',
-        });
+        return;
       }
       if (senddata.description.length > 60) {
         return false;
@@ -643,6 +633,8 @@ export default defineComponent({
       validatorPass,
       getShowBool,
       tableLoading,
+      nameRef,
+      desRef,
     };
   },
 });
