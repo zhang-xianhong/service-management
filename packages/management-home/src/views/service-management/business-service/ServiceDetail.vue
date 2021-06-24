@@ -112,6 +112,7 @@
                   :classifications="classifications"
                   :id="currentServiceId"
                   v-if="reloadCom"
+                  @change-source="getServerInfo"
                 ></component>
               </keep-alive>
             </template>
@@ -556,6 +557,7 @@ export default {
       getShowBool,
       pageLoading,
       reloadCom,
+      getServerInfo,
     };
   },
 };
