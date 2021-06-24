@@ -102,11 +102,9 @@
                   <span>{{ UserStatus[scope.row.status] }}</span>
                 </template>
               </el-table-column>
-              <el-table-column label="操作" width="100">
+              <el-table-column label="操作" width="100" v-if="getShowBool('delete')">
                 <template #default="scope">
-                  <el-button type="text" size="mini" @click="handleDelPerson(scope.row)" v-if="getShowBool('delete')"
-                    >删除</el-button
-                  >
+                  <el-button type="text" size="mini" @click="handleDelPerson(scope.row)">删除</el-button>
                 </template>
               </el-table-column>
             </el-table>

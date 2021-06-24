@@ -35,7 +35,7 @@
         <el-table-column label="类型名称" prop="name" sortable></el-table-column>
         <el-table-column label="描述" prop="description" sortable></el-table-column>
         <!--      <el-table-column label="克隆源" prop="cloneBy" sortable></el-table-column>-->
-        <el-table-column label="操作" width="200">
+        <el-table-column label="操作" width="200" v-if="getShowBool('update') || getShowBool('delete')">
           <template #default="scope">
             <template v-if="!scope.row.isSystem">
               <el-button type="text" size="mini" @click="onEdit(scope.row)" v-if="getShowBool('update')"
