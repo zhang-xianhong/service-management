@@ -197,7 +197,7 @@ export default defineComponent({
 #success-btn {
   height: 16px;
   width: 16px;
-  border-radius: 50%;
+  border-radius: 50% !important;
   transform: translateY(-90%);
   min-height: 0px;
   display: inline-flex;
