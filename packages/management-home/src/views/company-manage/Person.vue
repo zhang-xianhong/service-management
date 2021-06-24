@@ -46,14 +46,10 @@
             <template #default="scope">{{ scope.row.activate ? '已激活' : '未激活' }}</template>
           </el-table-column>
           <el-table-column label="部门" prop="deptName"></el-table-column>
-          <el-table-column label="操作" width="300">
+          <el-table-column label="操作" width="300" v-if="getShowBool('update')">
             <template #default="scope">
-              <el-button type="text" size="mini" @click="openEditDialog(scope.row)" v-if="getShowBool('update')"
-                >编辑</el-button
-              >
-              <el-button type="text" size="mini" @click="handleResetPasswd(scope.row)" v-if="getShowBool('update')"
-                >重置密码</el-button
-              >
+              <el-button type="text" size="mini" @click="openEditDialog(scope.row)">编辑</el-button>
+              <el-button type="text" size="mini" @click="handleResetPasswd(scope.row)">重置密码</el-button>
             </template>
           </el-table-column>
         </el-table>

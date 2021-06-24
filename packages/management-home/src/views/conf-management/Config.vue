@@ -40,7 +40,11 @@
             </template>
           </el-table-column>
           <el-table-column label="配置版本" prop="version" width="100"></el-table-column>
-          <el-table-column label="操作" width="300">
+          <el-table-column
+            label="操作"
+            width="300"
+            v-if="getShowBool('update') || getShowBool('selectDetail') || getShowBool('delete')"
+          >
             <template #default="scope">
               <el-button type="text" size="mini" @click="onEdit(scope.row)" v-if="getShowBool('update')"
                 >编辑</el-button
