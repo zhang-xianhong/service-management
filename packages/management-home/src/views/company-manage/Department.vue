@@ -686,9 +686,6 @@ export default defineComponent({
       }
     }
   }
-  .dialog-footer {
-    text-align: center;
-  }
   .user-table {
     width: calc(100% - 320px);
     background: white;
@@ -713,5 +710,11 @@ export default defineComponent({
 }
 .el-row {
   margin-bottom: 10px;
+}
+.dialog-footer {
+  width: 100%;
+  display: block;
+  text-align: center;
+  margin-bottom: 20px;
 }
 </style>
