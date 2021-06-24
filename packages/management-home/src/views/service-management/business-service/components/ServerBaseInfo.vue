@@ -25,7 +25,7 @@
           v-model="classificationValue"
           :options="classifications"
           :show-all-levels="false"
-          :props="{ multiple: false, label: 'name', value: 'id' }"
+          :props="{ multiple: false, label: 'name', value: 'id', emitPath: false }"
           @change="selectClassification"
           filterable
           clearable
@@ -96,7 +96,7 @@ export default {
       default: () => [],
     },
   },
-  setup(props: { data: any; id: number; tags: any[]; classifications: any[] }) {
+  setup(props: { data: any; id: number; tags: any[]; classifications: any[] }, ctx: any) {
     getAllService();
     // 是否为显示模式标识，默认为true
     const isShowMode = ref(true);
@@ -153,15 +153,14 @@ export default {
       ownersName.value = value.ownersName;
     };
 
-    const { classificationName, classificationValue } = useClassifications(
-      formData.classification,
-      props.classifications,
-    );
+    const classData = useClassifications(formData.classification, props.classifications);
+    const classificationValue = ref(+formData.classification);
+    const classificationName = ref(classData.classificationName);
 
     // 分类选择
-    const selectClassification = (value: Array<Array<string>>) => {
-      // formData.classification = value.map((item: Array<string>) => item[item.length - 1])?.join(',');
-      formData.classification = value ? value.join(',') : '';
+    const selectClassification = (value: any) => {
+      formData.classification = `${value}`;
+      classificationValue.value = value;
     };
 
     const { tagValue, tagNames } = useTags(formData.tag, props.tags);
@@ -180,8 +179,7 @@ export default {
     const saveFormData = async () => {
       console.log(formData);
       const data = { ...formData };
-      const ownerArr = data.owner.split(',');
-      if (ownerArr.length > 10) {
+      if (data.owners.length > 10) {
         return ElMessage.warning('负责人最多支持10个');
       }
       data.dependencies = formData.dependencies.map((x: any) => ({ id: x }));
@@ -190,6 +188,7 @@ export default {
         isShowMode.value = true;
         useTags(formData.tag, props.tags);
         useClassifications(formData.classification, props.classifications);
+        ctx.emit('changeSource');
       }
     };
 

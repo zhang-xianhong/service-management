@@ -26,7 +26,7 @@
     </div>
     <template #footer>
       <span class="dialog-footer">
-        <el-button type="primary" @click="submit">保存</el-button>
+        <el-button type="primary" @click="submit" :disabled="disableSubmit">保存</el-button>
         <el-button @click="cancel">返回</el-button>
       </span>
     </template>
@@ -34,8 +34,8 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, ref, watch, getCurrentInstance } from 'vue';
-import { useResetOptions } from './ResetOptions';
+import { defineComponent, reactive, ref, watch, getCurrentInstance, computed } from 'vue';
+import { useResetOptions, ResetMethods } from './ResetOptions';
 import { generatePasswd, copyFun } from './utils';
 import { resetPassWd, sendMailForResetPassword, MailType } from '@/api/company/users';
 import { PasswordRules, HELP_MSG } from '@/utils/validate';
@@ -141,24 +141,24 @@ export default defineComponent({
       visible.value = false;
     };
     const submit = async () => {
+      visible.value = false;
       try {
         let msg = '';
-        if (configuraion.isRandom) {
+        if (configuraion.current === ResetMethods.RandomPassword) {
           // 提交随机密码
           msg = await savePassword();
-        } else {
+        } else if (configuraion.current === ResetMethods.SendMail) {
           // 发送重置邮件
           msg = await sendMail();
         }
         msgTips('success', msg);
       } catch (error) {
-        console.log(error);
         msgTips('error', (error as Error).message);
       } finally {
         visible.value = false;
       }
     };
-
+    const disableSubmit = computed(() => configuraion.current === '');
     const cancel = () => {
       close();
     };
@@ -175,6 +175,7 @@ export default defineComponent({
       handleCopy,
       helper: HELP_MSG,
       resetForm,
+      disableSubmit,
     };
   },
 });
