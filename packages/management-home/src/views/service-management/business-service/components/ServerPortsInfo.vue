@@ -325,6 +325,28 @@ export default defineComponent({
 
     // 保存接口修改
     const updateApis = async () => {
+      console.log(' tableData.valu', tableData.value);
+      const reqData = tableData.value.filter((item: any) => item.isSystem === 0);
+      const res = reqData.find((item: any) => {
+        const { modelId, method, name } = item;
+        return typeof modelId === 'undefined' || method === '' || name === '';
+      });
+      if (res) {
+        let msg = '';
+        const { method, name } = res;
+        if (name.trim() === '') {
+          msg = '接口名称不能为空！';
+        } else if (method === '') {
+          msg = '请求方式不能为空！';
+        } else {
+          msg = '数据对象不能为空！';
+        }
+        (instance as any).proxy.$message({
+          type: 'warning',
+          message: msg,
+        });
+        return;
+      }
       const { code } = await updateServiceApis(
         {
           apis: tableData.value.filter((item: any) => item.name !== '' && item.isSystem === 0),
