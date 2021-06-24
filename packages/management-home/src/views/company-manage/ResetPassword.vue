@@ -141,6 +141,7 @@ export default defineComponent({
       visible.value = false;
     };
     const submit = async () => {
+      visible.value = false;
       try {
         let msg = '';
         if (configuraion.current === ResetMethods.RandomPassword) {
@@ -152,7 +153,6 @@ export default defineComponent({
         }
         msgTips('success', msg);
       } catch (error) {
-        console.log(error);
         msgTips('error', (error as Error).message);
       } finally {
         visible.value = false;
