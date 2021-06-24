@@ -50,7 +50,7 @@
           <template v-else>{{ scope.row.description }}</template>
         </template>
       </el-table-column>
-      <el-table-column label="操作" width="120">
+      <el-table-column label="操作" width="120" v-if="getShowBool('update')">
         <template #default="scope">
           <template v-if="!scope.row.isSystem">
             <a class="operation-link" @click="openParamsModel(scope.$index, scope.row)">参数</a>
@@ -60,7 +60,7 @@
         </template>
       </el-table-column>
     </el-table>
-    <div class="ports-configuration__operations">
+    <div class="ports-configuration__operations" v-if="getShowBool('update')">
       <el-button type="primary" @click="updateApis">保存</el-button>
       <el-button @click="cancelChange">取消</el-button>
     </div>
@@ -143,6 +143,7 @@
 import { defineComponent, ref, reactive, watch, getCurrentInstance, SetupContext, computed } from 'vue';
 import { getServiceApis, updateServiceApis } from '@/api/servers';
 import _ from 'lodash';
+import { getShowBool } from '@/utils/permission-show-module';
 
 // 参数类型枚举
 enum ParamTypeEnum {
@@ -365,6 +366,7 @@ export default defineComponent({
       dataTypeOptions,
       tableRowClassName,
       currentParams,
+      getShowBool,
     };
   },
 });
