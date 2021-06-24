@@ -30,13 +30,13 @@
     <el-dialog title="修改密码" v-model="dialogFormVisible" width="500px" destroy-on-close>
       <el-form :model="passForm" ref="formRef" :rules="formRules">
         <el-form-item label="原始密码" label-width="80px" prop="oldPassword">
-          <el-input v-model="passForm.oldPassword" autocomplete="off" type="password"></el-input>
+          <el-input v-model="passForm.oldPassword" autocomplete="off" type="password" show-password></el-input>
         </el-form-item>
         <el-form-item label="新密码" label-width="80px" prop="newPassword">
-          <el-input v-model="passForm.newPassword" autocomplete="off" type="password"></el-input>
+          <el-input v-model="passForm.newPassword" autocomplete="off" type="password" show-password></el-input>
         </el-form-item>
         <el-form-item label="确认密码" label-width="80px" prop="confirmPassword">
-          <el-input v-model="passForm.confirmPassword" autocomplete="off" type="password"></el-input>
+          <el-input v-model="passForm.confirmPassword" autocomplete="off" type="password" show-password></el-input>
         </el-form-item>
       </el-form>
       <template #footer>
