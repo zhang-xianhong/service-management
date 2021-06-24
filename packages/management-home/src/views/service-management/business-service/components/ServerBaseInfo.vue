@@ -55,8 +55,8 @@
           <el-option v-for="item in computedServices" :key="item.id" :label="item.name" :value="item.id"></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item>
-        <el-button v-if="isShowMode" type="primary" @click="modifyFormData">修改</el-button>
+      <el-form-item v-if="getShowBool('update')">
+        <el-button v-if="isShowMode" type="primary" @click="modifyFormData">编辑</el-button>
         <el-button v-else type="primary" @click="saveFormData">保存</el-button>
       </el-form-item>
     </el-form>
@@ -71,6 +71,7 @@ import { updateService } from '@/api/servers';
 import { allService, getAllService } from '../utils/service-data-utils';
 import OwnerSelect from '@/components/owners-select/Index.vue';
 import { ElMessage } from 'element-plus';
+import { getShowBool } from '@/utils/permission-show-module';
 
 export default {
   name: 'ServerBaseInfo',
@@ -206,6 +207,7 @@ export default {
       selectTag,
       modifyFormData,
       saveFormData,
+      getShowBool,
     };
   },
 };

@@ -8,27 +8,29 @@
     <div class="mask" v-if="maskText">{{ maskText }}</div>
     <div class="detail">
       <el-row class="detail__head">
-        <el-col :span="16" v-if="getShowBool('init')">
-          <el-button
-            v-for="(button, index) in buttons"
-            :key="index"
-            :type="button.type || undefined"
-            v-on="button.eventOption"
-            :disabled="!modelList.tables.length || button.disabled"
-            :style="button.style"
-          >
-            {{ button.label }}
-          </el-button>
-          <span v-if="!modelList.tables.length && pageLoading" style="color: red; font-size: 12px; margin-left: 10px"
-            >请至少创建一个数据对象</span
-          >
+        <el-col :span="16">
+          <div v-if="getShowBool('init')">
+            <el-button
+              v-for="(button, index) in buttons"
+              :key="index"
+              :type="button.type || undefined"
+              v-on="button.eventOption"
+              :disabled="!modelList.tables.length || button.disabled"
+              :style="button.style"
+            >
+              {{ button.label }}
+            </el-button>
+            <span v-if="!modelList.tables.length && pageLoading" style="color: red; font-size: 12px; margin-left: 10px"
+              >请至少创建一个数据对象</span
+            >
+          </div>
         </el-col>
         <el-col :span="8" class="detail-operation">
           <div class="detail-status">
             <span :style="{ background: serverStatusInfo.color }" class="detail-status__icon"></span>
             <span :style="{ color: serverStatusInfo.color }">{{ serverStatusInfo.label }}</span>
           </div>
-          <div class="detail-icons" v-if="getShowBool('update')">
+          <div class="detail-icons">
             <!-- 服务详情 -->
             <el-tooltip effect="light" content="服务详情" placement="bottom">
               <svg-icon
