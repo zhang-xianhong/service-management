@@ -35,16 +35,16 @@
             <el-checkbox v-model="scope.row.isIndex" :disabled="isFieldDisabled(scope)"></el-checkbox>
           </template>
         </el-table-column>
-        <el-table-column prop="isParticipleSupport" label="分词" width="60">
-          <template #default="scope">
-            <el-checkbox v-model="scope.row.isParticipleSupport" :disabled="isFieldDisabled(scope)"></el-checkbox>
-          </template>
-        </el-table-column>
-        <el-table-column prop="isPinyinSupport" label="拼音" width="60">
-          <template #default="scope">
-            <el-checkbox v-model="scope.row.isPinyinSupport" :disabled="isFieldDisabled(scope)"></el-checkbox>
-          </template>
-        </el-table-column>
+        <!--        <el-table-column prop="isParticipleSupport" label="分词" width="60">-->
+        <!--          <template #default="scope">-->
+        <!--            <el-checkbox v-model="scope.row.isParticipleSupport" :disabled="isFieldDisabled(scope)"></el-checkbox>-->
+        <!--          </template>-->
+        <!--        </el-table-column>-->
+        <!--        <el-table-column prop="isPinyinSupport" label="拼音" width="60">-->
+        <!--          <template #default="scope">-->
+        <!--            <el-checkbox v-model="scope.row.isPinyinSupport" :disabled="isFieldDisabled(scope)"></el-checkbox>-->
+        <!--          </template>-->
+        <!--        </el-table-column>-->
         <el-table-column prop="operations" label="操作" width="180" v-if="getShowBool('add')">
           <template #default="scope">
             <a @click="add(scope.$index)" class="operator" v-if="scope.$index === 0">添加</a>
