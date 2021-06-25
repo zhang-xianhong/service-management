@@ -150,8 +150,8 @@
       </div>
       <template #footer>
         <span class="dialog-footer">
-          <el-button type="primary" @click="submitConfigForm">保存</el-button>
-          <el-button @click="closeDialog">返回</el-button>
+          <el-button type="primary" @click="submitConfigForm">确定</el-button>
+          <el-button @click="closeDialog">取消</el-button>
         </span>
       </template>
     </el-dialog>
@@ -710,5 +710,11 @@ export default defineComponent({
 }
 .el-row {
   margin-bottom: 10px;
+}
+.dialog-footer {
+  width: 100%;
+  display: block;
+  text-align: center;
+  margin-bottom: 20px;
 }
 </style>
