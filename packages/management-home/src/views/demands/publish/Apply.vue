@@ -244,7 +244,7 @@
       <template #footer>
         <span class="dialog-footer">
           <el-button type="primary" @click="submitpublishForm">确定</el-button>
-          <el-button @click="closepublishForm">关闭</el-button>
+          <el-button @click="closepublishForm">取消</el-button>
         </span>
       </template>
     </el-dialog>

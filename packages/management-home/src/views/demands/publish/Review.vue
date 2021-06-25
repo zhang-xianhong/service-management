@@ -156,9 +156,9 @@
       </div>
       <template #footer>
         <span class="dialog-footer">
-          <el-button type="primary" @click="submitpublishForm(true)">通 过</el-button>
+          <el-button type="primary" @click="submitpublishForm(true)">通过</el-button>
           <el-button @click="submitpublishForm(false)">不通过</el-button>
-          <el-button @click="closepublishForm">关 闭</el-button>
+          <el-button @click="closepublishForm">取消</el-button>
         </span>
       </template>
     </el-dialog>
