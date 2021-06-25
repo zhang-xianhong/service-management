@@ -1,8 +1,9 @@
 <template>
   <div class="general">
-    <el-row>
-      <el-col :offset="18" :span="6" style="text-align: right">
+    <el-row style="margin-bottom: 10px;">
+      <el-col :offset="18" :span="6" style="text-align: right;">
         <el-input
+          style="max-width: 300px; margin-left: auto"
           placeholder="请输入服务名称"
           suffix-icon="el-icon-search"
           @input="filterpublish"

@@ -1,6 +1,6 @@
 <template>
   <div class="general">
-    <el-row>
+    <el-row style="margin-bottom: 10px;">
       <el-col :span="6" style="text-align: left">
         <el-button
           icon="el-icon-plus"
@@ -13,6 +13,7 @@
       </el-col>
       <el-col :offset="12" :span="6" style="text-align: right">
         <el-input
+          style="max-width: 300px; margin-left: auto"
           placeholder="请输入服务名称"
           suffix-icon="el-icon-search"
           @input="filterpublish"
@@ -242,8 +243,8 @@
       </div>
       <template #footer>
         <span class="dialog-footer">
-          <el-button type="primary" @click="submitpublishForm">提 交</el-button>
-          <el-button @click="closepublishForm">关 闭</el-button>
+          <el-button type="primary" @click="submitpublishForm">确定</el-button>
+          <el-button @click="closepublishForm">关闭</el-button>
         </span>
       </template>
     </el-dialog>
