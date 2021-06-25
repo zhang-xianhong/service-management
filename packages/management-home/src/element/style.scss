@@ -18,10 +18,10 @@ $--color-primary: #006eff !default;
 .el-button {
   border-radius: 0 !important;
 }
-.el-button--primary {
-  background-color: #006eff !important;
-  border-color: #006eff !important;
-}
+// .el-button--primary {
+//   background-color: #006eff !important;
+//   border-color: #006eff !important;
+// }
 // confirm 框的样式覆盖
 .el-message-box{
   padding: 20px 5px;
@@ -46,6 +46,8 @@ $--color-primary: #006eff !default;
     }
     .el-button--primary{
       color: #fff;
+      background-color: #006eff;
+      border-color: #006eff;
     }
   }
 }
