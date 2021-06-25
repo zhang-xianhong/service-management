@@ -1,9 +1,10 @@
 <template>
   <div class="general">
-    <el-row>
-      <el-col :offset="18" :span="6" style="text-align: right">
+    <el-row style="margin-bottom: 10px;">
+      <el-col :offset="18" :span="6" style="text-align: right;">
         <el-input
-          placeholder="请输入服务名称"
+          style="max-width: 300px; margin-left: auto"
+          placeholder="请输入名称"
           suffix-icon="el-icon-search"
           @input="filterpublish"
           v-model="searchProps.keyword"
@@ -155,9 +156,9 @@
       </div>
       <template #footer>
         <span class="dialog-footer">
-          <el-button type="primary" @click="submitpublishForm(true)">通 过</el-button>
+          <el-button type="primary" @click="submitpublishForm(true)">通过</el-button>
           <el-button @click="submitpublishForm(false)">不通过</el-button>
-          <el-button @click="closepublishForm">关 闭</el-button>
+          <el-button @click="closepublishForm">取消</el-button>
         </span>
       </template>
     </el-dialog>
