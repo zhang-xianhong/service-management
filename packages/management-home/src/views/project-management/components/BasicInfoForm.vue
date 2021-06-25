@@ -64,7 +64,7 @@
       </el-form-item>
     </el-form>
     <div style="text-align: center" v-if="editMode">
-      <el-button @click="save" type="primary">保存</el-button>
+      <el-button @click="save" type="primary">确定</el-button>
       <el-button @click="cancel">取消</el-button>
     </div>
   </div>

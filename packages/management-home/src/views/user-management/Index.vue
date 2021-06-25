@@ -15,7 +15,7 @@
             <template v-if="index !== 4">
               <el-button type="text" v-if="!statusArr[index]" @click="checkStatus(index)">修改</el-button>
               <span v-else>
-                <el-button type="text" @click="save(index, item)">保存</el-button>
+                <el-button type="text" @click="save(index, item)">确定</el-button>
                 <el-button type="text" @click="cancel(index, item)">取消</el-button>
               </span>
             </template>
@@ -41,7 +41,7 @@
       </el-form>
       <template #footer>
         <span class="dialog-footer" style="width: 100%; text-align: center; display: inline-block">
-          <el-button type="primary" @click="sendPass">保存</el-button>
+          <el-button type="primary" @click="sendPass">确定</el-button>
           <el-button @click="dialogFormVisible = false">返回</el-button>
         </span>
       </template>
@@ -64,6 +64,7 @@ export default defineComponent({
     const statusArr = ref([false, false, false, false, false]);
     const props = ['userName', 'displayName', 'phoneNumber', 'primaryMail', 'password'];
     const labels = ['用户账号', '用户姓名', '联系电话', '电子邮箱', '用户密码'];
+    // const rulesArr = [[], [{ require: true, trigger: 'blur', message: '请输入用户名称' }, {}]];
 
     getUserProfile().then((res) => {
       res.data.password = '******';
@@ -81,7 +82,13 @@ export default defineComponent({
         return ElMessage.error(`${labels[id]} 不得为空！`);
       }
       if (userSetInfo.displayName.length > 20) {
-        return ElMessage.warning('用户姓名不能超过20个字符');
+        return ElMessage.error('用户姓名不能超过20个字符');
+      }
+      if (id === 2) {
+        const reg = /^1[3|4|5|7|8][0-9]\d{8}$/;
+        if (!reg.test(userInfo[prop])) {
+          return ElMessage.error('请输入正确的电话号码');
+        }
       }
       const item = {} as any;
       item[prop] = userSetInfo[prop];
@@ -110,6 +117,9 @@ export default defineComponent({
       formRef.value.validate((res: any) => {
         viva = res;
       });
+      if (!passForm.newPassword || !passForm.confirmPassword || passForm.confirmPassword !== passForm.newPassword) {
+        return false;
+      }
       if (viva) {
         updateUserPassword({ ...passForm }).then((res) => {
           dialogFormVisible.value = false;
@@ -195,6 +205,7 @@ export default defineComponent({
       formRules,
       formRef,
       tenantDetail,
+      // rulesArr,
     };
   },
 });

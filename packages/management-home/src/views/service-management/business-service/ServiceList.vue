@@ -15,7 +15,7 @@
 
       <el-input
         placeholder="请输入服务名称"
-        style="max-width: 300px; margin-left: auto"
+        style="max-width: 300px; margin-left: auto;"
         v-model="pageInfo.keyword"
         suffix-icon="el-icon-search"
         @input="searchForList"

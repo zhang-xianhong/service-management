@@ -61,7 +61,7 @@
       </el-table-column>
     </el-table>
     <div class="ports-configuration__operations" v-if="getShowBool('update')">
-      <el-button type="primary" @click="updateApis">保存</el-button>
+      <el-button type="primary" @click="updateApis">确定</el-button>
       <el-button @click="cancelChange">取消</el-button>
     </div>
   </div>

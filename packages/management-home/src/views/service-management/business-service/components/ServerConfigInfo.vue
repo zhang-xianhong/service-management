@@ -43,7 +43,7 @@
             <a class="operation-link" @click="deleteItem(scope.row)">删除</a>
           </template>
           <template v-else>
-            <a class="operation-link" @click="saveModify(scope.row)">保存</a>
+            <a class="operation-link" @click="saveModify(scope.row)">确定</a>
             <a class="operation-link" @click="cancelModify(scope.$index)">取消</a>
           </template>
         </template>
@@ -79,8 +79,8 @@
       <!--      </el-form-item>-->
       <el-form-item>
         <template v-if="isEditable">
-          <el-button @click="submitDetailModify" type="primary">提交</el-button>
-          <el-button @click="closeDetailDialog">关闭</el-button>
+          <el-button @click="submitDetailModify" type="primary">确定</el-button>
+          <el-button @click="closeDetailDialog">取消</el-button>
         </template>
         <el-button v-else type="primary" @click="isEditable = true">编辑</el-button>
       </el-form-item>

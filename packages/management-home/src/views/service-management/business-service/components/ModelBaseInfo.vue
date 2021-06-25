@@ -49,7 +49,7 @@
       </el-form-item>
       <el-form-item>
         <el-button v-if="isShowMode" type="primary" @click="modifyFormData">修改</el-button>
-        <el-button v-else type="primary" @click="saveFormData">保存</el-button>
+        <el-button v-else type="primary" @click="saveFormData">确定</el-button>
       </el-form-item>
     </el-form>
   </div>

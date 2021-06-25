@@ -88,7 +88,7 @@
       </el-form-item>
     </el-form>
     <div class="dialog-footer">
-      <el-button type="primary" @click="submitAppCreate">保存</el-button>
+      <el-button type="primary" @click="submitAppCreate">确定</el-button>
       <el-button @click="closeAppCreate">取消</el-button>
     </div>
   </el-dialog>

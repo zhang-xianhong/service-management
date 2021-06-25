@@ -60,7 +60,7 @@
     </el-form>
     <div class="dialog-footer">
       <template v-if="getShowBool('update')">
-        <el-button v-if="isEditable" type="primary" @click="updateAppDetail">保存</el-button>
+        <el-button v-if="isEditable" type="primary" @click="updateAppDetail">确定</el-button>
         <el-button v-else type="primary" @click="isEditable = true">编辑</el-button>
       </template>
       <el-button @click="handleCloseDialog('cancel')">{{ isEditable ? '取消' : '关闭' }}</el-button>

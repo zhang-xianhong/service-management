@@ -160,7 +160,7 @@
         </div>
         <div class="dialog-footer">
           <el-button type="primary" style="margin-top: 20px" @click="enterLogs">确定</el-button>
-          <el-button style="margin-top: 20px" @click="clearSql">关闭</el-button>
+          <el-button style="margin-top: 20px" @click="clearSql">取消</el-button>
         </div>
       </el-dialog>
     </div>
