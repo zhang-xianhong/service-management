@@ -26,8 +26,8 @@
     </div>
     <template #footer>
       <span class="dialog-footer">
-        <el-button type="primary" @click="submit" :disabled="disableSubmit">保存</el-button>
-        <el-button @click="cancel">返回</el-button>
+        <el-button type="primary" @click="submit" :disabled="disableSubmit">确定</el-button>
+        <el-button @click="cancel">取消</el-button>
       </span>
     </template>
   </el-dialog>
