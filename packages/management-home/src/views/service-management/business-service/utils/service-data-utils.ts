@@ -61,7 +61,8 @@ export function refreshServiceList(payload = {} as any) {
         // @ts-ignore
         x.statusStr = statusMap[x.status];
         if (x.owners) {
-          x.ownerstr = x.owners
+          const sortable = x.owners.sort((a: any, b: any) => a.userId - b.userId);
+          x.ownerstr = sortable
             .map((x: any) => ownersMap.value[x.userId]?.displayName)
             .filter((x: any) => x)
             .join(',');

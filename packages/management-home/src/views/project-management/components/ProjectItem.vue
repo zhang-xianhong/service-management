@@ -91,7 +91,7 @@ export default defineComponent({
     };
     const changePic = () => {
       const ownerArr = props.dataObj.owners.map((x: any) => x.userId);
-      const includes = ownerArr.includes(userInfo.value.userId);
+      const includes = userInfo.value.admin || ownerArr.includes(userInfo.value.userId);
       if (props.updateOrNot && includes) {
         selectPic.value.click();
       } else {

@@ -8,7 +8,7 @@
         @click="openCreateDialog"
         v-if="getShowBool('add')"
         :disabled="!userProjectList.length"
-        >新增</el-button
+        >新建</el-button
       >
     </el-col>
     <el-col :span="6" :offset="12" style="text-align: right">
