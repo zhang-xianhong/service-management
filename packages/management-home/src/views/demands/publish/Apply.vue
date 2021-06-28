@@ -1,6 +1,6 @@
 <template>
   <div class="general">
-    <el-row style="margin-bottom: 10px;">
+    <el-row style="margin-bottom: 10px">
       <el-col :span="6" style="text-align: left">
         <el-button
           icon="el-icon-plus"
@@ -233,8 +233,8 @@
             <el-input
               v-model="publishForm.formData.description"
               type="textarea"
-              :rows="2"
-              maxlength="512"
+              :rows="8"
+              maxlength="1024"
               placeholder="请输入发布说明"
               show-word-limit
             ></el-input>

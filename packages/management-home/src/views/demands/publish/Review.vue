@@ -1,7 +1,7 @@
 <template>
   <div class="general">
-    <el-row style="margin-bottom: 10px;">
-      <el-col :offset="18" :span="6" style="text-align: right;">
+    <el-row style="margin-bottom: 10px">
+      <el-col :offset="18" :span="6" style="text-align: right">
         <el-input
           style="max-width: 300px; margin-left: auto"
           placeholder="请输入名称"
@@ -146,8 +146,8 @@
             <el-input
               v-model="publishForm.formData.auditInstructions"
               type="textarea"
-              :rows="4"
-              maxlength="512"
+              :rows="8"
+              maxlength="1024"
               placeholder="请输入审核说明"
               show-word-limit
             ></el-input>

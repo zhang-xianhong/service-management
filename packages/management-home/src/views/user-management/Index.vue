@@ -41,7 +41,7 @@
       </el-form>
       <template #footer>
         <span class="dialog-footer" style="width: 100%; text-align: center; display: inline-block">
-          <el-button type="primary" @click="sendPass">确定</el-button>
+          <el-button type="primary" @click="sendPass" :loading="passLoading">确定</el-button>
           <el-button @click="dialogFormVisible = false">返回</el-button>
         </span>
       </template>
@@ -59,6 +59,7 @@ import { getTenantDetail } from '@/api/tenant';
 export default defineComponent({
   name: 'UserManagement',
   setup() {
+    const passLoading = ref(false);
     const userSetInfo = reactive({} as any);
     const userRelease = reactive({} as any);
     const statusArr = ref([false, false, false, false, false]);
@@ -121,12 +122,18 @@ export default defineComponent({
         return false;
       }
       if (viva) {
-        updateUserPassword({ ...passForm }).then((res) => {
-          dialogFormVisible.value = false;
-          if (res.code === 0) {
-            ElMessage.success('修改成功');
-          }
-        });
+        passLoading.value = true;
+        updateUserPassword({ ...passForm })
+          .then((res) => {
+            if (res.code === 0) {
+              dialogFormVisible.value = false;
+              ElMessage.success('修改成功');
+            }
+            passLoading.value = false;
+          })
+          .catch(() => {
+            passLoading.value = false;
+          });
       }
     };
     // 初始密码校验
@@ -205,6 +212,7 @@ export default defineComponent({
       formRules,
       formRef,
       tenantDetail,
+      passLoading,
       // rulesArr,
     };
   },

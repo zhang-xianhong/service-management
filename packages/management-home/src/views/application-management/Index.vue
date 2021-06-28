@@ -14,7 +14,7 @@
     <el-col :span="6" :offset="12" style="text-align: right">
       <el-input
         placeholder="请输入应用中文/英文名称"
-        style="width:300px"
+        style="width: 300px"
         v-model="searchProps.keyword"
         @input="filterApps"
         suffix-icon="el-icon-search"
@@ -88,7 +88,7 @@
       </el-form-item>
     </el-form>
     <div class="dialog-footer">
-      <el-button type="primary" @click="submitAppCreate">确定</el-button>
+      <el-button type="primary" @click="submitAppCreate" :loading="submitting">确定</el-button>
       <el-button @click="closeAppCreate">取消</el-button>
     </div>
   </el-dialog>
@@ -130,6 +130,7 @@ export default defineComponent({
   },
   setup() {
     const instance = getCurrentInstance();
+    const submitting = ref(false);
 
     const searchProps = reactive({
       keyword: '',
@@ -210,10 +211,10 @@ export default defineComponent({
     };
 
     const beforeUpload = (file: { size: number }) => {
-      if (file.size > 1024 * 50) {
+      if (file.size > 1024 ** 1024 * 3) {
         (instance as any).proxy.$message({
           type: 'warning',
-          message: '上传图片大小不能超过 50 kb',
+          message: '上传图片大小不能超过3M',
         });
         return false;
       }
@@ -247,6 +248,7 @@ export default defineComponent({
       if (state.appInfo.description.length > 20 || state.appInfo.description.length < 3) {
         return false;
       }
+      submitting.value = true;
       const { code } = await createApp(state.appInfo);
       if (code === 0) {
         (instance as any).proxy.$message({
@@ -263,6 +265,7 @@ export default defineComponent({
           services: [],
         };
       }
+      submitting.value = false;
       getAppList();
     };
 
@@ -318,6 +321,7 @@ export default defineComponent({
       form,
       userProjectList,
       getShowBool,
+      submitting,
     };
   },
 });
