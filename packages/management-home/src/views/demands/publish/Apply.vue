@@ -1,6 +1,6 @@
 <template>
   <div class="general">
-    <el-row style="margin-bottom: 10px;">
+    <el-row style="margin-bottom: 10px">
       <el-col :span="6" style="text-align: left">
         <el-button
           icon="el-icon-plus"

@@ -103,7 +103,7 @@
       </div>
       <template #footer>
         <span class="dialog-footer" v-if="!configForm.disabled">
-          <el-button type="primary" @click="submitConfigForm">确定</el-button>
+          <el-button type="primary" @click="submitConfigForm" :loading="submitting">确定</el-button>
           <el-button @click="closeConfigForm">取消</el-button>
         </span>
         <span class="dialog-footer" v-else>
@@ -223,6 +223,8 @@ export default defineComponent({
         description: '',
       },
     });
+
+    const submitting = ref(false);
     let editOldKey = '';
     // // 服务key校验
     const validatorKeyPass = async (rule: any, value: string, callback: Function) => {
@@ -312,6 +314,7 @@ export default defineComponent({
       configFormRef.value.validate(async (valid: boolean) => {
         if (valid) {
           // 添加
+          submitting.value = true;
           if (!configForm.isEdit) {
             const { code } = await addConfig({
               ...configForm.formData,
@@ -341,6 +344,7 @@ export default defineComponent({
                 message: '编辑失败',
               });
             }
+            submitting.value = false;
             closeConfigForm();
           }
         }
@@ -472,6 +476,7 @@ export default defineComponent({
       handlePageChange,
       dateFormat,
       getShowBool,
+      submitting,
     };
   },
 });
