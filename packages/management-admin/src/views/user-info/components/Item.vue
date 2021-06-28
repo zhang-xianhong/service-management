@@ -11,7 +11,7 @@
     </span>
     <span v-show="changable" class="item-operation">
       <template v-if="isModifyMode">
-        <a @click="onSave">保存</a>
+        <a @click="onSave">确定</a>
         <a @click="onCancel">取消</a>
       </template>
       <template v-else>
