@@ -146,8 +146,8 @@
             <el-input
               v-model="publishForm.formData.auditInstructions"
               type="textarea"
-              :rows="4"
-              maxlength="512"
+              :rows="8"
+              maxlength="1024"
               placeholder="请输入审核说明"
               show-word-limit
             ></el-input>
