@@ -4,7 +4,7 @@ export const MODULE_TYPE: any = {
 };
 
 export const AUDIT_RESULTS: any = {
-  0: '',
+  0: '未审核',
   1: '未通过',
   2: '通过',
 };
