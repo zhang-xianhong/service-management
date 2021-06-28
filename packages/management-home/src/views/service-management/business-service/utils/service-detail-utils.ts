@@ -8,7 +8,7 @@ import { ref } from 'vue';
 
 import { ElMessageBox } from 'element-plus';
 
-export default function() {
+export default function () {
   const buttons = ref([] as any);
   // 初始化
   const initialize = () => {
