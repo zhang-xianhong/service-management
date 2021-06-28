@@ -219,4 +219,7 @@ export default defineComponent({
   font-size: 13px;
   color: #bbb;
 }
+.el-dialog {
+  font-weight: bolder;
+}
 </style>
