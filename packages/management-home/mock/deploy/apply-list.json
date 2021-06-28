@@ -19,7 +19,9 @@
           "scope": 1,
           "enable": 0,
           "serviceId": null,
-          "tenantId": 1
+          "tenantId": 1,
+          "compile": "编辑",
+          "isDelete": "删除"
         },
         {
           "id": 5,
@@ -37,7 +39,9 @@
           "scope": 1,
           "enable": 0,
           "serviceId": null,
-          "tenantId": 1
+          "tenantId": 1,
+          "compile": "编辑",
+          "isDelete": "删除"
         },
         {
           "id": 6,
@@ -55,7 +59,9 @@
           "scope": 1,
           "enable": 0,
           "serviceId": null,
-          "tenantId": 1
+          "tenantId": 1,
+          "compile": "编辑",
+          "isDelete": "删除"
         }
       ]
     },

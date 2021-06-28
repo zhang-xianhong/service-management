@@ -42,10 +42,10 @@
           <template #default="scope">{{ dateFormat(scope.row.reviewTime) }}</template>
         </el-table-column>
         <el-table-column label="操作">
-          <!--          <template>-->
-          <!--            <el-button type="text" size="mini">编辑</el-button>-->
-          <!--            <el-button type="text" size="mini">删除</el-button>-->
-          <!--          </template>-->
+          <template #default="props">
+            <el-button type="text" size="mini">{{ props.row.compile }}</el-button>
+            <el-button type="text" @click="removeApply">{{ props.row.isDelete }}</el-button>
+          </template>
         </el-table-column>
       </el-table>
       <packaged-pagination
@@ -105,9 +105,9 @@ import {
   // STATUS
 } from '@/views/deploy/index';
 
-import { ElMessage } from 'element-plus';
+import { ElMessage, ElMessageBox } from 'element-plus';
 import dateFormat from '@/utils/date-format';
-import { getDeployList } from '@/api/deploy';
+import { deleteApply, getDeployList } from '@/api/deploy/deploy-apply';
 import PackagedPagination from '@/components/pagination/Index.vue';
 import ListWrap from '@/components/list-wrap/Index.vue';
 import { getShowBool } from '@/utils/permission-show-module';
@@ -193,6 +193,20 @@ export default defineComponent({
       getTableData();
     };
 
+    // 删除发布申请
+    const removeApply = async (rowData: any) => {
+      ElMessageBox.confirm('是否确定删除该申请？', '提示', {
+        confirmButtonText: '确定删除',
+        cancelButtonText: '取消',
+        type: 'warning',
+      }).then(async () => {
+        const { code } = await deleteApply(rowData.id);
+        if (code === 0) {
+          return ElMessage.success('删除成功');
+        }
+        getTableData();
+      });
+    };
     // 新建表单
     const openCreateDialog = () => {
       tableState.createDialogVisible = true;
@@ -204,6 +218,7 @@ export default defineComponent({
       handlePageNumChange,
       getShowBool,
       openCreateDialog,
+      removeApply,
     };
   },
 });

@@ -15,6 +15,8 @@ export type DeployTableItemStruct = {
   enable: string;
   serviceId: string;
   tenantId: number;
+  compile: string;
+  isDelete: string;
 };
 
 export const MODULE_TYPE: any = {
