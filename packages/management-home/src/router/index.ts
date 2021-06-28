@@ -227,15 +227,15 @@ const routes: Array<RouteRecordRaw> = [
           isRootLevel: false,
         },
       },
-      // {
-      //   path: 'review',
-      //   component: () => import('@/views/deploy/Review.vue'),
-      //   name: 'DeployReview',
-      //   meta: {
-      //     title: '发布审核',
-      //     isRootLevel: false,
-      //   },
-      // },
+      {
+        path: 'review',
+        component: () => import('@/views/deploy/Review.vue'),
+        name: 'DeployReview',
+        meta: {
+          title: '发布审核',
+          isRootLevel: false,
+        },
+      },
     ],
   },
   {
