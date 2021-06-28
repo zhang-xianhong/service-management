@@ -222,8 +222,8 @@
         </el-form-item>
       </el-form>
       <div class="dialog-footer">
-        <el-button type="primary" @click="submitRunService">提交</el-button>
-        <el-button @click="runDialogVisible = false">关闭</el-button>
+        <el-button type="primary" @click="submitRunService">确定</el-button>
+        <el-button @click="runDialogVisible = false">取消</el-button>
       </div>
     </el-dialog>
     <el-dialog v-model="stopDialogVisible" width="300px">
