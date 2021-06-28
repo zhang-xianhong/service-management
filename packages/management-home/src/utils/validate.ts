@@ -4,7 +4,7 @@ export function isExternal(path: string) {
 
 // 邮箱校验
 export function checkMail(szMail: string): boolean {
-  const szReg = /^\w+((.\w+)|(-\w+))@[A-Za-z0-9]+((.|-)[A-Za-z0-9]+).[A-Za-z0-9]+$/;
+  const szReg = /^\w+@[a-zA-Z0-9]{2,10}(?:\.[a-z]{2,4}){1,3}$/;
   return szReg.test(szMail);
 }
 // 中文姓名校验2-16字以上
