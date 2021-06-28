@@ -233,8 +233,8 @@
             <el-input
               v-model="publishForm.formData.description"
               type="textarea"
-              :rows="2"
-              maxlength="512"
+              :rows="8"
+              maxlength="1024"
               placeholder="请输入发布说明"
               show-word-limit
             ></el-input>

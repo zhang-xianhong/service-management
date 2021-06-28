@@ -39,7 +39,7 @@
     </el-form>
     <template #footer>
       <div class="form-footer">
-        <el-button type="primary" @click="onSave">保存</el-button>
+        <el-button type="primary" @click="onSave" :loading="passLoading">保存</el-button>
         <el-button @click="onBack">返回</el-button>
       </div>
     </template>
@@ -64,6 +64,7 @@ export default defineComponent({
     Item,
   },
   setup() {
+    const passLoading = ref(false);
     const instance = getCurrentInstance();
     const companyName: Ref<string> = ref('腾讯云计算（北京）有限责任公司');
     const managerInfo: Ref<ManagerInfoInterface> = ref({
@@ -149,6 +150,10 @@ export default defineComponent({
     };
 
     const onSave = async () => {
+      if (!formData.newPassword || !formData.confirmPassword || formData.confirmPassword !== formData.newPassword) {
+        return false;
+      }
+      passLoading.value = true;
       const { code } = await updateProfilePassword(formData);
       if (code === 0) {
         (instance as any).proxy.$message({
@@ -157,6 +162,7 @@ export default defineComponent({
         });
         passwordModelVisible.value = false;
       }
+      passLoading.value = false;
     };
 
     const onBack = () => {
@@ -177,6 +183,7 @@ export default defineComponent({
       formRules,
       onSave,
       onBack,
+      passLoading,
     };
   },
 });
