@@ -113,7 +113,7 @@ export default defineComponent({
         if (!name) {
           msg = '属性名不能为空！';
         } else if (!/^([a-z]|[a-z]+[A-Z][a-z]+)+$/.test(name)) {
-          msg = '属性名称填写错误，必须是小驼峰格式'
+          msg = '属性名称填写错误，必须是小驼峰格式';
         } else if (!description) {
           msg = '属性描述不能为空！';
         } else {
