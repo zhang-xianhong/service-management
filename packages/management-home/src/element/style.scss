@@ -11,7 +11,7 @@ $--button-mini-border-radius: 0px !default;
 $--pagination-border-radius: 0px !default;
 $--tag-border-radius: 0px !default;
 $--color-primary: #006eff !default;
-
+$--radio-button-checked-background-color: #006eff !default;
 
 // 直接覆盖样式
 .el-textarea__inner,
@@ -48,4 +48,15 @@ $--color-primary: #006eff !default;
       color: #fff;
     }
   }
+}
+
+.el-radio-button__inner {
+  border-radius: 0 !important;
+}
+.el-radio-button__orig-radio:checked+.el-radio-button__inner {
+  background-color: $--color-primary;
+  border-color: $--color-primary;
+}
+.el-dialog__footer {
+  text-align: center;
 }

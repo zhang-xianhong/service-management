@@ -1,9 +1,11 @@
 <template>
   <div class="repository-detail">
-     <el-tabs v-model="activeTab" @tab-click="handleTabClick">
+    <el-tabs v-model="activeTab" @tab-click="handleTabClick">
       <el-tab-pane label="基本信息" name="base">基本信息</el-tab-pane>
       <el-tab-pane label="服务依赖" name="depend">
-        <service-depend/>
+        <div class="service-depened-wrapper">
+          <service-depend />
+        </div>
       </el-tab-pane>
       <el-tab-pane label="接口列表" name="api">接口列表</el-tab-pane>
       <el-tab-pane label="历史版本" name="history">历史版本</el-tab-pane>
@@ -14,20 +16,23 @@
 import { defineComponent, ref } from 'vue';
 import ServiceDepend from '../components/depend/Index.vue';
 export default defineComponent({
-  components: {ServiceDepend},
+  components: { ServiceDepend },
   setup() {
-    const activeTab = ref('base')
-    const handleTabClick = () => {}
+    const activeTab = ref('base');
+    const handleTabClick = () => 1;
     return {
       activeTab,
-      handleTabClick
-    }
+      handleTabClick,
+    };
   },
 });
 </script>
 <style lang="scss" scoped>
 .repository-detail {
   margin: -20px;
+}
+.service-depened-wrapper {
+  height: calc(100vh - 140px);
 }
 </style>
 <style lang="scss">

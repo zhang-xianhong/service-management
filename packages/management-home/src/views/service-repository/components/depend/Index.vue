@@ -208,7 +208,7 @@ export default defineComponent({
     });
 
     onBeforeUnmount(() => {
-      dependGraph?.destroy();
+      dependGraph.destroy();
     });
 
     return {
@@ -219,7 +219,8 @@ export default defineComponent({
 </script>
 <style lang="scss" scoped>
 .service-depend-canvas {
-  height: calc(100vh - 140px);
+  width: 100%;
+  height: 100%;
   position: relative;
 }
 </style>

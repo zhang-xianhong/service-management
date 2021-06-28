@@ -1,15 +1,14 @@
 <template>
   <div>
-    <list/>
+    <service-repository-list />
   </div>
 </template>
 <script>
 import { defineComponent } from 'vue';
-import List from './List.vue'
+import ServiceRepositoryList from '../list/List.vue';
 export default defineComponent({
   components: {
-    List
+    ServiceRepositoryList,
   },
-  setup() {},
 });
 </script>

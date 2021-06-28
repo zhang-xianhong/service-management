@@ -1,3 +1,4 @@
+/*eslint-disable*/
 import G6 from '@antv/g6';
 import insertCss from 'insert-css';
 
@@ -91,7 +92,7 @@ const registerFn = () => {
           },
         });
 
-        const rectBBox = rect.getBBox();
+        // const rectBBox = rect.getBBox();
 
         // label title
         group.addShape('text', {
