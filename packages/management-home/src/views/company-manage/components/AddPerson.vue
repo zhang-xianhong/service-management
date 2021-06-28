@@ -65,12 +65,12 @@
     </div>
     <template #footer>
       <span class="dialog-footer" v-if="!isEdit">
-        <el-button type="primary" @click="submitConfigForm">确定</el-button>
+        <el-button type="primary" @click="submitConfigForm" :loading="submitting">确定</el-button>
         <el-button @click="closeDialog">取消</el-button>
       </span>
       <span class="dialog-footer" v-else>
         <el-button type="primary" @click="enableEdit" v-if="disable">编辑</el-button>
-        <el-button type="primary" @click="submitConfigForm" v-else>确定</el-button>
+        <el-button type="primary" @click="submitConfigForm" v-else :loading="submitting">确定</el-button>
         <el-button @click="closeDialog">取消</el-button>
       </span>
     </template>
@@ -118,7 +118,9 @@ export default defineComponent({
         isAdmin: false,
       },
     });
+    const submitting = ref(false);
     let editBeforeFormData: any = {};
+
     // 手机号校验
     const validatorMobilePass = async (rule: any, value: string, callback: Function) => {
       if (!checkMobile(value)) {
@@ -265,6 +267,7 @@ export default defineComponent({
     async function submitConfigForm() {
       diagFormRef.value.validate((valid: boolean) => {
         if (valid) {
+          submitting.value = true;
           // 添加
           if (!dialogContent.isEdit) {
             handleCreate(dialogContent.formData);
@@ -272,6 +275,7 @@ export default defineComponent({
             delete dialogContent.formData.password;
             handleEdit(dialogContent.formData);
           }
+          submitting.value = false;
           closeDialog();
         }
       });
@@ -323,6 +327,7 @@ export default defineComponent({
       roleOptions,
       userInfo,
       roleState,
+      submitting,
     };
   },
 });

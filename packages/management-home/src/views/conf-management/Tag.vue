@@ -73,12 +73,12 @@
             { min: 1, max: 20, message: '内容过长，最多不能超过20个字符', trigger: 'blur' },
           ]"
         >
-          <el-input v-model.trim="form.name" autocomplete="off"></el-input>
+          <el-input ref="tagName" v-model.trim="form.name" autocomplete="off"></el-input>
         </el-form-item>
       </el-form>
       <template #footer>
         <div class="dialog-footer">
-          <el-button type="primary" @click="save()" size="mini">确定</el-button>
+          <el-button type="primary" @click="save()" size="mini" :loading="submitting">确定</el-button>
           <el-button @click="cancel()">取消</el-button>
         </div>
       </template>
@@ -112,6 +112,7 @@ export default defineComponent({
     const tagList = ref([]);
     const filterText = ref('');
     const loading = ref(false);
+    const submitting = ref(false);
     const columns = [
       {
         label: '标签名称',
@@ -242,9 +243,10 @@ export default defineComponent({
     };
     const save = () => {
       tagName.value.handleBlur();
-      if (form.value.name.length > 25 || form.value.name.length < 1) {
+      if (submitting.value || form.value.name.length > 25 || form.value.name.length < 1) {
         return;
       }
+      submitting.value = true;
       formRef.value.validate(async (isValid: boolean) => {
         if (isValid) {
           loading.value = true;
@@ -253,6 +255,7 @@ export default defineComponent({
               ? await addTag({ name: form.value.name })
               : await updateTag({ id, name: form.value.name });
           loading.value = false;
+          submitting.value = false;
           if (code === 0) {
             dialogVisible.value = false;
             dialogTitle.value === '新增标签' ? ElMessage.success('新增标签成功') : ElMessage.success('编辑标签成功');
@@ -294,6 +297,7 @@ export default defineComponent({
       sortChange,
       disabled,
       getShowBool,
+      submitting,
     };
   },
 });

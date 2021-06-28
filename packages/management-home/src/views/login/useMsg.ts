@@ -1,7 +1,7 @@
 import { getCurrentInstance } from '@vue/runtime-core';
 import { useRouter } from 'vue-router';
 
-export default function() {
+export default function () {
   // 获取组件实例
   const instance = getCurrentInstance();
   const msgTips = (type: string, content: string) => {

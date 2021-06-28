@@ -23,7 +23,7 @@
       <el-input v-model="typeForm.description" placeholder="请输入描述" style="width: 300px"></el-input>
     </el-form-item>
     <el-form-item>
-      <el-button type="primary" @click="onSubmit" v-if="getShowBool('update')">确定</el-button>
+      <el-button type="primary" @click="onSubmit" v-if="getShowBool('update')" :loading="submitting">确定</el-button>
       <el-button @click="onCancel">取消</el-button>
     </el-form-item>
   </el-form>
@@ -55,6 +55,8 @@ export default {
 
     // 是否为新建数据类型
     const isCreate = computed(() => route.params.id === '0');
+
+    const submitting = ref(false);
 
     // 初始化表单数据
     const initTypeForm = async () => {
@@ -107,6 +109,7 @@ export default {
     const onSubmit = () => {
       formRef.value.validate(async (valid: boolean) => {
         if (valid) {
+          submitting.value = true;
           if (isCreate.value) {
             const { code }: any = await addDataType(typeForm);
             if (code === 0) {
@@ -114,6 +117,7 @@ export default {
                 message: '新建成功',
                 type: 'success',
               });
+              submitting.value = false;
               router.back();
             }
           } else {
@@ -123,6 +127,7 @@ export default {
                 message: '更新成功',
                 type: 'success',
               });
+              submitting.value = false;
               router.back();
             }
           }
@@ -142,6 +147,7 @@ export default {
       onSubmit,
       onCancel,
       getShowBool,
+      submitting,
     };
   },
 };
