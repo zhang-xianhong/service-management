@@ -14,7 +14,7 @@
     <el-col :span="6" :offset="12" style="text-align: right">
       <el-input
         placeholder="请输入应用中文/英文名称"
-        style="width:300px"
+        style="width: 300px"
         v-model="searchProps.keyword"
         @input="filterApps"
         suffix-icon="el-icon-search"
