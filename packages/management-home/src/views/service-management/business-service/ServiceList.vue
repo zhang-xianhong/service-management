@@ -15,7 +15,7 @@
 
       <el-input
         placeholder="请输入服务名称"
-        style="max-width: 300px; margin-left: auto;"
+        style="max-width: 300px; margin-left: auto"
         v-model="pageInfo.keyword"
         suffix-icon="el-icon-search"
         @input="searchForList"
@@ -190,13 +190,13 @@
       </div>
       <template #footer>
         <span class="dialog-footer">
-          <el-button type="primary" @click="addServiceByForm">提 交</el-button>
+          <el-button type="primary" @click="addServiceByForm" :loading="submitting">确定</el-button>
           <el-button
             @click="
               addServiceDialog = false;
               clearDialog();
             "
-            >关 闭</el-button
+            >取消</el-button
           >
         </span>
       </template>
@@ -284,6 +284,7 @@ export default defineComponent({
   },
   setup() {
     const tableLoading = ref(false);
+    const submitting = ref(false);
 
     const pageInfo = reactive({
       page: 1,
@@ -396,16 +397,19 @@ export default defineComponent({
       if (senddata.description.length > 60) {
         return false;
       }
+      submitting.value = true;
       senddata.name = `srv-${senddata.name}`;
       senddata.classification = `${senddata.classification}`;
       addService(senddata)
         .then(() => {
           refreshServiceList(pageInfo);
           addServiceDialog.value = false;
+          submitting.value = false;
           clearDialog();
         })
         .catch(() => {
           addServiceDialog.value = false;
+          submitting.value = false;
         });
     }
 
@@ -635,6 +639,7 @@ export default defineComponent({
       tableLoading,
       nameRef,
       desRef,
+      submitting,
     };
   },
 });

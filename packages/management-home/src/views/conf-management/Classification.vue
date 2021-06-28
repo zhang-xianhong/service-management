@@ -35,7 +35,7 @@
         </el-scrollbar>
       </el-col>
       <el-col :span="12" v-if="~currentNode.id">
-        <el-button type="primary" @click="save" v-if="getShowBool('update')">确定</el-button>
+        <el-button type="primary" @click="save" v-if="getShowBool('update')" :loading="submitting">确定</el-button>
         <el-button @click="remove" v-if="getShowBool('delete')">删除</el-button>
         <el-form :model="currentNode" label-position="top" :rules="rules" class="mt20" ref="classFormRef">
           <el-form-item prop="name" label="分类名称">
@@ -80,6 +80,7 @@ export default defineComponent({
     const treeData: Ref<TreeData> = ref([]);
     const treeFirstIdArray = ref([] as any);
     const allExpanded = ref(false);
+    const submitting = ref(false);
     // 获取组件实例
     const instance = getCurrentInstance();
     const currentNode: Ref<ClassicificNode> = ref({
@@ -193,6 +194,7 @@ export default defineComponent({
     const save = () => {
       classFormRef.value.validate(async (valid: boolean) => {
         if (valid) {
+          submitting.value = true;
           if (currentNode.value.id) {
             const { code } = await confApi.updateClassification(
               _.pick(['id', 'name', 'description'])(currentNode.value),
@@ -206,6 +208,7 @@ export default defineComponent({
             if (currentNode.value.parentId !== TEMP_KEY) {
               params.parentId = currentNode.value.parentId;
             }
+
             const { code } = await confApi.addClassification(params);
             if (code === 0) {
               ElMessage.success('创建分类成功！');
@@ -216,6 +219,7 @@ export default defineComponent({
             tree.value.remove(toSave);
           }
           loadTreeData();
+          submitting.value = false;
         }
       });
     };
@@ -264,6 +268,7 @@ export default defineComponent({
       getShowBool,
       treeFirstIdArray,
       classFormRef,
+      submitting,
     };
   },
 });
