@@ -8,7 +8,7 @@ import auth from './auth';
 import publish from './publish';
 import app from './app';
 import company from './company';
-
+import repository from './repository'
 export default {
   schema,
   settings,
@@ -20,4 +20,5 @@ export default {
   publish,
   app,
   company,
+  repository,
 };
