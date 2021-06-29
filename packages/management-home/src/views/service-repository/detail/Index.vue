@@ -4,7 +4,7 @@
       <el-tab-pane label="基本信息" name="base">基本信息</el-tab-pane>
       <el-tab-pane label="服务依赖" name="depend">
         <div class="service-depened-wrapper">
-          <service-depend />
+          <service-depend v-if="activeTab === 'depend'" />
         </div>
       </el-tab-pane>
       <el-tab-pane label="接口列表" name="api">接口列表</el-tab-pane>
@@ -32,7 +32,7 @@ export default defineComponent({
   margin: -20px;
 }
 .service-depened-wrapper {
-  height: calc(100vh - 140px);
+  height: calc(100vh - 200px);
 }
 </style>
 <style lang="scss">

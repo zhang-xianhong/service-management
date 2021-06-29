@@ -1,7 +1,12 @@
 <template>
-  <div>服务下发</div>
+  <service-repository-list list-type="distribute" />
 </template>
 <script>
 import { defineComponent } from 'vue';
-export default defineComponent({});
+import ServiceRepositoryList from '../list/List.vue';
+export default defineComponent({
+  components: {
+    ServiceRepositoryList,
+  },
+});
 </script>

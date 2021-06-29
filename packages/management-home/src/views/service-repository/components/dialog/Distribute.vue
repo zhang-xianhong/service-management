@@ -27,10 +27,10 @@
         </template>
         <template v-else>
           <el-form-item label="英文服务名">
-            <span>{{ form.serviceName }}</span>
+            <span v-if="sourceData">{{ sourceData.serviceName }}</span>
           </el-form-item>
           <el-form-item label="中文服务名">
-            <span>{{ form.serviceNameZh }}</span>
+            <span v-if="sourceData && sourceData.snapshotInfo">{{ sourceData.snapshotInfo.serviceNameZh }}</span>
           </el-form-item>
         </template>
         <el-form-item label="服务依赖">
@@ -60,6 +60,7 @@ export default defineComponent({
     const submitting = ref(false);
     const formRef = ref(null as any);
     const serviceDependDialog = ref(null as any);
+    const sourceData = ref(null as any);
     const form = reactive({
       project: '',
       shareType: 1,
@@ -80,9 +81,11 @@ export default defineComponent({
     });
     const handleClose = () => {
       visible.value = false;
+      formRef.value.resetFields();
     };
-    const handleOpen = () => {
+    const handleOpen = (row: any) => {
       visible.value = true;
+      sourceData.value = row;
     };
     const handleSubmit = async () => {
       try {
@@ -117,6 +120,7 @@ export default defineComponent({
       handleSubmit,
       handleClearValidate,
       handleViewServiceDepend,
+      sourceData,
     };
   },
 });

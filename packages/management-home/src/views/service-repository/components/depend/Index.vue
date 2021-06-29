@@ -2,7 +2,7 @@
   <div class="service-depend-canvas" ref="container"></div>
 </template>
 <script>
-import { defineComponent, ref, onMounted, onBeforeUnmount } from 'vue';
+import { defineComponent, ref, onMounted, onBeforeUnmount, nextTick } from 'vue';
 import DependGraph from './graph';
 
 const mockData = {
@@ -203,8 +203,11 @@ export default defineComponent({
   setup() {
     const container = ref(null);
     let dependGraph = null;
+
     onMounted(() => {
-      dependGraph = DependGraph(container.value, mockData);
+      nextTick(() => {
+        dependGraph = DependGraph(container.value, mockData);
+      });
     });
 
     onBeforeUnmount(() => {
@@ -222,6 +225,11 @@ export default defineComponent({
   width: 100%;
   height: 100%;
   position: relative;
+  user-select: none;
+  ::v-deep svg {
+    user-select: none;
+    cursor: move;
+  }
 }
 </style>
 <style lang="scss">
@@ -229,7 +237,7 @@ export default defineComponent({
   li {
     &[code='redo'],
     &[code='undo'] {
-      display: none;
+      display: none !important;
     }
   }
 }

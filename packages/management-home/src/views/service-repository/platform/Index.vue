@@ -1,10 +1,12 @@
 <template>
-  <div>平台服务</div>
+  <service-repository-list list-type="platform" />
 </template>
 <script>
 import { defineComponent } from 'vue';
+import ServiceRepositoryList from '../list/List.vue';
 export default defineComponent({
-  components: {},
-  // setup() {},
+  components: {
+    ServiceRepositoryList,
+  },
 });
 </script>

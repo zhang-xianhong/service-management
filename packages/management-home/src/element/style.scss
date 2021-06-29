@@ -12,6 +12,25 @@ $--pagination-border-radius: 0px !default;
 $--tag-border-radius: 0px !default;
 $--color-primary: #006eff !default;
 $--radio-button-checked-background-color: #006eff !default;
+$--font-size-base : 12px!default;
+$--checkbox-font-size: 12px!default;
+$--select-font-size: 12px!default;
+$--select-input-font-size: 12px !default;
+$--select-group-font-size: 12px !default;
+$--input-font-size: 12px !default;
+$--cascader-menu-font-size: 12px !default;
+$--dialog-content-font-size: 12px !default;
+$--menu-item-font-size: 12px !default;
+$--form-label-font-size: 12px !default;
+
+.el-input,
+.el-input--small {
+  font-size: 13px;
+}
+.el-form-item__content,
+.el-select-dropdown__item {
+  font-size: $--font-size-base;
+}
 
 // 直接覆盖样式
 .el-textarea__inner,
@@ -26,6 +45,13 @@ $--radio-button-checked-background-color: #006eff !default;
 .el-message-box{
   padding: 20px 5px;
   border-radius: 0px;
+  width: 460px;
+  .el-message-box__header {
+    padding-top: 0;
+    .el-message-box__headerbtn {
+      top: 0;
+    }
+  }
   .el-message-box__title{
     font-size: 16px;
     color: #000;
@@ -41,8 +67,8 @@ $--radio-button-checked-background-color: #006eff !default;
     align-items: center;
     justify-content: center;
     .el-button{
-      margin:0 10px;
-      color: #000;
+      margin:0 5px;
+      color: #606266;
     }
     .el-button--primary{
       color: #fff;

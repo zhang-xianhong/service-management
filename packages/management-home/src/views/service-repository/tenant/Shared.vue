@@ -1,7 +1,5 @@
 <template>
-  <div>
-    <service-repository-list />
-  </div>
+  <service-repository-list list-type="shared" />
 </template>
 <script>
 import { defineComponent } from 'vue';

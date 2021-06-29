@@ -52,9 +52,7 @@
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
         :current-page="pageInfo.page"
-        :page-sizes="[1, 5, 10, 20, 50]"
         :page-size="pageInfo.pageSize"
-        layout="total, sizes, prev, pager, next, jumper"
         :total="pageInfo.total"
       ></packaged-pagination>
     </list-wrap>

@@ -1,7 +1,7 @@
 <template>
   <el-dialog title="服务依赖" v-model="visible" width="60%" :before-close="handleClose">
     <div class="dialog-service-depend-wrapper">
-      <service-depend />
+      <service-depend v-if="visible" />
     </div>
     <template #footer>
       <span class="dialog-footer">

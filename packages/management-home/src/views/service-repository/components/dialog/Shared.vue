@@ -2,8 +2,8 @@
   <el-dialog title="共享服务" v-model="visible" width="640px" :before-close="handleClose">
     <div class="dialog-body">
       <el-form :model="form" :rules="formRules" ref="formRef" label-width="100px">
-        <el-form-item label="共享方式" prop="shareType">
-          <el-select v-model="form.shareType" multiple placeholder="请选择共享方式" style="width: 100%">
+        <el-form-item label="共享方式" prop="platformShareType">
+          <el-select v-model="form.platformShareType" multiple placeholder="请选择共享方式" style="width: 100%">
             <el-option
               v-for="item in sharedTypes"
               :key="item.value"
@@ -13,20 +13,20 @@
           </el-select>
         </el-form-item>
         <el-form-item label="英文服务名">
-          <span>{{ form.serviceName }}</span>
+          <span v-if="sourceData">{{ sourceData.serviceName }}</span>
         </el-form-item>
         <el-form-item label="中文服务名">
-          <span>{{ form.serviceNameZh }}</span>
+          <span v-if="sourceData && sourceData.snapshotInfo">{{ sourceData.snapshotInfo.serviceNameZh }}</span>
         </el-form-item>
         <el-form-item label="服务依赖">
           <el-button type="text" @click="handleViewServiceDepend">查看详情</el-button>
         </el-form-item>
-        <el-form-item label="共享说明" prop="remark">
+        <el-form-item label="共享说明" prop="platformShareDescription">
           <el-input
             type="textarea"
             placeholder="请输入共享说明"
             :rows="4"
-            v-model="form.remark"
+            v-model="form.platformShareDescription"
             maxlength="1024"
             show-word-limit
           />
@@ -51,10 +51,11 @@ export default defineComponent({
     ServiceDependDialog,
   },
   setup() {
-    const visible = ref(true);
+    const visible = ref(false);
     const submitting = ref(false);
     const formRef = ref(null as any);
     const serviceDependDialog = ref(null as any);
+    const sourceData = ref(null as any);
     const form = reactive({
       shareType: [],
       remark: '',
@@ -70,13 +71,15 @@ export default defineComponent({
       },
     ]);
     const formRules = reactive({
-      shareType: [{ required: true, message: '请选择共享方式', trigger: 'blur' }],
-      remark: [{ max: 1024, message: '最多输入1024个字符', trigger: 'blur' }],
+      platformShareType: [{ required: true, message: '请选择共享方式', trigger: 'blur' }],
+      platformShareDescription: [{ max: 1024, message: '最多输入1024个字符', trigger: 'blur' }],
     });
     const handleClose = () => {
       visible.value = false;
+      formRef.value.resetFields();
     };
-    const handleOpen = () => {
+    const handleOpen = (row: any) => {
+      sourceData.value = row;
       visible.value = true;
     };
     const handleSubmit = async () => {
@@ -113,6 +116,7 @@ export default defineComponent({
       handleClearValidate,
       handleViewServiceDepend,
       sharedTypes,
+      sourceData,
     };
   },
 });

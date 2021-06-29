@@ -15,8 +15,9 @@ const props = {
   config: {
     padding: [0, 0],
     defaultLevel: 3,
-    defaultZoom: 0.5,
-    modes: { default: ['drag-node', 'drag-canvas'] },
+    defaultZoom: 1,
+    modes: { default: ['drag-canvas'] },
+    renderer: 'svg',
   },
 };
 
@@ -25,7 +26,7 @@ const defaultConfig = {
   width: window.innerWidth,
   height: window.innerHeight,
   modes: {
-    default: ['drag-canvas', 'drag-node'],
+    default: ['drag-canvas',],
   },
   fitView: true,
   animate: true,
@@ -36,7 +37,16 @@ const defaultConfig = {
     type: 'cubic-horizontal',
     style: {
       stroke: '#CED4D9',
+      cursor: 'move'
     },
+  },
+  defaultCombo: {
+    style: {
+      cursor: 'move'
+    }
+  },
+  style: {
+    cursor: 'move'
   },
   layout: {
     type: 'compactBox',
@@ -71,7 +81,7 @@ const registerFn = () => {
           radius: 0,
           stroke: grey,
           opacity: 1,
-          cursor: 'move',
+          cursor: 'default',
         };
 
         const nodeOrigin = {
@@ -99,7 +109,7 @@ const registerFn = () => {
           attrs: {
             ...textConfig,
             x: 12 + nodeOrigin.x,
-            y: 26 + nodeOrigin.y,
+            y: 28 + nodeOrigin.y,
             text: name.length > 22 ? `${name.substr(0, 22)}...` : name,
             fontSize: 12,
             opacity: 0.85,
@@ -108,96 +118,6 @@ const registerFn = () => {
           },
           name: 'name-shape',
         });
-
-        // // price
-        // const price = group.addShape('text', {
-        //   attrs: {
-        //     ...textConfig,
-        //     x: 12 + nodeOrigin.x,
-        //     y: rectBBox.maxY - 12,
-        //     text: label,
-        //     fontSize: 16,
-        //     fill: '#000',
-        //     opacity: 0.85,
-        //   },
-        // });
-
-        // // label currency
-        // group.addShape('text', {
-        //   attrs: {
-        //     ...textConfig,
-        //     x: price.getBBox().maxX + 5,
-        //     y: rectBBox.maxY - 12,
-        //     text: currency,
-        //     fontSize: 12,
-        //     fill: '#000',
-        //     opacity: 0.75,
-        //   },
-        // });
-
-        // // percentage
-        // const percentText = group.addShape('text', {
-        //   attrs: {
-        //     ...textConfig,
-        //     x: rectBBox.maxX - 8,
-        //     y: rectBBox.maxY - 12,
-        //     text: `${((variableValue || 0) * 100).toFixed(2)}%`,
-        //     fontSize: 12,
-        //     textAlign: 'right',
-        //     fill: colors[status],
-        //   },
-        // });
-
-        // // percentage triangle
-        // const symbol = variableUp ? 'triangle' : 'triangle-down';
-        // const triangle = group.addShape('marker', {
-        //   attrs: {
-        //     ...textConfig,
-        //     x: percentText.getBBox().minX - 10,
-        //     y: rectBBox.maxY - 12 - 6,
-        //     symbol,
-        //     r: 6,
-        //     fill: colors[status],
-        //   },
-        // });
-
-        // // variable name
-        // group.addShape('text', {
-        //   attrs: {
-        //     ...textConfig,
-        //     x: triangle.getBBox().minX - 4,
-        //     y: rectBBox.maxY - 12,
-        //     text: variableName,
-        //     fontSize: 12,
-        //     textAlign: 'right',
-        //     fill: '#000',
-        //     opacity: 0.45,
-        //   },
-        // });
-
-        // bottom line background
-        // const bottomBackRect = group.addShape('rect', {
-        //   attrs: {
-        //     x: nodeOrigin.x,
-        //     y: rectBBox.maxY - 4,
-        //     width: rectConfig.width,
-        //     height: 4,
-        //     radius: [0, 0, rectConfig.radius, rectConfig.radius],
-        //     fill: '#E0DFE3',
-        //   },
-        // });
-
-        // bottom percent
-        // const bottomRect = group.addShape('rect', {
-        //   attrs: {
-        //     x: nodeOrigin.x,
-        //     y: rectBBox.maxY - 4,
-        //     width: rate * rectBBox.width,
-        //     height: 4,
-        //     radius: [0, 0, 0, rectConfig.radius],
-        //     fill: colors[status],
-        //   },
-        // });
 
         // collapse rect
         if (cfg.children && cfg.children.length) {
@@ -312,6 +232,7 @@ const initGraph = (container, data) => {
     // the types of items that allow the tooltip show up
     // 允许出现 tooltip 的 item 类型
     itemTypes: ['node'],
+    container,
     // custom the tooltip's content
     // 自定义 tooltip 内容
     getContent: (e) => {
@@ -353,13 +274,16 @@ const initGraph = (container, data) => {
     height,
     plugins: [tooltip, minimap],
     enabledStack: false,
+    
   });
   if (typeof onInit === 'function') {
     onInit(graph);
   }
+
   graph.data(data);
   graph.render();
   graph.zoom(config.defaultZoom || 1);
+  graph.fitCenter()
 
   const handleCollapse = (e) => {
     const { target } = e;
@@ -375,6 +299,15 @@ const initGraph = (container, data) => {
   });
   graph.on('collapse-back:click', (e) => {
     handleCollapse(e);
+  });
+
+  // SVG画布的鼠标设置为move
+  graph.on('node:mouseleave', (e) => {
+    try {
+      graph.get('canvas').cfg.el.style.cursor = 'move'
+    } catch (error) {
+      console.log(e, error)
+    }
   });
 };
 
