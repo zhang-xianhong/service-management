@@ -43,7 +43,7 @@
         </el-table-column>
         <el-table-column label="操作">
           <template #default="props">
-            <el-button type="text" size="mini">{{ props.row.compile }}</el-button>
+            <el-button type="text" size="mini" @click="updateReleaseInfo(props.row)">{{ props.row.compile }}</el-button>
             <el-button type="text" @click="removeApply">{{ props.row.isDelete }}</el-button>
           </template>
         </el-table-column>
@@ -59,44 +59,19 @@
       >
       </packaged-pagination>
     </list-wrap>
-    <el-dialog title="发布服务" v-model="createDialogVisible" width="500px">
-      <el-form :model="serviceInfo" label-width="120px" label-position="left" ref="deployForm">
-        <el-form-item label="发布类型" required="true">
-          <el-select placeholder="请选择发布类型">
-            <el-option label="服务" value="service"></el-option>
-            <el-option label="应用" value="application"></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="服务名称" required="true">
-          <el-select placeholder="请选择服务名称">
-            <el-option label="data1" value="data1"></el-option>
-            <el-option label="data2" value="data2"></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="申请账号"></el-form-item>
-        <el-form-item label="发布版本" required="true">
-          <el-select placeholder="请选择发布版本">
-            <el-option label="v1.0" value="1"></el-option>
-            <el-option label="v2.0" value="2"></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item>
-          <el-input
-            label="发布说明"
-            type="textarea"
-            :rows="3"
-            placeholder="请输入发布说明，小于512字"
-            maxlength="512"
-            show-word-limit
-          ></el-input>
-        </el-form-item>
-      </el-form>
-    </el-dialog>
+    <service-info
+      :visable="createDialogVisible"
+      :releaseForms="releaseForm"
+      :tableDatas="tableData"
+      @close="closeReleaseForm"
+      @getTableInfo="getTableData"
+    />
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, toRefs } from 'vue';
+import { defineComponent, reactive, toRefs, ref } from 'vue';
+import ServiceInfo from './ServiceInfo.vue';
 import {
   DeployTableItemStruct,
   // AUDIT_RESULTS,
@@ -133,8 +108,26 @@ interface TableState {
   };
 }
 
+interface ReleaseState {
+  disabled: boolean;
+  isEdit: boolean;
+  id: string;
+  serviceList: Array<object>;
+  applicationList: Array<object>;
+  versionOptions: Array<object>;
+  types: Array<object>;
+  serviceInfo: {
+    releaseType: string;
+    // type: number;
+    name: string;
+    account: string;
+    version: string;
+    description: string;
+  };
+}
+
 export default defineComponent({
-  components: { ListWrap, PackagedPagination },
+  components: { ListWrap, PackagedPagination, ServiceInfo },
   setup() {
     const tableState: TableState = reactive({
       tableData: [],
@@ -162,6 +155,36 @@ export default defineComponent({
         sortType: 'descending',
       },
     });
+
+    const releaseForm: ReleaseState = reactive({
+      disabled: false,
+      isEdit: false,
+      id: '',
+      serviceInfo: {
+        releaseType: '',
+        name: '',
+        account: 'test',
+        version: '',
+        description: '',
+      },
+      serviceList: [
+        { id: 1, name: '服务1' },
+        { id: 2, name: '服务2' },
+      ],
+      applicationList: [],
+      versionOptions: [
+        { id: 1, name: '1.0' },
+        { id: 2, name: '2.0' },
+      ],
+      types: [
+        { id: 1, name: '服务' },
+        { id: 2, name: '应用' },
+      ],
+    });
+
+    const releaseInfo = ref({} as any);
+    console.log(releaseInfo);
+
     async function getTableData() {
       try {
         tableState.loading = true;
@@ -174,6 +197,7 @@ export default defineComponent({
           moduleType: getModuleType(item.type),
           reviewResult: getReviewResult(item.result),
         }));
+        // console.log('tableState.tableData: ', tableState.tableData);
       } catch (error) {
         tableState.loading = false;
         ElMessage({
@@ -193,6 +217,20 @@ export default defineComponent({
       getTableData();
     };
 
+    function initReleaseForm() {
+      releaseForm.disabled = false;
+      releaseForm.isEdit = false;
+      releaseForm.id = '';
+      releaseForm.serviceInfo = {
+        releaseType: '',
+        // releaseType: getModuleType(tableState.tableData[0].type),
+        name: '',
+        account: 'test',
+        version: '',
+        description: '',
+      };
+    }
+
     // 删除发布申请
     const removeApply = async (rowData: any) => {
       ElMessageBox.confirm('是否确定删除该申请？', '提示', {
@@ -207,10 +245,29 @@ export default defineComponent({
         getTableData();
       });
     };
+
     // 新建表单
     const openCreateDialog = () => {
-      tableState.createDialogVisible = true;
+      tableState.createDialogVisible = !tableState.createDialogVisible;
     };
+
+    // 关闭对话框
+    const closeReleaseForm = () => {
+      initReleaseForm();
+      openCreateDialog();
+    };
+
+    // 编辑
+    const updateReleaseInfo = (rowData: any) => {
+      releaseForm.isEdit = true;
+      releaseForm.id = rowData.id;
+      releaseForm.serviceInfo.name = rowData.name;
+      releaseForm.serviceInfo.releaseType = rowData.moduleType;
+      releaseForm.serviceInfo.version = rowData.version;
+      releaseForm.serviceInfo.description = rowData.description;
+      openCreateDialog();
+    };
+
     return {
       ...toRefs(tableState),
       dateFormat,
@@ -218,7 +275,11 @@ export default defineComponent({
       handlePageNumChange,
       getShowBool,
       openCreateDialog,
+      getTableData,
+      releaseForm,
+      closeReleaseForm,
       removeApply,
+      updateReleaseInfo,
     };
   },
 });
