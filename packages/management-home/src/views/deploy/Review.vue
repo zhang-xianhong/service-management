@@ -11,7 +11,7 @@
           <template #default="props">
             <el-form label-position="left">
               <el-form-item label="审核说明">
-                <span>{{ props.row.auditInstructions }}</span>
+                <span>{{ props.row.reviewContent }}</span>
               </el-form-item>
             </el-form>
           </template>
@@ -21,25 +21,25 @@
         <el-table-column label="发布名称" prop="publishName">
           <template #default="props">{{ props.row.name }}</template>
         </el-table-column>
-        <el-table-column label="版本" width="60" prop="version"></el-table-column>
-        <el-table-column label="申请人" width="80" prop="applyUser">
-          <template #default="props">{{ props.row.applyUser }}</template>
+        <el-table-column label="版本" width="80" prop="version"></el-table-column>
+        <el-table-column label="申请人" width="100" prop="applyUser">
+          <template #default="props">{{ props.row.publisher }}</template>
         </el-table-column>
-        <el-table-column label="申请时间" width="160" prop="createTime">
-          <template #default="scope">{{ dateFormat(scope.row.createTime) }}</template>
+        <el-table-column label="申请时间" width="180" prop="applyTime">
+          <template #default="scope">{{ dateFormat(scope.row.applyTime) }}</template>
         </el-table-column>
-        <el-table-column label="审核人" width="80" ref="reviewUser">
-          <template #default="props">{{ props.row.reviewUser }}</template>
+        <el-table-column label="审核人" width="100">
+          <template #default="props">{{ props.row.reviewer }}</template>
         </el-table-column>
         <el-table-column label="审核结果" width="80" prop="reviewResult">
           <template #default="props">{{ isReviewed(props.row) ? props.row.reviewResult : '' }}</template>
         </el-table-column>
-        <el-table-column label="审核时间">
+        <el-table-column label="审核时间" width="180">
           <template #default="scope">{{ isReviewed(scope.row) ? dateFormat(scope.row.reviewTime) : '' }}</template>
         </el-table-column>
         <el-table-column label="操作">
           <template #default="props">
-            <el-button type="text" size="mini" :disabled="isReviewed(props.row)">{{ props.row.review }}</el-button>
+            <el-button type="text" size="mini" :disabled="isReviewed(props.row)">审核</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -99,7 +99,7 @@ export default defineComponent({
         auditResults: null,
         page: 1,
         pageSize: 10,
-        sortField: 'createTime',
+        sortField: 'applyTime',
         sortType: 'descending',
       },
     });
@@ -113,7 +113,7 @@ export default defineComponent({
         tableState.tableData = rows.map((item: any) => ({
           ...item,
           moduleType: getModuleType(item.type),
-          reviewResult: getReviewResult(item.result),
+          reviewResult: getReviewResult(item.status),
         }));
       } catch (error) {
         tableState.loading = false;

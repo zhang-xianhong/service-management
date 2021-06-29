@@ -14,10 +14,10 @@
           <template #default="props">
             <el-form label-position="left">
               <el-form-item label="申请说明">
-                <span>{{ props.row.description }}</span>
+                <span>{{ props.row.publishContent }}</span>
               </el-form-item>
               <el-form-item label="审核说明">
-                <span>{{ props.row.auditInstructions }}</span>
+                <span>{{ props.row.reviewContent }}</span>
               </el-form-item>
             </el-form>
           </template>
@@ -27,24 +27,24 @@
         <el-table-column label="发布名称" prop="publishName">
           <template #default="props">{{ props.row.name }}</template>
         </el-table-column>
-        <el-table-column label="版本" width="60" prop="version"></el-table-column>
-        <el-table-column label="申请人" width="80" prop="applyUser">
-          <template #default="props">{{ props.row.applyUser }}</template>
+        <el-table-column label="版本" width="80" prop="version"></el-table-column>
+        <el-table-column label="申请人" width="100">
+          <template #default="props">{{ props.row.publisher }}</template>
         </el-table-column>
-        <el-table-column label="申请时间" width="160" prop="createTime">
-          <template #default="scope">{{ dateFormat(scope.row.createTime) }}</template>
+        <el-table-column label="申请时间" width="180" prop="applyTime">
+          <template #default="scope">{{ dateFormat(scope.row.applyTime) }}</template>
         </el-table-column>
-        <el-table-column label="审核人" width="80">
-          <template #default="props">{{ props.row.reviewUser }}</template>
+        <el-table-column label="审核人" width="100">
+          <template #default="props">{{ props.row.reviewer }}</template>
         </el-table-column>
         <el-table-column label="审核结果" width="80" prop="reviewResult"> </el-table-column>
-        <el-table-column label="审核时间">
+        <el-table-column label="审核时间" width="180">
           <template #default="scope">{{ dateFormat(scope.row.reviewTime) }}</template>
         </el-table-column>
         <el-table-column label="操作">
           <template #default="props">
-            <el-button type="text" size="mini" @click="updateReleaseInfo(props.row)">{{ props.row.compile }}</el-button>
-            <el-button type="text" @click="removeApply">{{ props.row.isDelete }}</el-button>
+            <el-button type="text" size="mini" @click="updateReleaseInfo(props.row)">编辑</el-button>
+            <el-button type="text" @click="removeApply">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -92,13 +92,6 @@ interface TableState {
   loading: boolean;
   total: number;
   createDialogVisible: boolean;
-  serviceInfo: {
-    type: string;
-    name: string;
-    account: string;
-    version: string;
-    description: string;
-  };
   searchProps: {
     keyword: string;
     page: number;
@@ -138,20 +131,13 @@ export default defineComponent({
       applicantFilters: [],
       reviewerFilters: [],
       createDialogVisible: false,
-      serviceInfo: {
-        type: '',
-        name: '',
-        account: '',
-        version: '',
-        description: '',
-      },
       searchProps: {
         keyword: '',
         status: null,
         auditResults: null,
         page: 1,
         pageSize: 10,
-        sortField: 'createTime',
+        sortField: 'applyTime',
         sortType: 'descending',
       },
     });
@@ -195,7 +181,7 @@ export default defineComponent({
         tableState.tableData = rows.map((item: any) => ({
           ...item,
           moduleType: getModuleType(item.type),
-          reviewResult: getReviewResult(item.result),
+          reviewResult: getReviewResult(item.status),
         }));
         // console.log('tableState.tableData: ', tableState.tableData);
       } catch (error) {

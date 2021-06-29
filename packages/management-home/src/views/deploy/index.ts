@@ -1,42 +1,35 @@
 export type DeployTableItemStruct = {
   id: number;
-  createTime: string;
-  reviewTime: string;
-  applyUser: string;
-  reviewUser: string;
-  version: string;
   name: string;
-  value: string;
-  defaultValue: string;
-  description: string;
+  version: string;
   type: number;
-  result: number;
-  scope: string;
-  enable: string;
-  serviceId: string;
-  tenantId: number;
-  compile: string;
-  isDelete: string;
+  publisher: string;
+  publisherID: string;
+  applyTime: string;
+  publishContent: string;
+  reviewer: string;
+  reviewerId: string;
+  status: number;
+  reviewContent: string;
+  reviewTime: string;
+  rowStatus: number;
 };
 
 export type ReviewTableItemStruct = {
   id: number;
-  createTime: string;
-  reviewTime: string;
-  applyUser: string;
-  reviewUser: string;
-  version: string;
   name: string;
-  value: string;
-  defaultValue: string;
-  description: string;
+  version: string;
   type: number;
-  result: number;
-  scope: string;
-  enable: string;
-  serviceId: string;
-  tenantId: number;
-  review: string;
+  publisher: string;
+  publisherID: string;
+  applyTime: string;
+  publishContent: string;
+  reviewer: string;
+  reviewerId: string;
+  status: number;
+  reviewContent: string;
+  reviewTime: string;
+  rowStatus: number;
 };
 
 export const MODULE_TYPE: any = {
@@ -45,9 +38,9 @@ export const MODULE_TYPE: any = {
 };
 
 export const REVIEW_RESULT: any = {
-  0: '通过',
-  1: '不通过',
+  0: '不通过',
+  1: '通过',
 };
 
 export const getModuleType = (type: number) => MODULE_TYPE[type];
-export const getReviewResult = (result: number) => REVIEW_RESULT[result];
+export const getReviewResult = (status: number) => REVIEW_RESULT[status];
