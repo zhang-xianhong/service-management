@@ -11,7 +11,7 @@ const classificationValue = ref([] as number[][]);
 // 分类信息Map
 const classificationMap: Map<number, any> = new Map();
 
-export default function (initialValue: string, classifications: any[]) {
+export default function(initialValue: string, classifications: any[]) {
   selectedClassifications.value = initialValue
     .split(',')
     .filter((item: string) => item !== '')
