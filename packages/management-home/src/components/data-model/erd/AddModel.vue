@@ -12,8 +12,8 @@
         </el-form-item>
       </el-form>
       <template #footer>
-        <el-button type="primary" @click="addModel">确 定</el-button>
-        <el-button @click="dialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="addModel" :loading="submitting">确定</el-button>
+        <el-button @click="dialogVisible = false">取消</el-button>
       </template>
     </el-dialog>
   </div>
@@ -31,6 +31,7 @@ export default defineComponent({
     const erdEmit = inject('erdEmit') as Function;
     const formRef: any = ref(null);
     const dialogVisible = ref(false);
+    const submitting = ref(false);
     const form = ref({
       name: '',
       description: '',
@@ -63,6 +64,7 @@ export default defineComponent({
         return false;
       }
       // 英文驼峰名验证
+      submitting.value = true;
       const { code } = await createModel({
         ...form.value,
         serviceId,
@@ -72,6 +74,7 @@ export default defineComponent({
         ElMessage.success('创建成功');
         erdEmit('model-change');
       }
+      submitting.value = false;
     };
     const rules = {
       name: [
@@ -93,6 +96,7 @@ export default defineComponent({
       formRef,
       objectName,
       objectDescription,
+      submitting,
     };
   },
 });

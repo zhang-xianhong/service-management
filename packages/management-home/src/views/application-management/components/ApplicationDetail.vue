@@ -60,7 +60,7 @@
     </el-form>
     <div class="dialog-footer">
       <template v-if="getShowBool('update')">
-        <el-button v-if="isEditable" type="primary" @click="updateAppDetail">保存</el-button>
+        <el-button v-if="isEditable" type="primary" @click="updateAppDetail" :loading="submitting">确定</el-button>
         <el-button v-else type="primary" @click="isEditable = true">编辑</el-button>
       </template>
       <el-button @click="handleCloseDialog('cancel')">{{ isEditable ? '取消' : '关闭' }}</el-button>
@@ -104,6 +104,7 @@ export default defineComponent({
     const instance = getCurrentInstance();
     const detailInfo: Ref<DetailInterface> = ref(props.detail);
     const isEditable: Ref<boolean> = ref(false);
+    const submitting = ref(false);
 
     const isVisable: any = computed(() => props.visable);
     // 每次打开会保留上一次的数据，需要重置
@@ -151,6 +152,7 @@ export default defineComponent({
       if (descriptionLength < 3 || descriptionLength > 20) {
         return false;
       }
+      submitting.value = true;
       const { code } = await updateAppById(detailInfo.value.id, {
         ...detailInfo.value,
         ...{ services: serviceIds.value },
@@ -163,6 +165,7 @@ export default defineComponent({
         isEditable.value = false;
         ctx.emit('close');
       }
+      submitting.value = false;
     };
 
     const handleCloseDialog = (type: string) => {
@@ -185,6 +188,7 @@ export default defineComponent({
       handleCloseDialog,
       getShowBool,
       onOpen,
+      submitting,
     };
   },
 });

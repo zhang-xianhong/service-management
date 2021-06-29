@@ -50,7 +50,7 @@
           <template v-else>{{ scope.row.description }}</template>
         </template>
       </el-table-column>
-      <el-table-column label="操作" width="120">
+      <el-table-column label="操作" width="120" v-if="getShowBool('update')">
         <template #default="scope">
           <template v-if="!scope.row.isSystem">
             <a class="operation-link" @click="openParamsModel(scope.$index, scope.row)">参数</a>
@@ -60,8 +60,8 @@
         </template>
       </el-table-column>
     </el-table>
-    <div class="ports-configuration__operations">
-      <el-button type="primary" @click="updateApis">保存</el-button>
+    <div class="ports-configuration__operations" v-if="getShowBool('update')">
+      <el-button type="primary" @click="updateApis">确定</el-button>
       <el-button @click="cancelChange">取消</el-button>
     </div>
   </div>
@@ -132,8 +132,8 @@
     </el-row>
     <template #footer>
       <span class="dialog-footer">
-        <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="handleParamsModify">确 定</el-button>
+        <el-button type="primary" @click="handleParamsModify">确定</el-button>
+        <el-button @click="dialogVisible = false">取消</el-button>
       </span>
     </template>
   </el-dialog>
@@ -143,6 +143,7 @@
 import { defineComponent, ref, reactive, watch, getCurrentInstance, SetupContext, computed } from 'vue';
 import { getServiceApis, updateServiceApis } from '@/api/servers';
 import _ from 'lodash';
+import { getShowBool } from '@/utils/permission-show-module';
 
 // 参数类型枚举
 enum ParamTypeEnum {
@@ -324,6 +325,28 @@ export default defineComponent({
 
     // 保存接口修改
     const updateApis = async () => {
+      console.log(' tableData.valu', tableData.value);
+      const reqData = tableData.value.filter((item: any) => item.isSystem === 0);
+      const res = reqData.find((item: any) => {
+        const { modelId, method, name } = item;
+        return typeof modelId === 'undefined' || method === '' || name === '';
+      });
+      if (res) {
+        let msg = '';
+        const { method, name } = res;
+        if (name.trim() === '') {
+          msg = '接口名称不能为空！';
+        } else if (method === '') {
+          msg = '请求方式不能为空！';
+        } else {
+          msg = '数据对象不能为空！';
+        }
+        (instance as any).proxy.$message({
+          type: 'warning',
+          message: msg,
+        });
+        return;
+      }
       const { code } = await updateServiceApis(
         {
           apis: tableData.value.filter((item: any) => item.name !== '' && item.isSystem === 0),
@@ -365,6 +388,7 @@ export default defineComponent({
       dataTypeOptions,
       tableRowClassName,
       currentParams,
+      getShowBool,
     };
   },
 });

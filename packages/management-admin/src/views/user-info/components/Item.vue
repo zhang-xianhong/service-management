@@ -11,7 +11,7 @@
     </span>
     <span v-show="changable" class="item-operation">
       <template v-if="isModifyMode">
-        <a @click="onSave">保存</a>
+        <a @click="onSave">确定</a>
         <a @click="onCancel">取消</a>
       </template>
       <template v-else>
@@ -69,6 +69,12 @@ export default defineComponent({
     const onSave = async () => {
       if (props.prop === 'displayName' || recentValue.value.length > 20) {
         return ElMessage.warning('管理员姓名长度在2-20个字符之间');
+      }
+      if (props.prop === 'phoneNumber') {
+        const reg = /^1[3|4|5|7|8][0-9]\d{8}$/;
+        if (!reg.test(recentValue.value)) {
+          return ElMessage.error('请输入正确的电话号码');
+        }
       }
       const { code } = await updateProfile({ [props.prop]: recentValue.value });
       if (code === 0) {

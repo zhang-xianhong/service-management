@@ -1,8 +1,10 @@
 export const isProduction = true || process.env.NODE_ENV === 'production';
 
+const useMock = Number(process.env.VUE_APP_USE_MOCK) === 1;
 export const getUrl = (urls: string[], params = ''): string => {
-  if (isProduction) {
-    return urls[0].replace('_', params);
+  const [api, mock] = urls;
+  if (mock && useMock) {
+    return mock.replace('_', params);
   }
-  return urls[1] || urls[0].replace('_', params);
+  return api.replace('_', params);
 };

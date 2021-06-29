@@ -5,6 +5,7 @@
     filterable
     remote
     reserve-keyword
+    multiple-limit="10"
     placeholder="请输入负责人姓名或者拼音"
     :remote-method="remoteMethod"
     :loading="loading"

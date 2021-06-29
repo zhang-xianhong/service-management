@@ -35,7 +35,7 @@
           <el-input v-else v-model.trim="scope.row.version" placeholder="请输入版本号"></el-input>
         </template>
       </el-table-column>
-      <el-table-column label="操作" width="160">
+      <el-table-column label="操作" width="160" v-if="getShowBool('update')">
         <template #default="scope">
           <template v-if="!scope.row.isEdit">
             <a class="operation-link" @click="addItem(scope.$index)">添加</a>
@@ -43,13 +43,13 @@
             <a class="operation-link" @click="deleteItem(scope.row)">删除</a>
           </template>
           <template v-else>
-            <a class="operation-link" @click="saveModify(scope.row)">保存</a>
+            <a class="operation-link" @click="saveModify(scope.row)">确定</a>
             <a class="operation-link" @click="cancelModify(scope.$index)">取消</a>
           </template>
         </template>
       </el-table-column>
     </el-table>
-    <div class="serverinfo-operations">
+    <div class="serverinfo-operations" v-if="getShowBool('update')">
       <el-button type="primary" @click="deliveryList">配置下发</el-button>
       <el-button @click="$emit('back')">返回</el-button>
     </div>
@@ -79,8 +79,8 @@
       <!--      </el-form-item>-->
       <el-form-item>
         <template v-if="isEditable">
-          <el-button @click="submitDetailModify" type="primary">提交</el-button>
-          <el-button @click="closeDetailDialog">关闭</el-button>
+          <el-button @click="submitDetailModify" type="primary">确定</el-button>
+          <el-button @click="closeDetailDialog">取消</el-button>
         </template>
         <el-button v-else type="primary" @click="isEditable = true">编辑</el-button>
       </el-form-item>
@@ -117,6 +117,7 @@ import {
   deliveryServiceConfig,
 } from '@/api/settings/config';
 import dateFormat from '@/utils/date-format';
+import { getShowBool } from '@/utils/permission-show-module';
 
 export default {
   name: 'ServerConfigInfo',
@@ -265,6 +266,7 @@ export default {
       cancelModify,
       deleteItem,
       deliveryList,
+      getShowBool,
     };
   },
 };

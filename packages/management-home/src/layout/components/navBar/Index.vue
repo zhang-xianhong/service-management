@@ -52,7 +52,7 @@
       <el-dropdown trigger="click" class="header-title">
         <span class="el-dropdown-link">
           <i class="el-icon-user-solid" style="margin-right: 2px"></i>
-          {{ userInfo.userName }}
+          {{ userInfo.displayName }}
           <i class="el-icon-arrow-down el-icon--right"></i>
         </span>
         <template #dropdown>
@@ -259,5 +259,8 @@ export default defineComponent({
   text-align: center;
   font-size: 13px;
   color: #bbb;
+}
+.el-dialog {
+  font-weight: bolder;
 }
 </style>

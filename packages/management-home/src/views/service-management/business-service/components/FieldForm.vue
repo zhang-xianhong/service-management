@@ -35,16 +35,16 @@
             <el-checkbox v-model="scope.row.isIndex" :disabled="isFieldDisabled(scope)"></el-checkbox>
           </template>
         </el-table-column>
-        <el-table-column prop="isParticipleSupport" label="分词" width="60">
-          <template #default="scope">
-            <el-checkbox v-model="scope.row.isParticipleSupport" :disabled="isFieldDisabled(scope)"></el-checkbox>
-          </template>
-        </el-table-column>
-        <el-table-column prop="isPinyinSupport" label="拼音" width="60">
-          <template #default="scope">
-            <el-checkbox v-model="scope.row.isPinyinSupport" :disabled="isFieldDisabled(scope)"></el-checkbox>
-          </template>
-        </el-table-column>
+        <!--        <el-table-column prop="isParticipleSupport" label="分词" width="60">-->
+        <!--          <template #default="scope">-->
+        <!--            <el-checkbox v-model="scope.row.isParticipleSupport" :disabled="isFieldDisabled(scope)"></el-checkbox>-->
+        <!--          </template>-->
+        <!--        </el-table-column>-->
+        <!--        <el-table-column prop="isPinyinSupport" label="拼音" width="60">-->
+        <!--          <template #default="scope">-->
+        <!--            <el-checkbox v-model="scope.row.isPinyinSupport" :disabled="isFieldDisabled(scope)"></el-checkbox>-->
+        <!--          </template>-->
+        <!--        </el-table-column>-->
         <el-table-column prop="operations" label="操作" width="180" v-if="getShowBool('add')">
           <template #default="scope">
             <a @click="add(scope.$index)" class="operator" v-if="scope.$index === 0">添加</a>
@@ -102,16 +102,18 @@ export default defineComponent({
       context.emit('back');
     };
     const save = async () => {
-      // 过滤空
+      // 过滤空和非法字符
       const res = fields.value.find((item: any) => {
         const { description, name, typeId } = item;
-        return !(description && name && typeId);
+        return !(description && name && typeId && /^([a-z]|[a-z]+[A-Z][a-z]+)+$/.test(name));
       });
       if (res) {
         let msg = '';
         const { description, name } = res;
         if (!name) {
           msg = '属性名不能为空！';
+        } else if (!/^([a-z]|[a-z]+[A-Z][a-z]+)+$/.test(name)) {
+          msg = '属性名称填写错误，必须是小驼峰格式';
         } else if (!description) {
           msg = '属性描述不能为空！';
         } else {

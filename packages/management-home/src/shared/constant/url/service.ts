@@ -15,6 +15,6 @@ export default {
   START_SERVICE: ['/services/start'],
   STOP_SERVICE: ['/services/stop'],
   SERVICE_NAME_TEST: ['/services/name/usable'],
-  GET_SERVICE_TRACE_ID: ['/logs/runtime/traceid/', '/mock/services/service-trace-id.json'],
+  GET_SERVICE_TRACE_ID: ['/logs/runtime/traceid', '/mock/services/service-trace-id.json'],
   UPDATE_SERVICE_STATUS: ['/services/sync/status', '/mock/services/update-service-status.json'],
 };
