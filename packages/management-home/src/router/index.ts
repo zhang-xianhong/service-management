@@ -209,6 +209,36 @@ const routes: Array<RouteRecordRaw> = [
     ],
   },
   {
+    path: '/deploy',
+    name: 'Deploy',
+    component: Layout,
+    meta: {
+      title: '发布管理',
+      isRootLevel: true,
+      icon: 'publish',
+    },
+    children: [
+      {
+        path: 'apply',
+        component: () => import('@/views/deploy/Apply.vue'),
+        name: 'DeployApply',
+        meta: {
+          title: '发布申请',
+          isRootLevel: false,
+        },
+      },
+      {
+        path: 'review',
+        component: () => import('@/views/deploy/Review.vue'),
+        name: 'DeployReview',
+        meta: {
+          title: '发布审核',
+          isRootLevel: false,
+        },
+      },
+    ],
+  },
+  {
     path: '/service-management',
     redirect: '/service-list',
     name: 'ServiceManagement',

@@ -8,6 +8,7 @@ import auth from './auth';
 import publish from './publish';
 import app from './app';
 import company from './company';
+import deploy from './deploy';
 
 export default {
   schema,
@@ -20,4 +21,5 @@ export default {
   publish,
   app,
   company,
+  deploy,
 };
