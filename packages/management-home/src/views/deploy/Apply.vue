@@ -59,44 +59,18 @@
       >
       </packaged-pagination>
     </list-wrap>
-    <el-dialog title="发布服务" v-model="createDialogVisible" width="500px">
-      <el-form :model="serviceInfo" label-width="120px" label-position="left" ref="deployForm">
-        <el-form-item label="发布类型" required="true">
-          <el-select placeholder="请选择发布类型">
-            <el-option label="服务" value="service"></el-option>
-            <el-option label="应用" value="application"></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="服务名称" required="true">
-          <el-select placeholder="请选择服务名称">
-            <el-option label="data1" value="data1"></el-option>
-            <el-option label="data2" value="data2"></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="申请账号"></el-form-item>
-        <el-form-item label="发布版本" required="true">
-          <el-select placeholder="请选择发布版本">
-            <el-option label="v1.0" value="1"></el-option>
-            <el-option label="v2.0" value="2"></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item>
-          <el-input
-            label="发布说明"
-            type="textarea"
-            :rows="3"
-            placeholder="请输入发布说明，小于512字"
-            maxlength="512"
-            show-word-limit
-          ></el-input>
-        </el-form-item>
-      </el-form>
-    </el-dialog>
+    <service-info
+      :visable="createDialogVisible"
+      :releaseForms="releaseForm"
+      @close="closeReleaseForm"
+      @getTableInfo="getTableData"
+    />
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, reactive, toRefs } from 'vue';
+import ServiceInfo from './ServiceInfo.vue';
 import {
   DeployTableItemStruct,
   // AUDIT_RESULTS,
@@ -133,8 +107,25 @@ interface TableState {
   };
 }
 
+interface ReleaseState {
+  disabled: boolean;
+  isEdit: boolean;
+  id: string;
+  serviceList: Array<object>;
+  applicationList: Array<object>;
+  versionOptions: Array<object>;
+  serviceInfo: {
+    releaseType: string;
+    // type: number;
+    name: string;
+    account: string;
+    version: string;
+    description: string;
+  };
+}
+
 export default defineComponent({
-  components: { ListWrap, PackagedPagination },
+  components: { ListWrap, PackagedPagination, ServiceInfo },
   setup() {
     const tableState: TableState = reactive({
       tableData: [],
@@ -162,6 +153,33 @@ export default defineComponent({
         sortType: 'descending',
       },
     });
+
+    const releaseForm: ReleaseState = reactive({
+      disabled: false,
+      isEdit: false,
+      id: '',
+      serviceInfo: {
+        releaseType: '1',
+        name: 'zxh',
+        account: '666',
+        version: '2.1',
+        description: '',
+      },
+      serviceList: [
+        { id: 1, name: '服务1' },
+        { id: 2, name: '服务2' },
+      ],
+      applicationList: [],
+      versionOptions: [
+        { id: 1, name: '1.0' },
+        { id: 2, name: '2.0' },
+      ],
+      types: [
+        { id: 1, name: '服务' },
+        { id: 2, name: '应用' },
+      ],
+    });
+
     async function getTableData() {
       try {
         tableState.loading = true;
@@ -209,8 +227,14 @@ export default defineComponent({
     };
     // 新建表单
     const openCreateDialog = () => {
-      tableState.createDialogVisible = true;
+      tableState.createDialogVisible = !tableState.createDialogVisible;
     };
+
+    // 关闭对话框
+    const closeReleaseForm = () => {
+      openCreateDialog();
+    };
+
     return {
       ...toRefs(tableState),
       dateFormat,
@@ -218,6 +242,8 @@ export default defineComponent({
       handlePageNumChange,
       getShowBool,
       openCreateDialog,
+      releaseForm,
+      closeReleaseForm,
       removeApply,
     };
   },
