@@ -43,7 +43,7 @@
         </el-table-column>
         <el-table-column label="操作">
           <template #default="props">
-            <el-button type="text" size="mini">{{ props.row.compile }}</el-button>
+            <el-button type="text" size="mini" @click="updateReleaseInfo(props.row)">{{ props.row.compile }}</el-button>
             <el-button type="text" @click="removeApply">{{ props.row.isDelete }}</el-button>
           </template>
         </el-table-column>
@@ -62,6 +62,7 @@
     <service-info
       :visable="createDialogVisible"
       :releaseForms="releaseForm"
+      :tableDatas="tableData"
       @close="closeReleaseForm"
       @getTableInfo="getTableData"
     />
@@ -69,7 +70,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, toRefs } from 'vue';
+import { defineComponent, reactive, toRefs, ref } from 'vue';
 import ServiceInfo from './ServiceInfo.vue';
 import {
   DeployTableItemStruct,
@@ -114,6 +115,7 @@ interface ReleaseState {
   serviceList: Array<object>;
   applicationList: Array<object>;
   versionOptions: Array<object>;
+  types: Array<object>;
   serviceInfo: {
     releaseType: string;
     // type: number;
@@ -159,10 +161,10 @@ export default defineComponent({
       isEdit: false,
       id: '',
       serviceInfo: {
-        releaseType: '1',
-        name: 'zxh',
-        account: '666',
-        version: '2.1',
+        releaseType: '',
+        name: '',
+        account: 'test',
+        version: '',
         description: '',
       },
       serviceList: [
@@ -180,6 +182,9 @@ export default defineComponent({
       ],
     });
 
+    const releaseInfo = ref({} as any);
+    console.log(releaseInfo);
+
     async function getTableData() {
       try {
         tableState.loading = true;
@@ -192,6 +197,7 @@ export default defineComponent({
           moduleType: getModuleType(item.type),
           reviewResult: getReviewResult(item.result),
         }));
+        // console.log('tableState.tableData: ', tableState.tableData);
       } catch (error) {
         tableState.loading = false;
         ElMessage({
@@ -211,6 +217,20 @@ export default defineComponent({
       getTableData();
     };
 
+    function initReleaseForm() {
+      releaseForm.disabled = false;
+      releaseForm.isEdit = false;
+      releaseForm.id = '';
+      releaseForm.serviceInfo = {
+        releaseType: '',
+        // releaseType: getModuleType(tableState.tableData[0].type),
+        name: '',
+        account: 'test',
+        version: '',
+        description: '',
+      };
+    }
+
     // 删除发布申请
     const removeApply = async (rowData: any) => {
       ElMessageBox.confirm('是否确定删除该申请？', '提示', {
@@ -225,6 +245,7 @@ export default defineComponent({
         getTableData();
       });
     };
+
     // 新建表单
     const openCreateDialog = () => {
       tableState.createDialogVisible = !tableState.createDialogVisible;
@@ -232,6 +253,18 @@ export default defineComponent({
 
     // 关闭对话框
     const closeReleaseForm = () => {
+      initReleaseForm();
+      openCreateDialog();
+    };
+
+    // 编辑
+    const updateReleaseInfo = (rowData: any) => {
+      releaseForm.isEdit = true;
+      releaseForm.id = rowData.id;
+      releaseForm.serviceInfo.name = rowData.name;
+      releaseForm.serviceInfo.releaseType = rowData.moduleType;
+      releaseForm.serviceInfo.version = rowData.version;
+      releaseForm.serviceInfo.description = rowData.description;
       openCreateDialog();
     };
 
@@ -242,9 +275,11 @@ export default defineComponent({
       handlePageNumChange,
       getShowBool,
       openCreateDialog,
+      getTableData,
       releaseForm,
       closeReleaseForm,
       removeApply,
+      updateReleaseInfo,
     };
   },
 });
