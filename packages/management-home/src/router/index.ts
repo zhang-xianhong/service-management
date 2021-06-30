@@ -174,106 +174,7 @@ const routes: Array<RouteRecordRaw> = [
       },
     ],
   },
-  {
-    path: '/service-repository',
-    name: '服务仓库',
-    component: Layout,
-    redirect: 'platform',
-    meta: {
-      title: '服务仓库',
-      icon: 'service-repository',
-      isRootLevel: true,
-      hidden: false,
-      node: true,
-    },
-    children: [
-      {
-        path: 'platform',
-        component: () => import('@/views/service-repository/platform/Index.vue'),
-        name: 'PublicRepositoryList',
-        children: [],
-        meta: {
-          title: '平台仓库',
-          isRootLevel: false,
-          hidden: false,
-        },
-      },
-      {
-        path: 'platform/:id',
-        component: () =>
-          import(/* webpackChunkName: "repository-detail" */ '@/views/service-repository/detail/Index.vue'),
-        name: 'RepositoryPlatformDetail',
-        meta: {
-          title: '服务详情',
-          isRootLevel: false,
-          hidden: true,
-          activeMenu: '/service-repository/platform',
-          showBackButton: true,
-        },
-      },
-      {
-        path: 'tenant',
-        component: () => import('@/views/service-repository/tenant/Index.vue'),
-        name: 'TenantRepositoryList',
-        redirect: 'shared',
-        children: [
-          {
-            path: 'shared',
-            component: () => import('@/views/service-repository/tenant/Shared.vue'),
-            name: 'SharedList',
-            children: [],
-            meta: {
-              title: '服务共享',
-              isRootLevel: false,
-              hidden: false,
-            },
-          },
-          {
-            path: 'distribute',
-            component: () => import('@/views/service-repository/tenant/Distribute.vue'),
-            name: 'DistributeList',
-            children: [],
-            meta: {
-              title: '服务下发',
-              isRootLevel: false,
-              hidden: false,
-            },
-          },
-        ],
-        meta: {
-          title: '租户仓库',
-          isRootLevel: false,
-          hidden: false,
-        },
-      },
-      {
-        path: 'tenant/shared/:id',
-        component: () =>
-          import(/* webpackChunkName: "repository-detail" */ '@/views/service-repository/detail/Index.vue'),
-        name: 'RepositoryTenantSharedDetail',
-        meta: {
-          title: '服务详情',
-          isRootLevel: false,
-          hidden: true,
-          activeMenu: '/service-repository/tenant/shared',
-          showBackButton: true,
-        },
-      },
-      {
-        path: 'tenant/distribute/:id',
-        component: () =>
-          import(/* webpackChunkName: "repository-detail" */ '@/views/service-repository/detail/Index.vue'),
-        name: 'RepositoryTenantDistributeDetail',
-        meta: {
-          title: '服务详情',
-          isRootLevel: false,
-          hidden: true,
-          activeMenu: '/service-repository/tenant/distribute',
-          showBackButton: true,
-        },
-      },
-    ],
-  },
+
   {
     path: '/publish',
     name: 'Publish',
@@ -391,6 +292,106 @@ const routes: Array<RouteRecordRaw> = [
           id: 23,
           hidden: true,
           activeMenu: '/application/application-list',
+          showBackButton: true,
+        },
+      },
+    ],
+  },
+  {
+    path: '/service-repository',
+    name: '服务仓库',
+    component: Layout,
+    redirect: 'platform',
+    meta: {
+      title: '服务仓库',
+      icon: 'service-repository',
+      isRootLevel: true,
+      hidden: false,
+      node: true,
+    },
+    children: [
+      {
+        path: 'platform',
+        component: () => import('@/views/service-repository/platform/Index.vue'),
+        name: 'PublicRepositoryList',
+        children: [],
+        meta: {
+          title: '平台仓库',
+          isRootLevel: false,
+          hidden: false,
+        },
+      },
+      {
+        path: 'platform/:id',
+        component: () =>
+          import(/* webpackChunkName: "repository-detail" */ '@/views/service-repository/detail/Index.vue'),
+        name: 'RepositoryPlatformDetail',
+        meta: {
+          title: '服务详情',
+          isRootLevel: false,
+          hidden: true,
+          activeMenu: '/service-repository/platform',
+          showBackButton: true,
+        },
+      },
+      {
+        path: 'tenant',
+        component: () => import('@/views/service-repository/tenant/Index.vue'),
+        name: 'TenantRepositoryList',
+        redirect: 'shared',
+        children: [
+          {
+            path: 'shared',
+            component: () => import('@/views/service-repository/tenant/Shared.vue'),
+            name: 'SharedList',
+            children: [],
+            meta: {
+              title: '服务共享',
+              isRootLevel: false,
+              hidden: false,
+            },
+          },
+          {
+            path: 'distribute',
+            component: () => import('@/views/service-repository/tenant/Distribute.vue'),
+            name: 'DistributeList',
+            children: [],
+            meta: {
+              title: '服务下发',
+              isRootLevel: false,
+              hidden: false,
+            },
+          },
+        ],
+        meta: {
+          title: '租户仓库',
+          isRootLevel: false,
+          hidden: false,
+        },
+      },
+      {
+        path: 'tenant/shared/:id',
+        component: () =>
+          import(/* webpackChunkName: "repository-detail" */ '@/views/service-repository/detail/Index.vue'),
+        name: 'RepositoryTenantSharedDetail',
+        meta: {
+          title: '服务详情',
+          isRootLevel: false,
+          hidden: true,
+          activeMenu: '/service-repository/tenant/shared',
+          showBackButton: true,
+        },
+      },
+      {
+        path: 'tenant/distribute/:id',
+        component: () =>
+          import(/* webpackChunkName: "repository-detail" */ '@/views/service-repository/detail/Index.vue'),
+        name: 'RepositoryTenantDistributeDetail',
+        meta: {
+          title: '服务详情',
+          isRootLevel: false,
+          hidden: true,
+          activeMenu: '/service-repository/tenant/distribute',
           showBackButton: true,
         },
       },

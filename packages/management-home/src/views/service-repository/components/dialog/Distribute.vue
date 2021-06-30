@@ -19,22 +19,18 @@
             <el-radio-button :label="0">否</el-radio-button>
           </el-radio-group>
         </el-form-item>
-        <template v-if="form.platformShareType === 1 && form.rename === 1">
-          <el-form-item label="英文服务名" prop="serviceName">
-            <el-input v-model.trim="form.serviceName" placeholder="请输入英文服务名" />
-          </el-form-item>
-          <el-form-item label="中文服务名" prop="serviceNameZh">
-            <el-input v-model.trim="form.serviceNameZh" placeholder="请输入中文服务名" />
-          </el-form-item>
-        </template>
-        <template v-else>
-          <el-form-item label="英文服务名">
-            <span v-if="sourceData">{{ sourceData.serviceName }}</span>
-          </el-form-item>
-          <el-form-item label="中文服务名">
-            <span v-if="sourceData && sourceData.snapshotInfo">{{ sourceData.snapshotInfo.serviceNameZh }}</span>
-          </el-form-item>
-        </template>
+        <el-form-item :label="`${useNewName ? '原服务英文名' : '服务英文名'}`">
+          <span v-if="sourceData">{{ sourceData.serviceName }}</span>
+        </el-form-item>
+        <el-form-item label="新服务英文名" prop="serviceName" v-if="useNewName">
+          <el-input v-model.trim="form.serviceName" placeholder="请输入英文服务名" />
+        </el-form-item>
+        <el-form-item :label="`${useNewName ? '原服务中文名' : '服务中文名'}`">
+          <span v-if="sourceData && sourceData.snapshotInfo">{{ sourceData.snapshotInfo.serviceNameZh }}</span>
+        </el-form-item>
+        <el-form-item label="新服务中文名" prop="serviceNameZh" v-if="useNewName">
+          <el-input v-model.trim="form.serviceNameZh" placeholder="请输入中文服务名" />
+        </el-form-item>
         <el-form-item label="服务依赖">
           <el-button type="text" @click="handleViewServiceDepend">查看详情</el-button>
         </el-form-item>
@@ -50,7 +46,7 @@
   </el-dialog>
 </template>
 <script lang="ts">
-import { defineComponent, ref, reactive } from 'vue';
+import { defineComponent, ref, reactive, computed } from 'vue';
 import ServiceDependDialog from './Depend.vue';
 import _ from 'lodash';
 import { ElMessage } from 'element-plus';
@@ -93,6 +89,7 @@ export default defineComponent({
         { min: 2, max: 64, message: '长度在 2 到 64 个字符', trigger: 'blur' },
       ],
     });
+    const useNewName = computed(() => form.platformShareType === 1 && form.rename === 1);
     // 获取项目列表
     const fetchProjectList = async () => {
       const { data } = await getAllProjectList({});
@@ -155,6 +152,7 @@ export default defineComponent({
       handleViewServiceDepend,
       sourceData,
       projectList,
+      useNewName,
     };
   },
 });

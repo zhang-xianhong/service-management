@@ -88,3 +88,7 @@ $--form-label-font-size: 12px !default;
 .el-dialog__footer {
   text-align: center;
 }
+
+.el-cascader-menu__list {
+  min-height: 46px;
+}
