@@ -55,6 +55,16 @@
           show-word-limit
         ></el-input>
       </el-form-item>
+      <el-form-item label="服务名称" :label-width="labelWidth">
+        <el-cascader
+          v-model="name"
+          :options="releaseData.serviceList"
+          :props="sortProps"
+          clearable
+          filterable
+          placeholder="请选择服务名称"
+        ></el-cascader>
+      </el-form-item>
     </el-form>
     <div class="dialog-footer">
       <el-button type="primary" @click="submitReleaseForm">提 交</el-button>
@@ -65,7 +75,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, Ref, computed, SetupContext, PropType } from 'vue';
+import { defineComponent, ref, Ref, computed, SetupContext, PropType, reactive } from 'vue';
 import { ElMessage } from 'element-plus';
 import { addApply, updateApply } from '@/api/deploy/deploy-apply';
 interface ReleaseState {
@@ -98,9 +108,17 @@ export default defineComponent({
   },
   setup(props: { visable: boolean; releaseForms: ReleaseState }, ctx: SetupContext) {
     const labelWidth = ref('80px');
+    const sortProps = reactive({
+      label: 'name',
+      value: 'id',
+      children: 'children',
+      emitPath: false,
+      // multiple: true,
+      expandTrigger: 'hover'
+    })
     const isVisable: any = computed(() => props.visable);
     const releaseData: Ref<ReleaseState> = computed(() => props.releaseForms);
-    console.log('releaseData: ', releaseData);
+    // console.log('releaseData: ', releaseData);
     const isEditable: Ref<boolean> = computed(() => releaseData.value.isEdit);
     // 表单
     const releaseFormRef: any = ref(null);
@@ -168,6 +186,7 @@ export default defineComponent({
 
     return {
       labelWidth,
+      sortProps,
       releaseRules,
       releaseData,
       releaseFormRef,

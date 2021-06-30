@@ -69,7 +69,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, ref, toRefs } from 'vue';
+import { defineComponent, reactive, toRefs } from 'vue';
 import ServiceInfo from './ServiceInfo.vue';
 import {
   DeployTableItemStruct,
@@ -85,6 +85,7 @@ import { deleteApply, getDeployList } from '@/api/deploy/deploy-apply';
 import PackagedPagination from '@/components/pagination/Index.vue';
 import ListWrap from '@/components/list-wrap/Index.vue';
 import { getShowBool } from '@/utils/permission-show-module';
+import { userInfo } from '@/layout/messageCenter/user-info';
 
 interface TableState {
   tableData: Array<DeployTableItemStruct>;
@@ -140,8 +141,6 @@ export default defineComponent({
       },
     });
 
-    const publishCount = ref<string>('');
-    console.log('publishCOunt:', publishCount);
     const releaseForm: ReleaseState = reactive({
       disabled: false,
       isEdit: false,
@@ -150,7 +149,7 @@ export default defineComponent({
         type: 0,
         name: '',
         version: '',
-        publisher: publishCount.value,
+        publisher: `${userInfo.value.displayName}_${userInfo.value.userName}`,
         publisherId: 'michaelccao_1',
         publishContent: '',
       },
@@ -178,12 +177,11 @@ export default defineComponent({
           id: item.id.toString(),
           name: item.name,
         }));
+
         releaseForm.versionOptions = tableState.tableData.map((item: any) => ({
           id: item.id.toString(),
           name: item.version,
         }));
-        publishCount.value = tableState.tableData[0].publisher;
-        console.log('publishCount.value: ', publishCount.value);
         // console.log('tableState.tableData: ', tableState.tableData);
       } catch (error) {
         tableState.loading = false;
@@ -194,6 +192,22 @@ export default defineComponent({
       }
     }
     getTableData();
+
+    // 获取服务列表
+    // async function getServices() {
+    //   const { data } = await getServiceList({ all: true });
+    //   const servides = data.rows || [];
+    //   releaseForm.serviceList = servides.map((item: any) => ({
+    //     id: item.id,
+    //     name: `${item.description}_${item.name}`,
+    //   }));
+    // }
+    // 改变service方法
+    // function serviceChange(serviceId: any) {
+    //   const data: any = releaseForm.serviceList.find((i: any) => i.id === serviceId);
+    //   releaseForm.serviceInfo.moduleId = serviceId;
+    //   releaseForm.serviceInfo.name = data?.name;
+    // }
 
     const handlePageSizeChange = (pageSize: number) => {
       tableState.searchProps.pageSize = pageSize;
@@ -213,7 +227,7 @@ export default defineComponent({
         name: '',
         version: '',
         // publisher: 'michaelccao',
-        publisher: publishCount.value,
+        publisher: `${userInfo.value.displayName}_${userInfo.value.userName}`,
         publisherId: 'michaelccao_1',
         publishContent: '',
       };
@@ -228,9 +242,17 @@ export default defineComponent({
       }).then(async () => {
         const { code } = await deleteApply(rowData.id);
         if (code === 0) {
-          return ElMessage.success('删除成功');
+          ElMessage({
+            type: 'success',
+            message: '申请删除成功',
+          });
+          getTableData();
+        } else {
+          ElMessage({
+            type: 'error',
+            message: '申请删除失败',
+          });
         }
-        getTableData();
       });
     };
 
@@ -252,7 +274,7 @@ export default defineComponent({
       releaseForm.id = rowData.id.toString();
       releaseForm.serviceInfo.name = rowData.name;
       releaseForm.serviceInfo.type = rowData.type;
-      releaseForm.serviceInfo.publisher = rowData.publisher;
+      // releaseForm.serviceInfo.publisher = rowData.publisher;
       releaseForm.serviceInfo.version = rowData.version;
       releaseForm.serviceInfo.publishContent = rowData.publishContent;
       openCreateDialog();
