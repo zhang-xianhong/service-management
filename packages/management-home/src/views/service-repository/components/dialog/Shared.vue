@@ -44,21 +44,30 @@
 </template>
 <script lang="ts">
 import { defineComponent, ref, reactive } from 'vue';
+import { ElMessage } from 'element-plus';
 import ServiceDependDialog from './Depend.vue';
+import { shareRepository } from '@/api/repository';
+import _ from 'lodash';
 export default defineComponent({
   name: 'SharedDialog',
   components: {
     ServiceDependDialog,
   },
-  setup() {
+  props: {
+    refresh: {
+      type: Function,
+      default: _.noop,
+    },
+  },
+  setup(props) {
     const visible = ref(false);
     const submitting = ref(false);
     const formRef = ref(null as any);
     const serviceDependDialog = ref(null as any);
     const sourceData = ref(null as any);
     const form = reactive({
-      shareType: [],
-      remark: '',
+      platformShareType: [],
+      platformShareDescription: '',
     });
     const sharedTypes = reactive([
       {
@@ -89,7 +98,19 @@ export default defineComponent({
         if (!valid) {
           return;
         }
-        console.log(form);
+        let platformShareType = 1;
+        if (form.platformShareType.length === 2) {
+          platformShareType = 3;
+        } else {
+          platformShareType = Number(form.platformShareType.join(''));
+        }
+        await shareRepository({
+          platformShareType,
+          platformShareDescription: form.platformShareDescription,
+          repositoryId: sourceData.value.id,
+        });
+        ElMessage.success('服务共享成功');
+        props.refresh && props.refresh();
         handleClose();
       } catch (e) {
         console.log(e);

@@ -68,8 +68,8 @@
         v-if="total > 0"
       ></packaged-pagination>
     </list-wrap>
-    <distribute-dialog ref="distributeDialogRef" />
-    <shared-dialog ref="sharedDialogRef" />
+    <distribute-dialog ref="distributeDialogRef" :refresh="fetchData" />
+    <shared-dialog ref="sharedDialogRef" :refresh="fetchData" />
   </div>
 </template>
 <script lang="ts">
@@ -209,6 +209,7 @@ export default defineComponent({
         ...SERVICE_LEVEL,
       },
       route,
+      fetchData,
     };
   },
 });

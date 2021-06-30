@@ -2,22 +2,24 @@
   <el-dialog title="下发服务" v-model="visible" width="640px" :before-close="handleClose">
     <div class="dialog-body">
       <el-form :model="form" :rules="formRules" ref="formRef" label-width="100px">
-        <el-form-item label="选择项目" prop="project">
-          <el-select v-model="form.project" placeholder="请选择项目" style="width: 100%"> </el-select>
+        <el-form-item label="选择项目" prop="projectId">
+          <el-select v-model="form.projectId" placeholder="请选择项目" filterable style="width: 100%">
+            <el-option v-for="item in projectList" :key="item.id" :label="item.name" :value="item.id"></el-option>
+          </el-select>
         </el-form-item>
-        <el-form-item label="共享方式" prop="shareType">
-          <el-radio-group v-model="form.shareType" name="shareType" @change="handleClearValidate">
+        <el-form-item label="共享方式" prop="platformShareType">
+          <el-radio-group v-model="form.platformShareType" name="platformShareType" @change="handleClearValidate">
             <el-radio-button :label="1">克隆</el-radio-button>
             <el-radio-button :label="2">引用</el-radio-button>
           </el-radio-group>
         </el-form-item>
-        <el-form-item label="是否重命名" prop="rename" v-if="form.shareType === 1">
+        <el-form-item label="是否重命名" prop="rename" v-if="form.platformShareType === 1">
           <el-radio-group v-model="form.rename" name="rename" @change="handleClearValidate">
             <el-radio-button :label="1">是</el-radio-button>
             <el-radio-button :label="0">否</el-radio-button>
           </el-radio-group>
         </el-form-item>
-        <template v-if="form.shareType === 1 && form.rename === 1">
+        <template v-if="form.platformShareType === 1 && form.rename === 1">
           <el-form-item label="英文服务名" prop="serviceName">
             <el-input v-model.trim="form.serviceName" placeholder="请输入英文服务名" />
           </el-form-item>
@@ -50,35 +52,53 @@
 <script lang="ts">
 import { defineComponent, ref, reactive } from 'vue';
 import ServiceDependDialog from './Depend.vue';
+import _ from 'lodash';
+import { ElMessage } from 'element-plus';
+import { distributeRepository } from '@/api/repository';
+import { getAllProjectList } from '@/api/project';
+
 export default defineComponent({
   name: 'DistributeDialog',
   components: {
     ServiceDependDialog,
   },
-  setup() {
+  props: {
+    refresh: {
+      type: Function,
+      default: _.noop,
+    },
+  },
+  setup(props) {
     const visible = ref(false);
     const submitting = ref(false);
     const formRef = ref(null as any);
     const serviceDependDialog = ref(null as any);
     const sourceData = ref(null as any);
+    const projectList = ref([] as any[]);
     const form = reactive({
-      project: '',
-      shareType: 1,
+      projectId: '',
+      platformShareType: 1,
       rename: 0,
       serviceName: '',
       serviceNameZh: '',
     });
     const formRules = reactive({
-      project: [{ required: true, message: '请选择项目', trigger: 'blur' }],
+      projectId: [{ required: true, message: '请选择项目', trigger: 'blur' }],
       serviceName: [
         { required: true, message: '请输入服务英文名称', trigger: 'blur' },
-        { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' },
+        { min: 2, max: 64, message: '长度在 2 到 64 个字符', trigger: 'blur' },
       ],
       serviceNameZh: [
         { required: true, message: '请输入服务中文名称', trigger: 'blur' },
-        { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' },
+        { min: 2, max: 64, message: '长度在 2 到 64 个字符', trigger: 'blur' },
       ],
     });
+    // 获取项目列表
+    const fetchProjectList = async () => {
+      const { data } = await getAllProjectList({});
+      projectList.value = data;
+      console.log(data);
+    };
     const handleClose = () => {
       visible.value = false;
       formRef.value.resetFields();
@@ -86,6 +106,7 @@ export default defineComponent({
     const handleOpen = (row: any) => {
       visible.value = true;
       sourceData.value = row;
+      fetchProjectList();
     };
     const handleSubmit = async () => {
       try {
@@ -94,7 +115,19 @@ export default defineComponent({
         if (!valid) {
           return;
         }
-        console.log(form);
+        const postData: any = {
+          platformShareType: form.platformShareType,
+          projectId: form.projectId,
+          repositoryId: sourceData.value.id,
+        };
+        // 需要重命名
+        if (form.platformShareType && form.rename === 1) {
+          postData.serviceName = form.serviceName;
+          postData.serviceNameZh = form.serviceNameZh;
+        }
+        await distributeRepository(postData);
+        ElMessage.success('服务下发成功');
+        props.refresh && props.refresh();
         handleClose();
       } catch (e) {
         console.log(e);
@@ -121,6 +154,7 @@ export default defineComponent({
       handleClearValidate,
       handleViewServiceDepend,
       sourceData,
+      projectList,
     };
   },
 });

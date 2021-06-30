@@ -11,3 +11,9 @@ export const getRepositoryList: (payload: any) => Promise<SuccessResponse<any>> 
 // 拉取到租户仓库
 export const pullRepository: (payload: any) => Promise<SuccessResponse<any>> = (payload: any) =>
   request.post(getUrl(repository.POST_PULL_REPOSITORY), payload);
+// 共享
+export const shareRepository: (payload: any) => Promise<SuccessResponse<any>> = (payload: any) =>
+  request.post(getUrl(repository.POST_SHARE_REPOSITORY), payload);
+// 下发
+export const distributeRepository: (payload: any) => Promise<SuccessResponse<any>> = (payload: any) =>
+  request.post(getUrl(repository.POST_DISTRIBUTE_REPOSITORY), payload);
