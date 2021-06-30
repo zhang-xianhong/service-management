@@ -62,7 +62,6 @@
     <service-info
       :visable="createDialogVisible"
       :releaseForms="releaseForm"
-      :tableDatas="tableData"
       @close="closeReleaseForm"
       @getTableInfo="getTableData"
     />
@@ -70,7 +69,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, toRefs, ref } from 'vue';
+import { defineComponent, reactive, toRefs } from 'vue';
 import ServiceInfo from './ServiceInfo.vue';
 import {
   DeployTableItemStruct,
@@ -79,6 +78,8 @@ import {
   getReviewResult,
   // STATUS
 } from '@/views/deploy/index';
+
+// import { duplicate } from '@/utils/duplicate-removal';
 
 import { ElMessage, ElMessageBox } from 'element-plus';
 import dateFormat from '@/utils/date-format';
@@ -106,16 +107,15 @@ interface ReleaseState {
   isEdit: boolean;
   id: string;
   serviceList: Array<object>;
-  applicationList: Array<object>;
   versionOptions: Array<object>;
   types: Array<object>;
   serviceInfo: {
-    releaseType: string;
-    // type: number;
     name: string;
-    account: string;
     version: string;
-    description: string;
+    type: number;
+    publisher: string;
+    publisherId: string;
+    publishContent: string;
   };
 }
 
@@ -147,29 +147,20 @@ export default defineComponent({
       isEdit: false,
       id: '',
       serviceInfo: {
-        releaseType: '',
+        type: 0,
         name: '',
-        account: 'test',
         version: '',
-        description: '',
+        publisher: 'michaelccao',
+        publisherId: 'michaelccao_1',
+        publishContent: '',
       },
-      serviceList: [
-        { id: 1, name: '服务1' },
-        { id: 2, name: '服务2' },
-      ],
-      applicationList: [],
-      versionOptions: [
-        { id: 1, name: '1.0' },
-        { id: 2, name: '2.0' },
-      ],
+      serviceList: [],
+      versionOptions: [],
       types: [
-        { id: 1, name: '服务' },
-        { id: 2, name: '应用' },
+        { id: 0, name: '服务' },
+        { id: 1, name: '应用' },
       ],
     });
-
-    const releaseInfo = ref({} as any);
-    console.log(releaseInfo);
 
     async function getTableData() {
       try {
@@ -182,6 +173,18 @@ export default defineComponent({
           ...item,
           moduleType: getModuleType(item.type),
           reviewResult: getReviewResult(item.status),
+        }));
+        releaseForm.serviceList = tableState.tableData.map((item: any) => ({
+          id: item.id.toString(),
+          name: item.name,
+        }));
+        // const serviceList: any = releaseForm.serviceList;
+        // console.log('duplicate(serviceList).flat()', duplicate(serviceList));
+        // releaseForm.serviceList = duplicate(serviceList);
+        // console.log('releaseForm.serviceList: ', releaseForm.serviceList);
+        releaseForm.versionOptions = tableState.tableData.map((item: any) => ({
+          id: item.id.toString(),
+          name: item.version,
         }));
         // console.log('tableState.tableData: ', tableState.tableData);
       } catch (error) {
@@ -208,12 +211,12 @@ export default defineComponent({
       releaseForm.isEdit = false;
       releaseForm.id = '';
       releaseForm.serviceInfo = {
-        releaseType: '',
-        // releaseType: getModuleType(tableState.tableData[0].type),
+        type: 0,
         name: '',
-        account: 'test',
         version: '',
-        description: '',
+        publisher: 'michaelccao',
+        publisherId: 'michaelccao_1',
+        publishContent: '',
       };
     }
 
@@ -246,11 +249,13 @@ export default defineComponent({
     // 编辑
     const updateReleaseInfo = (rowData: any) => {
       releaseForm.isEdit = true;
-      releaseForm.id = rowData.id;
+      // console.log('编辑时的数据信息：', rowData);
+      releaseForm.id = rowData.id.toString();
       releaseForm.serviceInfo.name = rowData.name;
-      releaseForm.serviceInfo.releaseType = rowData.moduleType;
+      releaseForm.serviceInfo.type = rowData.type;
+      releaseForm.serviceInfo.publisher = rowData.publisher;
       releaseForm.serviceInfo.version = rowData.version;
-      releaseForm.serviceInfo.description = rowData.description;
+      releaseForm.serviceInfo.publishContent = rowData.publishContent;
       openCreateDialog();
     };
 
