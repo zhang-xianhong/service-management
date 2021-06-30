@@ -79,8 +79,6 @@ import {
   // STATUS
 } from '@/views/deploy/index';
 
-// import { duplicate } from '@/utils/duplicate-removal';
-
 import { ElMessage, ElMessageBox } from 'element-plus';
 import dateFormat from '@/utils/date-format';
 import { deleteApply, getDeployList } from '@/api/deploy/deploy-apply';
@@ -178,15 +176,11 @@ export default defineComponent({
           id: item.id.toString(),
           name: item.name,
         }));
-        // const serviceList: any = releaseForm.serviceList;
-        // console.log('duplicate(serviceList).flat()', duplicate(serviceList));
-        // releaseForm.serviceList = duplicate(serviceList);
-        // console.log('releaseForm.serviceList: ', releaseForm.serviceList);
+
         releaseForm.versionOptions = tableState.tableData.map((item: any) => ({
           id: item.id.toString(),
           name: item.version,
         }));
-        // console.log('tableState.tableData: ', tableState.tableData);
       } catch (error) {
         tableState.loading = false;
         ElMessage({
@@ -229,9 +223,17 @@ export default defineComponent({
       }).then(async () => {
         const { code } = await deleteApply(rowData.id);
         if (code === 0) {
-          return ElMessage.success('删除成功');
+          ElMessage({
+            type: 'success',
+            message: '申请删除成功',
+          });
+          getTableData();
+        } else {
+          ElMessage({
+            type: 'error',
+            message: '申请删除失败',
+          });
         }
-        getTableData();
       });
     };
 
