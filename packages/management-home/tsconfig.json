@@ -34,7 +34,7 @@
     "tests/**/*.ts",
     "tests/**/*.tsx",
     "type-css.d.ts"
-  ],
+, "src/views/service-repository/components/depend/tree.js"  ],
   "exclude": [
     "node_modules"
   ]

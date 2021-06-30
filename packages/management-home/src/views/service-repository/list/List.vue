@@ -29,8 +29,8 @@
             {{ serviceLevels[scope.row.snapshotInfo?.level] }}
           </template>
         </el-table-column>
-        <el-table-column prop="address" label="类型"> </el-table-column>
-        <el-table-column prop="address" label="分类"> 业务服务 </el-table-column>
+        <el-table-column prop="address" label="类型">业务服务</el-table-column>
+        <el-table-column prop="address" label="分类"> </el-table-column>
         <el-table-column prop="address" label="标签"> </el-table-column>
         <el-table-column prop="address" label="服务来源" v-if="listType !== 'platform'"> </el-table-column>
         <el-table-column prop="address" label="开发方">
