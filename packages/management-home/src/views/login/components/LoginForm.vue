@@ -158,8 +158,8 @@ export default defineComponent({
 });
 </script>
 
-<style lang="scss">
-.form-item {
+<style scoped lang="scss">
+::v-deep .form-item {
   .el-input__inner {
     height: 48px;
   }
@@ -167,9 +167,6 @@ export default defineComponent({
     right: 0px;
   }
 }
-</style>
-
-<style scoped lang="scss">
 .form {
   &-item {
     display: block;
