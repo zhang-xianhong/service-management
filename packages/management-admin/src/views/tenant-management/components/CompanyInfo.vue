@@ -71,7 +71,7 @@
           v-model="companyInfo.addrDetail"
           style="width: 400px"
           placeholder="请输入详细地址"
-          maxlength="255"
+          maxlength="225"
         ></el-input>
       </el-form-item>
       <el-form-item prop="natureId" class="form-item" label="企业性质">

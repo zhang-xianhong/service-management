@@ -36,7 +36,13 @@
       </el-form-item>
       <el-form-item prop="addrDetail" class="form-item" label="详细地址">
         <template v-if="!isEdit">{{ companyInfo.addrDetail }}</template>
-        <el-input v-else v-model="companyInfo.addrDetail" style="width: 400px" placeholder="请输入详细地址"></el-input>
+        <el-input
+          v-else
+          v-model="companyInfo.addrDetail"
+          style="width: 400px"
+          placeholder="请输入详细地址"
+          maxlength="225"
+        ></el-input>
       </el-form-item>
       <el-form-item prop="natureId" class="form-item" label="企业性质" required>
         {{ computedNatureName }}
