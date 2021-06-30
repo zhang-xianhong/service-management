@@ -16,7 +16,10 @@
         <el-table-column label="序号" type="index"> </el-table-column>
         <el-table-column prop="serviceName" label="服务英文名">
           <template #default="scope">
-            <router-link :to="`${route.fullPath}/${scope.row.id}`">{{ scope.row.serviceName }}</router-link>
+            <router-link
+              :to="`${route.fullPath}/snapshotNo=${scope.row.snapshotInfo?.snapshotNo}&serviceName=${scope.row.snapshotInfo?.serviceName}`"
+              >{{ scope.row.serviceName }}</router-link
+            >
           </template>
         </el-table-column>
         <el-table-column prop="serviceNameZh" label="服务中文名">

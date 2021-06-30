@@ -1,7 +1,11 @@
 <template>
   <div class="repository-detail">
     <el-tabs v-model="activeTab" @tab-click="handleTabClick">
-      <el-tab-pane label="基本信息" name="base">基本信息</el-tab-pane>
+      <el-tab-pane label="基本信息" name="base">
+        <div class="service-depened-wrapper">
+          <service-base :snapshotNo="''" />
+        </div>
+      </el-tab-pane>
       <el-tab-pane label="服务依赖" name="depend">
         <div class="service-depened-wrapper">
           <service-depend v-if="activeTab === 'depend'" />
@@ -15,8 +19,9 @@
 <script lang="ts">
 import { defineComponent, ref } from 'vue';
 import ServiceDepend from '../components/depend/Index.vue';
+import ServiceBase from '../components/base/index.vue';
 export default defineComponent({
-  components: { ServiceDepend },
+  components: { ServiceDepend, ServiceBase },
   setup() {
     const activeTab = ref('base');
     const handleTabClick = () => 1;

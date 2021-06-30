@@ -17,3 +17,7 @@ export const shareRepository: (payload: any) => Promise<SuccessResponse<any>> = 
 // 下发
 export const distributeRepository: (payload: any) => Promise<SuccessResponse<any>> = (payload: any) =>
   request.post(getUrl(repository.POST_DISTRIBUTE_REPOSITORY), payload);
+
+// 获取服务详情
+export const getRepositoryDetail: (snapshotNo: string) => Promise<SuccessResponse<any>> = (snapshotNo: string) =>
+  request.get(getUrl(repository.GET_REPOSITORY_DETAIL_URL, snapshotNo));

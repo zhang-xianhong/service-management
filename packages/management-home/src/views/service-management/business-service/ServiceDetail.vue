@@ -631,14 +631,11 @@ export default {
       getShowBool,
       pageLoading,
       reloadCom,
-<<<<<<< Updated upstream
       getServerInfo,
-=======
       releaseNext,
       currentActive,
       closeReleaseDialog,
       releaseFormData,
->>>>>>> Stashed changes
     };
   },
 };
