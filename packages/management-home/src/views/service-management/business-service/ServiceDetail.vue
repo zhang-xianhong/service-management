@@ -163,6 +163,27 @@
           <el-button style="margin-top: 20px" @click="clearSql">取消</el-button>
         </div>
       </el-dialog>
+      <el-dialog title="发版" v-model="releaseDialogVisible" width="60%" @close="closeReleaseDialog">
+        <div>
+          <el-steps :active="currentActive" finish-status="success" simple style="margin-top: 20px">
+            <el-step v-for="item in releaseFormData" :key="item.title" :title="item.title"></el-step>
+          </el-steps>
+        </div>
+        <div>
+          <el-form
+            :model="releaseFormData[0].data"
+            :rules="releaseFormData[0].rules"
+            ref="releaseBaseForm"
+            label-width="100px"
+            class="demo-ruleForm"
+          >
+          </el-form>
+        </div>
+        <div class="dialog-footer">
+          <el-button type="primary" style="margin-top: 20px" @click="releaseNext">下一步</el-button>
+          <el-button style="margin-top: 20px" @click="closeReleaseDialog">关闭</el-button>
+        </div>
+      </el-dialog>
     </div>
   </div>
 </template>
@@ -207,6 +228,10 @@ import {
   clearLogInterVal,
   formatLogData,
 } from '@/views/service-management/business-service/utils/service-log-data-utils';
+import {
+  releaseDialogVisible,
+  closeReleaseDialog,
+} from '@/views/service-management/business-service/utils/service-release-data-utils';
 
 import { userProjectList } from '@/layout/messageCenter/user-info';
 
@@ -514,11 +539,57 @@ export default {
           return '';
       }
     });
+    const releaseFormData = reactive([
+      {
+        title: '基本信息',
+        id: 'baseInfo',
+        rules: {
+          version: [
+            { required: true, message: '请输入版本号', trigger: 'blur' },
+            { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' },
+          ],
+          description: [
+            { required: true, message: '请输入使用注意事项，更新日志，版本信息、bug修复记录', trigger: 'blur' },
+          ],
+        },
+        data: {
+          version: '',
+          description: '',
+        },
+      },
+      {
+        title: '配置项',
+        id: 'config',
+        data: {
+          version: '',
+          description: '',
+        },
+      },
+      {
+        title: '数据库升级脚本',
+        id: 'upgradeScript',
+        data: {
+          description: '',
+        },
+      },
+      {
+        title: '数据库预置数据',
+        id: 'preScript',
+        data: {
+          description: '',
+        },
+      },
+    ]);
+    const currentActive = ref(0);
+    const releaseNext = () => {
+      if (currentActive.value < 4) {
+        currentActive.value = currentActive.value + 1;
+      }
+    };
 
     onBeforeUnmount(() => {
       clearInterval(intervalId);
     });
-
     return {
       isShowDownDrawer,
       computedHeight,
@@ -543,6 +614,7 @@ export default {
       modelSelected,
       modelInfo,
       logDialogVisible,
+      releaseDialogVisible,
       logData,
       clearLogInterVal,
       formatLogData,
@@ -559,7 +631,14 @@ export default {
       getShowBool,
       pageLoading,
       reloadCom,
+<<<<<<< Updated upstream
       getServerInfo,
+=======
+      releaseNext,
+      currentActive,
+      closeReleaseDialog,
+      releaseFormData,
+>>>>>>> Stashed changes
     };
   },
 };

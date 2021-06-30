@@ -3,6 +3,7 @@ import {
   getSqlData,
   startServiceData,
   stopServiceData,
+  releaseServiceData,
 } from '@/views/service-management/business-service/utils/service-detail-data';
 import { ref } from 'vue';
 
@@ -56,6 +57,12 @@ export default function () {
     getTraceAndLog();
   };
 
+  // 发版
+  const release = () => {
+    console.log('发版');
+    releaseServiceData();
+  };
+
   // 按钮配置
   buttons.value = [
     {
@@ -98,6 +105,14 @@ export default function () {
       label: '日志',
       eventOption: {
         click: () => log(),
+      },
+      disabled: false,
+      style: 'margin-left: 5px',
+    },
+    {
+      label: '发版',
+      eventOption: {
+        click: () => release(),
       },
       disabled: false,
       style: 'margin-left: 5px',
