@@ -33,7 +33,15 @@
       </el-form-item>
       <el-form-item label="标签">
         <div v-if="isShowMode" class="baseinfo-content">{{ tagNames }}</div>
-        <el-select v-else v-model="tagValue" multiple filterable placeholder="请选择" @change="selectTag">
+        <el-select
+          v-else
+          v-model="tagValue"
+          multiple
+          filterable
+          placeholder="请选择"
+          @change="selectTag"
+          :multiple-limit="10"
+        >
           <el-option v-for="(item, index) in tags" :key="index" :value="item.id" :label="item.name"></el-option>
         </el-select>
       </el-form-item>

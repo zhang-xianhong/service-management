@@ -169,7 +169,7 @@
             ></el-cascader>
           </el-form-item>
           <el-form-item label="服务标签" :label-width="labelWidth">
-            <el-select v-model="serviceDetail.tags" placeholder="请选择标签" clearable multiple>
+            <el-select v-model="serviceDetail.tags" placeholder="请选择标签" clearable multiple :multiple-limit="10">
               <el-option v-for="(item, index) in tags" :key="index" :label="item.name" :value="item.id"></el-option>
             </el-select>
           </el-form-item>
