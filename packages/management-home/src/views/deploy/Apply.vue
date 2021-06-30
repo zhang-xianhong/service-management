@@ -69,7 +69,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, toRefs } from 'vue';
+import { defineComponent, reactive, ref, toRefs } from 'vue';
 import ServiceInfo from './ServiceInfo.vue';
 import {
   DeployTableItemStruct,
@@ -78,8 +78,6 @@ import {
   getReviewResult,
   // STATUS
 } from '@/views/deploy/index';
-
-// import { duplicate } from '@/utils/duplicate-removal';
 
 import { ElMessage, ElMessageBox } from 'element-plus';
 import dateFormat from '@/utils/date-format';
@@ -142,6 +140,8 @@ export default defineComponent({
       },
     });
 
+    const publishCount = ref<string>('');
+    console.log('publishCOunt:', publishCount);
     const releaseForm: ReleaseState = reactive({
       disabled: false,
       isEdit: false,
@@ -150,7 +150,7 @@ export default defineComponent({
         type: 0,
         name: '',
         version: '',
-        publisher: 'michaelccao',
+        publisher: publishCount.value,
         publisherId: 'michaelccao_1',
         publishContent: '',
       },
@@ -178,14 +178,12 @@ export default defineComponent({
           id: item.id.toString(),
           name: item.name,
         }));
-        // const serviceList: any = releaseForm.serviceList;
-        // console.log('duplicate(serviceList).flat()', duplicate(serviceList));
-        // releaseForm.serviceList = duplicate(serviceList);
-        // console.log('releaseForm.serviceList: ', releaseForm.serviceList);
         releaseForm.versionOptions = tableState.tableData.map((item: any) => ({
           id: item.id.toString(),
           name: item.version,
         }));
+        publishCount.value = tableState.tableData[0].publisher;
+        console.log('publishCount.value: ', publishCount.value);
         // console.log('tableState.tableData: ', tableState.tableData);
       } catch (error) {
         tableState.loading = false;
@@ -214,7 +212,8 @@ export default defineComponent({
         type: 0,
         name: '',
         version: '',
-        publisher: 'michaelccao',
+        // publisher: 'michaelccao',
+        publisher: publishCount.value,
         publisherId: 'michaelccao_1',
         publishContent: '',
       };
