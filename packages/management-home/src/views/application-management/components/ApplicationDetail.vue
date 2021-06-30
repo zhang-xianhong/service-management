@@ -138,10 +138,10 @@ export default defineComponent({
     };
 
     const beforeUpload = (file: { size: number }) => {
-      if (file.size > 1024 * 50) {
+      if (file.size > 1024 ** 2 * 3) {
         (instance as any).proxy.$message({
           type: 'warning',
-          message: '上传图片大小不能超过 50 kb',
+          message: '上传图片大小不能超过3M',
         });
         return false;
       }
