@@ -1,8 +1,8 @@
 <template>
-  <div class="service-depend-canvas" ref="container"></div>
+  <div class="service-depend-canvas" ref="container" v-loading="loading"></div>
 </template>
 <script>
-import { defineComponent, ref, onMounted, onBeforeUnmount, nextTick } from 'vue';
+import { defineComponent, ref, onBeforeUnmount, nextTick } from 'vue';
 import DependGraph from './graph';
 
 const mockData = {
@@ -201,21 +201,43 @@ const mockData = {
 export default defineComponent({
   name: 'ServiceDepend',
   setup() {
-    const container = ref(null);
     let dependGraph = null;
+    const container = ref(null);
+    const loading = ref(true);
+    const data = ref([]);
+    const dataLoaded = ref(false);
 
-    onMounted(() => {
+    const fetchData = async () => {
+      dataLoaded.value = true;
+      return mockData;
+    };
+
+    const render = async (force = false) => {
+      if (!force && dataLoaded.value) {
+        return;
+      }
+      if (force) {
+        // eslint-disable-next-line @typescript-eslint/prefer-optional-chain
+        dependGraph && dependGraph.destroy();
+      }
+      loading.value = true;
+      data.value = await fetchData();
       nextTick(() => {
-        dependGraph = DependGraph(container.value, mockData);
+        dependGraph = DependGraph(container.value, data.value);
+        loading.value = false;
       });
-    });
+    };
 
     onBeforeUnmount(() => {
-      dependGraph.destroy();
+      // eslint-disable-next-line @typescript-eslint/prefer-optional-chain
+      dependGraph && dependGraph.destroy();
+      dependGraph = null;
     });
 
     return {
+      render,
       container,
+      loading,
     };
   },
 });
@@ -224,8 +246,8 @@ export default defineComponent({
 .service-depend-canvas {
   width: 100%;
   height: 100%;
-  position: relative;
   user-select: none;
+  overflow: hidden;
   ::v-deep svg {
     user-select: none;
     cursor: move;

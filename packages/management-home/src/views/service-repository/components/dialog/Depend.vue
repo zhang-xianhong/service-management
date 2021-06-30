@@ -1,7 +1,7 @@
 <template>
   <el-dialog title="服务依赖" v-model="visible" width="60%" :before-close="handleClose">
     <div class="dialog-service-depend-wrapper">
-      <service-depend v-if="visible" />
+      <service-depend ref="serviceDependRef" />
     </div>
     <template #footer>
       <span class="dialog-footer">
@@ -11,7 +11,7 @@
   </el-dialog>
 </template>
 <script lang="ts">
-import { defineComponent, ref } from 'vue';
+import { defineComponent, ref, nextTick } from 'vue';
 import ServiceDepend from '../depend/Index.vue';
 export default defineComponent({
   name: 'DependDialog',
@@ -20,16 +20,21 @@ export default defineComponent({
   },
   setup() {
     const visible = ref(false);
+    const serviceDependRef = ref(null as any);
     const handleClose = () => {
       visible.value = false;
     };
     const handleOpen = () => {
       visible.value = true;
+      nextTick(() => {
+        serviceDependRef.value.render(true);
+      });
     };
     return {
       visible,
       handleOpen,
       handleClose,
+      serviceDependRef,
     };
   },
 });

@@ -4,7 +4,7 @@
       <el-tab-pane label="基本信息" name="base">基本信息</el-tab-pane>
       <el-tab-pane label="服务依赖" name="depend">
         <div class="service-depened-wrapper">
-          <service-depend v-if="activeTab === 'depend'" />
+          <service-depend ref="serviceDependRef" />
         </div>
       </el-tab-pane>
       <el-tab-pane label="接口列表" name="api">接口列表</el-tab-pane>
@@ -13,16 +13,23 @@
   </div>
 </template>
 <script lang="ts">
-import { defineComponent, ref } from 'vue';
+import { defineComponent, ref, watch } from 'vue';
 import ServiceDepend from '../components/depend/Index.vue';
 export default defineComponent({
   components: { ServiceDepend },
   setup() {
     const activeTab = ref('base');
+    const serviceDependRef = ref(null as any);
     const handleTabClick = () => 1;
+    watch(activeTab, (tab) => {
+      if (tab === 'depend') {
+        serviceDependRef.value.render();
+      }
+    });
     return {
       activeTab,
       handleTabClick,
+      serviceDependRef,
     };
   },
 });

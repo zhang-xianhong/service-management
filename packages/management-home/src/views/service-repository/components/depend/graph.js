@@ -1,6 +1,7 @@
 /*eslint-disable*/
 import G6 from '@antv/g6';
 import insertCss from 'insert-css';
+import icon from './icon.svg'
 
 const colors = {
   B: '#5B8FF9',
@@ -69,7 +70,7 @@ const registerFn = () => {
     {
       shapeType: 'flow-rect',
       draw(cfg, group) {
-        const { name = '', variableName, variableValue, variableUp, label, collapsed, currency, status, rate } = cfg;
+        const { name = '', collapsed,} = cfg;
         const grey = '#CED4D9';
         // 逻辑不应该在这里判断
         const rectConfig = {
@@ -108,9 +109,9 @@ const registerFn = () => {
         group.addShape('text', {
           attrs: {
             ...textConfig,
-            x: 12 + nodeOrigin.x,
+            x: 48 + nodeOrigin.x,
             y: 28 + nodeOrigin.y,
-            text: name.length > 22 ? `${name.substr(0, 22)}...` : name,
+            text: name.length > 18 ? `${name.substr(0, 18)}...` : name,
             fontSize: 12,
             opacity: 0.85,
             fill: '#000',
@@ -118,6 +119,30 @@ const registerFn = () => {
           },
           name: 'name-shape',
         });
+
+        // icon-bg
+        group.addShape('rect', {
+          attrs: {
+            width: 40,
+            height: 40,
+            x: nodeOrigin.x,
+            y: nodeOrigin.y,
+            fill: '#a0cfff'
+          },
+          name: 'icon-bg',
+        })
+
+        // icon
+        group.addShape('image', {
+          attrs: {
+            width: 16,
+            height: 16,
+            x: nodeOrigin.x + 12,
+            y: nodeOrigin.y + 12,
+            img:icon
+          },
+          name: 'icon',
+        })
 
         // collapse rect
         if (cfg.children && cfg.children.length) {
