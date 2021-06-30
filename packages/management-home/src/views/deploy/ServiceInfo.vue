@@ -107,7 +107,6 @@ export default defineComponent({
     const releaseRules = {
       type: [{ required: true, message: '请选择发布类型', trigger: 'change' }],
       name: [{ required: true, message: '请输入服务名称', trigger: 'change' }],
-      // publisher: [{ required: true, message: '请选择申请账号', trigger: 'change' }],
       version: [{ required: true, message: '请选择发布版本', trigger: 'change' }],
       publishContent: [
         { required: true, message: '请输入发布说明', trigger: 'blur' },
