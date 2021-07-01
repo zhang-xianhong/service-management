@@ -3,14 +3,6 @@ import G6 from '@antv/g6';
 import insertCss from 'insert-css';
 import icon from './icon.svg'
 
-const colors = {
-  B: '#5B8FF9',
-  R: '#F46649',
-  Y: '#EEBC20',
-  G: '#5BD8A6',
-  DI: '#A7A7A7',
-};
-
 const props = {
   data: [],
   config: {
@@ -53,10 +45,10 @@ const defaultConfig = {
     type: 'compactBox',
     direction: 'LR',
     getWidth() {
-      return 180;
+      return 210;
     },
     getHeight() {
-      return 40;
+      return 46;
     },
   },
 };
@@ -70,12 +62,12 @@ const registerFn = () => {
     {
       shapeType: 'flow-rect',
       draw(cfg, group) {
-        const { name = '', collapsed,} = cfg;
+        const { name = '', version, collapsed} = cfg;
         const grey = '#CED4D9';
         // 逻辑不应该在这里判断
         const rectConfig = {
-          width: 180,
-          height: 40,
+          width: 200,
+          height: 44,
           lineWidth: 1,
           fontSize: 12,
           fill: '#fff',
@@ -105,26 +97,41 @@ const registerFn = () => {
 
         // const rectBBox = rect.getBBox();
 
-        // label title
+        // label name
         group.addShape('text', {
           attrs: {
             ...textConfig,
-            x: 48 + nodeOrigin.x,
-            y: 28 + nodeOrigin.y,
+            x: 54 + nodeOrigin.x,
+            y: 25 + nodeOrigin.y,
             text: name.length > 18 ? `${name.substr(0, 18)}...` : name,
             fontSize: 12,
-            opacity: 0.85,
+            opacity: 0.7,
             fill: '#000',
             cursor: 'default',
           },
-          name: 'name-shape',
+          name: 'name-label',
+        });
+
+         // label version
+         group.addShape('text', {
+          attrs: {
+            ...textConfig,
+            x: 54 + nodeOrigin.x,
+            y: 37 + nodeOrigin.y,
+            text: version.length > 20 ? `${version.substr(0, 20)}...` : version,
+            fontSize: 10,
+            opacity: 0.4,
+            fill: '#000',
+            cursor: 'default',
+          },
+          name: 'version-label',
         });
 
         // icon-bg
         group.addShape('rect', {
           attrs: {
-            width: 40,
-            height: 40,
+            width: 44,
+            height: 44,
             x: nodeOrigin.x,
             y: nodeOrigin.y,
             fill: '#a0cfff'
@@ -137,8 +144,8 @@ const registerFn = () => {
           attrs: {
             width: 16,
             height: 16,
-            x: nodeOrigin.x + 12,
-            y: nodeOrigin.y + 12,
+            x: nodeOrigin.x + 14,
+            y: nodeOrigin.y + 14,
             img:icon
           },
           name: 'icon',
@@ -263,7 +270,9 @@ const initGraph = (container, data) => {
     getContent: (e) => {
       const outDiv = document.createElement('div');
       // outDiv.style.padding = '0px 0px 20px 0px';
-      const nodeName = e.item.getModel().name;
+      const node = e.item.getModel()
+      const {name, version} = node
+      const nodeName = `${name}`
       let formatedNodeName = '';
       for (let i = 0; i < nodeName.length; i++) {
         formatedNodeName = `${formatedNodeName}${nodeName[i]}`;
@@ -271,12 +280,13 @@ const initGraph = (container, data) => {
           formatedNodeName = `${formatedNodeName}<br/>`;
         }
       }
-      outDiv.innerHTML = `${formatedNodeName}`;
+      outDiv.innerHTML = `${formatedNodeName.replace(/<br\/>$/gm, '')}<br/>${version}`;
       return outDiv;
     },
     shouldBegin: (e) => {
-      if (e.target.get('name') === 'name-shape') return true;
-      return false;
+      return true;
+      // if (e.target.get('name') === 'name-shape') return true;
+      // return false;
     },
   });
 
@@ -289,7 +299,7 @@ const initGraph = (container, data) => {
   height = container.clientHeight || height || 400;
   console.log(container.clientWidth, container.clientHeight);
   // const toolbar = new G6.ToolBar({
-  //   position: { x: width - 1000, y: 60 },
+  //   position: { x: width / 2, y: 60 },
   // });
   graph = new G6.TreeGraph({
     container,
@@ -299,7 +309,6 @@ const initGraph = (container, data) => {
     height,
     plugins: [tooltip, minimap],
     enabledStack: false,
-    
   });
   if (typeof onInit === 'function') {
     onInit(graph);
@@ -368,6 +377,9 @@ export default (container, data) => {
       }
       graph.data(data);
       graph.render();
+    },
+    refresh() {
+      return graph.refresh()
     },
     destroy() {
       try {
