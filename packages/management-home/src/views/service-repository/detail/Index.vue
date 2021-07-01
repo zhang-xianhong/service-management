@@ -18,13 +18,18 @@
 </template>
 <script lang="ts">
 import { defineComponent, ref, watch } from 'vue';
+import { useRoute } from 'vue-router';
 import ServiceDepend from '../components/depend/Index.vue';
 import ServiceBase from '../components/base/index.vue';
+
 export default defineComponent({
+  name: 'RepositoryPlatformDetail',
   components: { ServiceDepend, ServiceBase },
   setup() {
     const activeTab = ref('base');
     const serviceDependRef = ref(null as any);
+    const { params } = useRoute();
+    const { snapshotNo, serviceName } = params;
     const handleTabClick = () => 1;
     watch(activeTab, (tab) => {
       if (tab === 'depend') {
@@ -35,6 +40,8 @@ export default defineComponent({
       activeTab,
       handleTabClick,
       serviceDependRef,
+      snapshotNo,
+      serviceName,
     };
   },
 });

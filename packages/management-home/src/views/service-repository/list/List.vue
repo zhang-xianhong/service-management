@@ -17,7 +17,14 @@
         <el-table-column prop="serviceName" label="服务英文名">
           <template #default="scope">
             <router-link
-              :to="`${route.fullPath}/snapshotNo=${scope.row.snapshotInfo?.snapshotNo}&serviceName=${scope.row.snapshotInfo?.serviceName}`"
+              :to="{
+                name: 'RepositoryPlatformDetail',
+                params: {
+                  serviceName: scope.row.snapshotInfo?.serviceName,
+                  snapshotNo: scope.row.snapshotInfo?.snapshotNo,
+                },
+              }"
+              @click="jump(`${route.fullPath}/${scope.row.id}`)"
               >{{ scope.row.serviceName }}</router-link
             >
           </template>
@@ -197,6 +204,10 @@ export default defineComponent({
     };
 
     fetchData();
+
+    const jump = (data: any) => {
+      console.log('data', data);
+    };
     return {
       ...toRefs(tableState),
       handlerSearch,
@@ -213,6 +224,7 @@ export default defineComponent({
       },
       route,
       fetchData,
+      jump,
     };
   },
 });
