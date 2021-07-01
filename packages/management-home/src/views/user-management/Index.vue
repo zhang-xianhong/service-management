@@ -86,9 +86,15 @@ export default defineComponent({
         return ElMessage.error('用户姓名不能超过20个字符');
       }
       if (id === 2) {
-        const reg = /^1[3|4|5|7|8][0-9]\d{8}$/;
-        if (!reg.test(userInfo[prop])) {
+        const reg = /^[1][3,4,5,7,8,9][0-9]{9}$/;
+        if (!reg.test(userSetInfo[prop])) {
           return ElMessage.error('请输入正确的电话号码');
+        }
+      }
+      if (id === 3) {
+        const reg = /^[a-zA-Z0-9]+([-_.][a-zA-Z0-9]+)*@[a-zA-Z0-9]+([-_.][a-zA-Z0-9]+)*\.[a-z]{2,}$/;
+        if (!reg.test(userSetInfo[prop])) {
+          return ElMessage.error('请输入正确的电子邮箱');
         }
       }
       const item = {} as any;
@@ -96,6 +102,7 @@ export default defineComponent({
       updateUserProfile(item).then((res) => {
         if (res.code === 0) {
           checkStatus(id);
+          userRelease[prop] = item[prop];
           ElMessage.success('修改成功');
         }
       });
