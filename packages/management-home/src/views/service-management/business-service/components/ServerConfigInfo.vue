@@ -50,7 +50,7 @@
       </el-table-column>
     </el-table>
     <div class="serverinfo-operations" v-if="getShowBool('update')">
-      <el-button type="primary" @click="deliveryList">配置下发</el-button>
+      <el-button type="primary" @click="deliveryList" :disabled="serviceStatus !== 21">配置下发</el-button>
       <el-button @click="$emit('back')">返回</el-button>
     </div>
   </div>
@@ -107,7 +107,7 @@
 </template>
 
 <script lang="ts">
-import { reactive, toRefs, onMounted, getCurrentInstance, inject } from 'vue';
+import { reactive, toRefs, onMounted, getCurrentInstance, inject, ref } from 'vue';
 import {
   getServiceConfig,
   addConfig,
@@ -126,12 +126,17 @@ export default {
       type: Number,
       default: 0,
     },
+    status: {
+      type: Number,
+      default: 0,
+    },
   },
   inheritAttrs: false,
   emits: ['back'],
-  setup(props: { id: number }) {
+  setup(props: { id: number; status: number }) {
     const { proxy } = getCurrentInstance() as any;
     const serviceId = inject('serviceId') as number;
+    const serviceStatus = ref(props.status);
 
     const state = reactive({
       tableData: [] as any[],
@@ -267,6 +272,7 @@ export default {
       deleteItem,
       deliveryList,
       getShowBool,
+      serviceStatus,
     };
   },
 };

@@ -77,11 +77,11 @@ export default defineComponent({
       }
       const updateData: any = tenantDetail.value;
       delete updateData.manager.password;
-      Object.keys(updateData).forEach((key: string) => {
-        if (updateData[key] === '') {
-          delete updateData[key];
-        }
-      });
+      // Object.keys(updateData).forEach((key: string) => {
+      //   if (updateData[key] === '') {
+      //     delete updateData[key];
+      //   }
+      // });
       const { code } = await updateTenant(tenantId, updateData);
       if (code === 0) {
         (instance as any).proxy.$message({

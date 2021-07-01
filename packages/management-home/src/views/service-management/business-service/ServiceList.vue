@@ -11,7 +11,7 @@
       >
       <el-button @click="runService" :disabled="computedDisabled" v-if="false">启动</el-button>
       <el-button @click="stopService" :disabled="computedDisabled" v-if="false">停止</el-button>
-      <el-button @click="deleteHandler" :disabled="computedDisabledForSS" v-if="getShowBool('delete')">删除</el-button>
+      <el-button @click="deleteHandler" v-if="getShowBool('delete')">删除</el-button>
 
       <el-input
         placeholder="请输入服务名称"
@@ -440,7 +440,28 @@ export default defineComponent({
       compuMutiArr.value = res;
     }
 
+    const computedDisabledForSS = computed(() => {
+      let res = false;
+      if (compuMutiArr.value.length === 0) {
+        return !res;
+      }
+      compuMutiArr.value.forEach((x: any) => {
+        if (+x.status === 20 || +x.status === 10 || +x.status === 21) {
+          res = true;
+        }
+      });
+      return res;
+    });
+
     function deleteHandler() {
+      if (!mutiArray.value.length) {
+        Message.error('请选择需要删除的服务');
+        return;
+      }
+      if (computedDisabledForSS.value) {
+        Message.error('存在已启动的服务，无法删除已启动的服务');
+        return;
+      }
       ElMessageBox.confirm('删除动作不可撤销, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -505,19 +526,6 @@ export default defineComponent({
       }
       compuMutiArr.value.forEach((x: any) => {
         if (+x.status === 20 || +x.status === 10 || +x.status === 0) {
-          res = true;
-        }
-      });
-      return res;
-    });
-
-    const computedDisabledForSS = computed(() => {
-      let res = false;
-      if (compuMutiArr.value.length === 0) {
-        return !res;
-      }
-      compuMutiArr.value.forEach((x: any) => {
-        if (+x.status === 20 || +x.status === 10 || +x.status === 21) {
           res = true;
         }
       });
