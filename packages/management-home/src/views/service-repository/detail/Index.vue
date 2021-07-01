@@ -18,16 +18,23 @@
 </template>
 <script lang="ts">
 import { defineComponent, ref } from 'vue';
+import { useRoute } from 'vue-router';
 import ServiceDepend from '../components/depend/Index.vue';
 import ServiceBase from '../components/base/index.vue';
+
 export default defineComponent({
+  name: 'RepositoryPlatformDetail',
   components: { ServiceDepend, ServiceBase },
   setup() {
     const activeTab = ref('base');
     const handleTabClick = () => 1;
+    const { params } = useRoute();
+    const { snapshotNo, serviceName } = params;
     return {
       activeTab,
       handleTabClick,
+      snapshotNo,
+      serviceName,
     };
   },
 });
