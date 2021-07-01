@@ -126,6 +126,7 @@
               <component
                 :is="drawerName"
                 :id="currentServiceId"
+                :status="serverInfo.status"
                 :modelList="modelList.tables"
                 @back="isShowDownDrawer = false"
               ></component>
