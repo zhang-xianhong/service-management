@@ -182,9 +182,14 @@
             ></el-input>
           </el-form-item>
           <el-form-item label="服务依赖" :label-width="labelWidth" prop="dependencies">
-            <el-select v-model="serviceDetail.dependencies" clearable multiple>
-              <el-option v-for="item in allService" :key="item.id" :label="item.name" :value="item.id"></el-option>
-            </el-select>
+            <el-cascader
+              v-model="serviceDetail.dependencies"
+              :options="allService"
+              :props="serviceCascaderProps"
+              @change="nodeChange"
+              @expand-change="expandChange"
+            >
+            </el-cascader>
           </el-form-item>
         </el-form>
       </div>
@@ -259,6 +264,7 @@ import {
   getAllService,
   allService,
   ownersMap,
+  getServiceVersionType,
 } from './utils/service-data-utils';
 import { addService, serviceNameTest, updateServiceStatus } from '@/api/servers';
 import Message from 'element-plus/es/el-message';
@@ -285,6 +291,9 @@ export default defineComponent({
   setup() {
     const tableLoading = ref(false);
     const submitting = ref(false);
+    const serviceCascaderProps = ref({
+      multiple: true,
+    } as any);
 
     const pageInfo = reactive({
       page: 1,
@@ -371,9 +380,14 @@ export default defineComponent({
       const ownerArr = senddata.owner?.split(',') || '';
       senddata.tag = serviceDetail.tags ? serviceDetail.tags.join(',') : '';
       senddata.dependencies = serviceDetail.dependencies
-        ? serviceDetail.dependencies.map((x: any) => ({
-            id: x,
-          }))
+        ? serviceDetail.dependencies.map((dependency: any) => {
+            const [serviceName, serviceVersion] = dependency;
+            return {
+              serviceName,
+              serviceVersion,
+              serviceVersionType: getServiceVersionType(serviceName, serviceVersion),
+            };
+          })
         : [];
       if (!senddata.name) {
         return;
@@ -583,6 +597,15 @@ export default defineComponent({
       blackHoverclick();
     });
 
+    const nodeChange = (nodes: any) => {
+      const checkNode: any = {};
+      for (const node of nodes) {
+        checkNode[node[0]] = node;
+      }
+      const selectData = Object.values(checkNode);
+      serviceDetail.dependencies = selectData;
+    };
+
     return {
       serviceTableList,
       serviceDetail,
@@ -640,6 +663,8 @@ export default defineComponent({
       nameRef,
       desRef,
       submitting,
+      serviceCascaderProps,
+      nodeChange,
     };
   },
 });
@@ -710,5 +735,8 @@ export default defineComponent({
   top: 0;
   width: 100%;
   padding-left: 20px;
+}
+.el-cascader-panel > :first-child .el-checkbox__input {
+  display: none;
 }
 </style>
