@@ -50,10 +50,21 @@
         </el-input>
       </el-form-item>
       <el-form-item label="服务依赖">
-        <div v-if="isShowMode" class="baseinfo-content">{{ computedDependencyName }}</div>
-        <el-select v-else v-model="formData.dependencies" clearable multiple>
-          <el-option v-for="item in computedServices" :key="item.id" :label="item.name" :value="item.id"></el-option>
-        </el-select>
+        <div v-if="isShowMode">
+          <el-tag :key="d.dependencyServiceName" v-for="d in formData.dependencies"> {{ d[0] }}/{{ d[1] }} </el-tag>
+        </div>
+        <el-cascader
+          v-else
+          v-model="formData.dependencies"
+          :options="allService"
+          :props="serviceCascaderProps"
+          @change="nodeChange"
+        >
+          <template #default="{ node, data }">
+            <span>{{ data.value }}</span>
+            <span v-if="!node.isLeaf"> ({{ data.children.length }}) </span>
+          </template>
+        </el-cascader>
       </el-form-item>
       <el-form-item>
         <el-button v-if="isShowMode" type="primary" @click="modifyFormData">修改</el-button>
@@ -68,7 +79,7 @@ import { reactive, ref, computed } from 'vue';
 import useClassifications from '../utils/service-baseinfo-classification';
 import useTags from '../utils/service-baseinfo-tag';
 import { updateService } from '@/api/servers';
-import { allService, getAllService } from '../utils/service-data-utils';
+import { allService, getAllService, getServiceVersionType } from '../utils/service-data-utils';
 import OwnerSelect from '@/components/owners-select/Index.vue';
 import { ElMessage } from 'element-plus';
 
@@ -99,6 +110,9 @@ export default {
     getAllService();
     // 是否为显示模式标识，默认为true
     const isShowMode = ref(true);
+    const serviceCascaderProps = ref({
+      multiple: true,
+    } as any);
 
     const computedServices = computed(() => allService.value.filter((service: any) => service.id !== props.id));
     const ownersArr = props.data.owners?.map((x: any) => x.userId) || [];
@@ -124,7 +138,7 @@ export default {
       detail: props.data.detail,
       dependencies: props.data.dependencies,
     });
-
+    console.log('formData', formData);
     const computedDependencyName = computed(() => {
       if (allService.value.length === 0) {
         return '';
@@ -183,13 +197,30 @@ export default {
       if (ownerArr.length > 10) {
         return ElMessage.warning('负责人最多支持10个');
       }
-      data.dependencies = formData.dependencies.map((x: any) => ({ id: x }));
+      data.dependencies = formData.dependencies
+        ? formData.dependencies.map((dependency: any) => {
+            const [serviceName, serviceVersion] = dependency;
+            return {
+              serviceName,
+              serviceVersion,
+              serviceVersionType: getServiceVersionType(serviceName, serviceVersion),
+            };
+          })
+        : [];
       const { code } = await updateService(String(props.id), data);
       if (code === 0) {
         isShowMode.value = true;
         useTags(formData.tag, props.tags);
         useClassifications(formData.classification, props.classifications);
       }
+    };
+    const nodeChange = (nodes: any) => {
+      const checkNode: any = {};
+      for (const node of nodes) {
+        checkNode[node[0]] = node;
+      }
+      const selectData = Object.values(checkNode);
+      formData.dependencies = selectData;
     };
 
     return {
@@ -207,6 +238,9 @@ export default {
       selectTag,
       modifyFormData,
       saveFormData,
+      allService,
+      serviceCascaderProps,
+      nodeChange,
     };
   },
 };

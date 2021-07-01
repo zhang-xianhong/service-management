@@ -1,5 +1,5 @@
 /* eslint-disable no-param-reassign */
-import { getServiceList, deleteService } from '@/api/servers';
+import { getServiceList, deleteService, getServiceDependencyList } from '@/api/servers';
 import { getAllTags } from '@/api/settings/tags';
 import { reactive, ref } from 'vue';
 import { getClassificationList } from '@/api/settings/classification';
@@ -113,15 +113,28 @@ export const deleteServiceForList = (arr: Array<any>) =>
   });
 
 export function getAllService() {
-  return getServiceList({ all: true }).then((res) => {
-    if (res?.data?.rows) {
-      res.data.rows.forEach((x: any) => {
-        // eslint-disable-next-line no-param-reassign
-        x.name = x.name.replace(/^srv-/g, '');
-      });
-      allService.value = res.data.rows;
+  console.log('get service dependency');
+  return getServiceDependencyList({}).then((res) => {
+    if (res?.data) {
+      const { data = [] } = res;
+      const serviceList = data.map((i: any) => ({
+        label: i.serviceName,
+        value: i.serviceName,
+        children: i.versions?.map((v: any) => ({
+          value: v.version,
+          label: v.preparing ? `${v.version}(服务构建中)` : v.version,
+          versionType: v.versionType,
+          disabled: v.preparing,
+        })),
+      }));
+      allService.value = serviceList;
     } else {
       allService.value = [];
     }
   });
+}
+export function getServiceVersionType(name: string, version: string) {
+  const { children: serversVersion = [] } = allService.value.find((service: any) => service.value === name);
+  const versionData = serversVersion.find((v: any) => v.value === version) || {};
+  return versionData.versionType;
 }

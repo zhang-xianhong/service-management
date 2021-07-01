@@ -65,10 +65,6 @@
         </el-col>
       </el-row>
       <div class="detail__body" :class="{ 'cannot-operate': !!maskText, 'is-show-drawer': isShowDownDrawer }">
-        <!-- <el-row :style="{ height: computedHeight, background: '#fff', padding: '12px', marginBottom: '10px' }">
-          <el-col :span="componentName ? 20 : 24" style="height: 100%"> </el-col>
-          <el-col v-if="componentName" :span="4" style="border-left: 1px solid #bbbbbb; height: 100%"> </el-col>
-        </el-row> -->
         <div class="main-container">
           <div class="left-canvas" style="height: 100%">
             <el-row class="project-switch">
@@ -304,7 +300,12 @@ export default {
     // 获取服务详情
     const getServerInfo = async () => {
       const { data } = await getServiceById({ id: currentServiceId.value });
-      serverInfo.value = data;
+      const { dependencies, ...info } = data;
+      const dependencyList = dependencies.map((i: any) => [i.dependencyServiceName, i.dependencyServiceVersion]);
+      serverInfo.value = {
+        ...info,
+        dependencies: dependencyList,
+      };
       !modelList.value.tables.length && initModelList();
     };
 
