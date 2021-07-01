@@ -20,3 +20,7 @@ export const distributeRepository: (payload: any) => Promise<SuccessResponse<any
 // 获取服务依赖
 export const getServiceDepend: (payload: any) => Promise<SuccessResponse<any>> = (payload: any) =>
   request.get(getUrl(repository.GET_SERVICE_DEPEND), payload);
+
+// 获取服务详情
+export const getRepositoryDetail: (snapshotNo: string) => Promise<SuccessResponse<any>> = (snapshotNo: string) =>
+  request.get(getUrl(repository.GET_REPOSITORY_DETAIL_URL, snapshotNo));
