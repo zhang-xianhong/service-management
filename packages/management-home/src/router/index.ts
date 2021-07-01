@@ -322,7 +322,7 @@ const routes: Array<RouteRecordRaw> = [
         },
       },
       {
-        path: 'platform/:serviceName/:snapshotNo',
+        path: 'platform/:id',
         component: () =>
           import(/* webpackChunkName: "repository-detail" */ '@/views/service-repository/detail/Index.vue'),
         name: 'RepositoryPlatformDetail',

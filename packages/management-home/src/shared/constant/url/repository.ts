@@ -5,5 +5,6 @@ export default {
   POST_SHARE_REPOSITORY: ['/repository/share', 'mock/repository/pull.json'],
   POST_DISTRIBUTE_REPOSITORY: ['/repository/distribute', 'mock/repository/pull.json'],
   GET_SERVICE_DEPEND: ['/services/dependencies/tree', 'mock/repository/depend.json'],
-  GET_REPOSITORY_DETAIL_URL: ['/repository/_/detail', 'mock/repository/detail.json'],
+  GET_REPOSITORY_DETAIL_URL: ['/repository/_', 'mock/repository/detail.json'],
+  GET_REPOSITORY_HISTORY: ['/repository/history', 'mock/repository/history.json'],
 };

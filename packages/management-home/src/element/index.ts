@@ -56,6 +56,7 @@ import {
   ElUpload,
   ElTooltip,
   ElRadioButton,
+  ElCollapseTransition,
 } from 'element-plus';
 
 const components = [
@@ -106,6 +107,7 @@ const components = [
   ElUpload,
   ElTooltip,
   ElRadioButton,
+  ElCollapseTransition
 ];
 const plugins = [ElInfiniteScroll, ElLoading, ElMessage, ElMessageBox, ElNotification];
 

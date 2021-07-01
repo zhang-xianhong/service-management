@@ -16,17 +16,7 @@
         <el-table-column label="序号" type="index"> </el-table-column>
         <el-table-column prop="serviceName" label="服务英文名">
           <template #default="scope">
-            <router-link
-              :to="{
-                name: 'RepositoryPlatformDetail',
-                params: {
-                  serviceName: scope.row.snapshotInfo?.serviceName,
-                  snapshotNo: scope.row.snapshotInfo?.snapshotNo,
-                },
-              }"
-              @click="jump(`${route.fullPath}/${scope.row.id}`)"
-              >{{ scope.row.serviceName }}</router-link
-            >
+            <router-link :to="`${route.fullPath}/${scope.row.id}`">{{ scope.row.serviceName }}</router-link>
           </template>
         </el-table-column>
         <el-table-column prop="serviceNameZh" label="服务中文名">
@@ -89,7 +79,7 @@ import { useRoute } from 'vue-router';
 import DistributeDialog from '../components/dialog/Distribute.vue';
 import SharedDialog from '../components/dialog/Shared.vue';
 import { getRepositoryList, pullRepository } from '@/api/repository';
-import { SERVICE_LEVEL } from './config';
+import { getSharedType, SERVICE_LEVEL } from './config';
 interface TableState {
   tableData: Array<object>;
   loading: boolean;
@@ -161,20 +151,6 @@ export default defineComponent({
       fetchData();
     };
 
-    const getSharedType = (row: any) => {
-      switch (row.platformShareType) {
-        case 1:
-          return '引用';
-        case 2:
-          return '克隆';
-        case 3:
-          return '克隆,引用';
-        case 0:
-        default:
-          return '';
-      }
-    };
-
     const handleShare = (row: any) => {
       sharedDialogRef.value.handleOpen(row);
     };
@@ -205,15 +181,14 @@ export default defineComponent({
 
     fetchData();
 
-    const jump = (data: any) => {
-      console.log('data', data);
-    };
     return {
       ...toRefs(tableState),
       handlerSearch,
       handlerPageSizeChange,
       handleCurrentPageChange,
-      getSharedType,
+      getSharedType(row: any) {
+        return getSharedType(row.platformShareType);
+      },
       handleShare,
       handlePull,
       handleDistribute,
@@ -224,7 +199,6 @@ export default defineComponent({
       },
       route,
       fetchData,
-      jump,
     };
   },
 });
