@@ -82,9 +82,13 @@ export default defineComponent({
       if (!userSetInfo[prop]) {
         return ElMessage.error(`${labels[id]} 不得为空！`);
       }
+      if (userSetInfo.displayName.length < 2) {
+        return ElMessage.error('用户姓名不能少于 2 个字符');
+      }
       if (userSetInfo.displayName.length > 20) {
         return ElMessage.error('用户姓名不能超过20个字符');
       }
+
       if (id === 2) {
         const reg = /^[1][3,4,5,7,8,9][0-9]{9}$/;
         if (!reg.test(userSetInfo[prop])) {
