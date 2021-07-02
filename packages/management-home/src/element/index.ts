@@ -107,7 +107,7 @@ const components = [
   ElUpload,
   ElTooltip,
   ElRadioButton,
-  ElCollapseTransition
+  ElCollapseTransition,
 ];
 const plugins = [ElInfiniteScroll, ElLoading, ElMessage, ElMessageBox, ElNotification];
 
