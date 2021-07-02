@@ -133,6 +133,7 @@ export default {
       detail: props.data.detail,
       dependencies: props.data.dependencies,
     });
+    console.log(formData.dependencies, 'this is dependencies');
 
     const computedDependencyName = computed(() => {
       if (allService.value.length === 0) {
