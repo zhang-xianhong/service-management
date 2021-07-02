@@ -33,14 +33,35 @@ export type ReviewTableItemStruct = {
 };
 
 export const MODULE_TYPE: any = {
-  0: '服务',
-  1: '应用',
+  1: '服务',
+  2: '应用',
 };
 
 export const REVIEW_RESULT: any = {
   0: '不通过',
   1: '通过',
+  // 2: ''
+};
+
+export const AUDIT_RESULTS: any = {
+  0: '未审核',
+  1: '未通过',
+  2: '通过',
+};
+
+export const STATUS: any = {
+  0: '未审核',
+  1: '审核通过',
+  2: '审核不通过',
+  3: '已发布',
 };
 
 export const getModuleType = (type: number) => MODULE_TYPE[type];
 export const getReviewResult = (status: number) => REVIEW_RESULT[status];
+
+export const AUDIT_RESULTS_CODE: any = {
+  PENDING: 0,
+  PASSED: 1,
+  FAILED: 2,
+  PUBLISHED: 3,
+};

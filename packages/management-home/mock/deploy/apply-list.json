@@ -21,7 +21,14 @@
                 "tenantId": 1,
                 "compile": "编辑",
                 "isDelete": "删除",
-                "publisher": "zxh"
+                "publisher": "",
+                "publishContent": "wao",
+                "reviewer": "zhangsan",
+                "reviewContent": "这是审核的内容",
+                "status": 0,
+                "applyTime": "2021-07-01T09:57:07.000Z",
+                "auditResults": 0,
+                "serviceVersion": "v1.6"
             },
             {
                 "id": 5,
@@ -42,7 +49,14 @@
                 "tenantId": 1,
                 "compile": "编辑",
                 "isDelete": "删除",
-                "publisher": "xhz"
+                "publisher": "xhz",
+                "publishContent": "99999",
+                "reviewer": "lisi",
+                "reviewContent": "",
+                "applyTime": "2021-07-01T09:57:07.000Z",
+                "auditResults": 0,
+                "status": 1,
+                "serviceVersion": "v2.6"
             },
             {
                 "id": 6,
@@ -63,7 +77,13 @@
                 "tenantId": 1,
                 "compile": "编辑",
                 "isDelete": "删除",
-                "publisher": "hhh"
+                "publisher": "hhh",
+                "publishContent": "88888",
+                "reviewer": "wangwu",
+                "reviewContent": "",
+                "applyTime": "2021-07-01T09:57:07.000Z",
+                "auditResults": 0,
+                "status": 1
             }
         ]
     },

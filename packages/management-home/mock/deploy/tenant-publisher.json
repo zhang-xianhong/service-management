@@ -1,0 +1,20 @@
+{
+    "code": 0,
+    "data": [{
+        "admin": true,
+        "deptId": 40,
+        "deptName": "welink",
+        "displayName": "admin",
+        "gender": 0,
+        "id": 244,
+        "phoneNumber": "18523453833",
+        "position": null,
+        "primaryMail": "admin@yufuid.com",
+        "status": 0,
+        "tenantId": 1,
+        "userName": "admin@yufuid.com"
+    }],
+    "message": "successful",
+    "httpStatus": 200,
+    "timestamp": 1619072662339
+}

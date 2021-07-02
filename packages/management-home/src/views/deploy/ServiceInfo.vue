@@ -13,7 +13,14 @@
         </el-select>
       </el-form-item>
       <el-form-item label="服务名称" prop="name" :label-width="labelWidth">
-        <el-select placeholder="请选择服务" v-model="releaseData.serviceInfo.name" clearable :disabled="isEditable">
+        <el-select
+          placeholder="请选择服务"
+          v-model="releaseData.serviceInfo.name"
+          filterable
+          clearable
+          :disabled="isEditable"
+          @change="changeService"
+        >
           <el-option
             v-for="(item, index) in releaseData.serviceList"
             :key="index"
@@ -27,20 +34,20 @@
         <template v-slot:label>
           <span class="publisher">申请账号</span>
         </template>
-        <el-input v-model="releaseData.serviceInfo.publisher" :disabled="true"></el-input>
+        <el-input v-model.number="releaseData.serviceInfo.publisher" :disabled="isEditable"></el-input>
       </el-form-item>
-      <el-form-item label="发布版本" prop="version" :label-width="labelWidth">
+      <el-form-item label="发布版本" prop="serviceVersion" :label-width="labelWidth">
         <el-select
           placeholder="请选择发布版本"
-          v-model="releaseData.serviceInfo.version"
+          v-model="releaseData.serviceInfo.serviceVersion"
           clearable
           :disabled="isEditable"
         >
           <el-option
             v-for="(item, index) in releaseData.versionOptions"
             :key="index"
-            :label="item.name"
-            :value="item.name"
+            :label="item.version"
+            :value="item.version"
           >
           </el-option>
         </el-select>
@@ -55,16 +62,6 @@
           show-word-limit
         ></el-input>
       </el-form-item>
-      <el-form-item label="服务名称" :label-width="labelWidth">
-        <el-cascader
-          v-model="name"
-          :options="releaseData.serviceList"
-          :props="sortProps"
-          clearable
-          filterable
-          placeholder="请选择服务名称"
-        ></el-cascader>
-      </el-form-item>
     </el-form>
     <div class="dialog-footer">
       <el-button type="primary" @click="submitReleaseForm">提 交</el-button>
@@ -75,22 +72,28 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, Ref, computed, SetupContext, PropType, reactive } from 'vue';
+import { defineComponent, ref, Ref, computed, SetupContext, PropType } from 'vue';
 import { ElMessage } from 'element-plus';
 import { addApply, updateApply } from '@/api/deploy/deploy-apply';
+interface ServiceState {
+  serviceName: '';
+  versions: Array<object>;
+}
+
 interface ReleaseState {
   disabled: boolean;
   isEdit: boolean;
   id: string;
   serviceList: Array<object>;
   versionOptions: Array<object>;
+  services: Array<object>;
   types: Array<object>;
   serviceInfo: {
     type: number;
     name: string;
-    version: string;
-    publisher: string;
-    publisherId: string;
+    serviceVersion: string;
+    publisher: number;
+    publisherName: string;
     publishContent: string;
   };
 }
@@ -108,28 +111,28 @@ export default defineComponent({
   },
   setup(props: { visable: boolean; releaseForms: ReleaseState }, ctx: SetupContext) {
     const labelWidth = ref('80px');
-    const sortProps = reactive({
-      label: 'name',
-      value: 'id',
-      children: 'children',
-      emitPath: false,
-      // multiple: true,
-      expandTrigger: 'hover'
-    })
     const isVisable: any = computed(() => props.visable);
     const releaseData: Ref<ReleaseState> = computed(() => props.releaseForms);
-    // console.log('releaseData: ', releaseData);
     const isEditable: Ref<boolean> = computed(() => releaseData.value.isEdit);
     // 表单
     const releaseFormRef: any = ref(null);
     const releaseRules = {
       type: [{ required: true, message: '请选择发布类型', trigger: 'change' }],
       name: [{ required: true, message: '请输入服务名称', trigger: 'change' }],
-      version: [{ required: true, message: '请选择发布版本', trigger: 'change' }],
+      serviceVersion: [{ required: true, message: '请选择发布版本', trigger: 'change' }],
+      publisher: [{ type: 'number', message: '请输入数值', trigger: 'change' }],
       publishContent: [
         { required: true, message: '请输入发布说明', trigger: 'blur' },
         { min: 3, max: 512, message: '长度在 3 到 512 个字符', trigger: 'blur' },
       ],
+    };
+
+    const changeService = () => {
+      const temp: any = ref(
+        releaseData.value.services.find((item: any) => item.serviceName === releaseData.value.serviceInfo.name),
+      );
+      // console.log('temp: ', temp);
+      releaseData.value.versionOptions = temp.value.versions;
     };
 
     const closeReleaseForm = () => {
@@ -145,6 +148,7 @@ export default defineComponent({
           // 添加
           if (!isEditable.value) {
             const releaseInfo = releaseData.value.serviceInfo;
+            releaseInfo.publisher = Number(releaseInfo.publisher);
             const { code } = await addApply(releaseInfo);
             if (code === 0) {
               ElMessage({
@@ -161,8 +165,8 @@ export default defineComponent({
             closeReleaseForm();
           } else {
             // 编辑
-            console.log('releaseData.value.id: ', releaseData.value.id);
-            const { code } = await updateApply(releaseData.value.id, {
+            // console.log('releaseData.value.serviceInfo.publisher: ', releaseData.value.serviceInfo.publisher);
+            const { code } = await updateApply(releaseData.value.serviceInfo.publisher, {
               ...releaseData.value.serviceInfo,
             });
             if (code === 0) {
@@ -185,7 +189,6 @@ export default defineComponent({
 
     return {
       labelWidth,
-      sortProps,
       releaseRules,
       releaseData,
       releaseFormRef,
@@ -193,6 +196,7 @@ export default defineComponent({
       isEditable,
       closeReleaseForm,
       submitReleaseForm,
+      changeService,
     };
   },
 });

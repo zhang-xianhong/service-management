@@ -5,7 +5,12 @@
         <el-button icon="el-icon-plus" type="primary" style="width: 90px" @click="openCreateDialog"> 新建 </el-button>
       </el-col>
       <el-col :offset="12" :span="6" style="text-align: right">
-        <el-input suffix-icon="el-icon-search" placeholder="请输入服务名称"></el-input>
+        <el-input
+          suffix-icon="el-icon-search"
+          placeholder="请输入服务名称"
+          @input="filterpublish"
+          v-model="searchProps.keyword"
+        ></el-input>
       </el-col>
     </el-row>
     <list-wrap :loading="loading" :empty="total === 0" :hasCreateAuth="getShowBool('add')">
@@ -24,27 +29,102 @@
         </el-table-column>
         <el-table-column label="序号" type="index" width="50"> </el-table-column>
         <el-table-column label="发布类型" width="80" prop="moduleType"></el-table-column>
-        <el-table-column label="发布名称" prop="publishName">
+        <el-table-column label="发布名称" prop="name">
           <template #default="props">{{ props.row.name }}</template>
         </el-table-column>
-        <el-table-column label="版本" width="80" prop="version"></el-table-column>
-        <el-table-column label="申请人" width="100">
+        <el-table-column label="版本" width="80" prop="serviceVersion"></el-table-column>
+        <el-table-column label="申请人" props="publisher" width="100">
           <template #default="props">{{ props.row.publisher }}</template>
+          <template #header>
+            <i class="el-icon-search"></i>
+            <el-popover placement="bottom" :width="200" trigger="manual" :visible="publisherTitleVisiable">
+              <template #reference>
+                <el-button type="text" @click="publisherTitleClick">申请人</el-button>
+              </template>
+              <el-select
+                v-model="searchProps.publisher"
+                placeholder="请输入申请人"
+                clearable
+                multiple
+                filterable
+                remote
+                :remote-method="remoteMethod"
+                @change="publisherChange"
+              >
+                <el-option
+                  v-for="(item, index) in publisherFilters"
+                  :key="index"
+                  :label="item.name"
+                  :value="item.id"
+                ></el-option>
+              </el-select>
+            </el-popover>
+          </template>
         </el-table-column>
         <el-table-column label="申请时间" width="180" prop="applyTime">
           <template #default="scope">{{ dateFormat(scope.row.applyTime) }}</template>
         </el-table-column>
-        <el-table-column label="审核人" width="100">
-          <template #default="props">{{ props.row.reviewer }}</template>
+        <el-table-column label="审核人" width="100" prop="reviewer">
+          <!-- <template #default="props">{{ props.row.reviewer }}</template> -->
+          <template #header>
+            <i class="el-icon-search"></i>
+            <el-popover placement="bottom" :width="200" trigger="manual" :visible="reviewerTitleVisiable">
+              <template #reference>
+                <el-button type="text" @click="reviewerTitleClick">审核人</el-button>
+              </template>
+              <el-select
+                v-model="searchProps.reviewer"
+                placeholder="请输入审核人"
+                clearable
+                multiple
+                filterable
+                remote
+                :remote-method="remoteMethod"
+                @change="reviewerChange"
+              >
+                <el-option
+                  v-for="(item, index) in reviewerFilters"
+                  :key="index"
+                  :label="item.name"
+                  :value="item.id"
+                ></el-option>
+              </el-select>
+            </el-popover>
+          </template>
         </el-table-column>
-        <el-table-column label="审核结果" width="80" prop="reviewResult"> </el-table-column>
+        <el-table-column label="审核结果" prop="reviewResult">
+          <template #default="scope">
+            <span>{{ getNameByCode(scope.row.status, 'status') }}</span>
+          </template>
+          <template #header>
+            <i class="el-icon-search"></i>
+            <el-popover placement="bottom" :width="200" trigger="manual" :visible="reviewResultsTitleVisiable">
+              <template #reference>
+                <el-button type="text" @click="reviewResultsTitleClick">审核结果</el-button>
+              </template>
+              <el-select
+                v-model="searchProps.status"
+                placeholder="请选择审核结果"
+                clearable
+                @change="auditResultsChange"
+              >
+                <el-option
+                  v-for="(item, index) in auditResultsFilters"
+                  :key="index"
+                  :label="item.name"
+                  :value="item.id"
+                ></el-option>
+              </el-select>
+            </el-popover>
+          </template>
+        </el-table-column>
         <el-table-column label="审核时间" width="180">
           <template #default="scope">{{ dateFormat(scope.row.reviewTime) }}</template>
         </el-table-column>
         <el-table-column label="操作">
           <template #default="props">
-            <el-button type="text" size="mini" @click="updateReleaseInfo(props.row)">编辑</el-button>
-            <el-button type="text" @click="removeApply">删除</el-button>
+            <el-button type="text" size="mini" @click="updateReleaseInfo(props.row)" :disabled="getRowOptionStatus(props.row)">编辑</el-button>
+            <el-button type="text" @click="removeApply(props.row)" :disabled="getRowOptionStatus(props.row)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -53,6 +133,7 @@
         :current-page="searchProps.page"
         :page-size="searchProps.pageSize"
         :page-sizes="[10, 20, 50]"
+        :total="total"
         layout="sizes, prev, pager, next, jumper"
         @size-change="handlePageSizeChange"
         @current-change="handlePageNumChange"
@@ -65,33 +146,32 @@
       @close="closeReleaseForm"
       @getTableInfo="getTableData"
     />
+    <div class="black-hovers" @click="blackHoverclick()" v-if="blackHoverVisible"></div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, toRefs } from 'vue';
+import { defineComponent, reactive, toRefs, ref, onBeforeMount } from 'vue';
 import ServiceInfo from './ServiceInfo.vue';
-import {
-  DeployTableItemStruct,
-  // AUDIT_RESULTS,
-  getModuleType,
-  getReviewResult,
-  // STATUS
-} from '@/views/deploy/index';
+import { DeployTableItemStruct, AUDIT_RESULTS, getModuleType, getReviewResult, STATUS } from '@/views/deploy/index';
 
 import { ElMessage, ElMessageBox } from 'element-plus';
 import dateFormat from '@/utils/date-format';
-import { deleteApply, getDeployList } from '@/api/deploy/deploy-apply';
+import { deleteApply, getDeployList, findPublisherByName, getServiceList } from '@/api/deploy/deploy-apply';
 import PackagedPagination from '@/components/pagination/Index.vue';
 import ListWrap from '@/components/list-wrap/Index.vue';
 import { getShowBool } from '@/utils/permission-show-module';
 import { userInfo } from '@/layout/messageCenter/user-info';
+import { debounce } from 'lodash';
 
 interface TableState {
   tableData: Array<DeployTableItemStruct>;
   loading: boolean;
   total: number;
   createDialogVisible: boolean;
+  publisherFilters: Array<object>;
+  reviewerFilters: Array<object>;
+  auditResultsFilters: Array<object>;
   searchProps: {
     keyword: string;
     page: number;
@@ -107,15 +187,22 @@ interface ReleaseState {
   id: string;
   serviceList: Array<object>;
   versionOptions: Array<object>;
+  services: Array<object>;
   types: Array<object>;
   serviceInfo: {
     name: string;
-    version: string;
+    serviceVersion: string;
     type: number;
-    publisher: string;
-    publisherId: string;
+    publisher: number;
+    publisherName: string;
     publishContent: string;
   };
+}
+
+interface VersionState {
+  preparing: boolean;
+  version: string;
+  versionType: number;
 }
 
 export default defineComponent({
@@ -127,7 +214,7 @@ export default defineComponent({
       total: 0,
       statusFilters: [],
       auditResultsFilters: [],
-      applicantFilters: [],
+      publisherFilters: [],
       reviewerFilters: [],
       createDialogVisible: false,
       searchProps: {
@@ -146,18 +233,19 @@ export default defineComponent({
       isEdit: false,
       id: '',
       serviceInfo: {
-        type: 0,
+        type: 1,
         name: '',
-        version: '',
-        publisher: `${userInfo.value.displayName}_${userInfo.value.userName}`,
-        publisherId: 'michaelccao_1',
+        serviceVersion: '',
+        publisher: 0,
+        publisherName: `${userInfo.value.displayName}_${userInfo.value.userName}`,
         publishContent: '',
       },
       serviceList: [],
       versionOptions: [],
+      services: [],
       types: [
-        { id: 0, name: '服务' },
-        { id: 1, name: '应用' },
+        { id: 1, name: '服务' },
+        { id: 2, name: '应用' },
       ],
     });
 
@@ -173,16 +261,10 @@ export default defineComponent({
           moduleType: getModuleType(item.type),
           reviewResult: getReviewResult(item.status),
         }));
-        releaseForm.serviceList = tableState.tableData.map((item: any) => ({
-          id: item.id.toString(),
-          name: item.name,
+        tableState.auditResultsFilters = Object.entries(STATUS).map((item) => ({
+          id: item[0],
+          name: item[1] ? item[1] : '未审核',
         }));
-
-        releaseForm.versionOptions = tableState.tableData.map((item: any) => ({
-          id: item.id.toString(),
-          name: item.version,
-        }));
-        // console.log('tableState.tableData: ', tableState.tableData);
       } catch (error) {
         tableState.loading = false;
         ElMessage({
@@ -194,20 +276,106 @@ export default defineComponent({
     getTableData();
 
     // 获取服务列表
-    // async function getServices() {
-    //   const { data } = await getServiceList({ all: true });
-    //   const servides = data.rows || [];
-    //   releaseForm.serviceList = servides.map((item: any) => ({
-    //     id: item.id,
-    //     name: `${item.description}_${item.name}`,
-    //   }));
-    // }
+    async function getServices() {
+      const { data } = await getServiceList({ all: true });
+      releaseForm.services = data.map((item: any) => ({
+        serviceName: item.serviceName,
+        versions: item.versions,
+      }));
+      releaseForm.serviceList = data.map((item: any) => ({
+        id: item.serviceName,
+        name: item.serviceName,
+      }));
+    }
     // 改变service方法
     // function serviceChange(serviceId: any) {
     //   const data: any = releaseForm.serviceList.find((i: any) => i.id === serviceId);
     //   releaseForm.serviceInfo.moduleId = serviceId;
     //   releaseForm.serviceInfo.name = data?.name;
     // }
+
+    const blackHoverVisible = ref(false);
+    const publisherTitleVisiable = ref(false);
+    function publisherTitleClick() {
+      publisherTitleVisiable.value = true;
+      blackHoverVisible.value = true;
+    }
+
+    async function publisherChange() {
+      publisherTitleVisiable.value = false;
+      blackHoverVisible.value = false;
+      await getTableData();
+    }
+
+    async function remoteMethod(keyword: string) {
+      // console.log("keyword:", keyword);
+      if (keyword !== '') {
+        const { data = [] } = await findPublisherByName({ keyword });
+        // console.log("keywordDatas:", data);
+        const users = data.map((item: any) => ({
+          id: item.id,
+          name: item.userName,
+        }));
+        tableState.reviewerFilters = users;
+        tableState.publisherFilters = users;
+      } else {
+        tableState.reviewerFilters = [];
+        tableState.publisherFilters = [];
+      }
+    }
+
+    const reviewResultsTitleVisiable = ref(false);
+    function reviewResultsTitleClick() {
+      reviewResultsTitleVisiable.value = true;
+      blackHoverVisible.value = true;
+    }
+
+    async function auditResultsChange() {
+      reviewResultsTitleVisiable.value = false;
+      blackHoverVisible.value = false;
+      await getTableData();
+    }
+
+    const reviewerTitleVisiable = ref(false);
+    function reviewerTitleClick() {
+      reviewerTitleVisiable.value = true;
+      blackHoverVisible.value = true;
+    }
+
+    async function reviewerChange() {
+      reviewerTitleVisiable.value = false;
+      blackHoverVisible.value = false;
+      await getTableData();
+    }
+
+    function blackHoverclick() {
+      reviewResultsTitleVisiable.value = false;
+      reviewerTitleVisiable.value = false;
+      publisherTitleVisiable.value = false;
+      blackHoverVisible.value = false;
+    }
+
+    onBeforeMount(() => {
+      blackHoverclick();
+    });
+
+    function getNameByCode(code: number, type: string): string {
+      let name = '';
+      switch (type) {
+        case 'status':
+          name = STATUS[code];
+          break;
+        case 'auditResults':
+          name = AUDIT_RESULTS[code];
+          break;
+        default:
+          break;
+      }
+      return name;
+    }
+
+    // 发布筛选筛选
+    const filterpublish = debounce(getTableData, 1000);
 
     const handlePageSizeChange = (pageSize: number) => {
       tableState.searchProps.pageSize = pageSize;
@@ -223,14 +391,14 @@ export default defineComponent({
       releaseForm.isEdit = false;
       releaseForm.id = '';
       releaseForm.serviceInfo = {
-        type: 0,
+        type: 1,
         name: '',
-        version: '',
-        // publisher: 'michaelccao',
-        publisher: `${userInfo.value.displayName}_${userInfo.value.userName}`,
-        publisherId: 'michaelccao_1',
+        serviceVersion: '',
+        publisher: 0,
+        publisherName: `${userInfo.value.displayName}_${userInfo.value.userName}`,
         publishContent: '',
       };
+      // getServices();
     }
 
     // 删除发布申请
@@ -259,6 +427,7 @@ export default defineComponent({
     // 新建表单
     const openCreateDialog = () => {
       tableState.createDialogVisible = !tableState.createDialogVisible;
+      getServices();
     };
 
     // 关闭对话框
@@ -267,16 +436,18 @@ export default defineComponent({
       openCreateDialog();
     };
 
+    function getRowOptionStatus(row: any) {
+      // return userInfo.value.userId !== row.publisher || row.status !== 0;
+      return row.status !== 0;
+    }
+
     // 编辑
     const updateReleaseInfo = (rowData: any) => {
       releaseForm.isEdit = true;
-      // console.log('编辑时的数据信息：', rowData);
-      releaseForm.id = rowData.id.toString();
-      releaseForm.serviceInfo.name = rowData.name;
-      releaseForm.serviceInfo.type = rowData.type;
-      // releaseForm.serviceInfo.publisher = rowData.publisher;
-      releaseForm.serviceInfo.version = rowData.version;
-      releaseForm.serviceInfo.publishContent = rowData.publishContent;
+      releaseForm.serviceInfo = {
+        ...releaseForm.serviceInfo,
+        ...rowData,
+      };
       openCreateDialog();
     };
 
@@ -292,7 +463,34 @@ export default defineComponent({
       closeReleaseForm,
       removeApply,
       updateReleaseInfo,
+      filterpublish,
+      getNameByCode,
+      getRowOptionStatus,
+      blackHoverVisible,
+      publisherTitleVisiable,
+      publisherTitleClick,
+      remoteMethod,
+      publisherChange,
+      reviewResultsTitleVisiable,
+      reviewResultsTitleClick,
+      auditResultsChange,
+      reviewerTitleVisiable,
+      reviewerTitleClick,
+      reviewerChange,
+      blackHoverclick,
     };
   },
 });
 </script>
+
+<style lang="scss" scoped>
+.black-hovers {
+  width: 100vw;
+  height: 100vh;
+  position: absolute;
+  left: 0;
+  top: 0;
+  background-color: rgba(0, 0, 0, 0.2);
+  z-index: 40;
+}
+</style>
