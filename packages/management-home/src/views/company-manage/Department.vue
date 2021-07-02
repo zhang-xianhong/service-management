@@ -485,7 +485,7 @@ export default defineComponent({
       });
       // 过滤当前组织下已存在的人员
       newUserList.forEach((item: any) => {
-        append(item, data.parentData);
+        append({ ...item, parent: parentData }, data.parentData);
       });
       treeData.currentNodeUsers = [...treeData.currentNodeUsers, ...newUserList];
       const { page, pageSize } = tableData.searchProps;

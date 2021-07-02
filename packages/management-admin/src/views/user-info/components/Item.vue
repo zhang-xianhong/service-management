@@ -67,13 +67,23 @@ export default defineComponent({
     });
 
     const onSave = async () => {
-      if (props.prop === 'displayName' || recentValue.value.length > 20) {
-        return ElMessage.warning('管理员姓名长度在2-20个字符之间');
+      if (props.prop === 'displayName') {
+        if (recentValue.value.length > 20 || recentValue.value.length < 2) {
+          return ElMessage.warning('管理员姓名长度在2-20个字符之间');
+        }
       }
       if (props.prop === 'phoneNumber') {
-        const reg = /^1[3|4|5|7|8][0-9]\d{8}$/;
+        const reg =
+          /^(?:\+?86)?1(?:3\d{3}|5[^4\D]\d{2}|8\d{3}|7(?:[0-35-9]\d{2}|4(?:0\d|1[0-2]|9\d))|9[0-35-9]\d{2}|6[2567]\d{2}|4(?:(?:10|4[01])\d{3}|[68]\d{4}|[579]\d{2}))\d{6}$/;
         if (!reg.test(recentValue.value)) {
           return ElMessage.error('请输入正确的电话号码');
+        }
+      }
+      if (props.prop === 'primaryMail') {
+        const reg =
+          /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        if (!reg.test(recentValue.value)) {
+          return ElMessage.error('请输入正确的邮箱');
         }
       }
       const { code } = await updateProfile({ [props.prop]: recentValue.value });
