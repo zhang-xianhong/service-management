@@ -10,6 +10,5 @@ export default defineComponent({
   components: {
     ServiceDepend,
   },
-  setup() {},
 });
 </script>

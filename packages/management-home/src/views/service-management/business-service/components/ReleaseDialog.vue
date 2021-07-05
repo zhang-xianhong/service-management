@@ -40,27 +40,9 @@
         </el-table-column>
       </el-table>
 
-      <el-form
-        :model="baseFormData"
-        :rules="baseFormRules"
-        ref="upgradeScriptForm"
-        v-show="tabMenuData[currentActive].id === 'upgradeScript'"
-      >
-        <el-form-item>
-          <el-input type="textarea" v-model="baseFormData.ddlScript"></el-input>
-        </el-form-item>
-      </el-form>
+      <CodeEditor v-model="baseFormData.ddlScript" v-show="tabMenuData[currentActive].id === 'upgradeScript'" />
 
-      <el-form
-        :model="baseFormData"
-        :rules="baseFormRules"
-        ref="preScriptForm"
-        v-show="tabMenuData[currentActive].id === 'preScript'"
-      >
-        <el-form-item>
-          <el-input type="textarea" v-model="baseFormData.dmlScript"></el-input>
-        </el-form-item>
-      </el-form>
+      <CodeEditor v-model="baseFormData.dmlScript" v-show="tabMenuData[currentActive].id === 'preScript'" />
     </div>
     <div class="dialog-footer">
       <el-button style="margin-top: 20px" @click="releasePrev" v-show="currentActive > 0">上一步</el-button>
@@ -72,6 +54,7 @@
 <script lang="ts">
 import { defineComponent, reactive, ref, getCurrentInstance, Ref } from 'vue';
 import { getServiceConfig, releaseService } from '@/api/servers';
+import CodeEditor from '@/components/sql-editor/Index.vue';
 // 状态码
 enum ResCode {
   Success,
@@ -94,6 +77,7 @@ interface RefType {
 }
 export default defineComponent({
   name: 'ReleaseDialog',
+  components: { CodeEditor },
   setup() {
     const tabMenuData = [
       {

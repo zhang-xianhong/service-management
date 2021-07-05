@@ -175,7 +175,7 @@ import RelationInfo from './components/RelationInfo.vue';
 import ModelFieldForm from './components/FieldForm.vue';
 import ModelBaseInfo from './components/ModelBaseInfo.vue';
 import ServerConfigInfo from './components/ServerConfigInfo.vue';
-import { getServiceList, getServiceById, updateServiceStatus } from '@/api/servers';
+import { getServiceList, getServiceById, updateServiceStatus, releaseCheck } from '@/api/servers';
 import { getAllTags } from '@/api/settings/tags';
 import { getClassificationList } from '@/api/settings/classification';
 import { getServiceModelList, getModelDetail } from '@/api/schema/model';
@@ -247,6 +247,15 @@ export default {
 
     // 服务列表
     const serverList = reactive([] as any[]);
+    // 获取组件实例
+    const instance = getCurrentInstance();
+    // 提示信息
+    function msgTips(type: string, content: string) {
+      (instance as any).proxy.$message({
+        type,
+        message: content,
+      });
+    }
 
     const getServerList = async () => {
       const { data } = await getServiceList({});
@@ -531,8 +540,16 @@ export default {
 
     const releaseRef: Ref<RefDialog | null> = ref(null);
 
-    watch(releaseDialogVisible, () => {
-      (releaseRef.value as RefDialog).openDialog(currentServiceId.value);
+    watch(releaseDialogVisible, async (currentValue: any) => {
+      if (currentValue) {
+        // 服务发版前检查
+        const { code, message } = await releaseCheck(currentServiceId.value);
+        if (code === 0) {
+          (releaseRef.value as RefDialog).openDialog(currentServiceId.value);
+        } else {
+          msgTips('error', message);
+        }
+      }
     });
     return {
       isShowDownDrawer,

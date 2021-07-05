@@ -70,3 +70,6 @@ export const getServiceConfig: (id: any) => Promise<SuccessResponse<any>> = (id:
 
 export const releaseService: (payload: any) => Promise<SuccessResponse<any>> = (payload: any) =>
   request.post(getUrl(URL.service.POST_SERVICE_RELEASE), payload);
+
+export const releaseCheck: (serviceId: any) => Promise<SuccessResponse<any>> = (serviceId: any) =>
+  request.get(getUrl(URL.service.GET_RELEASE_CHECK), { params: { serviceId } });
