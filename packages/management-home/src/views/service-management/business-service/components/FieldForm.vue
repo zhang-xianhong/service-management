@@ -16,7 +16,13 @@
         <el-table-column prop="type" label="数据类型">
           <template #default="scope">
             <el-select v-model="scope.row.typeId" :disabled="isFieldDisabled(scope)">
-              <el-option v-for="type in allTypes" :key="type.id" :label="type.name" :value="type.id"></el-option>
+              <el-option
+                v-for="type in allTypes"
+                :key="type.id"
+                :label="type.name"
+                :value="type.id"
+                :disabled="type.id === 1"
+              ></el-option>
             </el-select>
           </template>
         </el-table-column>

@@ -1,40 +1,59 @@
 {
-    "code": 0,
-    "data": {
-        "id": 108,
-        "createTime": "2021-05-08T06:53:15.000Z",
-        "updateTime": "2021-05-08T06:54:01.000Z",
-        "createUser": null,
-        "updateUser": null,
-        "isDelete": false,
-        "version": 0,
-        "projectId": 42,
-        "name": "srv-userinfo",
-        "url": "",
-        "serverPort": 8092,
-        "deployId": null,
-        "moduleDependencyId": null,
-        "deposit": null,
-        "status": 11,
-        "description": "用户信息",
-        "detail": "hello ",
-        "isAllByExtend": null,
-        "extendVersion": null,
-        "classification": "17",
-        "tag": "",
-        "initTimes": 0,
-        "codeQuality": "",
-        "serviceRank": "",
-        "serviceApiUrl": "",
-        "druidUrl": "",
-        "startTime": null,
-        "cloneBy": "",
-        "dependencies": [102],
-        "owners": [],
-        "sshHost": "http://9.134.38.8",
-        "ownerUsers": []
-    },
-    "message": "successful",
-    "httpStatus": 200,
-    "timestamp": 1620458841976
+  "code": 0,
+  "data": {
+      "id": 3,
+      "updateTime": "2021-06-25T09:25:13.000Z",
+      "createTime": "2021-06-25T09:25:13.000Z",
+      "createUser": null,
+      "updateUser": null,
+      "isDelete": false,
+      "version": 0,
+      "projectId": 1,
+      "name": "srv-test-wxpqq",
+      "url": "",
+      "serverPort": 8082,
+      "deployId": null,
+      "moduleDependencyId": null,
+      "deposit": null,
+      "status": 0,
+      "description": "测试更新服务依赖",
+      "detail": null,
+      "isAllByExtend": null,
+      "extendVersion": null,
+      "classification": "",
+      "tag": "",
+      "initTimes": 0,
+      "codeQuality": "",
+      "serviceRank": "",
+      "serviceApiUrl": "",
+      "druidUrl": "",
+      "startTime": null,
+      "cloneBy": "",
+      "repositoryId": null,
+      "lastSyncTime": "2021-06-25T09:25:13.000Z",
+      "serviceVersion": "master",
+      "serviceVersionType": 1,
+      "serviceSource": 1,
+      "owners": [
+          {
+              "userId": 75
+          }
+      ],
+      "dependencies": [
+          {
+              "dependencyServiceName": "srv-test-service1",
+              "dependencyServiceVersionType": 1,
+              "dependencyServiceVersion": "master"
+          },
+          {
+              "dependencyServiceName": "srv-test-service2",
+              "dependencyServiceVersionType": 2,
+              "dependencyServiceVersion": "v1.0"
+          }
+      ],
+      "sshHost": "http://9.134.38.8"
+  },
+  "message": "successful",
+  "httpStatus": 200,
+  "timestamp": 1624973952623
 }
