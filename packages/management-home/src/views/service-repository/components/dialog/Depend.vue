@@ -24,10 +24,10 @@ export default defineComponent({
     const handleClose = () => {
       visible.value = false;
     };
-    const handleOpen = () => {
+    const handleOpen = (service: any) => {
       visible.value = true;
       nextTick(() => {
-        serviceDependRef.value.render(true);
+        serviceDependRef.value.render(service, true);
       });
     };
     return {

@@ -30,16 +30,18 @@ export default defineComponent({
     let dependGraph = null;
     const container = ref(null);
     const loading = ref(true);
-    // const data = ref([]);
     const dataLoaded = ref(false);
 
-    const fetchData = async () => {
-      const { data } = await getServiceDepend({});
+    const fetchData = async (service) => {
+      const { data } = await getServiceDepend({
+        serviceName: service?.serviceName || '',
+        serviceVersion: service?.serviceVersion || '',
+      });
       dataLoaded.value = true;
       return formateTree(data);
     };
 
-    const render = async (force = false) => {
+    const render = async (service, force = false) => {
       if (!force && dataLoaded.value) {
         // eslint-disable-next-line @typescript-eslint/prefer-optional-chain
         dependGraph && dependGraph.refresh();
@@ -50,8 +52,7 @@ export default defineComponent({
         dependGraph && dependGraph.destroy();
       }
       loading.value = true;
-      const data = await fetchData();
-      console.log(JSON.stringify(data));
+      const data = await fetchData(service);
       nextTick(() => {
         dependGraph = DependGraph(container.value, data);
         loading.value = false;

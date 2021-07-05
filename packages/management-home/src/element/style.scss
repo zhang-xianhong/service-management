@@ -23,8 +23,13 @@ $--dialog-content-font-size: 12px !default;
 $--menu-item-font-size: 12px !default;
 $--form-label-font-size: 12px !default;
 
+.el-dialog__body {
+  font-size: 12px;
+  font-weight: normal;
+}
+
 .el-input,
-.el-input--small {
+.el-input--small{
   font-size: 13px;
 }
 .el-form-item__content,
