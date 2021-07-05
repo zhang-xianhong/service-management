@@ -18,4 +18,5 @@ export default {
   GET_SERVICE_TRACE_ID: ['/logs/runtime/traceid', '/mock/services/service-trace-id.json'],
   UPDATE_SERVICE_STATUS: ['/services/sync/status', '/mock/services/update-service-status.json'],
   GET_SERVICE_CONFIG: ['/config/service/desensitized/list/_', '/mock/services/get-service-config.json'],
+  POST_SERVICE_RELEASE: ['/services/release', '/mock/services/release.json'],
 };

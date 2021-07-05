@@ -531,7 +531,7 @@ export default {
     const releaseRef: Ref<RefDialog | null> = ref(null);
 
     watch(releaseDialogVisible, () => {
-      (releaseRef.value as RefDialog).openDialog();
+      (releaseRef.value as RefDialog).openDialog(currentServiceId.value);
     });
     return {
       isShowDownDrawer,
