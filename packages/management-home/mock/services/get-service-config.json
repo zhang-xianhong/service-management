@@ -1,0 +1,27 @@
+{
+  "code" : 0,
+  "message" : "String",
+  "requestId" : "String",
+  "data" : [
+                 {
+                   "defaultValue": "",
+                   "description": "数据库驱动",
+                   "name": "spring.datasource.driver-class-name",
+                   "projectId": 1,
+                   "scope": 0,
+                   "serviceId": 1,
+                   "tenantId": 1,
+                   "type": 1
+                 },
+                 {
+                   "defaultValue": "",
+                   "description": "口令",
+                   "name": "spring.datasource.password",
+                   "projectId": 1,
+                   "scope": 2,
+                   "serviceId": 1,
+                   "tenantId": 1,
+                   "type": 1
+                 }
+   ]
+}

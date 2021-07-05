@@ -61,3 +61,6 @@ export const getServiceTraceId: (serviceId: any) => Promise<SuccessResponse<any>
 
 export const updateServiceStatus: (ids: any) => Promise<SuccessResponse<any>> = (ids: any) =>
   request.post(getUrl(URL.service.UPDATE_SERVICE_STATUS), { ids });
+
+export const getServiceConfig: (payload: object) => Promise<SuccessResponse<any>> = (payload: any) =>
+  request.post(getUrl(URL.service.GET_SERVICE_CONFIG), payload.id);
