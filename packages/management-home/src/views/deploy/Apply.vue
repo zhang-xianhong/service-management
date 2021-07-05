@@ -21,7 +21,7 @@
               <el-form-item label="申请说明">
                 <span>{{ props.row.publishContent }}</span>
               </el-form-item>
-              <el-form-item label="审核说明">
+              <el-form-item label="审核说明" v-if="props.row.reviewContent">
                 <span>{{ props.row.reviewContent }}</span>
               </el-form-item>
             </el-form>
@@ -33,8 +33,8 @@
           <template #default="props">{{ props.row.name }}</template>
         </el-table-column>
         <el-table-column label="版本" width="80" prop="serviceVersion"></el-table-column>
-        <el-table-column label="申请人" props="publisher" width="100">
-          <template #default="props">{{ props.row.publisher }}</template>
+        <el-table-column label="申请人" prop="publisherName" width="100">
+          <template #default="props">{{ props.row.publisherName }}</template>
           <template #header>
             <i class="el-icon-search"></i>
             <el-popover placement="bottom" :width="200" trigger="manual" :visible="publisherTitleVisiable">
@@ -64,7 +64,7 @@
         <el-table-column label="申请时间" width="180" prop="applyTime">
           <template #default="scope">{{ dateFormat(scope.row.applyTime) }}</template>
         </el-table-column>
-        <el-table-column label="审核人" width="100" prop="reviewer">
+        <el-table-column label="审核人" width="100" prop="reviewerName">
           <!-- <template #default="props">{{ props.row.reviewer }}</template> -->
           <template #header>
             <i class="el-icon-search"></i>
@@ -92,7 +92,7 @@
             </el-popover>
           </template>
         </el-table-column>
-        <el-table-column label="审核结果" prop="reviewResult">
+        <el-table-column label="审核结果" prop="status">
           <template #default="scope">
             <span>{{ getNameByCode(scope.row.status, 'status') }}</span>
           </template>
@@ -123,8 +123,16 @@
         </el-table-column>
         <el-table-column label="操作">
           <template #default="props">
-            <el-button type="text" size="mini" @click="updateReleaseInfo(props.row)" :disabled="getRowOptionStatus(props.row)">编辑</el-button>
-            <el-button type="text" @click="removeApply(props.row)" :disabled="getRowOptionStatus(props.row)">删除</el-button>
+            <el-button
+              type="text"
+              size="mini"
+              @click="updateReleaseInfo(props.row)"
+              :disabled="getRowOptionStatus(props.row)"
+              >编辑</el-button
+            >
+            <el-button type="text" @click="removeApply(props.row)" :disabled="getRowOptionStatus(props.row)"
+              >删除</el-button
+            >
           </template>
         </el-table-column>
       </el-table>
@@ -193,6 +201,7 @@ interface ReleaseState {
     name: string;
     serviceVersion: string;
     type: number;
+    moduleId: number;
     publisher: number;
     publisherName: string;
     publishContent: string;
@@ -234,9 +243,10 @@ export default defineComponent({
       id: '',
       serviceInfo: {
         type: 1,
+        moduleId: 0,
         name: '',
         serviceVersion: '',
-        publisher: 0,
+        publisher: userInfo.value.userId,
         publisherName: `${userInfo.value.displayName}_${userInfo.value.userName}`,
         publishContent: '',
       },
@@ -265,6 +275,7 @@ export default defineComponent({
           id: item[0],
           name: item[1] ? item[1] : '未审核',
         }));
+        console.log('tableState.tableData: ', tableState.tableData);
       } catch (error) {
         tableState.loading = false;
         ElMessage({
@@ -283,16 +294,10 @@ export default defineComponent({
         versions: item.versions,
       }));
       releaseForm.serviceList = data.map((item: any) => ({
-        id: item.serviceName,
+        id: item.id ? item.id : item.serviceName,
         name: item.serviceName,
       }));
     }
-    // 改变service方法
-    // function serviceChange(serviceId: any) {
-    //   const data: any = releaseForm.serviceList.find((i: any) => i.id === serviceId);
-    //   releaseForm.serviceInfo.moduleId = serviceId;
-    //   releaseForm.serviceInfo.name = data?.name;
-    // }
 
     const blackHoverVisible = ref(false);
     const publisherTitleVisiable = ref(false);
@@ -308,16 +313,17 @@ export default defineComponent({
     }
 
     async function remoteMethod(keyword: string) {
-      // console.log("keyword:", keyword);
       if (keyword !== '') {
         const { data = [] } = await findPublisherByName({ keyword });
-        // console.log("keywordDatas:", data);
-        const users = data.map((item: any) => ({
+        const users = data?.users;
+        const publishers = data?.publishers;
+        const reviewers = data?.reviewers;
+        const userFilters = users.map((item: any) => ({
           id: item.id,
-          name: item.userName,
+          name: item.displayName,
         }));
-        tableState.reviewerFilters = users;
-        tableState.publisherFilters = users;
+        tableState.publisherFilters = userFilters.filter((item: any) => publishers.includes(item.id));
+        tableState.reviewerFilters = userFilters.filter((item: any) => reviewers.includes(item.id));
       } else {
         tableState.reviewerFilters = [];
         tableState.publisherFilters = [];
@@ -392,9 +398,10 @@ export default defineComponent({
       releaseForm.id = '';
       releaseForm.serviceInfo = {
         type: 1,
+        moduleId: 0,
         name: '',
         serviceVersion: '',
-        publisher: 0,
+        publisher: userInfo.value.userId,
         publisherName: `${userInfo.value.displayName}_${userInfo.value.userName}`,
         publishContent: '',
       };
@@ -444,6 +451,8 @@ export default defineComponent({
     // 编辑
     const updateReleaseInfo = (rowData: any) => {
       releaseForm.isEdit = true;
+      releaseForm.disabled = true;
+      releaseForm.id = rowData.id;
       releaseForm.serviceInfo = {
         ...releaseForm.serviceInfo,
         ...rowData,

@@ -10,7 +10,7 @@
         ></el-input>
       </el-col>
     </el-row>
-    <list-wrap :loading="loading" :empty="total === 0" :hasCreateAuth="getShowBool('add')">
+    <list-wrap :loading="loading" :empty="total === 0" :hasCreateAuth="false">
       <el-table :data="tableData">
         <el-table-column type="expand">
           <template #default="props">
@@ -18,7 +18,7 @@
               <el-form-item label="申请说明">
                 <span>{{ props.row.publishContent }}</span>
               </el-form-item>
-              <el-form-item label="审核说明">
+              <el-form-item label="审核说明" v-if="props.row.reviewContent">
                 <span>{{ props.row.reviewContent }}</span>
               </el-form-item>
             </el-form>
@@ -30,22 +30,20 @@
           <template #default="props">{{ props.row.name }}</template>
         </el-table-column>
         <el-table-column label="版本" width="80" prop="serviceVersion"></el-table-column>
-        <el-table-column label="申请人" width="100" prop="publisher">
-          <template #default="props">{{ props.row.publisher }}</template>
+        <el-table-column label="申请人" width="100" prop="publisherName">
+          <template #default="props">{{ props.row.publisherName }}</template>
           <template #header>
             <i class="el-icon-search"></i>
-            <el-popover placement="bottom" :width="200" trigger="manual" :visible="publisherTitleVisiable">
+            <el-popover placement="bottom" :width="300" trigger="manual" :visible="publisherTitleVisiable">
               <template #reference>
                 <el-button type="text" @click="publisherTitleClick">申请人</el-button>
               </template>
               <el-select
+                style="width: 100%"
                 v-model="searchProps.publisher"
-                placeholder="请输入申请人"
-                clearable
+                placeholder="请选择申请人"
                 multiple
-                filterable
-                remote
-                :remote-method="remoteMethod"
+                clearable
                 @change="publisherChange"
               >
                 <el-option
@@ -61,7 +59,7 @@
         <el-table-column label="申请时间" width="180" prop="applyTime">
           <template #default="scope">{{ dateFormat(scope.row.applyTime) }}</template>
         </el-table-column>
-        <el-table-column label="审核人" width="100" prop="reviewer">
+        <el-table-column label="审核人" width="100" prop="reviewerName">
           <!-- <template #default="props">{{ props.row.reviewer }}</template> -->
           <template #header>
             <i class="el-icon-search"></i>
@@ -71,12 +69,9 @@
               </template>
               <el-select
                 v-model="searchProps.reviewer"
-                placeholder="请输入审核人"
-                clearable
+                placeholder="请选择审核人"
                 multiple
-                filterable
-                remote
-                :remote-method="remoteMethod"
+                clearable
                 @change="reviewerChange"
               >
                 <el-option
@@ -89,8 +84,7 @@
             </el-popover>
           </template>
         </el-table-column>
-        <el-table-column label="审核结果" prop="reviewResult">
-          <!-- <template #default="props">{{ isReviewed(props.row) ? props.row.reviewResult : '' }}</template> -->
+        <el-table-column label="审核结果" prop="status">
           <template #default="scope">
             <span>{{ getNameByCode(scope.row.status, 'status') }}</span>
           </template>
@@ -121,7 +115,9 @@
         </el-table-column>
         <el-table-column label="操作">
           <template #default="props">
-            <el-button type="text" size="mini" @click="onReview(props.row)" :disabled="props.row.status !== 0">审核</el-button>
+            <el-button type="text" size="mini" @click="onReview(props.row)" :disabled="props.row.status !== 0"
+              >审核</el-button
+            >
           </template>
         </el-table-column>
       </el-table>
@@ -169,7 +165,7 @@ import {
   STATUS,
   AUDIT_RESULTS,
 } from '@/views/deploy/index';
-import { defineComponent, reactive, ref, toRefs, onBeforeMount } from 'vue';
+import { defineComponent, reactive, ref, toRefs, onBeforeMount, onMounted } from 'vue';
 import ListWrap from '@/components/list-wrap/Index.vue';
 import PackagedPagination from '@/components/pagination/Index.vue';
 import { ElMessage } from 'element-plus';
@@ -177,6 +173,7 @@ import { reviewApply, getReviewList } from '@/api/deploy/deploy-review';
 import { findPublisherByName } from '@/api/deploy/deploy-apply';
 import dateFormat from '@/utils/date-format';
 import { getShowBool } from '@/utils/permission-show-module';
+import { userInfo } from '@/layout/messageCenter/user-info';
 import { debounce } from 'lodash';
 
 interface TableState {
@@ -234,8 +231,8 @@ export default defineComponent({
       disabled: false,
       id: '',
       formData: {
-        reviewer: 0,
-        // reviewer: userInfo.value.userId,
+        // reviewer: 0,
+        reviewer: userInfo.value.userId,
         reviewContent: '',
       },
     });
@@ -245,7 +242,7 @@ export default defineComponent({
       reviewState.disabled = false;
       reviewState.id = '';
       reviewState.formData = {
-        reviewer: 0,
+        reviewer: userInfo.value.userId,
         reviewContent: '',
       };
     }
@@ -266,6 +263,7 @@ export default defineComponent({
           id: item[0],
           name: item[1] ? item[1] : '未审核',
         }));
+        // console.log('review-tableData:', tableState.tableData);
       } catch (error) {
         tableState.loading = false;
         ElMessage({
@@ -322,14 +320,15 @@ export default defineComponent({
     async function remoteMethod(keyword: string) {
       console.log('keyword:', keyword);
       if (keyword !== '') {
-        const { data = [] } = await findPublisherByName({ keyword });
+        // const { data = [] } = await findPublisherByName({ keyword });
+        const data = [{}];
         console.log('keywordDatas:', data);
         const users = data.map((item: any) => ({
           id: item.id,
           name: item.userName,
         }));
         tableState.reviewerFilters = users;
-        tableState.publisherFilters = users;
+        // tableState.publisherFilters = users;
       } else {
         tableState.reviewerFilters = [];
         tableState.publisherFilters = [];
@@ -366,9 +365,6 @@ export default defineComponent({
       publisherTitleVisiable.value = false;
       blackHoverVisible.value = false;
     }
-    onBeforeMount(() => {
-      blackHoverclick();
-    });
 
     function getNameByCode(code: number, type: string): string {
       let name = '';
@@ -387,7 +383,7 @@ export default defineComponent({
 
     // 审核
     const onReview = async (rowData: any) => {
-      console.log('审核rowData：', rowData);
+      // console.log('审核rowData：', rowData);
       reviewState.isEdit = true;
       reviewState.disabled = true;
       reviewState.id = rowData.id;
@@ -402,11 +398,11 @@ export default defineComponent({
       reviewForm.value.validate(async (valid: boolean) => {
         if (valid) {
           const reviewData = {
+            id: reviewState.id,
             status: tempStatus ? AUDIT_RESULTS_CODE.PASSED : AUDIT_RESULTS_CODE.FAILED,
             reviewContent: reviewState.formData.reviewContent,
           };
-          console.log('reviewState.id: ', reviewState.id);
-          const { code } = await reviewApply(Number(reviewState.id), reviewData);
+          const { code } = await reviewApply(reviewData);
           if (code === 0) {
             ElMessage({
               type: 'success',
@@ -423,6 +419,23 @@ export default defineComponent({
         }
       });
     }
+
+    onBeforeMount(() => {
+      blackHoverclick();
+    });
+
+    onMounted(async () => {
+      const { data = [] } = await findPublisherByName();
+      const users = data?.users;
+      const publishers = data?.publishers;
+      const reviewers = data?.reviewers;
+      const userFilters = users.map((item: any) => ({
+        id: item.id,
+        name: item.displayName,
+      }));
+      tableState.publisherFilters = userFilters.filter((item: any) => publishers.includes(item.id));
+      tableState.reviewerFilters = userFilters.filter((item: any) => reviewers.includes(item.id));
+    });
 
     return {
       ...toRefs(tableState),
@@ -456,7 +469,7 @@ export default defineComponent({
 });
 </script>
 
-<style>
+<style lang="scss" scoped>
 .dialog-footer {
   display: flex;
   justify-content: center;
@@ -469,5 +482,8 @@ export default defineComponent({
   top: 0;
   background-color: rgba(0, 0, 0, 0.2);
   z-index: 40;
+}
+.is-puret {
+  left: -200px !important;
 }
 </style>

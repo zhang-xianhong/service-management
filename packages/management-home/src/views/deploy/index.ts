@@ -7,6 +7,7 @@ export type DeployTableItemStruct = {
   publisherID: string;
   applyTime: string;
   publishContent: string;
+  publisherName: string;
   reviewer: string;
   reviewerId: string;
   status: number;
@@ -51,8 +52,8 @@ export const AUDIT_RESULTS: any = {
 
 export const STATUS: any = {
   0: '未审核',
-  1: '审核通过',
-  2: '审核不通过',
+  1: '通过',
+  2: '不通过',
   3: '已发布',
 };
 
