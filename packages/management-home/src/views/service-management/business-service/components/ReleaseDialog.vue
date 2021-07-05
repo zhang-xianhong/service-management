@@ -1,5 +1,5 @@
 <template>
-  <el-dialog title="发版" v-model="releaseDialogVisible" width="1000px" @close="closeDialog">
+  <el-dialog title="发版" v-model="releaseDialogVisible" width="1000px" @close="closeDialog" destroy-on-close>
     <div>
       <el-steps :active="currentActive" finish-status="success" simple>
         <el-step v-for="item in tabMenuData" :key="item.title" :title="item.title"></el-step>
@@ -11,11 +11,10 @@
         :rules="baseFormRules"
         ref="releaseBaseForm"
         label-width="100px"
-        class="demo-ruleForm"
         v-show="tabMenuData[currentActive].id === 'baseInfo'"
       >
-        <el-form-item label="版本" prop="version">
-          <el-input v-model="baseFormData.version"></el-input>
+        <el-form-item label="版本" prop="serviceVersion">
+          <el-input v-model="baseFormData.serviceVersion"></el-input>
         </el-form-item>
         <el-form-item label="发版说明" prop="description">
           <el-input type="textarea" v-model="baseFormData.description"></el-input>
@@ -40,16 +39,39 @@
           <template #default="scope">{{ ConfigType[scope.row.type] }}</template>
         </el-table-column>
       </el-table>
+
+      <el-form
+        :model="baseFormData"
+        :rules="baseFormRules"
+        ref="upgradeScriptForm"
+        v-show="tabMenuData[currentActive].id === 'upgradeScript'"
+      >
+        <el-form-item>
+          <el-input type="textarea" v-model="baseFormData.ddlScript"></el-input>
+        </el-form-item>
+      </el-form>
+
+      <el-form
+        :model="baseFormData"
+        :rules="baseFormRules"
+        ref="preScriptForm"
+        v-show="tabMenuData[currentActive].id === 'preScript'"
+      >
+        <el-form-item>
+          <el-input type="textarea" v-model="baseFormData.dmlScript"></el-input>
+        </el-form-item>
+      </el-form>
     </div>
     <div class="dialog-footer">
-      <el-button type="primary" style="margin-top: 20px" @click="releaseNext">下一步</el-button>
-      <el-button style="margin-top: 20px" @click="closeDialog">关闭</el-button>
+      <el-button style="margin-top: 20px" @click="releasePrev" v-show="currentActive > 0">上一步</el-button>
+      <el-button type="primary" @click="releaseNext" v-show="currentActive < 3">下一步</el-button>
+      <el-button type="primary" @click="finished" v-show="currentActive === 3" :loading="finishing">完成</el-button>
     </div>
   </el-dialog>
 </template>
 <script lang="ts">
-import { defineComponent, reactive, ref, getCurrentInstance, onMounted } from 'vue';
-import { getServiceConfig } from '@/api/servers';
+import { defineComponent, reactive, ref, getCurrentInstance, Ref } from 'vue';
+import { getServiceConfig, releaseService } from '@/api/servers';
 // 状态码
 enum ResCode {
   Success,
@@ -67,15 +89,11 @@ enum ConfigType {
   '应用类型',
   '系统类型',
 }
-
+interface RefType {
+  [attr: string]: any;
+}
 export default defineComponent({
   name: 'ReleaseDialog',
-  components: {
-    // BaseInfo,
-    // Config,
-    // UpgradeScript,
-    // PreData,
-  },
   setup() {
     const tabMenuData = [
       {
@@ -95,6 +113,8 @@ export default defineComponent({
         id: 'preScript',
       },
     ];
+    const releaseBaseForm: Ref<RefType | any> = ref(null);
+    const finishing: Ref<boolean> = ref(false);
     // 获取组件实例
     const instance = getCurrentInstance();
     // 提示信息
@@ -104,14 +124,17 @@ export default defineComponent({
         message: content,
       });
     }
-
-    // 基础信息
+    let serviceId: any = '';
+    // 发版数据
     const baseFormData = reactive({
-      version: '',
+      serviceVersion: '',
       description: '',
+      configTemplates: [],
+      ddlScript: '',
+      dmlScript: '',
     });
     const baseFormRules = {
-      version: [
+      serviceVersion: [
         { required: true, message: '请输入版本号', trigger: 'blur' },
         { min: 1, max: 20, message: '长度在 1 到 20 个字符', trigger: 'blur' },
       ],
@@ -125,14 +148,14 @@ export default defineComponent({
     const configTableData: any = ref([]);
     const tableRef: any = ref(null);
     // 获取配置列表
-    const getConfigList = async () => {
+    const getConfigList = async (id: any) => {
       try {
-        const { code, data } = await getServiceConfig({ id: '' });
+        const { code, data } = await getServiceConfig({ id });
         if (code === ResCode.Success) {
           configTableData.value = data;
           // 更改选中
-          console.log('tableRef.value', tableRef.value);
-          tableRef.value.toggleRowSelection(configTableData.value[0], true);
+          // console.log('tableRef.value', tableRef.value);
+          // tableRef.value.toggleRowSelection(configTableData.value[0], true);
         } else {
           msgTips('error', '获取人员列表失败');
         }
@@ -140,36 +163,85 @@ export default defineComponent({
         console.log('error', error);
       }
     };
-    onMounted(() => {
-      getConfigList();
-    });
-
     const handleSelectionChange = (data: any) => {
-      console.log('data', data);
+      baseFormData.configTemplates = data.map((item: any) => ({
+        name: item.name,
+        value: item.defaultValue,
+      }));
     };
 
     const releaseDialogVisible = ref(false);
     // 当前step
     const currentActive = ref(0);
 
+    // 上一步
+    const releasePrev = () => {
+      if (currentActive.value > 0) {
+        currentActive.value = currentActive.value - 1;
+      }
+    };
+
     // 下一步
     const releaseNext = () => {
-      if (currentActive.value < 4) {
+      if (currentActive.value === 0) {
+        // 增加校验
+        releaseBaseForm.value.validate((valid: boolean) => {
+          if (valid) {
+            currentActive.value = currentActive.value + 1;
+          }
+        });
+      } else if (currentActive.value < 4) {
         currentActive.value = currentActive.value + 1;
       }
     };
 
     // 打开dialog
-    const openDialog = () => {
+    const openDialog = (id: any) => {
       releaseDialogVisible.value = true;
+      serviceId = id;
+      getConfigList(serviceId);
+    };
+
+    // 初始化
+    const init = () => {
+      currentActive.value = 0;
+      baseFormData.serviceVersion = '';
+      baseFormData.description = '';
+      baseFormData.configTemplates = [];
+      baseFormData.ddlScript = '';
+      baseFormData.dmlScript = '';
+      configTableData.value = [];
     };
 
     // 关闭dialog
     const closeDialog = () => {
+      init();
       releaseDialogVisible.value = false;
     };
-    const dynamicComp = ['BaseInfo', 'Config', 'UpgradeScript', 'PreData'];
-    const currentTabComponent = ref(0);
+
+    // 完成
+    const finished = async () => {
+      finishing.value = true;
+      try {
+        const data = {
+          ...baseFormData,
+          serviceId,
+        };
+        // 发版
+        const { code } = await releaseService(data);
+        if (code === ResCode.Success) {
+          finishing.value = false;
+          msgTips('success', '发版成功！');
+          // 关闭dialog
+          closeDialog();
+        } else {
+          msgTips('error', '发版失败！');
+        }
+      } catch (error) {
+        finishing.value = false;
+        console.log('error', error);
+      }
+    };
     return {
       releaseDialogVisible,
       baseFormData,
@@ -179,20 +251,19 @@ export default defineComponent({
       openDialog,
       closeDialog,
       releaseNext,
-      currentTabComponent,
-      dynamicComp,
       configTableData,
       handleSelectionChange,
       ConfigOrigin,
       ConfigType,
       tableRef,
+      releasePrev,
+      finished,
+      releaseBaseForm,
+      finishing,
     };
   },
 });
 </script>
-<!-- <keep-alive>
-        <component :is="dynamicComp[currentActive]"> </component>
-      </keep-alive> -->
 <style scoped>
 .release-container {
   padding: 30px 0;
