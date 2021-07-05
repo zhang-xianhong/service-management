@@ -82,17 +82,24 @@ export default defineComponent({
       if (!userSetInfo[prop]) {
         return ElMessage.error(`${labels[id]} 不得为空！`);
       }
-      if (userSetInfo.displayName.length > 20) {
-        return ElMessage.error('用户姓名不能超过20个字符');
+      if (id === 1) {
+        const reg = /^[\u4E00-\u9FA5]{2,20}$/;
+        if (!reg.test(userSetInfo[prop])) {
+          return ElMessage.error('用户姓名长度在2～20字符之间,且为中文');
+        }
       }
+
       if (id === 2) {
-        const reg = /^[1][3,4,5,7,8,9][0-9]{9}$/;
+        // https://github.com/VincentSit/ChinaMobilePhoneNumberRegex
+        const reg =
+          /^(?:\+?86)?1(?:3\d{3}|5[^4\D]\d{2}|8\d{3}|7(?:[0-35-9]\d{2}|4(?:0\d|1[0-2]|9\d))|9[0-35-9]\d{2}|6[2567]\d{2}|4(?:(?:10|4[01])\d{3}|[68]\d{4}|[579]\d{2}))\d{6}$/;
         if (!reg.test(userSetInfo[prop])) {
           return ElMessage.error('请输入正确的电话号码');
         }
       }
       if (id === 3) {
-        const reg = /^[a-zA-Z0-9]+([-_.][a-zA-Z0-9]+)*@[a-zA-Z0-9]+([-_.][a-zA-Z0-9]+)*\.[a-z]{2,}$/;
+        const reg =
+          /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
         if (!reg.test(userSetInfo[prop])) {
           return ElMessage.error('请输入正确的电子邮箱');
         }
