@@ -118,7 +118,7 @@
           </template>
         </el-table-column>
         <el-table-column label="审核时间" width="180">
-          <template #default="props">{{ isReviewed(props.row) ? dateFormat(props.row.reviewTime) : '' }}</template>
+          <template #default="props">{{ dateFormat(props.row.reviewTime) }}</template>
         </el-table-column>
         <el-table-column label="操作">
           <template #default="props">
