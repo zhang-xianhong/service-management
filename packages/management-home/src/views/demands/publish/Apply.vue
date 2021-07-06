@@ -160,8 +160,6 @@
         v-if="total"
         :current-page="searchProps.page"
         :page-size="searchProps.pageSize"
-        :page-sizes="[10, 20, 50]"
-        layout="sizes, prev, pager, next, jumper"
         :total="total"
         @size-change="handlePageSizeChange"
         @current-change="handlePageChange"

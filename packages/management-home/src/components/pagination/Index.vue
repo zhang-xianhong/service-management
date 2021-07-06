@@ -5,11 +5,11 @@
       @size-change="$emit('size-change', $event)"
       @current-change="$emit('current-change', $event)"
       :current-page="page"
-      :page-sizes="[1, 5, 10, 20, 50]"
+      :page-sizes="pageSizes"
       :page-size="pageSize"
       :pager-count="5"
       :total="total"
-      layout="sizes, prev, pager, next, jumper"
+      :layout="layout"
       v-bind="$attrs"
     ></el-pagination>
   </div>
@@ -31,6 +31,14 @@ export default {
     total: {
       type: Number,
       default: 0,
+    },
+    pageSizes: {
+      type: Array,
+      default: () => [10, 20, 50, 100],
+    },
+    layout: {
+      type: String,
+      default: 'sizes, prev, pager, next, jumper',
     },
   },
 };

@@ -1,6 +1,7 @@
 import { buildService, getChanges, getChangesApply, startService, stopService, getServiceTraceId } from '@/api/servers';
 import { ref } from 'vue';
 import { logSetTimeOut } from '@/views/service-management/business-service/utils/service-log-data-utils';
+import { release } from '@/views/service-management/business-service/utils/service-release-data-utils';
 import Message from 'element-plus/es/el-message';
 export const thenRefresh = ref(false);
 
@@ -74,4 +75,8 @@ export const stopServiceData = () => {
     .catch((e) => {
       console.log(e);
     });
+};
+
+export const releaseServiceData = () => {
+  release();
 };

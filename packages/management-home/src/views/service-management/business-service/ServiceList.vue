@@ -103,7 +103,6 @@
             @size-change="handleSizeChange"
             @current-change="handleCurrentChange"
             :current-page="pageInfo.page"
-            :page-sizes="[1, 10, 15, 20, 50]"
             :page-size="pageInfo.pageSize"
             layout="sizes, prev, pager, next, jumper"
             :total="serviceTableList.total"

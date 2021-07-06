@@ -64,3 +64,12 @@ export const getServiceTraceId: (serviceId: any) => Promise<SuccessResponse<any>
 
 export const updateServiceStatus: (ids: any) => Promise<SuccessResponse<any>> = (ids: any) =>
   request.post(getUrl(URL.service.UPDATE_SERVICE_STATUS), { ids });
+
+export const getServiceConfig: (id: any) => Promise<SuccessResponse<any>> = (id: any) =>
+  request.get(getUrl(URL.service.GET_SERVICE_CONFIG, id));
+
+export const releaseService: (payload: any) => Promise<SuccessResponse<any>> = (payload: any) =>
+  request.post(getUrl(URL.service.POST_SERVICE_RELEASE), payload);
+
+export const releaseCheck: (serviceId: any) => Promise<SuccessResponse<any>> = (serviceId: any) =>
+  request.get(getUrl(URL.service.GET_RELEASE_CHECK), { params: { serviceId } });
