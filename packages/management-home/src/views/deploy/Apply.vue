@@ -123,8 +123,16 @@
         </el-table-column>
         <el-table-column label="操作">
           <template #default="props">
-            <el-button type="text" size="mini" @click="updateReleaseInfo(props.row)" :disabled="getRowOptionStatus(props.row)">编辑</el-button>
-            <el-button type="text" @click="removeApply(props.row)" :disabled="getRowOptionStatus(props.row)">删除</el-button>
+            <el-button
+              type="text"
+              size="mini"
+              @click="updateReleaseInfo(props.row)"
+              :disabled="getRowOptionStatus(props.row)"
+              >编辑</el-button
+            >
+            <el-button type="text" @click="removeApply(props.row)" :disabled="getRowOptionStatus(props.row)"
+              >删除</el-button
+            >
           </template>
         </el-table-column>
       </el-table>

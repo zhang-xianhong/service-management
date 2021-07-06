@@ -121,7 +121,9 @@
         </el-table-column>
         <el-table-column label="操作">
           <template #default="props">
-            <el-button type="text" size="mini" @click="onReview(props.row)" :disabled="props.row.status !== 0">审核</el-button>
+            <el-button type="text" size="mini" @click="onReview(props.row)" :disabled="props.row.status !== 0"
+              >审核</el-button
+            >
           </template>
         </el-table-column>
       </el-table>
