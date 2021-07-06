@@ -29,15 +29,23 @@
         </el-table-column>
         <el-table-column label="序号" type="index" width="50"> </el-table-column>
         <el-table-column label="发布类型" width="80" prop="moduleType"></el-table-column>
-        <el-table-column label="发布名称" prop="name">
-          <template #default="props">{{ props.row.name }}</template>
+        <el-table-column label="发布名称" prop="name" width="100">
+          <template #default="props">
+            <router-link
+              :to="{
+                path: `/service-management/service-list/detail/${props.row.id}`,
+                query: { detailName: props.row.name },
+              }"
+              >{{ props.row.name }}
+            </router-link>
+          </template>
         </el-table-column>
         <el-table-column label="版本" width="80" prop="serviceVersion"></el-table-column>
         <el-table-column label="申请人" prop="publisherName" width="100">
           <template #default="props">{{ props.row.publisherName }}</template>
           <template #header>
             <i class="el-icon-search"></i>
-            <el-popover placement="bottom" :width="200" trigger="manual" :visible="publisherTitleVisiable">
+            <el-popover placement="bottom" :width="200" trigger="manual" :visible="publisherTitleVisiable" v-if="isShowPopover">
               <template #reference>
                 <el-button type="text" @click="publisherTitleClick">申请人</el-button>
               </template>
@@ -46,9 +54,6 @@
                 placeholder="请输入申请人"
                 clearable
                 multiple
-                filterable
-                remote
-                :remote-method="remoteMethod"
                 @change="publisherChange"
               >
                 <el-option
@@ -62,13 +67,12 @@
           </template>
         </el-table-column>
         <el-table-column label="申请时间" width="180" prop="applyTime">
-          <template #default="scope">{{ dateFormat(scope.row.applyTime) }}</template>
+          <template #default="props">{{ dateFormat(props.row.applyTime) }}</template>
         </el-table-column>
         <el-table-column label="审核人" width="100" prop="reviewerName">
-          <!-- <template #default="props">{{ props.row.reviewer }}</template> -->
           <template #header>
             <i class="el-icon-search"></i>
-            <el-popover placement="bottom" :width="200" trigger="manual" :visible="reviewerTitleVisiable">
+            <el-popover placement="bottom" :width="200" trigger="manual" :visible="reviewerTitleVisiable" v-if="isShowPopover">
               <template #reference>
                 <el-button type="text" @click="reviewerTitleClick">审核人</el-button>
               </template>
@@ -77,9 +81,6 @@
                 placeholder="请输入审核人"
                 clearable
                 multiple
-                filterable
-                remote
-                :remote-method="remoteMethod"
                 @change="reviewerChange"
               >
                 <el-option
@@ -93,8 +94,8 @@
           </template>
         </el-table-column>
         <el-table-column label="审核结果" prop="status">
-          <template #default="scope">
-            <span>{{ getNameByCode(scope.row.status, 'status') }}</span>
+          <template #default="props">
+            <span>{{ getNameByCode(props.row.status, 'status') }}</span>
           </template>
           <template #header>
             <i class="el-icon-search"></i>
@@ -119,7 +120,7 @@
           </template>
         </el-table-column>
         <el-table-column label="审核时间" width="180">
-          <template #default="scope">{{ dateFormat(scope.row.reviewTime) }}</template>
+          <template #default="props">{{ dateFormat(props.row.reviewTime) }}</template>
         </el-table-column>
         <el-table-column label="操作">
           <template #default="props">
@@ -159,7 +160,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, toRefs, ref, onBeforeMount } from 'vue';
+import { defineComponent, reactive, toRefs, ref, onBeforeMount, onMounted } from 'vue';
 import ServiceInfo from './ServiceInfo.vue';
 import { DeployTableItemStruct, AUDIT_RESULTS, getModuleType, getReviewResult, STATUS } from '@/views/deploy/index';
 
@@ -206,12 +207,6 @@ interface ReleaseState {
     publisherName: string;
     publishContent: string;
   };
-}
-
-interface VersionState {
-  preparing: boolean;
-  version: string;
-  versionType: number;
 }
 
 export default defineComponent({
@@ -288,19 +283,22 @@ export default defineComponent({
 
     // 获取服务列表
     async function getServices() {
-      const { data } = await getServiceList({ all: true });
+      // const { data } = await getServiceList({ all: true });
+      const { data } = await getServiceList();
       releaseForm.services = data.map((item: any) => ({
         serviceName: item.serviceName,
         versions: item.versions,
       }));
       releaseForm.serviceList = data.map((item: any) => ({
-        id: item.id ? item.id : item.serviceName,
+        // id: item.id ? item.id : item.serviceName,
+        id: item.serviceName,
         name: item.serviceName,
       }));
     }
 
     const blackHoverVisible = ref(false);
     const publisherTitleVisiable = ref(false);
+    const isShowPopover = ref(true);
     function publisherTitleClick() {
       publisherTitleVisiable.value = true;
       blackHoverVisible.value = true;
@@ -308,26 +306,10 @@ export default defineComponent({
 
     async function publisherChange() {
       publisherTitleVisiable.value = false;
+      isShowPopover.value = false;
       blackHoverVisible.value = false;
       await getTableData();
-    }
-
-    async function remoteMethod(keyword: string) {
-      if (keyword !== '') {
-        const { data = [] } = await findPublisherByName({ keyword });
-        const users = data?.users;
-        const publishers = data?.publishers;
-        const reviewers = data?.reviewers;
-        const userFilters = users.map((item: any) => ({
-          id: item.id,
-          name: item.displayName,
-        }));
-        tableState.publisherFilters = userFilters.filter((item: any) => publishers.includes(item.id));
-        tableState.reviewerFilters = userFilters.filter((item: any) => reviewers.includes(item.id));
-      } else {
-        tableState.reviewerFilters = [];
-        tableState.publisherFilters = [];
-      }
+      isShowPopover.value = true;
     }
 
     const reviewResultsTitleVisiable = ref(false);
@@ -350,8 +332,10 @@ export default defineComponent({
 
     async function reviewerChange() {
       reviewerTitleVisiable.value = false;
+      isShowPopover.value = false;
       blackHoverVisible.value = false;
       await getTableData();
+      isShowPopover.value = true;
     }
 
     function blackHoverclick() {
@@ -457,8 +441,22 @@ export default defineComponent({
         ...releaseForm.serviceInfo,
         ...rowData,
       };
-      openCreateDialog();
+      // openCreateDialog();
+      tableState.createDialogVisible = !tableState.createDialogVisible;
     };
+
+    onMounted(async () => {
+      const { data = [] } = await findPublisherByName();
+      const users = data?.users;
+      const publishers = data?.publishers;
+      const reviewers = data?.reviewers;
+      const userFilters = users.map((item: any) => ({
+        id: item.id,
+        name: item.displayName,
+      }));
+      tableState.publisherFilters = userFilters.filter((item: any) => publishers.includes(item.id));
+      tableState.reviewerFilters = userFilters.filter((item: any) => reviewers.includes(item.id));
+    });
 
     return {
       ...toRefs(tableState),
@@ -478,7 +476,7 @@ export default defineComponent({
       blackHoverVisible,
       publisherTitleVisiable,
       publisherTitleClick,
-      remoteMethod,
+      // remoteMethod,
       publisherChange,
       reviewResultsTitleVisiable,
       reviewResultsTitleClick,
@@ -487,6 +485,7 @@ export default defineComponent({
       reviewerTitleClick,
       reviewerChange,
       blackHoverclick,
+      isShowPopover
     };
   },
 });

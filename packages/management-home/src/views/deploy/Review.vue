@@ -26,24 +26,31 @@
         </el-table-column>
         <el-table-column label="序号" type="index" width="50"></el-table-column>
         <el-table-column label="发布类型" width="80" prop="moduleType"></el-table-column>
-        <el-table-column label="发布名称" prop="name">
-          <template #default="props">{{ props.row.name }}</template>
+        <el-table-column label="发布名称" prop="name" width="100">
+          <template #default="props">
+            <router-link
+              :to="{
+                path: `/service-management/service-list/detail/${props.row.id}`,
+                query: { detailName: props.row.name },
+              }"
+              >{{ props.row.name }}
+            </router-link>
+          </template>
         </el-table-column>
         <el-table-column label="版本" width="80" prop="serviceVersion"></el-table-column>
         <el-table-column label="申请人" width="100" prop="publisherName">
           <template #default="props">{{ props.row.publisherName }}</template>
           <template #header>
             <i class="el-icon-search"></i>
-            <el-popover placement="bottom" :width="300" trigger="manual" :visible="publisherTitleVisiable">
+            <el-popover placement="bottom" :width="200" trigger="manual" :visible="publisherTitleVisiable" v-if="isShowPopover">
               <template #reference>
                 <el-button type="text" @click="publisherTitleClick">申请人</el-button>
               </template>
               <el-select
-                style="width: 100%"
                 v-model="searchProps.publisher"
                 placeholder="请选择申请人"
-                multiple
                 clearable
+                multiple
                 @change="publisherChange"
               >
                 <el-option
@@ -57,13 +64,13 @@
           </template>
         </el-table-column>
         <el-table-column label="申请时间" width="180" prop="applyTime">
-          <template #default="scope">{{ dateFormat(scope.row.applyTime) }}</template>
+          <template #default="props">{{ dateFormat(props.row.applyTime) }}</template>
         </el-table-column>
         <el-table-column label="审核人" width="100" prop="reviewerName">
           <!-- <template #default="props">{{ props.row.reviewer }}</template> -->
           <template #header>
             <i class="el-icon-search"></i>
-            <el-popover placement="bottom" :width="200" trigger="manual" :visible="reviewerTitleVisiable">
+            <el-popover placement="bottom" :width="200" trigger="manual" :visible="reviewerTitleVisiable" v-if="isShowPopover">
               <template #reference>
                 <el-button type="text" @click="reviewerTitleClick">审核人</el-button>
               </template>
@@ -85,8 +92,8 @@
           </template>
         </el-table-column>
         <el-table-column label="审核结果" prop="status">
-          <template #default="scope">
-            <span>{{ getNameByCode(scope.row.status, 'status') }}</span>
+          <template #default="props">
+            <span>{{ getNameByCode(props.row.status, 'status') }}</span>
           </template>
           <template #header>
             <i class="el-icon-search"></i>
@@ -111,7 +118,7 @@
           </template>
         </el-table-column>
         <el-table-column label="审核时间" width="180">
-          <template #default="scope">{{ isReviewed(scope.row) ? dateFormat(scope.row.reviewTime) : '' }}</template>
+          <template #default="props">{{ isReviewed(props.row) ? dateFormat(props.row.reviewTime) : '' }}</template>
         </el-table-column>
         <el-table-column label="操作">
           <template #default="props">
@@ -263,7 +270,7 @@ export default defineComponent({
           id: item[0],
           name: item[1] ? item[1] : '未审核',
         }));
-        // console.log('review-tableData:', tableState.tableData);
+        console.log('review-tableData:', tableState.tableData);
       } catch (error) {
         tableState.loading = false;
         ElMessage({
@@ -306,6 +313,7 @@ export default defineComponent({
 
     const blackHoverVisible = ref(false);
     const publisherTitleVisiable = ref(false);
+    const isShowPopover = ref(true);
     function publisherTitleClick() {
       publisherTitleVisiable.value = true;
       blackHoverVisible.value = true;
@@ -313,8 +321,10 @@ export default defineComponent({
 
     async function publisherChange() {
       publisherTitleVisiable.value = false;
+      isShowPopover.value = false;
       blackHoverVisible.value = false;
       await getTableData();
+      isShowPopover.value = true;
     }
 
     async function remoteMethod(keyword: string) {
@@ -355,8 +365,10 @@ export default defineComponent({
 
     async function reviewerChange() {
       reviewerTitleVisiable.value = false;
+      isShowPopover.value = false;
       blackHoverVisible.value = false;
       await getTableData();
+      isShowPopover.value = true;
     }
 
     function blackHoverclick() {
@@ -464,6 +476,7 @@ export default defineComponent({
       reviewerTitleClick,
       reviewerChange,
       blackHoverclick,
+      isShowPopover
     };
   },
 });
