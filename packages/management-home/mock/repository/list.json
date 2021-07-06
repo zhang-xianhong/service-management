@@ -42,8 +42,8 @@
           "commitId": null,
           "config": null,
           "level": 2,
-          "classification": "分类1",
-          "tag": "项目管理",
+          "classification": 4,
+          "tag": 1,
           "developer": "腾讯云智"
         }
       }

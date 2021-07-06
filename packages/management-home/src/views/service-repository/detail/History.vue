@@ -30,13 +30,21 @@ export default defineComponent({
   components: {
     VersionInfoDialog,
   },
-  setup() {
+  props: {
+    info: {
+      type: Object,
+      default: () => ({}),
+    },
+  },
+  setup(props) {
     const loading = ref(true);
     const histories = ref([] as any[]);
     const versionInfoDialogRef = ref(null as any);
     const fetchData = async () => {
       loading.value = true;
-      const { data } = await getRepositoryHistory({});
+      const { data } = await getRepositoryHistory({
+        serviceName: props.info.serviceName,
+      });
       loading.value = false;
       histories.value = data.map((item: any, index: number) => {
         const newItem = { ...item };

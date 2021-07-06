@@ -13,7 +13,7 @@
         <service-api :loading="loading" :info="serviceInfo" />
       </el-tab-pane>
       <el-tab-pane label="历史版本" name="history">
-        <service-history />
+        <service-history :info="serviceInfo" v-if="serviceInfo" />
       </el-tab-pane>
     </el-tabs>
   </div>
