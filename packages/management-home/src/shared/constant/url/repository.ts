@@ -7,4 +7,5 @@ export default {
   GET_SERVICE_DEPEND: ['/services/dependencies/tree', 'mock/repository/depend.json'],
   GET_REPOSITORY_DETAIL_URL: ['/repository/_', 'mock/repository/detail.json'],
   GET_REPOSITORY_HISTORY: ['/repository/history', 'mock/repository/history.json'],
+  GET_REPOSITORY_SNAPSHOT: ['/repository/snapshot', 'mock/repository/snapshot-detail.json'],
 };

@@ -12,25 +12,39 @@
           <el-collapse-transition>
             <div v-show="!item.collapsed">
               <div class="history-content" v-html="item.description"></div>
+              <el-button type="text" @click="handleShowVersionInfo(item)">更多</el-button>
             </div>
           </el-collapse-transition>
         </div>
       </li>
     </ul>
+    <version-info-dialog ref="versionInfoDialogRef" />
   </div>
 </template>
 <script lang="ts">
 import { defineComponent, ref } from 'vue';
 import { getRepositoryHistory } from '@/api/repository';
+import VersionInfoDialog from './Version-Info-Dialog.vue';
 export default defineComponent({
   name: 'ServiceHistory',
-  components: {},
-  setup() {
+  components: {
+    VersionInfoDialog,
+  },
+  props: {
+    info: {
+      type: Object,
+      default: () => ({}),
+    },
+  },
+  setup(props) {
     const loading = ref(true);
     const histories = ref([] as any[]);
+    const versionInfoDialogRef = ref(null as any);
     const fetchData = async () => {
       loading.value = true;
-      const { data } = await getRepositoryHistory({});
+      const { data } = await getRepositoryHistory({
+        serviceName: props.info.serviceName,
+      });
       loading.value = false;
       histories.value = data.map((item: any, index: number) => {
         const newItem = { ...item };
@@ -38,10 +52,15 @@ export default defineComponent({
         return newItem;
       });
     };
+    const handleShowVersionInfo = (row: any) => {
+      versionInfoDialogRef.value.handleOpen(row.snapshotNo);
+    };
     fetchData();
     return {
       loading,
       histories,
+      versionInfoDialogRef,
+      handleShowVersionInfo,
     };
   },
 });

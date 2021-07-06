@@ -29,9 +29,56 @@
             {{ serviceLevels[scope.row.snapshotInfo?.level] }}
           </template>
         </el-table-column>
-        <el-table-column prop="address" label="类型">业务服务</el-table-column>
-        <el-table-column prop="address" label="分类"> </el-table-column>
-        <el-table-column prop="address" label="标签"> </el-table-column>
+        <el-table-column prop="type" label="类型">业务服务</el-table-column>
+        <el-table-column prop="classification" label="分类">
+          <template #header>
+            <i class="el-icon-search"></i>
+            <el-popover placement="bottom" :width="200" trigger="manual" :visible="classification.visible">
+              <template #reference>
+                <el-button type="text" @click="() => (classification.visible = true)">分类</el-button>
+              </template>
+              <el-cascader
+                v-model="searchProps.classification"
+                :options="classificationList"
+                :props="classification.props"
+                clearable
+                filterable
+                placeholder="请选择分类"
+                @change="classification.handleChange"
+              ></el-cascader>
+            </el-popover>
+          </template>
+          <template #default="scope">
+            {{ getClassificationName(scope.row.snapshotInfo.classification, classificationList) }}
+          </template>
+        </el-table-column>
+        <el-table-column prop="tag" label="标签">
+          <template #header>
+            <i class="el-icon-search"></i>
+            <el-popover placement="bottom" :width="200" trigger="manual" :visible="tagFilter.visible">
+              <template #reference>
+                <el-button type="text" @click="() => (tagFilter.visible = true)">标签</el-button>
+              </template>
+              <el-select
+                v-model="searchProps.tags"
+                @change="tagFilter.handleChange"
+                placeholder="请选择标签"
+                clearable
+                multiple
+              >
+                <el-option
+                  v-for="(item, index) in tagList"
+                  :key="index"
+                  :label="item.name"
+                  :value="item.id"
+                ></el-option>
+              </el-select>
+            </el-popover>
+          </template>
+          <template #default="scope">
+            {{ getTagsName(String(scope.row.snapshotInfo.tag || '').split(','), tagList) }}
+          </template>
+        </el-table-column>
         <el-table-column prop="address" label="服务来源" v-if="listType !== 'platform'"> </el-table-column>
         <el-table-column prop="address" label="开发方">
           <template #default="scope">
@@ -70,16 +117,24 @@
     </list-wrap>
     <distribute-dialog ref="distributeDialogRef" :refresh="fetchData" />
     <shared-dialog ref="sharedDialogRef" :refresh="fetchData" />
+    <div
+      class="blank-overlay"
+      @click="handleClosaFilterOverlay"
+      v-if="classification.visible || tagFilter.visible"
+    ></div>
   </div>
 </template>
 <script lang="ts">
-import { defineComponent, reactive, toRefs, ref } from 'vue';
+import { defineComponent, reactive, toRefs, ref, nextTick } from 'vue';
 import { ElMessageBox, ElMessage } from 'element-plus';
 import { useRoute } from 'vue-router';
 import DistributeDialog from '../components/dialog/Distribute.vue';
 import SharedDialog from '../components/dialog/Shared.vue';
 import { getRepositoryList, pullRepository } from '@/api/repository';
+import { getAllTags } from '@/api/settings/tags';
+import { getClassificationList } from '@/api/settings/classification';
 import { getSharedType, SERVICE_LEVEL } from './config';
+import { getClassificationName, getTagsName } from '../util';
 interface TableState {
   tableData: Array<object>;
   loading: boolean;
@@ -89,6 +144,8 @@ interface TableState {
     page: number;
     pageSize: number;
     sortField: string;
+    classification: string;
+    tags: string[];
     sortType: 'ascending' | 'descending';
   };
 }
@@ -106,6 +163,8 @@ export default defineComponent({
   setup() {
     const sharedDialogRef = ref(null as any);
     const distributeDialogRef = ref(null as any);
+    const classificationList = ref([] as any);
+    const tagList = ref([] as any);
     const route = useRoute();
     // 表单相关状态
     const tableState: TableState = reactive({
@@ -114,6 +173,8 @@ export default defineComponent({
       total: 0,
       searchProps: {
         keyword: '',
+        classification: '',
+        tags: [],
         status: null,
         auditResults: null,
         page: 1,
@@ -122,6 +183,25 @@ export default defineComponent({
         sortType: 'descending',
       },
     });
+
+    const fetchAllData = async () => {
+      tableState.loading = true;
+      try {
+        const [classificationRes, tagsRes, listRes] = await Promise.all([
+          getClassificationList(),
+          getAllTags(),
+          getRepositoryList(tableState.searchProps),
+        ]);
+        const { rows, count } = listRes.data;
+        classificationList.value = classificationRes.data;
+        tagList.value = tagsRes.data;
+        tableState.tableData = rows;
+        tableState.total = count;
+      } catch (e) {
+        console.log(e);
+      }
+      tableState.loading = false;
+    };
 
     const fetchData = async () => {
       tableState.loading = true;
@@ -134,6 +214,40 @@ export default defineComponent({
       }
       tableState.loading = false;
     };
+
+    const classification: any = reactive({
+      visible: false,
+      props: {
+        label: 'name',
+        value: 'id',
+        emitPath: false,
+      },
+      handleChange(value: string) {
+        tableState.searchProps.classification = value;
+        tableState.searchProps.page = 1;
+        fetchData();
+        nextTick(() => {
+          classification.visible = false;
+        });
+      },
+    });
+
+    const tagFilter: any = reactive({
+      visible: false,
+      handleChange(value: string[]) {
+        tableState.searchProps.tags = value;
+        tableState.searchProps.page = 1;
+        fetchData();
+        nextTick(() => {
+          tagFilter.visible = false;
+        });
+      },
+    });
+
+    function handleClosaFilterOverlay() {
+      classification.visible = false;
+      tagFilter.visible = false;
+    }
 
     const handlerSearch = (value: string) => {
       tableState.searchProps.keyword = value;
@@ -179,7 +293,7 @@ export default defineComponent({
       });
     };
 
-    fetchData();
+    fetchAllData();
 
     return {
       ...toRefs(tableState),
@@ -199,7 +313,24 @@ export default defineComponent({
       },
       route,
       fetchData,
+      classification,
+      classificationList,
+      tagList,
+      tagFilter,
+      handleClosaFilterOverlay,
+      getTagsName,
+      getClassificationName,
     };
   },
 });
 </script>
+<style lang="scss" scoped>
+.blank-overlay {
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 40;
+}
+</style>

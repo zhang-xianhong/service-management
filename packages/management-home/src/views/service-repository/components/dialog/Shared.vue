@@ -122,7 +122,7 @@ export default defineComponent({
       formRef.value.clearValidate(['serviceName', 'serviceNameZh']);
     };
     const handleViewServiceDepend = () => {
-      serviceDependDialog.value.handleOpen();
+      serviceDependDialog.value.handleOpen(sourceData.value);
     };
     return {
       visible,

@@ -1,6 +1,6 @@
 <template>
   <div class="repository-detail">
-    <el-tabs v-model="activeTab" @tab-click="handleTabClick">
+    <el-tabs v-model="activeTab" v-loading="loading">
       <el-tab-pane label="基本信息" name="base">
         <service-base :loading="loading" :info="serviceInfo" />
       </el-tab-pane>
@@ -10,10 +10,10 @@
         </div>
       </el-tab-pane>
       <el-tab-pane label="接口列表" name="api">
-        <service-api />
+        <service-api :loading="loading" :info="serviceInfo" />
       </el-tab-pane>
       <el-tab-pane label="历史版本" name="history">
-        <service-history />
+        <service-history :info="serviceInfo" v-if="serviceInfo" />
       </el-tab-pane>
     </el-tabs>
   </div>
@@ -37,7 +37,6 @@ export default defineComponent({
     const { params } = useRoute();
     const { id } = params;
     const loading = ref(true);
-    const handleTabClick = () => 1;
     const fetchData = async () => {
       loading.value = true;
       const { data } = await getRepositoryDetail(id as string);
@@ -49,12 +48,11 @@ export default defineComponent({
 
     watch(activeTab, (tab) => {
       if (tab === 'depend') {
-        serviceDependRef.value.render();
+        serviceDependRef.value.render(serviceInfo.value);
       }
     });
     return {
       activeTab,
-      handleTabClick,
       serviceDependRef,
       serviceInfo,
       loading,
