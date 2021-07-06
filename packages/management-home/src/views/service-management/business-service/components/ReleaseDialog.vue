@@ -143,7 +143,7 @@ export default defineComponent({
     // 获取配置列表
     const getConfigList = async (id: any) => {
       try {
-        const { code, data } = await getServiceConfig({ id });
+        const { code, data } = await getServiceConfig(id);
         if (code === ResCode.Success) {
           configTableData.value = data;
           // 更改选中
