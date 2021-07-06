@@ -1,0 +1,95 @@
+{
+    "code": 0,
+    "data": {
+        "publishers": [54, 254, 369, 555, 666, 777],
+        "reviewers": [100, 555, 666, 777, 888],
+        "users": [{
+                "admin": true,
+                "deptId": 40,
+                "deptName": "welink",
+                "displayName": "admin",
+                "gender": 0,
+                "id": 54,
+                "phoneNumber": "18523453833",
+                "position": null,
+                "primaryMail": "admin@yufuid.com",
+                "status": 0,
+                "tenantId": 1,
+                "userName": "admin@yufuid.com"
+            },
+            {
+                "admin": false,
+                "deptId": 40,
+                "deptName": "welink",
+                "displayName": "张献洪",
+                "gender": 0,
+                "id": 100,
+                "phoneNumber": "13699798247",
+                "position": null,
+                "primaryMail": "362732382@qq.com",
+                "status": 0,
+                "tenantId": 1,
+                "userName": "paulxhzhang"
+            },
+            {
+                "admin": false,
+                "deptId": 40,
+                "deptName": "welink",
+                "displayName": "曹国涛的号码我就饿哦将佛鳄减肥",
+                "gender": 0,
+                "id": 254,
+                "phoneNumber": "13699798247",
+                "position": null,
+                "primaryMail": "993557751@qq.com",
+                "status": 0,
+                "tenantId": 1,
+                "userName": "michaelccao"
+            },
+            {
+                "admin": false,
+                "deptId": 40,
+                "deptName": "welink",
+                "displayName": "小红_xiaohong",
+                "gender": 0,
+                "id": 555,
+                "phoneNumber": "13699798247",
+                "position": null,
+                "primaryMail": "993557751@qq.com",
+                "status": 0,
+                "tenantId": 1,
+                "userName": "zhangxianhong"
+            },
+            {
+                "admin": false,
+                "deptId": 40,
+                "deptName": "welink",
+                "displayName": "小王_xiaowang",
+                "gender": 0,
+                "id": 666,
+                "phoneNumber": "13699798247",
+                "position": null,
+                "primaryMail": "993557751@qq.com",
+                "status": 0,
+                "tenantId": 1,
+                "userName": "zxh"
+            },
+            {
+                "admin": false,
+                "deptId": 40,
+                "deptName": "welink",
+                "displayName": "鲜红",
+                "gender": 0,
+                "id": 777,
+                "phoneNumber": "13699798247",
+                "position": null,
+                "primaryMail": "993557751@qq.com",
+                "status": 0,
+                "tenantId": 1,
+                "userName": "xianhong"
+            }
+        ]
+    },
+    "message": "successful",
+    "httpStatus": 200,
+    "timestamp": 1619072662339
+}
