@@ -21,7 +21,12 @@
           :disabled="isEditable"
           @change="changeService"
         >
-          <el-option v-for="(item, index) in releaseData.serviceList" :key="index" :label="item.name" :value="item.name">
+          <el-option
+            v-for="(item, index) in releaseData.serviceList"
+            :key="index"
+            :label="item.name"
+            :value="item.name"
+          >
           </el-option>
         </el-select>
       </el-form-item>
@@ -43,6 +48,7 @@
             :key="index"
             :label="item.version"
             :value="item.version"
+            :disabled="item.versionStatus !== 10"
           >
           </el-option>
         </el-select>
@@ -70,10 +76,6 @@
 import { defineComponent, ref, Ref, computed, SetupContext, PropType } from 'vue';
 import { ElMessage } from 'element-plus';
 import { addApply, updateApply } from '@/api/deploy/deploy-apply';
-interface ServiceState {
-  serviceName: '';
-  versions: Array<object>;
-}
 
 interface ReleaseState {
   disabled: boolean;
@@ -129,16 +131,9 @@ export default defineComponent({
       );
       releaseData.value.versionOptions = temp.value.versions;
       const data: any = releaseData.value.serviceList.find((i: any) => i.id === serviceId);
-      releaseData.value.serviceInfo.moduleId = serviceId;
+      // releaseData.value.serviceInfo.moduleId = serviceId;
       releaseData.value.serviceInfo.name = data?.name;
     };
-
-    // 改变service方法
-    // function serviceChange(serviceId: any) {
-    //   const data: any = releaseForm.serviceList.find((i: any) => i.id === serviceId);
-    //   releaseForm.serviceInfo.moduleId = serviceId;
-    //   releaseForm.serviceInfo.name = data?.name;
-    // }
 
     const closeReleaseForm = () => {
       isEditable.value = false;

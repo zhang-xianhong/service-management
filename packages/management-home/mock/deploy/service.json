@@ -7,12 +7,12 @@
             "versions": [{
                     "version": "v1.0",
                     "versionType": 1,
-                    "preparing": true
+                    "versionStatus": 10
                 },
                 {
                     "version": "v2.0",
                     "versionType": 1,
-                    "preparing": true
+                    "versionStatus": 8
                 }
             ]
         },
@@ -21,12 +21,17 @@
             "versions": [{
                     "version": "v3.0",
                     "versionType": 1,
-                    "preparing": true
+                    "versionStatus": 10
                 },
                 {
                     "version": "v4.0",
                     "versionType": 1,
-                    "preparing": true
+                    "versionStatus": 9
+                },
+                {
+                    "version": "v5.0",
+                    "versionType": 1,
+                    "versionStatus": 10
                 }
             ]
         }
