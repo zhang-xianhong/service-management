@@ -1,0 +1,149 @@
+{
+  "code":0,
+  "message":"ok",
+  "data":{
+      "id":0,
+      "createTime":"2021-07-01 16:44:57",
+      "updateTime":"2021-07-01 16:44:57",
+      "createUser":0,
+      "updateUser":0,
+      "snapshotNo":"",
+      "serviceName":"",
+      "serviceNameZh":"",
+      "serviceVersion":"",
+      "status":0,
+      "description":"",
+      "codeInfoId":0,
+      "commitId":"",
+      "level":0,
+      "classification":"",
+      "tag":"",
+      "developer":"",
+      "serviceSnapshotConfig":{
+          "modelInfos":[
+              {
+                  "serialVersionUID":0,
+                  "id":0,
+                  "createTime":"2021-07-01 16:44:57",
+                  "updateTime":"2021-07-01 16:44:57",
+                  "createUser":0,
+                  "updateUser":0,
+                  "isDelete":0,
+                  "name":"",
+                  "description":"",
+                  "remark":"",
+                  "engine":"",
+                  "version":0,
+                  "isAllByExtend":0,
+                  "modelRank":"",
+                  "classification":"",
+                  "tags":"",
+                  "similarObject":"",
+                  "similarity":"0.00",
+                  "cloneBy":"",
+                  "startTime":"2021-07-01 16:44:57",
+                  "serviceId":0,
+                  "projectId":0
+              }
+          ],
+          "modelFields":[
+              {
+                  "serialVersionUID":0,
+                  "id":0,
+                  "createTime":"2021-07-01 16:44:57",
+                  "updateTime":"2021-07-01 16:44:57",
+                  "createUser":0,
+                  "updateUser":0,
+                  "isDelete":0,
+                  "modelId":0,
+                  "name":"",
+                  "typeId":0,
+                  "description":"",
+                  "fieldOrder":0,
+                  "defaultValue":"",
+                  "isKey":0,
+                  "isQuery":0,
+                  "isShow":0,
+                  "isShowList0":0,
+                  "queryMode":"",
+                  "readOnly":0,
+                  "notNull":0,
+                  "extra":"",
+                  "foreignModelId":"",
+                  "foreignId":"",
+                  "version":0,
+                  "isUnique":0,
+                  "isIndex":0,
+                  "isParticipleSupport":0,
+                  "isPinyinSupport":0,
+                  "isSystem":0
+              }
+          ],
+          "modelRelations":[
+              {
+                  "serialVersionUID":0,
+                  "id":0,
+                  "createTime":"2021-07-01 16:44:57",
+                  "updateTime":"2021-07-01 16:44:57",
+                  "createUser":0,
+                  "updateUser":0,
+                  "isDelete":0,
+                  "serviceId":0,
+                  "fromModelId":0,
+                  "toModelId":0,
+                  "relationType":0,
+                  "byFieldId":0,
+                  "version":0
+              }
+          ],
+          "serviceApis":[
+              {
+                  "serialVersionUID":0,
+                  "id":0,
+                  "createTime":"2021-07-01 16:44:57",
+                  "updateTime":"2021-07-01 16:44:57",
+                  "createUser":0,
+                  "updateUser":0,
+                  "isDelete":0,
+                  "url":"",
+                  "methodType":0,
+                  "name":"",
+                  "description":"",
+                  "serviceId":0,
+                  "modelId":0,
+                  "version":0,
+                  "isSystem":0
+              }
+          ],
+          "serviceApiParams":[
+              {
+                  "serialVersionUID":0,
+                  "id":0,
+                  "createTime":"2021-07-01 16:44:57",
+                  "updateTime":"2021-07-01 16:44:57",
+                  "createUser":0,
+                  "updateUser":0,
+                  "isDelete":0,
+                  "name":"",
+                  "type":0,
+                  "paramType":0,
+                  "defaultValue":"",
+                  "required":0,
+                  "paramOrder":0,
+                  "description":"",
+                  "serviceApiId":0,
+                  "version":0
+              }
+          ]
+      },
+      "ddlScript":"CREATE TABLE `service_snapshot_script` (\r\n\t`id` BIGINT(20) NOT NULL AUTO_INCREMENT,\r\n\t`create_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\r\n\t`update_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,\r\n\t`create_user` BIGINT(20) NULL DEFAULT NULL,\r\n\t`update_user` BIGINT(20) NULL DEFAULT NULL,\r\n\t`is_delete` TINYINT(1) NULL DEFAULT '0',\r\n\t`version` INT(11) NULL DEFAULT '0',\r\n\t`snapshot_no` VARCHAR(50) NULL DEFAULT NULL COMMENT '快照唯一编号' COLLATE 'utf8mb4_general_ci',\r\n\t`service_name` VARCHAR(255) NULL DEFAULT NULL COMMENT '服务名称' COLLATE 'utf8mb4_general_ci',\r\n\t`service_version` VARCHAR(255) NULL DEFAULT NULL COMMENT 'release版本' COLLATE 'utf8mb4_general_ci',\r\n\t`script_type` TINYINT(4) NULL DEFAULT NULL COMMENT '脚本类型1 ddl 2 dml',\r\n\t`script` TEXT NULL DEFAULT NULL COMMENT '脚本' COLLATE 'utf8mb4_general_ci',\r\n\tPRIMARY KEY (`id`) USING BTREE\r\n)\r\nCOMMENT='服务快照脚本'\r\nCOLLATE='utf8mb4_general_ci'\r\nENGINE=InnoDB\r\nAUTO_INCREMENT=2\r\n;\r\n",
+      "dmlScript":"INSERT INTO `api_info` VALUES (2, '2021-05-19 17:27:29', '2021-05-08 15:00:18', 0, 0, 0, 0, '', '/citybase-nodejs/api/users/info', 'get', '');\r\nINSERT INTO `api_info` VALUES (3, '2021-05-19 17:29:28', '2021-05-08 15:00:18', 0, 0, 0, 0, '', '/citybase-nodejs/api/menus/permission', 'post', '');\r\nINSERT INTO `api_info` VALUES (4, '2021-05-19 17:29:28', '2021-05-08 15:00:18', 0, 0, 0, 0, '', '/citybase-nodejs/api/menus/tree', 'get', '');\r\nINSERT INTO `api_info` VALUES (5, '2021-05-20 17:10:42', '2021-05-08 15:00:18', 0, 0, 0, 0, '', '/citybase-nodejs/api/menus/{:[0-9]+}', 'post', '');\r\nINSERT INTO `api_info` VALUES (6, '2021-05-20 17:10:42', '2021-05-08 15:00:18', 0, 0, 0, 0, '', '/citybase-nodejs/api/menus/delete/{:[0-9]+}', 'post', '');\r\nINSERT INTO `api_info` VALUES (7, '2021-05-19 17:29:28', '2021-05-08 15:00:18', 0, 0, 0, 0, '', '/citybase-nodejs/api/menus', 'post', '');\r\nINSERT INTO `api_info` VALUES (8, '2021-05-20 17:10:42', '2021-05-08 15:00:18', 0, 0, 0, 0, '', '/citybase-nodejs/api/menus/role/{:[0-9]+}', 'get', '');\r\nINSERT INTO `api_info` VALUES (9, '2021-05-20 17:10:42', '2021-05-08 15:00:18', 0, 0, 0, 0, '', '/citybase-nodejs/api/menus/role/tree/{:[0-9]+}', 'get', '');\r\nINSERT INTO `api_info` VALUES (10, '2021-05-19 17:29:28', '2021-05-08 15:00:18', 0, 0, 0, 0, '', '/citybase-nodejs/api/auth/login', 'post', '');\r\nINSERT INTO `api_info` VALUES (11, '2021-05-19 17:29:28', '2021-05-08 15:00:18', 0, 0, 0, 0, '', '/citybase-nodejs/api/auth/logout', 'post', '');\r\nINSERT INTO `api_info` VALUES (12, '2021-05-19 17:29:28', '2021-05-08 15:00:18', 0, 0, 0, 0, '', '/citybase-nodejs/api/auth/me', 'get', '');\r\nINSERT INTO `api_info` VALUES (13, '2021-05-19 17:29:28', '2021-05-08 15:00:18', 0, 0, 0, 0, '', '/citybase-nodejs/api/models/name/usable', 'post', '');\r\nINSERT INTO `api_info` VALUES (14, '2021-05-19 17:29:28', '2021-05-08 15:00:18', 0, 0, 0, 0, '', '/citybase-nodejs/api/models', 'post', '');\r\nINSERT INTO `api_info` VALUES (15, '2021-05-19 17:29:28', '2021-05-08 15:00:18', 0, 0, 0, 0, '', '/citybase-nodejs/api/models/delete', 'post', '');\r\nINSERT INTO `api_info` VALUES (16, '2021-05-20 17:10:42', '2021-05-08 15:00:18', 0, 0, 0, 0, '', '/citybase-nodejs/api/models/{:[0-9]+}/fields', 'post', '');",
+      "configTemplates":[
+          {
+              "serialVersionUID":0,
+              "name":"",
+              "value":""
+          }
+      ]
+  }
+}
