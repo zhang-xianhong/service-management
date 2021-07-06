@@ -136,7 +136,6 @@
               @blur="checkEnglishName"
               ref="nameRef"
             >
-              <template #prepend>srv-</template>
             </el-input>
           </el-form-item>
           <el-form-item
@@ -412,7 +411,6 @@ export default defineComponent({
         return false;
       }
       submitting.value = true;
-      senddata.name = `srv-${senddata.name}`;
       senddata.classification = `${senddata.classification}`;
       addService(senddata)
         .then(() => {
