@@ -30,11 +30,11 @@
           </el-option>
         </el-select>
       </el-form-item>
-      <el-form-item prop="publisher" :label-width="labelWidth">
+      <el-form-item prop="publisherName" :label-width="labelWidth">
         <template v-slot:label>
-          <span class="publisher">申请账号</span>
+          <span class="publisherName">申请账号</span>
         </template>
-        <el-input v-model.number="releaseData.serviceInfo.publisher" :disabled="isEditable"></el-input>
+        <el-input v-model="releaseData.serviceInfo.publisherName" :disabled="true"></el-input>
       </el-form-item>
       <el-form-item label="发布版本" prop="serviceVersion" :label-width="labelWidth">
         <el-select
@@ -48,6 +48,7 @@
             :key="index"
             :label="item.version"
             :value="item.version"
+            :disabled="item.versionStatus !== 10"
           >
           </el-option>
         </el-select>
@@ -75,10 +76,6 @@
 import { defineComponent, ref, Ref, computed, SetupContext, PropType } from 'vue';
 import { ElMessage } from 'element-plus';
 import { addApply, updateApply } from '@/api/deploy/deploy-apply';
-interface ServiceState {
-  serviceName: '';
-  versions: Array<object>;
-}
 
 interface ReleaseState {
   disabled: boolean;
@@ -90,6 +87,7 @@ interface ReleaseState {
   types: Array<object>;
   serviceInfo: {
     type: number;
+    moduleId: number;
     name: string;
     serviceVersion: string;
     publisher: number;
@@ -127,12 +125,14 @@ export default defineComponent({
       ],
     };
 
-    const changeService = () => {
+    const changeService = (serviceId: any) => {
       const temp: any = ref(
         releaseData.value.services.find((item: any) => item.serviceName === releaseData.value.serviceInfo.name),
       );
-      // console.log('temp: ', temp);
       releaseData.value.versionOptions = temp.value.versions;
+      const data: any = releaseData.value.serviceList.find((i: any) => i.id === serviceId);
+      // releaseData.value.serviceInfo.moduleId = serviceId;
+      releaseData.value.serviceInfo.name = data?.name;
     };
 
     const closeReleaseForm = () => {
@@ -148,7 +148,7 @@ export default defineComponent({
           // 添加
           if (!isEditable.value) {
             const releaseInfo = releaseData.value.serviceInfo;
-            releaseInfo.publisher = Number(releaseInfo.publisher);
+            // releaseInfo.publisher = Number(releaseInfo.publisher);
             const { code } = await addApply(releaseInfo);
             if (code === 0) {
               ElMessage({
@@ -164,9 +164,8 @@ export default defineComponent({
             }
             closeReleaseForm();
           } else {
-            // 编辑
-            // console.log('releaseData.value.serviceInfo.publisher: ', releaseData.value.serviceInfo.publisher);
-            const { code } = await updateApply(releaseData.value.serviceInfo.publisher, {
+            // 编辑 releaseData.value.serviceInfo.publisher
+            const { code } = await updateApply(Number(releaseData.value.id), {
               ...releaseData.value.serviceInfo,
             });
             if (code === 0) {
