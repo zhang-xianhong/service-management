@@ -1,0 +1,44 @@
+{
+  "code": 0,
+  "data": [
+      {
+          "serviceName": "srv-test-service1",
+          "versions": [
+              {
+                  "version": "master",
+                  "versionType": 1
+              },
+              {
+                  "version": "v2.0",
+                  "versionType": 2,
+                  "preparing": true
+              },
+              {
+                  "version": "v1.0",
+                  "versionType": 2
+              }
+          ]
+      },
+      {
+          "serviceName": "srv-test-service2",
+          "versions": [
+              {
+                  "version": "master",
+                  "versionType": 1
+              },
+              {
+                  "version": "v2.0",
+                  "versionType": 2,
+                  "preparing": true
+              },
+              {
+                  "version": "v1.0",
+                  "versionType": 2
+              }
+          ]
+      }
+  ],
+  "message": "successful",
+  "httpStatus": 200,
+  "timestamp": 1624880647383
+}

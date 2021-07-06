@@ -220,7 +220,7 @@ export default defineComponent({
   cursor: pointer;
   &:hover {
     &::after {
-      content: '建议尺寸110x110，支持png、jpg格式，小于50k';
+      content: '建议尺寸110x110，支持png、jpg格式，小于3M';
       position: absolute;
       margin-top: -30px;
       margin-left: -40px;

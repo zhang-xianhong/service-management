@@ -17,6 +17,9 @@ export const getServiceById: (payload: object) => Promise<SuccessResponse<any>> 
 export const getServiceList: (payload: object) => Promise<SuccessResponse<any>> = (payload: any) =>
   request.get(getUrl(URL.service.GET_SERVICE_LIST), { params: payload });
 
+export const getServiceDependencyList: (payload: object) => Promise<SuccessResponse<any>> = (payload: any) =>
+  request.get(getUrl(URL.service.GET_SERVICE_DEPENDENCY_LIST), { params: payload });
+
 export const deleteService: (id: any) => Promise<SuccessResponse<any>> = (id: string) =>
   request.post(getUrl(URL.service.DELETE_SERVICR), { ids: id });
 
@@ -67,3 +70,6 @@ export const getServiceConfig: (id: any) => Promise<SuccessResponse<any>> = (id:
 
 export const releaseService: (payload: any) => Promise<SuccessResponse<any>> = (payload: any) =>
   request.post(getUrl(URL.service.POST_SERVICE_RELEASE), payload);
+
+export const releaseCheck: (serviceId: any) => Promise<SuccessResponse<any>> = (serviceId: any) =>
+  request.get(getUrl(URL.service.GET_RELEASE_CHECK), { params: { serviceId } });

@@ -9,6 +9,7 @@ import publish from './publish';
 import app from './app';
 import company from './company';
 import repository from './repository';
+import deploy from './deploy';
 
 export default {
   schema,
@@ -22,4 +23,5 @@ export default {
   app,
   company,
   repository,
+  deploy,
 };
