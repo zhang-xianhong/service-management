@@ -200,6 +200,7 @@ export default defineComponent({
 <style lang="scss" scoped>
 .pop-title {
   font-weight: bolder;
+  font-size: 16px;
 }
 .el-select {
   width: 100%;
