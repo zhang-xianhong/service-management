@@ -16,7 +16,9 @@
         <el-table-column label="序号" type="index"> </el-table-column>
         <el-table-column prop="serviceName" label="服务英文名">
           <template #default="scope">
-            <router-link :to="`${route.fullPath}/${scope.row.id}`">{{ scope.row.serviceName }}</router-link>
+            <router-link :to="`${route.fullPath}/${scope.row.id}`">
+              <service-name :name="scope.row.serviceName"
+            /></router-link>
           </template>
         </el-table-column>
         <el-table-column prop="serviceNameZh" label="服务中文名">
@@ -59,13 +61,7 @@
               <template #reference>
                 <el-button type="text" @click="() => (tagFilter.visible = true)">标签</el-button>
               </template>
-              <el-select
-                v-model="searchProps.tags"
-                @change="tagFilter.handleChange"
-                placeholder="请选择标签"
-                clearable
-                multiple
-              >
+              <el-select v-model="searchProps.tags" placeholder="请选择标签" clearable multiple>
                 <el-option
                   v-for="(item, index) in tagList"
                   :key="index"
@@ -119,13 +115,13 @@
     <shared-dialog ref="sharedDialogRef" :refresh="fetchData" />
     <div
       class="blank-overlay"
-      @click="handleClosaFilterOverlay"
+      @click="handleCloseFilterOverlay"
       v-if="classification.visible || tagFilter.visible"
     ></div>
   </div>
 </template>
 <script lang="ts">
-import { defineComponent, reactive, toRefs, ref, nextTick } from 'vue';
+import { defineComponent, reactive, toRefs, ref } from 'vue';
 import { ElMessageBox, ElMessage } from 'element-plus';
 import { useRoute } from 'vue-router';
 import DistributeDialog from '../components/dialog/Distribute.vue';
@@ -134,7 +130,7 @@ import { getRepositoryList, pullRepository } from '@/api/repository';
 import { getAllTags } from '@/api/settings/tags';
 import { getClassificationList } from '@/api/settings/classification';
 import { getSharedType, SERVICE_LEVEL } from './config';
-import { getClassificationName, getTagsName } from '../util';
+import { filterClassificationList, getClassificationName, getTagsName } from '../util';
 interface TableState {
   tableData: Array<object>;
   loading: boolean;
@@ -160,7 +156,7 @@ export default defineComponent({
     },
   },
   name: 'ServiceRepositoryList',
-  setup() {
+  setup(props) {
     const sharedDialogRef = ref(null as any);
     const distributeDialogRef = ref(null as any);
     const classificationList = ref([] as any);
@@ -183,6 +179,18 @@ export default defineComponent({
         sortType: 'descending',
       },
     });
+    let platformType = 0;
+    switch (props.listType) {
+      case 'platform':
+        platformType = 0;
+        break;
+      case 'shared':
+        platformType = 1;
+        break;
+      case 'distribute':
+        platformType = 2;
+        break;
+    }
 
     const fetchAllData = async () => {
       tableState.loading = true;
@@ -190,10 +198,13 @@ export default defineComponent({
         const [classificationRes, tagsRes, listRes] = await Promise.all([
           getClassificationList(),
           getAllTags(),
-          getRepositoryList(tableState.searchProps),
+          getRepositoryList({
+            ...tableState.searchProps,
+            platformType,
+          }),
         ]);
         const { rows, count } = listRes.data;
-        classificationList.value = classificationRes.data;
+        classificationList.value = filterClassificationList(classificationRes.data);
         tagList.value = tagsRes.data;
         tableState.tableData = rows;
         tableState.total = count;
@@ -206,7 +217,12 @@ export default defineComponent({
     const fetchData = async () => {
       tableState.loading = true;
       try {
-        const { rows, count } = (await getRepositoryList(tableState.searchProps)).data;
+        const { rows, count } = (
+          await getRepositoryList({
+            ...tableState.searchProps,
+            platformType,
+          })
+        ).data;
         tableState.tableData = rows;
         tableState.total = count;
       } catch (e) {
@@ -224,29 +240,18 @@ export default defineComponent({
       },
       handleChange(value: string) {
         tableState.searchProps.classification = value;
-        tableState.searchProps.page = 1;
-        fetchData();
-        nextTick(() => {
-          classification.visible = false;
-        });
       },
     });
 
     const tagFilter: any = reactive({
       visible: false,
-      handleChange(value: string[]) {
-        tableState.searchProps.tags = value;
-        tableState.searchProps.page = 1;
-        fetchData();
-        nextTick(() => {
-          tagFilter.visible = false;
-        });
-      },
     });
 
-    function handleClosaFilterOverlay() {
+    function handleCloseFilterOverlay() {
       classification.visible = false;
       tagFilter.visible = false;
+      tableState.searchProps.page = 1;
+      fetchData();
     }
 
     const handlerSearch = (value: string) => {
@@ -317,7 +322,7 @@ export default defineComponent({
       classificationList,
       tagList,
       tagFilter,
-      handleClosaFilterOverlay,
+      handleCloseFilterOverlay,
       getTagsName,
       getClassificationName,
     };
@@ -329,6 +334,7 @@ export default defineComponent({
   width: 100vw;
   height: 100vh;
   position: fixed;
+  background-color: rgba(0, 0, 0, 0.2);
   top: 0;
   left: 0;
   z-index: 40;

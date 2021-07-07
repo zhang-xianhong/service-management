@@ -1,5 +1,5 @@
 <template>
-  <div class="detail-base" v-loading="loading">
+  <div class="detail-base">
     <el-row :gutter="20" class="columns-wrap">
       <el-col :span="12" v-for="col in columns" :key="col.key">
         <el-row :gutter="20">
@@ -15,68 +15,15 @@
 <script lang="ts">
 import { defineComponent, watch, ref } from 'vue';
 import { SERVICE_LEVEL, getSharedType } from '../list/config';
+import { getClassificationName, getTagsName } from '../util';
+import { getAllTags } from '@/api/settings/tags';
+import { getClassificationList } from '@/api/settings/classification';
 interface Column {
   key: string;
   label: string;
   render?: Function;
 }
-const columns: Column[] = [
-  {
-    key: 'serviceName',
-    label: '服务英文名',
-  },
-  {
-    key: 'serviceNameZh',
-    label: '服务中文名',
-    render(col: Column, row: any) {
-      return row.snapshotInfo.serviceNameZh;
-    },
-  },
-  {
-    key: 'snapshotInfo.level',
-    label: '级别',
-    render(col: Column, row: any) {
-      return SERVICE_LEVEL[row.snapshotInfo.level];
-    },
-  },
-  {
-    key: 'type',
-    label: '类型',
-    render() {
-      return '业务服务';
-    },
-  },
-  {
-    key: 'origin',
-    label: '来源',
-  },
-  {
-    key: 'developer',
-    label: '开发方',
-    render(col: Column, row: any) {
-      return row.snapshotInfo.developer;
-    },
-  },
-  {
-    key: 'platformShareType',
-    label: '权限',
-    render(col: Column, row: any) {
-      return getSharedType(row.platformShareType);
-    },
-  },
-  {
-    key: 'serviceVersion',
-    label: '版本',
-  },
-  {
-    key: 'classification',
-    label: '分类',
-  },
-  {
-    key: 'tag',
-    label: '标签',
-  },
-];
+
 export default defineComponent({
   name: 'ServiceBase',
   props: {
@@ -91,6 +38,79 @@ export default defineComponent({
   },
   setup(props) {
     const newColumns = ref([] as any);
+    const tagList = ref([] as any);
+    const classificationList = ref([] as any);
+    const fetchData = async () => {
+      const [tagReq, classificationReq] = await Promise.all([getAllTags(), getClassificationList()]);
+      tagList.value = tagReq.data;
+      classificationList.value = classificationReq.data;
+    };
+
+    fetchData();
+
+    const columns: Column[] = [
+      {
+        key: 'serviceName',
+        label: '服务英文名',
+      },
+      {
+        key: 'serviceNameZh',
+        label: '服务中文名',
+        render(col: Column, row: any) {
+          return row.snapshotInfo.serviceNameZh;
+        },
+      },
+      {
+        key: 'snapshotInfo.level',
+        label: '级别',
+        render(col: Column, row: any) {
+          return SERVICE_LEVEL[row.snapshotInfo.level];
+        },
+      },
+      {
+        key: 'type',
+        label: '类型',
+        render() {
+          return '业务服务';
+        },
+      },
+      {
+        key: 'origin',
+        label: '来源',
+      },
+      {
+        key: 'developer',
+        label: '开发方',
+        render(col: Column, row: any) {
+          return row.snapshotInfo.developer;
+        },
+      },
+      {
+        key: 'platformShareType',
+        label: '权限',
+        render(col: Column, row: any) {
+          return getSharedType(row.platformShareType);
+        },
+      },
+      {
+        key: 'serviceVersion',
+        label: '版本',
+      },
+      {
+        key: 'classification',
+        label: '分类',
+        render(col: Column, row: any) {
+          return getClassificationName(row.snapshotInfo.classification, classificationList.value);
+        },
+      },
+      {
+        key: 'tag',
+        label: '标签',
+        render(col: Column, row: any) {
+          return getTagsName((row.snapshotInfo.tag || '').split(','), tagList.value);
+        },
+      },
+    ];
 
     const setColumns = (info: any) => {
       newColumns.value = columns.map((item) => {
@@ -113,6 +133,10 @@ export default defineComponent({
     );
     return {
       columns: newColumns,
+      getClassificationName,
+      getTagsName,
+      tagList,
+      classificationList,
     };
   },
 });

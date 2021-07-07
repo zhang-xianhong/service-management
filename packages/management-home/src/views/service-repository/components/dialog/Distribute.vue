@@ -121,6 +121,9 @@ export default defineComponent({
         if (form.platformShareType && form.rename === 1) {
           postData.serviceName = form.serviceName;
           postData.serviceNameZh = form.serviceNameZh;
+        } else {
+          postData.serviceName = sourceData.value.serviceName;
+          postData.serviceNameZh = sourceData.value.snapshotInfo.serviceNameZh;
         }
         await distributeRepository(postData);
         ElMessage.success('服务下发成功');
