@@ -52,7 +52,7 @@
   </el-dialog>
 </template>
 <script lang="ts">
-import { defineComponent, reactive, ref, getCurrentInstance, Ref } from 'vue';
+import { defineComponent, reactive, ref, getCurrentInstance, Ref, nextTick } from 'vue';
 import { getServiceConfig, releaseService } from '@/api/servers';
 import CodeEditor from '@/components/sql-editor/Index.vue';
 // 状态码
@@ -146,9 +146,9 @@ export default defineComponent({
         const { code, data } = await getServiceConfig(id);
         if (code === ResCode.Success) {
           configTableData.value = data;
+          // console.log('tableRef.value', tableRef.value.toggleRowSelection);
           // 更改选中
-          // console.log('tableRef.value', tableRef.value);
-          // tableRef.value.toggleRowSelection(configTableData.value[0], true);
+          tableRef.value.toggleRowSelection(data[0]);
         } else {
           msgTips('error', '获取人员列表失败');
         }
@@ -175,14 +175,20 @@ export default defineComponent({
     };
 
     // 下一步
-    const releaseNext = () => {
+    const releaseNext = async () => {
       if (currentActive.value === 0) {
         // 增加校验
         releaseBaseForm.value.validate((valid: boolean) => {
           if (valid) {
             currentActive.value = currentActive.value + 1;
+            const defaultSelConfig: any = configTableData.value.filter((item: any) => item.scope === ConfigOrigin['通用配置']);
+            // 自动选中系统配置
+            defaultSelConfig.forEach((item: any) => {
+              tableRef.value.toggleRowSelection(item);
+            });
           }
         });
+        await nextTick();
       } else if (currentActive.value < 4) {
         currentActive.value = currentActive.value + 1;
       }
@@ -214,6 +220,7 @@ export default defineComponent({
 
     // 完成
     const finished = async () => {
+      console.log('tableRef.value', tableRef.value.toggleRowSelection);
       finishing.value = true;
       try {
         const data = {
