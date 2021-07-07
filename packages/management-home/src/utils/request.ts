@@ -88,9 +88,8 @@ service.interceptors.response.use(
           }
         },
       });
-    } else {
-      return Promise.reject(data);
     }
+    return Promise.reject(data);
   },
 );
 
