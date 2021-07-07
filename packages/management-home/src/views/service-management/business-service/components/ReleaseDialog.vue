@@ -133,7 +133,7 @@ export default defineComponent({
       ],
       description: [
         { required: true, message: '请输入使用注意事项，更新日志，版本信息、bug修复记录', trigger: 'blur' },
-        { min: 1, max: 225, message: '长度在 1 到 225 个字符', trigger: 'blur' },
+        { min: 1, max: 65536, message: '长度在 1 到 65536 个字符', trigger: 'blur' },
       ],
     };
 
