@@ -1,8 +1,10 @@
 <template>
-  <div class="service-depend-canvas" ref="container" v-loading="loading"></div>
+  <div class="service-depend-canvas" ref="container" v-loading="loading">
+    <p class="render-error" v-if="isError">加载失败，请稍后重试</p>
+  </div>
 </template>
 <script>
-import { defineComponent, ref, onBeforeUnmount, nextTick } from 'vue';
+import { defineComponent, ref, onBeforeUnmount } from 'vue';
 import { getServiceDepend } from '@/api/repository';
 import DependGraph from './graph';
 const formateTree = (data) => {
@@ -31,8 +33,10 @@ export default defineComponent({
     const container = ref(null);
     const loading = ref(true);
     const dataLoaded = ref(false);
+    const isError = ref(false);
 
     const fetchData = async (service) => {
+      isError.value = false;
       const { data } = await getServiceDepend({
         serviceName: service?.serviceName || '',
         serviceVersion: service?.serviceVersion || '',
@@ -52,11 +56,16 @@ export default defineComponent({
         dependGraph && dependGraph.destroy();
       }
       loading.value = true;
-      const data = await fetchData(service);
-      nextTick(() => {
+      try {
+        const data = await fetchData(service);
         dependGraph = DependGraph(container.value, data);
+      } catch (e) {
+        console.log(e);
+        dataLoaded.value = false;
+        isError.value = true;
+      } finally {
         loading.value = false;
-      });
+      }
     };
 
     onBeforeUnmount(() => {
@@ -69,6 +78,7 @@ export default defineComponent({
       render,
       container,
       loading,
+      isError,
     };
   },
 });
@@ -83,6 +93,12 @@ export default defineComponent({
     user-select: none;
     cursor: move;
   }
+}
+.render-error {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 </style>
 <style lang="scss">

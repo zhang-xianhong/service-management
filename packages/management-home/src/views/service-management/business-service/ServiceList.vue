@@ -44,9 +44,10 @@
                 <router-link
                   v-if="getShowBool('selectDetail')"
                   :to="{ path: `service-list/detail/${scope.row.id}`, query: { detailName: scope.row.name } }"
-                  >{{ scope.row.name }}</router-link
                 >
-                <el-button type="text" v-else>{{ scope.row.name }}</el-button>
+                  <service-name :name="scope.row.name" />
+                </router-link>
+                <service-name :name="scope.row.name" v-else />
               </template>
             </el-table-column>
             <el-table-column property="description" label="服务中文名"></el-table-column>
@@ -259,7 +260,7 @@ import {
   deleteServiceForList,
   getTagsForService,
   getClassifications,
-  getAllService,
+  getServiceDependencies,
   allService,
   ownersMap,
   getServiceVersionType,
@@ -318,7 +319,7 @@ export default defineComponent({
     const addServiceDialog = ref(false);
     const toggleServiceDialog = () => {
       addServiceDialog.value = !addServiceDialog.value;
-      getAllService();
+      getServiceDependencies();
     };
     const labelWidth = ref('100px');
 
