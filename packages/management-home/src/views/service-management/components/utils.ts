@@ -4,6 +4,6 @@
  * @returns
  */
 export const getServiceShowName = (name: string) => {
-  const names = name.split(/\./gm);
+  const names = String(name || '').split(/\./gm);
   return names[names.length - 1] || name;
 };
