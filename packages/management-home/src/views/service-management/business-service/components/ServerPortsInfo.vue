@@ -283,7 +283,7 @@ export default defineComponent({
       dialogState.url = rowData.url;
       dialogState.type = rowData.type;
       dialogState.params = rowData.params || [];
-      computedParams.value = rowData.params.filter((x: any) => x.paramType === 0);
+      computedParams.value = (rowData.params || []).filter((x: any) => x.paramType === 0);
       computedParams.value.push({ name: '', paramType: 0, required: '', type: '' });
     };
 

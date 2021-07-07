@@ -56,11 +56,11 @@ export default {
             logoUrl,
             intro,
           };
-          Object.keys(updateData).forEach((key: string) => {
-            if (updateData[key] === '') {
-              delete updateData[key];
-            }
-          });
+          // Object.keys(updateData).forEach((key: string) => {
+          //   if (updateData[key] === '') {
+          //     delete updateData[key];
+          //   }
+          // });
           const { code } = await updateTenant(updateData);
           if (code === 0) {
             (instance as any).proxy.$message({
