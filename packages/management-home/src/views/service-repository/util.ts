@@ -1,3 +1,5 @@
+import _ from 'lodash';
+
 /**
  * 过滤空children
  * @param list
@@ -17,33 +19,24 @@ export const filterClassificationList = (list: any) => {
   newList.forEach((item) => filter(item));
   return newList;
 };
-
-function visitNode(node: any, hashMap: any, array: any[]) {
-  if (!hashMap[node.data]) {
-    // eslint-disable-next-line no-param-reassign
-    hashMap[node.data] = true;
-    array.push(node);
-  }
-}
-function convertTreeToList(root: any) {
-  const stack = [];
+function convertTreeToList(tree: any) {
   const array: any[] = [];
-  const hashMap = {};
-  stack.push(root);
 
-  while (stack.length !== 0) {
-    const node = stack.pop();
-    if (node.children === null) {
-      visitNode(node, hashMap, array);
-    } else {
-      for (let i = node.children.length - 1; i >= 0; i--) {
-        stack.push(node.children[i]);
+  const flat = (nodes: any[]) => {
+    nodes.forEach((node) => {
+      if (node.children && node.children.length > 0) {
+        flat(node.children);
       }
-    }
-  }
+      array.push(node);
+    });
+  };
+
+  flat(tree);
 
   return array;
 }
+
+const convertTreeToArray = _.memoize(convertTreeToList);
 
 /**
  * 获取分类名称
@@ -51,9 +44,11 @@ function convertTreeToList(root: any) {
  * @param classificationList
  * @returns
  */
-export const getClassificationName = (classificationId: number, classificationList: any[]) => {
-  const array: any[] = convertTreeToList(classificationList);
-  const item = array.find((item) => item.id === classificationId);
+export const getClassificationName = (classificationId: number, classificationList: any) => {
+  const array: any[] = convertTreeToArray(JSON.parse(JSON.stringify(classificationList)));
+  console.log(array);
+  const item = array.find((item) => item.id === Number(classificationId));
+  console.log(item);
   return item?.name || '';
 };
 

@@ -508,8 +508,11 @@ export default defineComponent({
       reviewerChange,
       blackHoverclick,
       isShowPopover,
+<<<<<<< HEAD
       versionInfoDialogRef,
       handleShowVersionInfo,
+=======
+>>>>>>> c3fc23e9b1df9b161b38b57ead49e38fd94fec8e
     };
   },
 });

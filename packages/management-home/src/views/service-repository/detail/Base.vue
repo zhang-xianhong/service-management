@@ -6,7 +6,10 @@
           <el-col :span="4" style="text-align: right">
             <span style="color: #606266">{{ col.label }}</span></el-col
           >
-          <el-col :span="18" :offset="1">{{ col.render() }} </el-col>
+          <el-col :span="18" :offset="1">
+            <service-name :name="info.serviceName" v-if="col.key === 'serviceName'" />
+            <template v-else>{{ col.render() }} </template>
+          </el-col>
         </el-row>
       </el-col>
     </el-row>

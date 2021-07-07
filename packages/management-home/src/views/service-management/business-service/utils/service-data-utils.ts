@@ -112,10 +112,22 @@ export const deleteServiceForList = (arr: Array<any>) =>
   deleteService(arr as any).then((res) => {
     console.log(res);
   });
-
 export function getAllService() {
+  return getServiceList({ all: true }).then((res) => {
+    if (res?.data?.rows) {
+      // res.data.rows.forEach((x: any) => {
+      //   // eslint-disable-next-line no-param-reassign
+      //   // x.name = x.name.replace(/^srv-/g, '');
+      // });
+      allService.value = res.data.rows;
+    } else {
+      allService.value = [];
+    }
+  });
+}
+export function getServiceDependencies(id?: number) {
   console.log('get service dependency');
-  return getServiceDependencyList({}).then((res) => {
+  return getServiceDependencyList({ serviceId: id }).then((res) => {
     if (res?.data) {
       const { data = [] } = res;
       const serviceList = data.map((i: any) => ({

@@ -79,7 +79,7 @@ import { reactive, ref, computed } from 'vue';
 import useClassifications from '../utils/service-baseinfo-classification';
 import useTags from '../utils/service-baseinfo-tag';
 import { updateService } from '@/api/servers';
-import { allService, getAllService, getServiceVersionType } from '../utils/service-data-utils';
+import { allService, getServiceDependencies, getServiceVersionType } from '../utils/service-data-utils';
 import OwnerSelect from '@/components/owners-select/Index.vue';
 import { ElMessage } from 'element-plus';
 import { getShowBool } from '@/utils/permission-show-module';
@@ -108,7 +108,7 @@ export default {
     },
   },
   setup(props: { data: any; id: number; tags: any[]; classifications: any[] }, ctx: any) {
-    getAllService();
+    getServiceDependencies(props.id);
     // 是否为显示模式标识，默认为true
     const isShowMode = ref(true);
     const serviceCascaderProps = ref({

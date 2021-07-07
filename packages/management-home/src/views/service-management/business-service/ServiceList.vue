@@ -260,7 +260,7 @@ import {
   deleteServiceForList,
   getTagsForService,
   getClassifications,
-  getAllService,
+  getServiceDependencies,
   allService,
   ownersMap,
   getServiceVersionType,
@@ -319,7 +319,7 @@ export default defineComponent({
     const addServiceDialog = ref(false);
     const toggleServiceDialog = () => {
       addServiceDialog.value = !addServiceDialog.value;
-      getAllService();
+      getServiceDependencies();
     };
     const labelWidth = ref('100px');
 
