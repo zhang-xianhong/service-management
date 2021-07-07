@@ -45,7 +45,13 @@
           <template #default="props">{{ props.row.publisherName }}</template>
           <template #header>
             <i class="el-icon-search"></i>
-            <el-popover placement="bottom" :width="200" trigger="manual" :visible="publisherTitleVisiable" v-if="isShowPopover">
+            <el-popover
+              placement="bottom"
+              :width="200"
+              trigger="manual"
+              :visible="publisherTitleVisiable"
+              v-if="isShowPopover"
+            >
               <template #reference>
                 <el-button type="text" @click="publisherTitleClick">申请人</el-button>
               </template>
@@ -72,7 +78,13 @@
         <el-table-column label="审核人" width="100" prop="reviewerName">
           <template #header>
             <i class="el-icon-search"></i>
-            <el-popover placement="bottom" :width="200" trigger="manual" :visible="reviewerTitleVisiable" v-if="isShowPopover">
+            <el-popover
+              placement="bottom"
+              :width="200"
+              trigger="manual"
+              :visible="reviewerTitleVisiable"
+              v-if="isShowPopover"
+            >
               <template #reference>
                 <el-button type="text" @click="reviewerTitleClick">审核人</el-button>
               </template>
@@ -485,7 +497,7 @@ export default defineComponent({
       reviewerTitleClick,
       reviewerChange,
       blackHoverclick,
-      isShowPopover
+      isShowPopover,
     };
   },
 });
