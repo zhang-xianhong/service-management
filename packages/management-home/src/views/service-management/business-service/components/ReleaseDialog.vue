@@ -76,7 +76,7 @@ interface RefType {
   [attr: string]: any;
 }
 // 发版说明  版本号必须只能包含英文字母、数字、西文点号、西文“-”， 西文“_”，且长度限制在1~20个西文字符。
-const regDes = /^[A-Za-z\d（.\-_)]{1,20}$/
+const regDes = /^[A-Za-z\d（.\-_)]{1,20}$/;
 // 密码校验
 const validatorVersionPass = (rule: any, value: string, callback: Function) => {
   if (!regDes.test(value)) {

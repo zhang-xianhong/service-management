@@ -2,38 +2,40 @@
     "code": 0,
     "message": "ok",
     "requestId": null,
-    "data": [{
-            "serviceName": "public.tenant1.project1.service1",
-            "versions": [{
-                    "version": "v1.0",
-                    "versionType": 1,
-                    "versionStatus": 10
-                },
-                {
-                    "version": "v2.0",
-                    "versionType": 1,
-                    "versionStatus": 8
-                }
-            ]
-        },
-        {
-            "serviceName": "public.tenant1.project1.service2",
-            "versions": [{
-                    "version": "v3.0",
-                    "versionType": 1,
-                    "versionStatus": 10
-                },
-                {
-                    "version": "v4.0",
-                    "versionType": 1,
-                    "versionStatus": 9
-                },
-                {
-                    "version": "v5.0",
-                    "versionType": 1,
-                    "versionStatus": 10
-                }
-            ]
-        }
-    ]
+    "data": {
+        "data": [{
+                "serviceName": "public.tenant1.project1.service1",
+                "versions": [{
+                        "version": "v1.0",
+                        "versionType": 1,
+                        "versionStatus": 10
+                    },
+                    {
+                        "version": "v2.0",
+                        "versionType": 1,
+                        "versionStatus": 8
+                    }
+                ]
+            },
+            {
+                "serviceName": "public.tenant1.project1.service2",
+                "versions": [{
+                        "version": "v3.0",
+                        "versionType": 1,
+                        "versionStatus": 10
+                    },
+                    {
+                        "version": "v4.0",
+                        "versionType": 1,
+                        "versionStatus": 9
+                    },
+                    {
+                        "version": "v5.0",
+                        "versionType": 1,
+                        "versionStatus": 10
+                    }
+                ]
+            }
+        ]
+    }
 }

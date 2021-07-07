@@ -27,9 +27,9 @@
             </el-form>
           </template>
         </el-table-column>
-        <el-table-column label="序号" type="index" width="50"> </el-table-column>
-        <el-table-column label="发布类型" width="80" prop="moduleType"></el-table-column>
-        <el-table-column label="发布名称" prop="name" width="100">
+        <el-table-column label="序号" type="index" width="60"> </el-table-column>
+        <el-table-column label="发布类型" prop="moduleType"></el-table-column>
+        <el-table-column label="发布名称" prop="name">
           <template #default="props">
             <router-link
               :to="{
@@ -40,18 +40,28 @@
             </router-link>
           </template>
         </el-table-column>
-        <el-table-column label="版本" width="80" prop="serviceVersion"></el-table-column>
-        <el-table-column label="申请人" prop="publisherName" width="100">
+        <el-table-column label="版本" width="100" prop="serviceVersion">
+          <template #default="props">
+            <el-button type="text" @click="handleShowVersionInfo(props.row)">{{ props.row.serviceVersion }}</el-button>
+          </template>
+        </el-table-column>
+        <el-table-column label="申请人" prop="publisherName">
           <template #default="props">{{ props.row.publisherName }}</template>
           <template #header>
             <i class="el-icon-search"></i>
-            <el-popover placement="bottom" :width="200" trigger="manual" :visible="publisherTitleVisiable" v-if="isShowPopover">
+            <el-popover
+              placement="bottom"
+              :width="200"
+              trigger="manual"
+              :visible="publisherTitleVisiable"
+              v-if="isShowPopover"
+            >
               <template #reference>
                 <el-button type="text" @click="publisherTitleClick">申请人</el-button>
               </template>
               <el-select
                 v-model="searchProps.publisher"
-                placeholder="请输入申请人"
+                placeholder="请选择申请人"
                 clearable
                 multiple
                 @change="publisherChange"
@@ -66,19 +76,25 @@
             </el-popover>
           </template>
         </el-table-column>
-        <el-table-column label="申请时间" width="180" prop="applyTime">
+        <el-table-column label="申请时间" width="190" prop="applyTime">
           <template #default="props">{{ dateFormat(props.row.applyTime) }}</template>
         </el-table-column>
-        <el-table-column label="审核人" width="100" prop="reviewerName">
+        <el-table-column label="审核人" prop="reviewerName">
           <template #header>
             <i class="el-icon-search"></i>
-            <el-popover placement="bottom" :width="200" trigger="manual" :visible="reviewerTitleVisiable" v-if="isShowPopover">
+            <el-popover
+              placement="bottom"
+              :width="200"
+              trigger="manual"
+              :visible="reviewerTitleVisiable"
+              v-if="isShowPopover"
+            >
               <template #reference>
                 <el-button type="text" @click="reviewerTitleClick">审核人</el-button>
               </template>
               <el-select
                 v-model="searchProps.reviewer"
-                placeholder="请输入审核人"
+                placeholder="请选择审核人"
                 clearable
                 multiple
                 @change="reviewerChange"
@@ -119,7 +135,7 @@
             </el-popover>
           </template>
         </el-table-column>
-        <el-table-column label="审核时间" width="180">
+        <el-table-column label="审核时间" width="190">
           <template #default="props">{{ dateFormat(props.row.reviewTime) }}</template>
         </el-table-column>
         <el-table-column label="操作">
@@ -156,6 +172,7 @@
       @getTableInfo="getTableData"
     />
     <div class="black-hovers" @click="blackHoverclick()" v-if="blackHoverVisible"></div>
+    <version-info-dialog ref="versionInfoDialogRef" />
   </div>
 </template>
 
@@ -166,9 +183,16 @@ import { DeployTableItemStruct, AUDIT_RESULTS, getModuleType, getReviewResult, S
 
 import { ElMessage, ElMessageBox } from 'element-plus';
 import dateFormat from '@/utils/date-format';
-import { deleteApply, getDeployList, findPublisherByName, getServiceList } from '@/api/deploy/deploy-apply';
+import {
+  deleteApply,
+  getDeployList,
+  findPublisherByName,
+  getServiceList,
+  getSnapshotNo,
+} from '@/api/deploy/deploy-apply';
 import PackagedPagination from '@/components/pagination/Index.vue';
 import ListWrap from '@/components/list-wrap/Index.vue';
+import VersionInfoDialog from '@/views/service-repository/detail/Version-Info-Dialog.vue';
 import { getShowBool } from '@/utils/permission-show-module';
 import { userInfo } from '@/layout/messageCenter/user-info';
 import { debounce } from 'lodash';
@@ -210,7 +234,7 @@ interface ReleaseState {
 }
 
 export default defineComponent({
-  components: { ListWrap, PackagedPagination, ServiceInfo },
+  components: { ListWrap, PackagedPagination, ServiceInfo, VersionInfoDialog },
   setup() {
     const tableState: TableState = reactive({
       tableData: [],
@@ -254,6 +278,8 @@ export default defineComponent({
       ],
     });
 
+    const versionInfoDialogRef = ref(null as any);
+
     async function getTableData() {
       try {
         tableState.loading = true;
@@ -270,7 +296,7 @@ export default defineComponent({
           id: item[0],
           name: item[1] ? item[1] : '未审核',
         }));
-        console.log('tableState.tableData: ', tableState.tableData);
+        // console.log('tableState.tableData: ', tableState.tableData);
       } catch (error) {
         tableState.loading = false;
         ElMessage({
@@ -281,15 +307,13 @@ export default defineComponent({
     }
     getTableData();
 
-    // 获取服务列表
     async function getServices() {
-      // const { data } = await getServiceList({ all: true });
       const { data } = await getServiceList();
-      releaseForm.services = data.map((item: any) => ({
+      releaseForm.services = data.data.map((item: any) => ({
         serviceName: item.serviceName,
         versions: item.versions,
       }));
-      releaseForm.serviceList = data.map((item: any) => ({
+      releaseForm.serviceList = data.data.map((item: any) => ({
         // id: item.id ? item.id : item.serviceName,
         id: item.serviceName,
         name: item.serviceName,
@@ -345,10 +369,6 @@ export default defineComponent({
       blackHoverVisible.value = false;
     }
 
-    onBeforeMount(() => {
-      blackHoverclick();
-    });
-
     function getNameByCode(code: number, type: string): string {
       let name = '';
       switch (type) {
@@ -364,7 +384,6 @@ export default defineComponent({
       return name;
     }
 
-    // 发布筛选筛选
     const filterpublish = debounce(getTableData, 1000);
 
     const handlePageSizeChange = (pageSize: number) => {
@@ -392,7 +411,6 @@ export default defineComponent({
       // getServices();
     }
 
-    // 删除发布申请
     const removeApply = async (rowData: any) => {
       ElMessageBox.confirm('是否确定删除该申请？', '提示', {
         confirmButtonText: '确定删除',
@@ -415,13 +433,11 @@ export default defineComponent({
       });
     };
 
-    // 新建表单
     const openCreateDialog = () => {
       tableState.createDialogVisible = !tableState.createDialogVisible;
       getServices();
     };
 
-    // 关闭对话框
     const closeReleaseForm = () => {
       initReleaseForm();
       openCreateDialog();
@@ -432,7 +448,6 @@ export default defineComponent({
       return row.status !== 0;
     }
 
-    // 编辑
     const updateReleaseInfo = (rowData: any) => {
       releaseForm.isEdit = true;
       releaseForm.disabled = true;
@@ -441,9 +456,17 @@ export default defineComponent({
         ...releaseForm.serviceInfo,
         ...rowData,
       };
-      // openCreateDialog();
       tableState.createDialogVisible = !tableState.createDialogVisible;
     };
+
+    const handleShowVersionInfo = async (row: any) => {
+      const { data } = await getSnapshotNo(row?.id);
+      versionInfoDialogRef.value.handleOpen(data);
+    };
+
+    onBeforeMount(() => {
+      blackHoverclick();
+    });
 
     onMounted(async () => {
       const { data = [] } = await findPublisherByName();
@@ -476,7 +499,6 @@ export default defineComponent({
       blackHoverVisible,
       publisherTitleVisiable,
       publisherTitleClick,
-      // remoteMethod,
       publisherChange,
       reviewResultsTitleVisiable,
       reviewResultsTitleClick,
@@ -485,7 +507,9 @@ export default defineComponent({
       reviewerTitleClick,
       reviewerChange,
       blackHoverclick,
-      isShowPopover
+      isShowPopover,
+      versionInfoDialogRef,
+      handleShowVersionInfo,
     };
   },
 });

@@ -24,9 +24,9 @@
             </el-form>
           </template>
         </el-table-column>
-        <el-table-column label="序号" type="index" width="50"></el-table-column>
+        <el-table-column label="序号" type="index" width="60"></el-table-column>
         <el-table-column label="发布类型" width="80" prop="moduleType"></el-table-column>
-        <el-table-column label="发布名称" prop="name" width="100">
+        <el-table-column label="发布名称" prop="name">
           <template #default="props">
             <router-link
               :to="{
@@ -37,12 +37,22 @@
             </router-link>
           </template>
         </el-table-column>
-        <el-table-column label="版本" width="80" prop="serviceVersion"></el-table-column>
-        <el-table-column label="申请人" width="100" prop="publisherName">
+        <el-table-column label="版本" width="100" prop="serviceVersion">
+          <template #default="props">
+            <el-button type="text" @click="handleShowVersionInfo(props.row)">{{ props.row.serviceVersion }}</el-button>
+          </template>
+        </el-table-column>
+        <el-table-column label="申请人" prop="publisherName">
           <template #default="props">{{ props.row.publisherName }}</template>
           <template #header>
             <i class="el-icon-search"></i>
-            <el-popover placement="bottom" :width="200" trigger="manual" :visible="publisherTitleVisiable" v-if="isShowPopover">
+            <el-popover
+              placement="bottom"
+              :width="200"
+              trigger="manual"
+              :visible="publisherTitleVisiable"
+              v-if="isShowPopover"
+            >
               <template #reference>
                 <el-button type="text" @click="publisherTitleClick">申请人</el-button>
               </template>
@@ -63,14 +73,19 @@
             </el-popover>
           </template>
         </el-table-column>
-        <el-table-column label="申请时间" width="180" prop="applyTime">
+        <el-table-column label="申请时间" width="190" prop="applyTime">
           <template #default="props">{{ dateFormat(props.row.applyTime) }}</template>
         </el-table-column>
-        <el-table-column label="审核人" width="100" prop="reviewerName">
-          <!-- <template #default="props">{{ props.row.reviewer }}</template> -->
+        <el-table-column label="审核人" prop="reviewerName">
           <template #header>
             <i class="el-icon-search"></i>
-            <el-popover placement="bottom" :width="200" trigger="manual" :visible="reviewerTitleVisiable" v-if="isShowPopover">
+            <el-popover
+              placement="bottom"
+              :width="200"
+              trigger="manual"
+              :visible="reviewerTitleVisiable"
+              v-if="isShowPopover"
+            >
               <template #reference>
                 <el-button type="text" @click="reviewerTitleClick">审核人</el-button>
               </template>
@@ -117,9 +132,8 @@
             </el-popover>
           </template>
         </el-table-column>
-        <el-table-column label="审核时间" width="180">
-          <!-- <template #default="props">{{ isReviewed(props.row) ? dateFormat(props.row.reviewTime) : '' }}</template> -->
-          <template #default="props">{{ dateFormat(props.row.reviewTime) }}</template>
+        <el-table-column label="审核时间" width="190">
+          <template #default="props">{{ isReviewed(props.row) ? dateFormat(props.row.reviewTime) : '' }}</template>
         </el-table-column>
         <el-table-column label="操作">
           <template #default="props">
@@ -161,6 +175,7 @@
       </el-form>
     </el-dialog>
     <div class="black-hovers" @click="blackHoverclick()" v-if="blackHoverVisible"></div>
+    <version-info-dialog ref="versionInfoDialogRef" />
   </div>
 </template>
 
@@ -176,9 +191,10 @@ import {
 import { defineComponent, reactive, ref, toRefs, onBeforeMount, onMounted } from 'vue';
 import ListWrap from '@/components/list-wrap/Index.vue';
 import PackagedPagination from '@/components/pagination/Index.vue';
+import VersionInfoDialog from '@/views/service-repository/detail/Version-Info-Dialog.vue';
 import { ElMessage } from 'element-plus';
 import { reviewApply, getReviewList } from '@/api/deploy/deploy-review';
-import { findPublisherByName } from '@/api/deploy/deploy-apply';
+import { findPublisherByName, getSnapshotNo } from '@/api/deploy/deploy-apply';
 import dateFormat from '@/utils/date-format';
 import { getShowBool } from '@/utils/permission-show-module';
 import { userInfo } from '@/layout/messageCenter/user-info';
@@ -212,7 +228,7 @@ interface RiewFormState {
 }
 
 export default defineComponent({
-  components: { ListWrap, PackagedPagination },
+  components: { ListWrap, PackagedPagination, VersionInfoDialog },
   setup() {
     const tableState: TableState = reactive({
       tableData: [],
@@ -244,7 +260,7 @@ export default defineComponent({
         reviewContent: '',
       },
     });
-    // 初始化reviewState
+
     function initReviewState() {
       reviewState.isEdit = false;
       reviewState.disabled = false;
@@ -254,6 +270,8 @@ export default defineComponent({
         reviewContent: '',
       };
     }
+
+    const versionInfoDialogRef = ref(null as any);
 
     async function getTableData() {
       try {
@@ -271,7 +289,7 @@ export default defineComponent({
           id: item[0],
           name: item[1] ? item[1] : '未审核',
         }));
-        console.log('review-tableData:', tableState.tableData);
+        // console.log('review-tableData:', tableState.tableData);
       } catch (error) {
         tableState.loading = false;
         ElMessage({
@@ -286,12 +304,12 @@ export default defineComponent({
       tableState.searchProps.pageSize = pageSize;
       getTableData();
     };
+
     const handlePageNumChange = (page: number) => {
       tableState.searchProps.page = page;
       getTableData();
     };
 
-    // 发布筛选筛选
     const filterpublish = debounce(getTableData, 1000);
 
     const isReviewed = (row: any) => row.reviewResult;
@@ -326,24 +344,6 @@ export default defineComponent({
       blackHoverVisible.value = false;
       await getTableData();
       isShowPopover.value = true;
-    }
-
-    async function remoteMethod(keyword: string) {
-      console.log('keyword:', keyword);
-      if (keyword !== '') {
-        // const { data = [] } = await findPublisherByName({ keyword });
-        const data = [{}];
-        console.log('keywordDatas:', data);
-        const users = data.map((item: any) => ({
-          id: item.id,
-          name: item.userName,
-        }));
-        tableState.reviewerFilters = users;
-        // tableState.publisherFilters = users;
-      } else {
-        tableState.reviewerFilters = [];
-        tableState.publisherFilters = [];
-      }
     }
 
     const reviewResultsTitleVisiable = ref(false);
@@ -394,9 +394,7 @@ export default defineComponent({
       return name;
     }
 
-    // 审核
     const onReview = async (rowData: any) => {
-      // console.log('审核rowData：', rowData);
       reviewState.isEdit = true;
       reviewState.disabled = true;
       reviewState.id = rowData.id;
@@ -406,7 +404,7 @@ export default defineComponent({
       };
       openReviewDialog();
     };
-    // 提交发布审核
+
     async function submitReviewForm(tempStatus: boolean) {
       reviewForm.value.validate(async (valid: boolean) => {
         if (valid) {
@@ -432,6 +430,11 @@ export default defineComponent({
         }
       });
     }
+
+    const handleShowVersionInfo = async (row: any) => {
+      const { data } = await getSnapshotNo(row.id);
+      versionInfoDialogRef.value.handleOpen(data);
+    };
 
     onBeforeMount(() => {
       blackHoverclick();
@@ -468,7 +471,6 @@ export default defineComponent({
       blackHoverVisible,
       publisherTitleVisiable,
       publisherTitleClick,
-      remoteMethod,
       publisherChange,
       reviewResultsTitleVisiable,
       reviewResultsTitleClick,
@@ -477,7 +479,9 @@ export default defineComponent({
       reviewerTitleClick,
       reviewerChange,
       blackHoverclick,
-      isShowPopover
+      isShowPopover,
+      versionInfoDialogRef,
+      handleShowVersionInfo,
     };
   },
 });
