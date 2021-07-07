@@ -56,7 +56,7 @@ export default defineComponent({
   },
 });
 </script>
-<style lang="scss" scoped>
+<style lang="scss">
 .sa-list-wrap {
   width: 100%;
   &__empty,
@@ -71,8 +71,6 @@ export default defineComponent({
     margin: 20px 0;
   }
 }
-</style>
-<style lang="scss">
 .sa-list-wrap .el-table__empty-block {
   display: none;
 }

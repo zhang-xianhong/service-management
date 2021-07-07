@@ -19,6 +19,7 @@
       </li>
     </ul>
     <version-info-dialog ref="versionInfoDialogRef" />
+    <div class="sa-list-wrap__empty" v-if="!loading && histories.length === 0">暂无数据</div>
   </div>
 </template>
 <script lang="ts">
@@ -42,15 +43,20 @@ export default defineComponent({
     const versionInfoDialogRef = ref(null as any);
     const fetchData = async () => {
       loading.value = true;
-      const { data } = await getRepositoryHistory({
-        serviceName: props.info.serviceName,
-      });
-      loading.value = false;
-      histories.value = data.map((item: any, index: number) => {
-        const newItem = { ...item };
-        newItem.collapsed = index > 0;
-        return newItem;
-      });
+      try {
+        const { data } = await getRepositoryHistory({
+          serviceName: props.info.serviceName,
+        });
+        histories.value = data.map((item: any, index: number) => {
+          const newItem = { ...item };
+          newItem.collapsed = index > 0;
+          return newItem;
+        });
+      } catch (e) {
+        console.log(e);
+      } finally {
+        loading.value = false;
+      }
     };
     const handleShowVersionInfo = (row: any) => {
       versionInfoDialogRef.value.handleOpen(row.snapshotNo);
