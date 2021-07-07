@@ -493,14 +493,14 @@ export default defineComponent({
     };
 
     function nodeClickHandle(data: any, node: any): void {
-      console.log('当前节点数据', data);
       // 首节点不做选中
       treeData.isSel = true;
       treeData.currentNodeData = data;
       treeData.currentNode = node;
       const { page, pageSize } = tableData.searchProps;
       if (!data._children) {
-        const res = allUsers.value.find((item: any) => item.id === data.id);
+        let res: any = allUsers.value.find((item: any) => item.id === data.id);
+        res ? allUsers.value.push(data as never) : (res = data);
         getCurrentTableData([res], page, pageSize);
         return;
       }
