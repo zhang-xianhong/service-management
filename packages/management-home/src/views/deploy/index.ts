@@ -58,7 +58,8 @@ export const STATUS: any = {
 };
 
 export const getModuleType = (type: number) => MODULE_TYPE[type];
-export const getReviewResult = (status: number) => REVIEW_RESULT[status];
+// export const getReviewResult = (status: number) => REVIEW_RESULT[status];
+export const getReviewResult = (status: number) => STATUS[status];
 
 export const AUDIT_RESULTS_CODE: any = {
   PENDING: 0,

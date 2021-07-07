@@ -13,4 +13,5 @@ export const getServiceList: (payload?: object) => Promise<SuccessResponse<any>>
   axios.get(getUrl(deploy.GET_SERVICE_LIST), { params: payload });
 export const findPublisherByName = (payload?: any): Promise<SuccessResponse<any>> =>
   axios.get(getUrl(deploy.QUERY_IN_TENT), { params: payload });
-// export const findPublisherByName = (): Promise<SuccessResponse<any>> => axios.get(getUrl(deploy.QUERY_IN_TENT));
+export const getSnapshotNo: (id: number) => Promise<SuccessResponse<string>> = (id: number) =>
+  axios.get(getUrl(deploy.GET_SNAPSHOT_NO, id.toString()));

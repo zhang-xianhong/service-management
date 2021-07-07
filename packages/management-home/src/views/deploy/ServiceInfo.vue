@@ -32,7 +32,7 @@
       </el-form-item>
       <el-form-item prop="publisherName" :label-width="labelWidth">
         <template v-slot:label>
-          <span class="publisherName">申请账号</span>
+          <span class="publisher-name">申请账号</span>
         </template>
         <el-input v-model="releaseData.serviceInfo.publisherName" :disabled="true"></el-input>
       </el-form-item>
@@ -66,7 +66,6 @@
     </el-form>
     <div class="dialog-footer">
       <el-button type="primary" @click="submitReleaseForm">提 交</el-button>
-      <!-- <el-button type="primary" @click="updateReleaseForm" v-else>编辑</el-button> -->
       <el-button @click="closeReleaseForm">关 闭</el-button>
     </div>
   </el-dialog>
@@ -112,7 +111,6 @@ export default defineComponent({
     const isVisable: any = computed(() => props.visable);
     const releaseData: Ref<ReleaseState> = computed(() => props.releaseForms);
     const isEditable: Ref<boolean> = computed(() => releaseData.value.isEdit);
-    // 表单
     const releaseFormRef: any = ref(null);
     const releaseRules = {
       type: [{ required: true, message: '请选择发布类型', trigger: 'change' }],
@@ -145,10 +143,9 @@ export default defineComponent({
     const submitReleaseForm = async () => {
       releaseFormRef.value.validate(async (valid: boolean) => {
         if (valid) {
-          // 添加
           if (!isEditable.value) {
             const releaseInfo = releaseData.value.serviceInfo;
-            // releaseInfo.publisher = Number(releaseInfo.publisher);
+            console.log('releaseInfo', releaseInfo);
             const { code } = await addApply(releaseInfo);
             if (code === 0) {
               ElMessage({
@@ -164,7 +161,6 @@ export default defineComponent({
             }
             closeReleaseForm();
           } else {
-            // 编辑 releaseData.value.serviceInfo.publisher
             const { code } = await updateApply(Number(releaseData.value.id), {
               ...releaseData.value.serviceInfo,
             });
@@ -208,8 +204,8 @@ export default defineComponent({
 .el-select {
   width: 100%;
 }
-.publisher {
-  padding-left: 3px;
+.publisher-name {
+  padding-left: 4px;
 }
 .dialog-footer {
   margin-top: 35px;
