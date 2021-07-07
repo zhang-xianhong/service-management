@@ -2,7 +2,7 @@
 import G6 from '@antv/g6';
 import insertCss from 'insert-css';
 import icon from './icon.svg'
-
+import {getServiceShowName} from '../../../service-management/components/utils'
 const props = {
   data: [],
   config: {
@@ -96,14 +96,14 @@ const registerFn = () => {
         });
 
         // const rectBBox = rect.getBBox();
-
+        const shortName = getServiceShowName(name.length)
         // label name
         group.addShape('text', {
           attrs: {
             ...textConfig,
             x: 54 + nodeOrigin.x,
             y: 25 + nodeOrigin.y,
-            text: name.length > 18 ? `${name.substr(0, 18)}...` : name,
+            text: shortName.length > 18 ? `${shortName.substr(0, 18)}...` : shortName,
             fontSize: 12,
             opacity: 0.7,
             fill: '#000',
@@ -307,7 +307,7 @@ const initGraph = (container, data) => {
     ...config,
     width,
     height,
-    plugins: [tooltip, minimap],
+    plugins: [tooltip],
     enabledStack: false,
   });
   if (typeof onInit === 'function') {

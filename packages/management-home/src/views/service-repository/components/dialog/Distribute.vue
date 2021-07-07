@@ -20,7 +20,7 @@
           </el-radio-group>
         </el-form-item>
         <el-form-item :label="`${useNewName ? '原服务英文名' : '服务英文名'}`">
-          <span v-if="sourceData">{{ sourceData.serviceName }}</span>
+          <service-name :name="sourceData.serviceName" v-if="sourceData" />
         </el-form-item>
         <el-form-item label="新服务英文名" prop="serviceName" v-if="useNewName">
           <el-input v-model.trim="form.serviceName" placeholder="请输入英文服务名" />

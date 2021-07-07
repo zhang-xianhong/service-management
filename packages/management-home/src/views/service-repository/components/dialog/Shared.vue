@@ -13,7 +13,7 @@
           </el-select>
         </el-form-item>
         <el-form-item label="英文服务名">
-          <span v-if="sourceData">{{ sourceData.serviceName }}</span>
+          <service-name :name="sourceData.serviceName" v-if="sourceData" />
         </el-form-item>
         <el-form-item label="中文服务名">
           <span v-if="sourceData && sourceData.snapshotInfo">{{ sourceData.snapshotInfo.serviceNameZh }}</span>
