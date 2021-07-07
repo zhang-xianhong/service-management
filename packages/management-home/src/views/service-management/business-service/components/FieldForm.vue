@@ -132,24 +132,32 @@ export default defineComponent({
         return;
       }
 
+      const inputData = _.flow(
+        _.filter((field: any) => !field.isSystem),
+        _.map(
+          _.pick([
+            'id',
+            'name',
+            'description',
+            'typeId',
+            'notNull',
+            'isUnique',
+            'isIndex',
+            'isParticipleSupport',
+            'isPinyinSupport',
+          ]),
+        ),
+      )(fields.value);
+
+      inputData.forEach((x: any) => {
+        if (!x.notNull) {
+          x.notNull = false;
+        }
+      });
+
       const { code } = await updateFields(modelId, {
         serviceId,
-        fields: _.flow(
-          _.filter((field: any) => !field.isSystem),
-          _.map(
-            _.pick([
-              'id',
-              'name',
-              'description',
-              'typeId',
-              'notNull',
-              'isUnique',
-              'isIndex',
-              'isParticipleSupport',
-              'isPinyinSupport',
-            ]),
-          ),
-        )(fields.value),
+        fields: inputData,
       });
       if (code === 0) {
         currentModel.value.fields = fields.value;
