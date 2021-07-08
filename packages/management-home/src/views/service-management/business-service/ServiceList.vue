@@ -558,6 +558,8 @@ export default defineComponent({
       const reg = /^(?!-)(?!.*-$)[a-z0-9-]+$/;
       if (!reg.test(value)) {
         callback(new Error(rule.message));
+      } else {
+        callback();
       }
     };
 

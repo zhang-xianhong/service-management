@@ -44,6 +44,10 @@ $--form-label-font-size: 12px !default;
   color: #006eff;
 }
 
+.el-button--text {
+  font-weight: normal;
+}
+
 .el-tabs__active-bar {
   background-color: #006eff;
 }
@@ -54,6 +58,7 @@ $--form-label-font-size: 12px !default;
 
 thead .el-button--text {
   color: inherit;
+  font-weight: bold;
 }
 
 
