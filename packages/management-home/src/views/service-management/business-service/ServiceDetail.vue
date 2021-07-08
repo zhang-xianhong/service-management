@@ -211,6 +211,7 @@ import {
 
 import { userProjectList } from '@/layout/messageCenter/user-info';
 import ReleaseDialog from './components/ReleaseDialog.vue';
+import { getServiceShowName } from '../components/utils';
 interface RefDialog {
   openDialog: Function;
   [attr: string]: any;
@@ -261,7 +262,7 @@ export default {
       const { data } = await getServiceList({});
       data.rows.forEach((x: any) => {
         // eslint-disable-next-line no-param-reassign
-        x.name = x.name ? x.name.replace(/^srv-/g, '') : 'service name not found';
+        x.name = x.name ? getServiceShowName(x.name) : '';
       });
       serverList.push(...(data.rows || []));
     };

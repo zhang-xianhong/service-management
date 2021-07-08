@@ -96,7 +96,7 @@ const registerFn = () => {
         });
 
         // const rectBBox = rect.getBBox();
-        const shortName = getServiceShowName(name.length)
+        const shortName = getServiceShowName(name)
         // label name
         group.addShape('text', {
           attrs: {

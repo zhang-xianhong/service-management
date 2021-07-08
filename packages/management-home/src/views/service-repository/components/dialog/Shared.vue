@@ -90,6 +90,7 @@ export default defineComponent({
     const handleOpen = (row: any) => {
       sourceData.value = row;
       visible.value = true;
+      submitting.value = false;
     };
     const handleSubmit = async () => {
       try {
