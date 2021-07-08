@@ -44,6 +44,7 @@
                 remote
                 :remote-method="remoteMethod"
                 @change="applicantChange"
+                :loading="seleteLoading"
               >
                 <el-option
                   v-for="(item, index) in applicantFilters"
@@ -100,6 +101,7 @@
                 remote
                 :remote-method="remoteMethod"
                 @change="reviewerChange"
+                :loading="seleteLoading"
               >
                 <el-option
                   v-for="(item, index) in reviewerFilters"
@@ -398,15 +400,18 @@ export default {
       blackHoverVisible.value = false;
       await getTableData();
     }
+    const seleteLoading = ref(false);
     async function remoteMethod(keyword: string) {
       if (keyword !== '') {
+        seleteLoading.value = true;
         const { data = [] } = await findUserByName({ keyword });
         const users = data.map((item: any) => ({
           id: item.id,
-          name: item.userName,
+          name: item.displayName,
         }));
         tableState.reviewerFilters = users;
         tableState.applicantFilters = users;
+        seleteLoading.value = false;
       } else {
         tableState.reviewerFilters = [];
         tableState.applicantFilters = [];
@@ -447,6 +452,7 @@ export default {
       applicantTitleVisiable,
       applicantTitleClick,
       applicantChange,
+      seleteLoading,
       remoteMethod,
       blackHoverVisible,
       blackHoverclick,
