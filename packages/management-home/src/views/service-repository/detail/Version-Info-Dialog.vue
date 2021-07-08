@@ -39,6 +39,7 @@
             <pre v-highlight>
               <code v-html="formatSql(snapshot.ddlScript)" class="sql"></code>
             </pre>
+            <div class="empty" v-if="!snapshot?.ddlScript?.trim()">暂无数据...</div>
           </div>
         </el-tab-pane>
         <el-tab-pane label="数据库预置数据" name="sqlData">
@@ -46,6 +47,7 @@
             <pre v-highlight>
               <code v-html="formatSql(snapshot.dmlScript)" class="sql"></code>
             </pre>
+            <div class="empty" v-if="!snapshot?.dmlScript?.trim()">暂无数据...</div>
           </div>
         </el-tab-pane>
       </el-tabs>
@@ -71,11 +73,16 @@ export default defineComponent({
     const loading = ref(true);
     const fetchData = async (snapshotNo: string) => {
       loading.value = true;
-      const { data } = await getSnapshotInfo({
-        snapshotNo,
-      });
-      snapshot.value = data;
-      loading.value = false;
+      try {
+        const { data } = await getSnapshotInfo({
+          snapshotNo,
+        });
+        snapshot.value = data;
+      } catch (e) {
+        console.log(e);
+      } finally {
+        loading.value = false;
+      }
     };
     const handleClose = () => {
       visible.value = false;
@@ -125,6 +132,11 @@ export default defineComponent({
       margin: -20px 0;
       padding: 0;
       font-size: 13px;
+    }
+
+    .empty {
+      padding: 50px;
+      text-align: center;
     }
   }
 }

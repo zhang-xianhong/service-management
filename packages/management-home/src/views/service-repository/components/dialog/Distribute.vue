@@ -28,16 +28,37 @@
         <el-form-item :label="`${useNewName ? '原服务英文名' : '服务英文名'}`">
           <service-name :name="sourceData.serviceName" v-if="sourceData" />
         </el-form-item>
-        <el-form-item label="新服务英文名" prop="serviceName" v-if="useNewName">
+        <el-form-item
+          label="新服务英文名"
+          prop="serviceName"
+          v-if="useNewName"
+          :rules="[
+            { required: true, message: '请输入服务名称', trigger: 'blur' },
+            { min: 1, max: 32, message: '最大不能超过 32 个字符', trigger: 'blur' },
+            {
+              validator: validatorEnName,
+              message: '仅支持小写英文、数字、中划线，不能以中划线开头和结尾',
+              trigger: 'blur',
+            },
+          ]"
+        >
           <el-tooltip effect="dark" :visible-arrow="false" :content="newServiceFullName" placement="top-start">
-            <el-input v-model.trim="form.serviceName" placeholder="请输入英文服务名" />
+            <el-input v-model.trim="form.serviceName" placeholder="请输入英文服务名" maxlength="32" />
           </el-tooltip>
         </el-form-item>
         <el-form-item :label="`${useNewName ? '原服务中文名' : '服务中文名'}`">
           <span v-if="sourceData && sourceData.snapshotInfo">{{ sourceData.snapshotInfo.serviceNameZh }}</span>
         </el-form-item>
-        <el-form-item label="新服务中文名" prop="serviceNameZh" v-if="useNewName">
-          <el-input v-model.trim="form.serviceNameZh" placeholder="请输入中文服务名" />
+        <el-form-item
+          label="新服务中文名"
+          prop="serviceNameZh"
+          v-if="useNewName"
+          :rules="[
+            { required: true, message: '请输入服务描述', trigger: 'blur' },
+            { min: 1, max: 60, message: '最大不能超过 60 个字符', trigger: 'blur' },
+          ]"
+        >
+          <el-input v-model.trim="form.serviceNameZh" placeholder="请输入中文服务名" maxlength="60" />
         </el-form-item>
         <el-form-item label="服务依赖">
           <el-button type="text" @click="handleViewServiceDepend">查看详情</el-button>
@@ -119,6 +140,7 @@ export default defineComponent({
     const handleOpen = (row: any) => {
       visible.value = true;
       sourceData.value = row;
+      submitting.value = false;
       form.serviceName = getServiceShowName(row.serviceName);
       form.serviceNameZh = row.snapshotInfo.serviceNameZh;
       fetchTenant();
@@ -173,6 +195,13 @@ export default defineComponent({
       const project = projectList.value.find((item) => item.id === projectId);
       currentProject.value = project;
     };
+
+    const validatorEnName = (rule: any, value: any, callback: any) => {
+      const reg = /^(?!-)(?!.*-$)[a-z0-9-]+$/;
+      if (!reg.test(value)) {
+        callback(new Error(rule.message));
+      }
+    };
     return {
       visible,
       submitting,
@@ -191,6 +220,7 @@ export default defineComponent({
       tenant,
       newServiceFullName,
       handleProjectChange,
+      validatorEnName,
     };
   },
 });

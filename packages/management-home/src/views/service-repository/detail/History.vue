@@ -4,7 +4,7 @@
       <li class="history-timeline__item" v-for="item in histories" :key="item.id">
         <div class="history-version">
           <span role="button" class="toggle" @click="item.collapsed = !item.collapsed">
-            V{{ item.serviceVersion }}
+            {{ item.serviceVersion }}
             <i :class="!item.collapsed ? 'el-icon-arrow-down' : 'el-icon-arrow-right'"></i>
           </span>
         </div>

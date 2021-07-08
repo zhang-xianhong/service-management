@@ -23,7 +23,8 @@ $--dialog-content-font-size: 12px !default;
 $--menu-item-font-size: 12px !default;
 $--form-label-font-size: 12px !default;
 
-.el-dialog__body {
+.el-dialog__body,
+.el-cascader-panel {
   font-size: 12px;
   font-weight: normal;
 }
@@ -36,6 +37,25 @@ $--form-label-font-size: 12px !default;
 .el-select-dropdown__item {
   font-size: $--font-size-base;
 }
+
+.el-tabs__item.is-active ,
+.el-loading-spinner .el-loading-text,
+.el-button--text{
+  color: #006eff;
+}
+
+.el-tabs__active-bar {
+  background-color: #006eff;
+}
+
+.el-loading-spinner .path {
+  stroke: #006eff;
+}
+
+thead .el-button--text {
+  color: inherit;
+}
+
 
 // 直接覆盖样式
 .el-textarea__inner,

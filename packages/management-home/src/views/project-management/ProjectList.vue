@@ -143,7 +143,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref, watch } from 'vue';
+import { defineComponent, nextTick, onMounted, ref, watch } from 'vue';
 import ProjectItem from '@/views/project-management/components/ProjectItem.vue';
 import PackagedPagination from '@/components/pagination/Index.vue';
 import { getShowBool } from '@/utils/permission-show-module';
@@ -270,11 +270,17 @@ export default defineComponent({
     );
     const paddings = ref('0px');
     const getPaddings = () => {
-      const width = projectParentDiv.value.clientWidth - 20;
-      paddings.value = `${Math.abs((width % 290) / 2) - 10}px`;
+      try {
+        const width = projectParentDiv.value.clientWidth - 20;
+        paddings.value = `${Math.abs((width % 290) / 2) - 10}px`;
+      } catch (error) {
+        console.log(error);
+      }
     };
     onMounted(() => {
-      getPaddings();
+      nextTick(() => {
+        getPaddings();
+      });
       window.onresize = () => {
         getPaddings();
       };
