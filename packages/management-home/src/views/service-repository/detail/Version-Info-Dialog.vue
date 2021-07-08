@@ -41,7 +41,7 @@
             </pre>
           </div>
         </el-tab-pane>
-        <el-tab-pane label="数据库预制数据" name="sqlData">
+        <el-tab-pane label="数据库预置数据" name="sqlData">
           <div class="content-wrap" v-if="snapshot && !loading">
             <pre v-highlight>
               <code v-html="formatSql(snapshot.dmlScript)" class="sql"></code>
