@@ -28,10 +28,9 @@
         <el-table-column label="发布类型" width="80" prop="moduleType"></el-table-column>
         <el-table-column label="发布名称" prop="name">
           <template #default="props">
-            <router-link
+            <router-link :class="{ 'showlink': props.row.status !== 1 }"
               :to="{
-                path: `/service-management/service-list/detail/${props.row.id}`,
-                query: { detailName: props.row.name },
+                path: `/service-repository/${props.row.repositoryId}`
               }"
               >{{ props.row.name }}
             </router-link>
@@ -39,7 +38,7 @@
         </el-table-column>
         <el-table-column label="版本" width="100" prop="serviceVersion">
           <template #default="props">
-            <el-button type="text" @click="handleShowVersionInfo(props.row)">{{ props.row.serviceVersion }}</el-button>
+            <el-button type="text" @click="handleShowVersionInfo(props.row)" :disabled="props.row.status !== 1">{{ props.row.serviceVersion }}</el-button>
           </template>
         </el-table-column>
         <el-table-column label="申请人" prop="publisherName">
@@ -289,7 +288,6 @@ export default defineComponent({
           id: item[0],
           name: item[1] ? item[1] : '未审核',
         }));
-        // console.log('review-tableData:', tableState.tableData);
       } catch (error) {
         tableState.loading = false;
         ElMessage({
@@ -488,6 +486,10 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
+.showlink {
+  pointer-events: none;
+  color: #C0C4CC;
+}
 .dialog-footer {
   display: flex;
   justify-content: center;
