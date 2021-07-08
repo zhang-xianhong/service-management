@@ -46,6 +46,7 @@ export default defineComponent({
       default: true,
     },
   },
+  emits: ['updated'],
   setup(props: { title: string; prop: string; value: string }, ctx: SetupContext) {
     const instance = getCurrentInstance();
     const initialValue: Ref<string> = ref('');
@@ -93,6 +94,8 @@ export default defineComponent({
           message: '保存成功',
         });
         isModifyMode.value = false;
+        // 通知外部更新成功
+        ctx.emit('updated');
       }
     };
 

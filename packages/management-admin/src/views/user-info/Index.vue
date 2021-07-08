@@ -10,6 +10,7 @@
       :prop="item"
       :title="fieldTitleConfiguration[item]"
       :value="managerInfo[item]"
+      @updated="onUpdate"
       :changable="item === 'userName' ? false : true"
     ></item>
     <item prop="password" title="登录密码" value="*********" @modify="onModifyPassword"></item>
@@ -88,7 +89,12 @@ export default defineComponent({
       managerInfo.value = { userName, displayName, phoneNumber, primaryMail };
     };
     getManagerInfo();
+    const onUpdate = () => {
+      // 更新成功，拉一遍最新的用户信息
+      console.log('emit:update');
 
+      getManagerInfo();
+    };
     const passwordModelVisible: Ref<boolean> = ref(false);
 
     const onModifyPassword = () => {
@@ -184,6 +190,7 @@ export default defineComponent({
       onSave,
       onBack,
       passLoading,
+      onUpdate,
     };
   },
 });
