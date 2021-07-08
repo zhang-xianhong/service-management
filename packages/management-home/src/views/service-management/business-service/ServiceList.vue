@@ -411,7 +411,7 @@ export default defineComponent({
         return false;
       }
       submitting.value = true;
-      senddata.classification = `${senddata.classification}`;
+      senddata.classification = senddata.classification ? `${senddata.classification}` : '';
       addService(senddata)
         .then(() => {
           refreshServiceList(pageInfo);
