@@ -1,8 +1,13 @@
 <template>
   <el-dialog title="下发服务" v-model="visible" width="640px" :before-close="handleClose">
     <div class="dialog-body">
-      <el-form :model="form" :rules="formRules" ref="formRef" label-width="100px">
-        <el-form-item label="选择项目" prop="projectId">
+      <el-form :model="form" ref="formRef" label-width="100px">
+        <el-form-item
+          label="选择项目"
+          prop="projectId"
+          key="projectId"
+          :rules="[{ required: true, message: '请选择项目', trigger: 'blur' }]"
+        >
           <el-select
             v-model="form.projectId"
             placeholder="请选择项目"
@@ -13,13 +18,13 @@
             <el-option v-for="item in projectList" :key="item.id" :label="item.name" :value="item.id"></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="共享方式" prop="platformShareType">
+        <el-form-item label="共享方式" prop="platformShareType" key="platformShareType">
           <el-radio-group v-model="form.platformShareType" name="platformShareType" @change="handleClearValidate">
             <el-radio-button :label="1">克隆</el-radio-button>
             <el-radio-button :label="2">引用</el-radio-button>
           </el-radio-group>
         </el-form-item>
-        <el-form-item label="是否重命名" prop="rename" v-if="form.platformShareType === 1">
+        <el-form-item label="是否重命名" prop="rename" key="rename" v-if="form.platformShareType === 1">
           <el-radio-group v-model="form.rename" name="rename" @change="handleClearValidate">
             <el-radio-button :label="1">是</el-radio-button>
             <el-radio-button :label="0">否</el-radio-button>
@@ -31,7 +36,8 @@
         <el-form-item
           label="新服务英文名"
           prop="serviceName"
-          v-if="useNewName"
+          key="serviceName"
+          v-show="useNewName"
           :rules="[
             { required: true, message: '请输入服务名称', trigger: 'blur' },
             { min: 1, max: 32, message: '最大不能超过 32 个字符', trigger: 'blur' },
@@ -52,7 +58,8 @@
         <el-form-item
           label="新服务中文名"
           prop="serviceNameZh"
-          v-if="useNewName"
+          key="serviceNameZh"
+          v-show="useNewName"
           :rules="[
             { required: true, message: '请输入服务描述', trigger: 'blur' },
             { min: 1, max: 60, message: '最大不能超过 60 个字符', trigger: 'blur' },
@@ -115,23 +122,12 @@ export default defineComponent({
       const { data } = await getTenantDetail();
       tenant.value = data;
     };
-    const formRules = reactive({
-      projectId: [{ required: true, message: '请选择项目', trigger: 'blur' }],
-      serviceName: [
-        { required: true, message: '请输入服务英文名称', trigger: 'blur' },
-        { min: 2, max: 64, message: '长度在 2 到 64 个字符', trigger: 'blur' },
-      ],
-      serviceNameZh: [
-        { required: true, message: '请输入服务中文名称', trigger: 'blur' },
-        { min: 2, max: 64, message: '长度在 2 到 64 个字符', trigger: 'blur' },
-      ],
-    });
+
     const useNewName = computed(() => form.platformShareType === 1 && form.rename === 1);
     // 获取项目列表
     const fetchProjectList = async () => {
       const { data } = await getAllProjectList({});
       projectList.value = data;
-      console.log(data);
     };
     const handleClose = () => {
       visible.value = false;
@@ -151,6 +147,7 @@ export default defineComponent({
         submitting.value = true;
         const valid = await formRef.value.validate();
         if (!valid) {
+          console.log(222);
           return;
         }
         const postData: any = {
@@ -172,7 +169,7 @@ export default defineComponent({
         props.refresh && props.refresh();
         handleClose();
       } catch (e) {
-        console.log(e);
+        console.log(111, e);
       } finally {
         submitting.value = false;
       }
@@ -200,13 +197,14 @@ export default defineComponent({
       const reg = /^(?!-)(?!.*-$)[a-z0-9-]+$/;
       if (!reg.test(value)) {
         callback(new Error(rule.message));
+      } else {
+        callback();
       }
     };
     return {
       visible,
       submitting,
       form,
-      formRules,
       formRef,
       serviceDependDialog,
       handleOpen,

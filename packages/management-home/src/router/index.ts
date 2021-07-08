@@ -426,6 +426,18 @@ const routes: Array<RouteRecordRaw> = [
           showBackButton: true,
         },
       },
+      {
+        path: '/:id',
+        component: () =>
+          import(/* webpackChunkName: "repository-detail" */ '@/views/service-repository/detail/Index.vue'),
+        name: 'RepositoryDetail',
+        meta: {
+          title: '服务详情',
+          isRootLevel: false,
+          hidden: true,
+          showBackButton: true,
+        },
+      },
     ],
   },
   {
