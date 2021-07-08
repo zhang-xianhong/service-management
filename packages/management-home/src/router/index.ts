@@ -216,7 +216,7 @@ const routes: Array<RouteRecordRaw> = [
       title: '发布管理',
       isRootLevel: true,
       icon: 'publish',
-      // hidden: true,
+      hidden: false,
     },
     children: [
       {
