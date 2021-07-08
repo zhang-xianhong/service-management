@@ -309,11 +309,11 @@ export default defineComponent({
 
     async function getServices() {
       const { data } = await getServiceList();
-      releaseForm.services = data.data.map((item: any) => ({
+      releaseForm.services = data.map((item: any) => ({
         serviceName: item.serviceName,
         versions: item.versions,
       }));
-      releaseForm.serviceList = data.data.map((item: any) => ({
+      releaseForm.serviceList = data.map((item: any) => ({
         // id: item.id ? item.id : item.serviceName,
         id: item.serviceName,
         name: item.serviceName,
