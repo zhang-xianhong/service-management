@@ -222,6 +222,23 @@ export default {
         ...rowData,
         serviceId,
       };
+      // 数据校验
+      const RegName = /^[a-zA-Z][A-Za-z0-9-._]+$/;
+      if (!RegName.test(configData.name)) {
+        proxy.$message({
+          type: 'warning',
+          message: '键只能以英文字母开头，英文字母、数字、点、下划线结尾!',
+        });
+        return;
+      }
+      if (configData.type === '') {
+        proxy.$message({
+          type: 'warning',
+          message: '请选择类型！',
+        });
+        return;
+      }
+
       const { code } = await addConfig(configData);
       if (code === 0) {
         proxy.$message({
