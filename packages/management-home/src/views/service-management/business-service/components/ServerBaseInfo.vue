@@ -66,7 +66,7 @@
           </template>
         </el-cascader>
       </el-form-item>
-      <el-form-item v-if="getShowBool('update')">
+      <el-form-item v-if="getShowBool('update') || !isRefrenceService">
         <el-button v-if="isShowMode" type="primary" @click="modifyFormData">编辑</el-button>
         <el-button v-else type="primary" @click="saveFormData">确定</el-button>
       </el-form-item>
@@ -75,7 +75,7 @@
 </template>
 
 <script lang="ts">
-import { reactive, ref, computed } from 'vue';
+import { reactive, ref, computed, inject } from 'vue';
 import useClassifications from '../utils/service-baseinfo-classification';
 import useTags from '../utils/service-baseinfo-tag';
 import { updateService } from '@/api/servers';
@@ -83,6 +83,7 @@ import { allService, getServiceDependencies, getServiceVersionType } from '../ut
 import OwnerSelect from '@/components/owners-select/Index.vue';
 import { ElMessage } from 'element-plus';
 import { getShowBool } from '@/utils/permission-show-module';
+import { isRefrence } from '../utils/permisson';
 
 export default {
   name: 'ServerBaseInfo',
@@ -111,10 +112,11 @@ export default {
     getServiceDependencies(props.id);
     // 是否为显示模式标识，默认为true
     const isShowMode = ref(true);
+
     const serviceCascaderProps = ref({
       multiple: true,
     } as any);
-
+    const isRefrenceService = inject(isRefrence);
     const computedServices = computed(() => allService.value.filter((service: any) => service.id !== props.id));
     const ownersArr = props.data.owners?.map((x: any) => x.userId) || [];
     const allOwnersArr = props.data.ownerUsers?.map((x: any) => x.id) || [];
@@ -242,6 +244,7 @@ export default {
       allService,
       serviceCascaderProps,
       nodeChange,
+      isRefrenceService,
     };
   },
 };

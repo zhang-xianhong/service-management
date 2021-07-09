@@ -42,6 +42,7 @@ import ErdRelation from './Relation.vue';
 import AddModel from './AddModel.vue';
 import { updateConfig, createRelation, updateRelation } from '@/api/schema/model';
 import { getShowBool } from '@/utils/permission-show-module';
+import { isRefrence } from '@/views/service-management/business-service/utils/permisson';
 export default defineComponent({
   name: 'Erd',
   props: {
@@ -68,6 +69,8 @@ export default defineComponent({
     const { allTypes } = inject('configs') as any;
     const erdEmit = context.emit;
     provide('erdEmit', erdEmit);
+    // inject isRefrenceService
+    const isRefrenceService = inject(isRefrence);
     watchEffect(() => {
       tables.value = props.modelValue.tables || [];
       relations.value = props.modelValue.relations || [];
@@ -126,6 +129,11 @@ export default defineComponent({
         table.dragging = 0;
         coordinate[table.id] = table.position;
       });
+
+      if (isRefrenceService?.value) {
+        // 引用类型的服务，不允许更新
+        return;
+      }
       await updateConfig({
         serviceId,
         config: {
