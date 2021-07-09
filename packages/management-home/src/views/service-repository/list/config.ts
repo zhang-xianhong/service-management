@@ -22,3 +22,18 @@ export const getSharedType = (platformShareType: number) => {
       return '';
   }
 };
+
+/**
+ * 获取服务来源
+ * @param platformType
+ */
+export const getServiceSource = (platformType: number) => {
+  switch (platformType) {
+    case 1:
+      return '自研新建';
+    case 2:
+      return '平台共享';
+    case 3:
+      break;
+  }
+};

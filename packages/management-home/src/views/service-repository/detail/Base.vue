@@ -21,6 +21,7 @@ import { SERVICE_LEVEL, getSharedType } from '../list/config';
 import { getClassificationName, getTagsName } from '../util';
 import { getAllTags } from '@/api/settings/tags';
 import { getClassificationList } from '@/api/settings/classification';
+import { userInfo } from '@/layout/messageCenter/user-info';
 interface Column {
   key: string;
   label: string;
@@ -80,6 +81,9 @@ export default defineComponent({
       {
         key: 'origin',
         label: '来源',
+        render(col: Column, row: any) {
+          return row.tenantId === userInfo.value.tenantId ? '自研新建' : '平台共享';
+        },
       },
       {
         key: 'developer',
@@ -140,6 +144,7 @@ export default defineComponent({
       getTagsName,
       tagList,
       classificationList,
+      userInfo,
     };
   },
 });
