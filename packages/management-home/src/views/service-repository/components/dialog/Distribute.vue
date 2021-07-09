@@ -20,8 +20,8 @@
         </el-form-item>
         <el-form-item label="共享方式" prop="platformShareType" key="platformShareType">
           <el-radio-group v-model="form.platformShareType" name="platformShareType" @change="handleClearValidate">
-            <el-radio-button :label="1">克隆</el-radio-button>
-            <el-radio-button :label="2">引用</el-radio-button>
+            <el-radio-button :label="2">克隆</el-radio-button>
+            <el-radio-button :label="1">引用</el-radio-button>
           </el-radio-group>
         </el-form-item>
         <el-form-item label="是否重命名" prop="rename" key="rename" v-if="form.platformShareType === 1">
@@ -113,7 +113,7 @@ export default defineComponent({
     const tenant = ref(null as any);
     const form = reactive({
       projectId: '',
-      platformShareType: 1,
+      platformShareType: 2,
       rename: 0,
       serviceName: '',
       serviceNameZh: '',
