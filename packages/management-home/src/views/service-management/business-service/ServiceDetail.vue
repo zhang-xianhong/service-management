@@ -508,11 +508,11 @@ export default {
     const maskText = computed(() => {
       switch (serverInfo.value.status) {
         case 10:
-          return '应用变更中, 请稍后...';
+          return '服务变更中, 请稍后...';
         case 20:
-          return '应用启动中, 请稍后...';
+          return '服务启动中, 请稍后...';
         case 30:
-          return '应用停止中, 请稍后...';
+          return '服务停止中, 请稍后...';
         default:
           return '';
       }
