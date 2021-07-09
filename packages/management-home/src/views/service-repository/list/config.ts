@@ -10,7 +10,7 @@ export const SERVICE_LEVEL: any = {
  * @returns
  */
 export const getSharedType = (platformShareType: number) => {
-  switch (platformShareType) {
+  switch (Number(platformShareType)) {
     case 1:
       return '引用';
     case 2:
@@ -20,5 +20,20 @@ export const getSharedType = (platformShareType: number) => {
     case 0:
     default:
       return '';
+  }
+};
+
+/**
+ * 获取服务来源
+ * @param platformType
+ */
+export const getServiceSource = (platformType: number) => {
+  switch (platformType) {
+    case 1:
+      return '自研新建';
+    case 2:
+      return '平台共享';
+    case 3:
+      break;
   }
 };

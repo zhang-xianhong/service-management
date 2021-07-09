@@ -75,13 +75,15 @@
             {{ getTagsName(String(scope.row.snapshotInfo.tag || '').split(','), tagList) }}
           </template>
         </el-table-column>
-        <el-table-column prop="address" label="服务来源" v-if="listType !== 'platform'"> </el-table-column>
+        <el-table-column prop="address" label="服务来源" v-if="listType !== 'platform'">
+          {{ getServiceSource(platformType) }}
+        </el-table-column>
         <el-table-column prop="address" label="开发方">
           <template #default="scope">
             {{ scope.row.snapshotInfo?.developer }}
           </template>
         </el-table-column>
-        <el-table-column prop="address" label="权限">
+        <el-table-column prop="platformShareType" label="权限">
           <template #default="scope">
             {{ getSharedType(scope.row) }}
           </template>
@@ -91,14 +93,26 @@
             {{ scope.row.snapshotInfo?.serviceVersion }}
           </template>
         </el-table-column>
-        <el-table-column prop="address" label="操作">
+        <el-table-column prop="opt" label="操作">
           <template #default="scope">
             <!-- {{ scope.row.snapshotInfo?.developer }} -->
-            <el-button type="text" v-if="listType === 'shared'" @click="handleShare(scope.row)">共享</el-button>
+            <el-button
+              type="text"
+              v-if="listType === 'shared'"
+              @click="handleShare(scope.row)"
+              :disabled="scope.row.platformShareType === 2 || scope.row.platformShareType === 3"
+              >共享</el-button
+            >
             <el-button type="text" v-if="listType === 'distribute'" @click="handleDistribute(scope.row)"
               >下发</el-button
             >
-            <el-button type="text" v-if="listType === 'platform'" @click="handlePull(scope.row)">拉取</el-button>
+            <el-button
+              type="text"
+              v-if="listType === 'platform'"
+              @click="handlePull(scope.row)"
+              :disabled="scope.row.tenantId === userInfo.tenantId"
+              >拉取</el-button
+            >
           </template>
         </el-table-column>
       </el-table>
@@ -129,7 +143,8 @@ import SharedDialog from '../components/dialog/Shared.vue';
 import { getRepositoryList, pullRepository } from '@/api/repository';
 import { getAllTags } from '@/api/settings/tags';
 import { getClassificationList } from '@/api/settings/classification';
-import { getSharedType, SERVICE_LEVEL } from './config';
+import { userInfo } from '@/layout/messageCenter/user-info';
+import { SERVICE_LEVEL, getSharedType, getServiceSource } from './config';
 import { filterClassificationList, getClassificationName, getTagsName } from '../util';
 interface TableState {
   tableData: Array<object>;
@@ -271,6 +286,9 @@ export default defineComponent({
     };
 
     const handleShare = (row: any) => {
+      if (row.platformShareType === 2) {
+        return;
+      }
       sharedDialogRef.value.handleOpen(row);
     };
 
@@ -279,6 +297,9 @@ export default defineComponent({
     };
 
     const handlePull = (row: any) => {
+      if (row.tenantId === userInfo.value.tenantId) {
+        return;
+      }
       // distributeDialogRef.value.handleOpen(row);
       ElMessageBox.confirm(
         `将该服务从平台仓库拉取至租户仓库后，租户内的项目可按照该服务提供的相应权限进行开发。`,
@@ -299,6 +320,7 @@ export default defineComponent({
     };
 
     fetchAllData();
+    console.log(userInfo);
 
     return {
       ...toRefs(tableState),
@@ -323,8 +345,11 @@ export default defineComponent({
       tagList,
       tagFilter,
       handleCloseFilterOverlay,
+      platformType,
       getTagsName,
       getClassificationName,
+      getServiceSource,
+      userInfo,
     };
   },
 });
