@@ -186,7 +186,6 @@
               :options="allService"
               :props="serviceCascaderProps"
               @change="nodeChange"
-              @expand-change="expandChange"
             >
             </el-cascader>
           </el-form-item>
@@ -245,25 +244,25 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, ref, onBeforeUnmount, computed, watch } from 'vue';
+import { computed, defineComponent, onBeforeUnmount, reactive, ref, watch } from 'vue';
 import ListWrap from '@/components/list-wrap/Index.vue';
 import PackagedPagination from '@/components/pagination/Index.vue';
 import { userProjectList } from '@/layout/messageCenter/user-info';
 import { getShowBool } from '@/utils/permission-show-module';
 import {
-  refreshServiceList,
-  serviceTableList,
-  serviceDetail,
-  persons,
-  tags,
-  sorts,
+  allService,
   deleteServiceForList,
-  getTagsForService,
   getClassifications,
   getServiceDependencies,
-  allService,
-  ownersMap,
   getServiceVersionType,
+  getTagsForService,
+  ownersMap,
+  persons,
+  refreshServiceList,
+  serviceDetail,
+  serviceTableList,
+  sorts,
+  tags,
 } from './utils/service-data-utils';
 import { addService, serviceNameTest, updateServiceStatus } from '@/api/servers';
 import Message from 'element-plus/es/el-message';
@@ -602,8 +601,7 @@ export default defineComponent({
       for (const node of nodes) {
         checkNode[node[0]] = node;
       }
-      const selectData = Object.values(checkNode);
-      serviceDetail.dependencies = selectData;
+      serviceDetail.dependencies = Object.values(checkNode);
     };
 
     return {
