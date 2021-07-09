@@ -183,7 +183,7 @@
           <el-form-item label="服务依赖" :label-width="labelWidth" prop="dependencies">
             <el-cascader
               v-model="serviceDetail.dependencies"
-              :options="allService"
+              :options="dependenciesList"
               :props="serviceCascaderProps"
               @change="nodeChange"
               @expand-change="expandChange"
@@ -261,7 +261,7 @@ import {
   getTagsForService,
   getClassifications,
   getServiceDependencies,
-  allService,
+  dependenciesList,
   ownersMap,
   getServiceVersionType,
 } from './utils/service-data-utils';
@@ -644,7 +644,7 @@ export default defineComponent({
       logType,
       searchForList,
       getCascaderForm,
-      allService,
+      dependenciesList,
       getSortClassification,
       mutiArray,
       computedDisabled,

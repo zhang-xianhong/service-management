@@ -4,12 +4,14 @@ import { getAllTags } from '@/api/settings/tags';
 import { reactive, ref } from 'vue';
 import { getClassificationList } from '@/api/settings/classification';
 import { statusMap } from '@/views/service-management/business-service/utils/service-status-map';
+import { getServiceShowName } from '../../components/utils';
 
 export const serviceTableList = reactive({
   list: [],
   total: 10,
 } as any);
 export const allService = ref([] as any);
+export const dependenciesList = ref([] as any);
 
 export const serviceDetail = reactive({} as any);
 
@@ -131,8 +133,8 @@ export function getServiceDependencies(id?: number) {
     if (res?.data) {
       const { data = [] } = res;
       const serviceList = data.map((i: any) => ({
-        label: i.serviceName,
-        value: i.serviceName,
+        label: getServiceShowName(i.serviceName),
+        value: getServiceShowName(i.serviceName),
         children: i.versions?.map((v: any) => ({
           value: v.version,
           label: v.preparing ? `${v.version}(服务构建中)` : v.version,
@@ -140,14 +142,14 @@ export function getServiceDependencies(id?: number) {
           disabled: v.preparing,
         })),
       }));
-      allService.value = serviceList;
+      dependenciesList.value = serviceList;
     } else {
-      allService.value = [];
+      dependenciesList.value = [];
     }
   });
 }
 export function getServiceVersionType(name: string, version: string) {
-  const { children: serversVersion = [] } = allService.value.find((service: any) => service.value === name);
+  const { children: serversVersion = [] } = dependenciesList.value.find((service: any) => service.value === name);
   const versionData = serversVersion.find((v: any) => v.value === version) || {};
   return versionData.versionType;
 }

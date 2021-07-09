@@ -24,7 +24,7 @@
             <el-radio-button :label="1">引用</el-radio-button>
           </el-radio-group>
         </el-form-item>
-        <el-form-item label="是否重命名" prop="rename" key="rename" v-if="form.platformShareType === 1">
+        <el-form-item label="是否重命名" prop="rename" key="rename" v-if="form.platformShareType === 2">
           <el-radio-group v-model="form.rename" name="rename" @change="handleClearValidate">
             <el-radio-button :label="1">是</el-radio-button>
             <el-radio-button :label="0">否</el-radio-button>
@@ -123,7 +123,7 @@ export default defineComponent({
       tenant.value = data;
     };
 
-    const useNewName = computed(() => form.platformShareType === 1 && form.rename === 1);
+    const useNewName = computed(() => form.platformShareType === 2 && form.rename === 1);
     // 获取项目列表
     const fetchProjectList = async () => {
       const { data } = await getAllProjectList({});
