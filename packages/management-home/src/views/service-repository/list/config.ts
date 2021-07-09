@@ -10,7 +10,7 @@ export const SERVICE_LEVEL: any = {
  * @returns
  */
 export const getSharedType = (platformShareType: number) => {
-  switch (platformShareType) {
+  switch (Number(platformShareType)) {
     case 1:
       return '引用';
     case 2:

@@ -123,7 +123,7 @@ export default defineComponent({
       newColumns.value = columns.map((item) => {
         const column = item;
         const { render } = column;
-        column.render = () => render?.(column, info) || info[column.key];
+        column.render = () => render?.(column, info) || '';
         return column;
       });
     };
