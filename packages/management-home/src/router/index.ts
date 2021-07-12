@@ -218,6 +218,7 @@ const routes: Array<RouteRecordRaw> = [
       isRootLevel: true,
       icon: 'publish',
       hidden: false,
+      id: 29,
     },
     children: [
       {
@@ -227,6 +228,7 @@ const routes: Array<RouteRecordRaw> = [
         meta: {
           title: '发布申请',
           isRootLevel: false,
+          id: 30,
         },
       },
       {
@@ -236,6 +238,20 @@ const routes: Array<RouteRecordRaw> = [
         meta: {
           title: '发布审核',
           isRootLevel: false,
+          id: 31,
+        },
+      },
+      {
+        path: 'detail/:id',
+        component: () =>
+          import(/* webpackChunkName: "repository-detail" */ '@/views/service-repository/detail/Index.vue'),
+        name: 'RepositoryDetail',
+        meta: {
+          title: '服务详情',
+          isRootLevel: false,
+          hidden: true,
+          showBackButton: true,
+          id: 29,
         },
       },
     ],
@@ -350,6 +366,7 @@ const routes: Array<RouteRecordRaw> = [
           title: '平台仓库',
           isRootLevel: false,
           hidden: false,
+          id: 25,
         },
       },
       {
@@ -363,6 +380,7 @@ const routes: Array<RouteRecordRaw> = [
           hidden: true,
           activeMenu: '/service-repository/platform',
           showBackButton: true,
+          id: 25,
         },
       },
       {
@@ -380,6 +398,7 @@ const routes: Array<RouteRecordRaw> = [
               title: '服务共享',
               isRootLevel: false,
               hidden: false,
+              id: 27,
             },
           },
           {
@@ -391,6 +410,7 @@ const routes: Array<RouteRecordRaw> = [
               title: '服务下发',
               isRootLevel: false,
               hidden: false,
+              id: 28,
             },
           },
         ],
@@ -398,6 +418,7 @@ const routes: Array<RouteRecordRaw> = [
           title: '租户仓库',
           isRootLevel: false,
           hidden: false,
+          id: 26,
         },
       },
       {
@@ -411,6 +432,7 @@ const routes: Array<RouteRecordRaw> = [
           hidden: true,
           activeMenu: '/service-repository/tenant/shared',
           showBackButton: true,
+          id: 27,
         },
       },
       {
@@ -424,18 +446,7 @@ const routes: Array<RouteRecordRaw> = [
           hidden: true,
           activeMenu: '/service-repository/tenant/distribute',
           showBackButton: true,
-        },
-      },
-      {
-        path: '/:id',
-        component: () =>
-          import(/* webpackChunkName: "repository-detail" */ '@/views/service-repository/detail/Index.vue'),
-        name: 'RepositoryDetail',
-        meta: {
-          title: '服务详情',
-          isRootLevel: false,
-          hidden: true,
-          showBackButton: true,
+          id: 28,
         },
       },
     ],

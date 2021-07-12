@@ -9,7 +9,7 @@ const props = {
     padding: [0, 0],
     defaultLevel: 3,
     defaultZoom: 1,
-    modes: { default: ['drag-canvas'] },
+    modes: { default: ['drag-canvas',] },
     renderer: 'svg',
   },
 };

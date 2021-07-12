@@ -1,6 +1,6 @@
 <template>
   <el-dialog title="发版" v-model="releaseDialogVisible" width="1000px" @close="closeDialog" destroy-on-close>
-    <div>
+    <div class="release-steps">
       <el-steps :active="currentActive" finish-status="success" simple>
         <el-step v-for="item in tabMenuData" :key="item.title" :title="item.title"></el-step>
       </el-steps>
@@ -266,11 +266,18 @@ export default defineComponent({
   },
 });
 </script>
-<style scoped>
+<style lang="scss" scoped>
 .release-container {
   padding: 30px 0;
 }
 .el-steps--simple {
   padding: 10px 0;
+}
+.release-steps {
+  ::v-deep {
+    .el-step__line {
+      display: none;
+    }
+  }
 }
 </style>
