@@ -28,17 +28,20 @@
         <el-table-column label="发布类型" width="80" prop="moduleType"></el-table-column>
         <el-table-column label="发布名称" prop="name">
           <template #default="props">
-            <router-link :class="{ 'showlink': props.row.status !== 1 }"
+            <router-link
+              :class="{ showlink: props.row.status !== 1 }"
               :to="{
-                path: `/service-repository/${props.row.repositoryId}`
+                path: `/service-repository/${props.row.repositoryId}`,
               }"
-              >{{ props.row.name }}
+              ><service-name :name="props.row.name" />
             </router-link>
           </template>
         </el-table-column>
         <el-table-column label="版本" width="100" prop="serviceVersion">
           <template #default="props">
-            <el-button type="text" @click="handleShowVersionInfo(props.row)" :disabled="props.row.status !== 1">{{ props.row.serviceVersion }}</el-button>
+            <el-button type="text" @click="handleShowVersionInfo(props.row)" :disabled="props.row.status !== 1">{{
+              props.row.serviceVersion
+            }}</el-button>
           </template>
         </el-table-column>
         <el-table-column label="申请人" prop="publisherName">
@@ -198,6 +201,7 @@ import dateFormat from '@/utils/date-format';
 import { getShowBool } from '@/utils/permission-show-module';
 import { userInfo } from '@/layout/messageCenter/user-info';
 import { debounce } from 'lodash';
+import ServiceName from '@/views/service-management/components/ServiceName.vue';
 
 interface TableState {
   tableData: Array<ReviewTableItemStruct>;
@@ -227,7 +231,7 @@ interface RiewFormState {
 }
 
 export default defineComponent({
-  components: { ListWrap, PackagedPagination, VersionInfoDialog },
+  components: { ListWrap, PackagedPagination, VersionInfoDialog, ServiceName },
   setup() {
     const tableState: TableState = reactive({
       tableData: [],
@@ -488,7 +492,7 @@ export default defineComponent({
 <style lang="scss" scoped>
 .showlink {
   pointer-events: none;
-  color: #C0C4CC;
+  color: #c0c4cc;
 }
 .dialog-footer {
   display: flex;

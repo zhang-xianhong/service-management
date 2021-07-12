@@ -21,12 +21,8 @@
           :disabled="isEditable"
           @change="changeService"
         >
-          <el-option
-            v-for="(item, index) in releaseData.serviceList"
-            :key="index"
-            :label="item.name"
-            :value="item.name"
-          >
+          <el-option v-for="(item, index) in releaseData.serviceList" :key="index" :value="item.name">
+            <service-name :name="item.name"></service-name>
           </el-option>
         </el-select>
       </el-form-item>
@@ -75,6 +71,7 @@
 import { defineComponent, ref, Ref, computed, SetupContext, PropType } from 'vue';
 import { ElMessage } from 'element-plus';
 import { addApply, updateApply } from '@/api/deploy/deploy-apply';
+import ServiceName from '@/views/service-management/components/ServiceName.vue';
 
 interface ReleaseState {
   disabled: boolean;
@@ -105,6 +102,9 @@ export default defineComponent({
       type: Object as PropType<ReleaseState>,
       default: () => ({}),
     },
+  },
+  components: {
+    ServiceName,
   },
   setup(props: { visable: boolean; releaseForms: ReleaseState }, ctx: SetupContext) {
     const labelWidth = ref('80px');
