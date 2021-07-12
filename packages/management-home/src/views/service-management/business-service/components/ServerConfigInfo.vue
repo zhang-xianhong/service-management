@@ -93,12 +93,12 @@
       <el-table-column label="创建时间" prop="createTime" width="160">
         <template #default="scope">{{ dateFormat(scope.row.createTime) }}</template>
       </el-table-column>
-      <el-table-column
-        v-for="(item, index) in historyTableColumns"
-        :key="index"
-        :label="item.label"
-        :prop="item.prop"
-      ></el-table-column>
+      <el-table-column v-for="(item, index) in historyTableColumns" :key="index" :label="item.label" :prop="item.prop">
+      </el-table-column>
+      <el-table-column label="类型" prop="type" width="160">
+        <template #default="scope">{{ scope.row.type === 0 ? '应用类型' : '系统类型' }}</template>
+      </el-table-column>
+      <el-table-column label="版本" prop="version" width="160"> </el-table-column>
     </el-table>
     <template #footer>
       <el-button type="primary" @click="isOpenHistoryDialog = false">关闭</el-button>
