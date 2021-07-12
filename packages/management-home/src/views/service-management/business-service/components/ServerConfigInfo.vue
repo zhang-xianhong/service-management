@@ -49,7 +49,7 @@
         </template>
       </el-table-column>
     </el-table>
-    <div class="serverinfo-operations" v-if="getShowBool('update')">
+    <div class="serverinfo-operations" v-if="getShowBool('update') || !isRefrenceService">
       <el-button type="primary" @click="deliveryList">配置下发</el-button>
       <el-button @click="$emit('back')">返回</el-button>
     </div>
@@ -118,6 +118,7 @@ import {
 } from '@/api/settings/config';
 import dateFormat from '@/utils/date-format';
 import { getShowBool } from '@/utils/permission-show-module';
+import { isRefrence } from '../utils/permisson';
 
 export default {
   name: 'ServerConfigInfo',
@@ -253,6 +254,7 @@ export default {
         });
       }
     };
+    const isRefrenceService = inject(isRefrence);
     return {
       ...toRefs(state),
       dateFormat,
@@ -267,6 +269,7 @@ export default {
       deleteItem,
       deliveryList,
       getShowBool,
+      isRefrenceService,
     };
   },
 };

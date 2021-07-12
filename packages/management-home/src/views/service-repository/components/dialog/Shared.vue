@@ -72,11 +72,11 @@ export default defineComponent({
     const sharedTypes = reactive([
       {
         value: 1,
-        label: '克隆',
+        label: '引用',
       },
       {
         value: 2,
-        label: '引用',
+        label: '克隆',
       },
     ]);
     const formRules = reactive({
@@ -99,12 +99,7 @@ export default defineComponent({
         if (!valid) {
           return;
         }
-        let platformShareType = 1;
-        if (form.platformShareType.length === 2) {
-          platformShareType = 3;
-        } else {
-          platformShareType = Number(form.platformShareType.join(''));
-        }
+        const platformShareType = form.platformShareType.length > 1 ? 3 : Number(form.platformShareType.join(''));
         await shareRepository({
           platformShareType,
           platformShareDescription: form.platformShareDescription,

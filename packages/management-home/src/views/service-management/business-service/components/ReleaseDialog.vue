@@ -1,6 +1,6 @@
 <template>
   <el-dialog title="发版" v-model="releaseDialogVisible" width="1000px" @close="closeDialog" destroy-on-close>
-    <div>
+    <div class="release-steps">
       <el-steps :active="currentActive" finish-status="success" simple>
         <el-step v-for="item in tabMenuData" :key="item.title" :title="item.title"></el-step>
       </el-steps>
@@ -133,7 +133,7 @@ export default defineComponent({
       ],
       description: [
         { required: true, message: '请输入使用注意事项，更新日志，版本信息、bug修复记录', trigger: 'blur' },
-        { min: 1, max: 65536, message: '长度在 1 到 65536 个字符', trigger: 'blur' },
+        { min: 1, max: 2048, message: '长度在 1 到 2048 个字符', trigger: 'blur' },
       ],
     };
 
@@ -146,9 +146,6 @@ export default defineComponent({
         const { code, data } = await getServiceConfig(id);
         if (code === ResCode.Success) {
           configTableData.value = data;
-          // console.log('tableRef.value', tableRef.value.toggleRowSelection);
-          // 更改选中
-          tableRef.value.toggleRowSelection(data[0]);
         } else {
           msgTips('error', '获取人员列表失败');
         }
@@ -181,13 +178,13 @@ export default defineComponent({
         releaseBaseForm.value.validate((valid: boolean) => {
           if (valid) {
             currentActive.value = currentActive.value + 1;
-            const defaultSelConfig: any = configTableData.value.filter(
-              (item: any) => item.scope === ConfigOrigin['通用配置'],
-            );
-            // 自动选中系统配置
-            defaultSelConfig.forEach((item: any) => {
-              tableRef.value.toggleRowSelection(item);
-            });
+            // const defaultSelConfig: any = configTableData.value.filter(
+            //   (item: any) => item.scope === ConfigOrigin['通用配置'],
+            // );
+            // // 自动选中系统配置
+            // defaultSelConfig.forEach((item: any) => {
+            //   tableRef.value.toggleRowSelection(item);
+            // });
           }
         });
         await nextTick();
@@ -222,7 +219,6 @@ export default defineComponent({
 
     // 完成
     const finished = async () => {
-      console.log('tableRef.value', tableRef.value.toggleRowSelection);
       finishing.value = true;
       try {
         const data = {
@@ -266,11 +262,18 @@ export default defineComponent({
   },
 });
 </script>
-<style scoped>
+<style lang="scss" scoped>
 .release-container {
   padding: 30px 0;
 }
 .el-steps--simple {
   padding: 10px 0;
+}
+.release-steps {
+  ::v-deep {
+    .el-step__line {
+      display: none;
+    }
+  }
 }
 </style>

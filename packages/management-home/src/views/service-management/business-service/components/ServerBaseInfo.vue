@@ -51,22 +51,20 @@
       </el-form-item>
       <el-form-item label="服务依赖">
         <div v-if="isShowMode">
-          <el-tag :key="d.dependencyServiceName" v-for="d in formData.dependencies"> {{ d[0] }}/{{ d[1] }} </el-tag>
+          <el-tag :key="d.dependencyServiceName" v-for="d in formData.dependencies">
+            {{ dependencyNameAndVersion(d) }}
+          </el-tag>
         </div>
         <el-cascader
           v-else
           v-model="formData.dependencies"
-          :options="allService"
+          :options="dependenciesList"
           :props="serviceCascaderProps"
           @change="nodeChange"
         >
-          <template #default="{ node, data }">
-            <span>{{ data.value }}</span>
-            <span v-if="!node.isLeaf"> ({{ data.children.length }}) </span>
-          </template>
         </el-cascader>
       </el-form-item>
-      <el-form-item v-if="getShowBool('update')">
+      <el-form-item v-if="getShowBool('update') || !isRefrenceService">
         <el-button v-if="isShowMode" type="primary" @click="modifyFormData">编辑</el-button>
         <el-button v-else type="primary" @click="saveFormData">确定</el-button>
       </el-form-item>
@@ -75,14 +73,16 @@
 </template>
 
 <script lang="ts">
-import { reactive, ref, computed } from 'vue';
+import { reactive, ref, computed, inject } from 'vue';
 import useClassifications from '../utils/service-baseinfo-classification';
 import useTags from '../utils/service-baseinfo-tag';
 import { updateService } from '@/api/servers';
-import { allService, getServiceDependencies, getServiceVersionType } from '../utils/service-data-utils';
+import { dependenciesList, getServiceDependencies, getServiceVersionType } from '../utils/service-data-utils';
 import OwnerSelect from '@/components/owners-select/Index.vue';
 import { ElMessage } from 'element-plus';
 import { getShowBool } from '@/utils/permission-show-module';
+import { getServiceShowName } from '../../components/utils';
+import { isRefrence } from '../utils/permisson';
 
 export default {
   name: 'ServerBaseInfo',
@@ -111,11 +111,11 @@ export default {
     getServiceDependencies(props.id);
     // 是否为显示模式标识，默认为true
     const isShowMode = ref(true);
+
     const serviceCascaderProps = ref({
       multiple: true,
     } as any);
-
-    const computedServices = computed(() => allService.value.filter((service: any) => service.id !== props.id));
+    const isRefrenceService = inject(isRefrence); // inject isRefrence
     const ownersArr = props.data.owners?.map((x: any) => x.userId) || [];
     const allOwnersArr = props.data.ownerUsers?.map((x: any) => x.id) || [];
     const realOwners = ownersArr
@@ -139,13 +139,12 @@ export default {
       detail: props.data.detail,
       dependencies: props.data.dependencies,
     });
-    console.log('formData', formData);
     const computedDependencyName = computed(() => {
-      if (allService.value.length === 0) {
+      if (dependenciesList.value.length === 0) {
         return '';
       }
       const names = formData.dependencies
-        .map((id: number) => allService.value.filter((item: any) => item.id === id)[0]?.name)
+        .map((id: number) => dependenciesList.value.filter((item: any) => item.id === id)[0]?.name)
         .filter((x: any) => x);
       return names.join(',');
     });
@@ -223,9 +222,12 @@ export default {
       formData.dependencies = selectData;
     };
 
+    const dependencyNameAndVersion = (data: any) => {
+      const [name, version] = data;
+      return `${getServiceShowName(name)}/${version}`;
+    };
     return {
       isShowMode,
-      computedServices,
       formData,
       classificationName,
       classificationValue,
@@ -239,9 +241,11 @@ export default {
       modifyFormData,
       saveFormData,
       getShowBool,
-      allService,
+      dependenciesList,
       serviceCascaderProps,
       nodeChange,
+      dependencyNameAndVersion,
+      isRefrenceService,
     };
   },
 };

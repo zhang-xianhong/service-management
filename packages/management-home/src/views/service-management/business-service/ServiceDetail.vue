@@ -212,6 +212,7 @@ import {
 import { userProjectList } from '@/layout/messageCenter/user-info';
 import ReleaseDialog from './components/ReleaseDialog.vue';
 import { getServiceShowName } from '../components/utils';
+import { useCheckRefrenceService } from './utils/permisson';
 interface RefDialog {
   openDialog: Function;
   [attr: string]: any;
@@ -552,6 +553,7 @@ export default {
         }
       }
     });
+    useCheckRefrenceService(serverInfo);
     return {
       isShowDownDrawer,
       computedHeight,

@@ -52,7 +52,7 @@
       </el-table-column>
       <el-table-column label="操作" width="120" v-if="getShowBool('update')">
         <template #default="scope">
-          <template v-if="!scope.row.isSystem">
+          <template v-if="!scope.row.isSystem || !isRefrenceService">
             <a class="operation-link" @click="openParamsModel(scope.$index, scope.row)">参数</a>
             <a class="operation-link" @click="addItem(scope.$index)" v-if="scope.$index === 0">添加</a>
             <a class="operation-link" @click="deleteItem(scope.$index, scope.row)">删除</a>
@@ -60,7 +60,7 @@
         </template>
       </el-table-column>
     </el-table>
-    <div class="ports-configuration__operations" v-if="getShowBool('update')">
+    <div class="ports-configuration__operations" v-if="getShowBool('update') || !isRefrenceService">
       <el-button type="primary" @click="updateApis">确定</el-button>
       <el-button @click="cancelChange">取消</el-button>
     </div>
@@ -140,10 +140,11 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, reactive, watch, getCurrentInstance, SetupContext, computed } from 'vue';
+import { defineComponent, ref, reactive, watch, getCurrentInstance, SetupContext, computed, inject } from 'vue';
 import { getServiceApis, updateServiceApis } from '@/api/servers';
 import _ from 'lodash';
 import { getShowBool } from '@/utils/permission-show-module';
+import { isRefrence } from '../utils/permisson';
 
 // 参数类型枚举
 enum ParamTypeEnum {
@@ -368,6 +369,8 @@ export default defineComponent({
         return 'system-row';
       }
     };
+    // ----------------------
+    const isRefrenceService = inject(isRefrence);
 
     return {
       ParamTypeEnum,
@@ -389,6 +392,7 @@ export default defineComponent({
       tableRowClassName,
       currentParams,
       getShowBool,
+      isRefrenceService,
     };
   },
 });

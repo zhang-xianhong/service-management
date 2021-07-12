@@ -183,9 +183,10 @@
           <el-form-item label="服务依赖" :label-width="labelWidth" prop="dependencies">
             <el-cascader
               v-model="serviceDetail.dependencies"
-              :options="allService"
+              :options="dependenciesList"
               :props="serviceCascaderProps"
               @change="nodeChange"
+              @expand-change="expandChange"
             >
             </el-cascader>
           </el-form-item>
@@ -244,25 +245,25 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, onBeforeUnmount, reactive, ref, watch } from 'vue';
+import { defineComponent, reactive, ref, onBeforeUnmount, computed, watch } from 'vue';
 import ListWrap from '@/components/list-wrap/Index.vue';
 import PackagedPagination from '@/components/pagination/Index.vue';
 import { userProjectList } from '@/layout/messageCenter/user-info';
 import { getShowBool } from '@/utils/permission-show-module';
 import {
-  allService,
+  refreshServiceList,
+  serviceTableList,
+  serviceDetail,
+  persons,
+  tags,
+  sorts,
   deleteServiceForList,
+  getTagsForService,
   getClassifications,
   getServiceDependencies,
-  getServiceVersionType,
-  getTagsForService,
+  dependenciesList,
   ownersMap,
-  persons,
-  refreshServiceList,
-  serviceDetail,
-  serviceTableList,
-  sorts,
-  tags,
+  getServiceVersionType,
 } from './utils/service-data-utils';
 import { addService, serviceNameTest, updateServiceStatus } from '@/api/servers';
 import Message from 'element-plus/es/el-message';
@@ -601,7 +602,8 @@ export default defineComponent({
       for (const node of nodes) {
         checkNode[node[0]] = node;
       }
-      serviceDetail.dependencies = Object.values(checkNode);
+      const selectData = Object.values(checkNode);
+      serviceDetail.dependencies = selectData;
     };
 
     return {
@@ -642,7 +644,7 @@ export default defineComponent({
       logType,
       searchForList,
       getCascaderForm,
-      allService,
+      dependenciesList,
       getSortClassification,
       mutiArray,
       computedDisabled,
