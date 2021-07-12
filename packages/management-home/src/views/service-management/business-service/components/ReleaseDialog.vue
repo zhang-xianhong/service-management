@@ -52,7 +52,7 @@
   </el-dialog>
 </template>
 <script lang="ts">
-import { defineComponent, reactive, ref, getCurrentInstance, Ref, nextTick } from 'vue';
+import { defineComponent, reactive, ref, getCurrentInstance, Ref } from 'vue';
 import { getServiceConfig, releaseService } from '@/api/servers';
 import CodeEditor from '@/components/sql-editor/Index.vue';
 // 状态码
@@ -74,6 +74,14 @@ enum ConfigType {
 }
 interface RefType {
   [attr: string]: any;
+}
+
+interface BaseFormDataType{
+  serviceVersion: string;
+  description: string;
+  configTemplates: any[];
+  ddlScript: string;
+  dmlScript: string;
 }
 // 发版说明  版本号必须只能包含英文字母、数字、西文点号、西文“-”， 西文“_”，且长度限制在1~20个西文字符。
 const regDes = /^[A-Za-z\d（.\-_)]{1,20}$/;
@@ -106,7 +114,7 @@ export default defineComponent({
         id: 'preScript',
       },
     ];
-    const releaseBaseForm: Ref<RefType | any> = ref(null);
+    const releaseBaseForm: Ref<RefType> = ref({});
     const finishing: Ref<boolean> = ref(false);
     // 获取组件实例
     const instance = getCurrentInstance();
@@ -117,9 +125,9 @@ export default defineComponent({
         message: content,
       });
     }
-    let serviceId: any = '';
+    let serviceId: number;
     // 发版数据
-    const baseFormData = reactive({
+    const baseFormData: BaseFormDataType = reactive({
       serviceVersion: '',
       description: '',
       configTemplates: [],
@@ -141,7 +149,7 @@ export default defineComponent({
     const configTableData: any = ref([]);
     const tableRef: any = ref(null);
     // 获取配置列表
-    const getConfigList = async (id: any) => {
+    const getConfigList = async (id: any): Promise<void> => {
       try {
         const { code, data } = await getServiceConfig(id);
         if (code === ResCode.Success) {
@@ -153,26 +161,26 @@ export default defineComponent({
         console.log('error', error);
       }
     };
-    const handleSelectionChange = (data: any) => {
+    const handleSelectionChange = (data: any): void => {
       baseFormData.configTemplates = data.map((item: any) => ({
         name: item.name,
         value: item.defaultValue,
       }));
     };
 
-    const releaseDialogVisible = ref(false);
+    const releaseDialogVisible: Ref<boolean> = ref(false);
     // 当前step
     const currentActive = ref(0);
 
     // 上一步
-    const releasePrev = () => {
+    const releasePrev = (): void => {
       if (currentActive.value > 0) {
         currentActive.value = currentActive.value - 1;
       }
     };
 
     // 下一步
-    const releaseNext = async () => {
+    const releaseNext = async (): Promise<void> => {
       if (currentActive.value === 0) {
         // 增加校验
         releaseBaseForm.value.validate((valid: boolean) => {
@@ -187,21 +195,21 @@ export default defineComponent({
             // });
           }
         });
-        await nextTick();
+        // await nextTick();
       } else if (currentActive.value < 4) {
         currentActive.value = currentActive.value + 1;
       }
     };
 
     // 打开dialog
-    const openDialog = (id: any) => {
+    const openDialog = (id: number): void => {
       releaseDialogVisible.value = true;
       serviceId = id;
       getConfigList(serviceId);
     };
 
     // 初始化
-    const init = () => {
+    const init = (): void => {
       currentActive.value = 0;
       baseFormData.serviceVersion = '';
       baseFormData.description = '';
@@ -212,13 +220,13 @@ export default defineComponent({
     };
 
     // 关闭dialog
-    const closeDialog = () => {
+    const closeDialog = (): void => {
       init();
       releaseDialogVisible.value = false;
     };
 
     // 完成
-    const finished = async () => {
+    const finished = async (): Promise<void> => {
       finishing.value = true;
       try {
         const data = {
