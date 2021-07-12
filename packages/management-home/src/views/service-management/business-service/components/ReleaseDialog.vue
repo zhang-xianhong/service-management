@@ -133,7 +133,7 @@ export default defineComponent({
       ],
       description: [
         { required: true, message: '请输入使用注意事项，更新日志，版本信息、bug修复记录', trigger: 'blur' },
-        { min: 1, max: 65536, message: '长度在 1 到 65536 个字符', trigger: 'blur' },
+        { min: 1, max: 2048, message: '长度在 1 到 2048 个字符', trigger: 'blur' },
       ],
     };
 
@@ -222,7 +222,6 @@ export default defineComponent({
 
     // 完成
     const finished = async () => {
-      console.log('tableRef.value', tableRef.value.toggleRowSelection);
       finishing.value = true;
       try {
         const data = {
