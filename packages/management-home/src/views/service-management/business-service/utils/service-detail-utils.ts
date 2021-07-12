@@ -3,12 +3,13 @@ import {
   getSqlData,
   startServiceData,
   stopServiceData,
+  releaseServiceData,
 } from '@/views/service-management/business-service/utils/service-detail-data';
 import { ref } from 'vue';
 
 import { ElMessageBox } from 'element-plus';
 
-export default function() {
+export default function () {
   const buttons = ref([] as any);
   // 初始化
   const initialize = () => {
@@ -56,6 +57,12 @@ export default function() {
     getTraceAndLog();
   };
 
+  // 发版
+  const release = () => {
+    console.log('发版');
+    releaseServiceData();
+  };
+
   // 按钮配置
   buttons.value = [
     {
@@ -94,6 +101,14 @@ export default function() {
     //   },
     //   disabled: false,
     // },
+    {
+      label: '发版',
+      eventOption: {
+        click: () => release(),
+      },
+      disabled: false,
+      style: 'margin-left: 5px',
+    },
     {
       label: '日志',
       eventOption: {

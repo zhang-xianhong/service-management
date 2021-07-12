@@ -1,7 +1,7 @@
 <template>
   <div class="erd-container-wrapper" :style="{ width, height }" v-on="handlers">
     <div :style="`width: ${viewWidth}px; height: ${viewHeight}px; position: relative;`">
-      <add-model v-if="getShowBool('add')"></add-model>
+      <add-model v-if="getShowBool('add') && !isRefrenceService"></add-model>
       <erd-relation></erd-relation>
       <template v-if="allTypes.length">
         <erd-table
@@ -42,6 +42,7 @@ import ErdRelation from './Relation.vue';
 import AddModel from './AddModel.vue';
 import { updateConfig, createRelation, updateRelation } from '@/api/schema/model';
 import { getShowBool } from '@/utils/permission-show-module';
+import { isRefrence } from '@/views/service-management/business-service/utils/permisson';
 export default defineComponent({
   name: 'Erd',
   props: {
@@ -68,6 +69,8 @@ export default defineComponent({
     const { allTypes } = inject('configs') as any;
     const erdEmit = context.emit;
     provide('erdEmit', erdEmit);
+    // inject isRefrenceService
+    const isRefrenceService = inject(isRefrence);
     watchEffect(() => {
       tables.value = props.modelValue.tables || [];
       relations.value = props.modelValue.relations || [];
@@ -126,6 +129,10 @@ export default defineComponent({
         table.dragging = 0;
         coordinate[table.id] = table.position;
       });
+      if (isRefrenceService?.value) {
+        // 引用类型的服务，不允许更新
+        return;
+      }
       await updateConfig({
         serviceId,
         config: {
@@ -189,6 +196,9 @@ export default defineComponent({
       [relations.value[index][0], relations.value[index][1]] = [relations.value[index][1], relations.value[index][0]];
       const fromIndex = relations.value[index][0];
       const toIndex = relations.value[index][1];
+      if (isRefrenceService?.value) {
+        return; // 引用服务不可以更新
+      }
       const { code } = await updateRelation(String(relations.value[index][3]), {
         fromModelId: (tables.value[fromIndex] as any).id,
         toModelId: (tables.value[toIndex] as any).id,
@@ -284,6 +294,7 @@ export default defineComponent({
       handlers,
       logs,
       getShowBool,
+      isRefrenceService,
     };
   },
 });

@@ -1,0 +1,121 @@
+{
+  "code": 0,
+  "data": {
+    "id": 181,
+    "name": "srv-test-dependency-7",
+    "version": "master",
+    "children": [
+      {
+        "id": 18,
+        "name": "srv-test-dependency-5",
+        "version": "master",
+        "children": [
+          {
+            "id": 13,
+            "name": "srv-test-dependency-1",
+            "version": "master",
+            "children": [
+              {
+                "id": 3,
+                "name": "srv-performance1",
+                "version": "develop",
+                "children": []
+              },
+              {
+                "id": 4,
+                "name": "srv-performance2",
+                "version": "master",
+                "children": []
+              },
+              {
+                "id": 5,
+                "name": "srv-performance3",
+                "version": "master",
+                "children": []
+              }
+            ]
+          },
+          {
+            "id": 14,
+            "name": "srv-test-dependency-3",
+            "version": "master",
+            "children": [
+              {
+                "id": 9,
+                "name": "srv-performance7",
+                "version": "master",
+                "children": []
+              },
+              {
+                "id": 10,
+                "name": "srv-performance8",
+                "version": "master",
+                "children": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": 19,
+        "name": "srv-test-dependency-6",
+        "version": "master",
+        "children": [
+          {
+            "id": 15,
+            "name": "srv-test-dependency-2",
+            "version": "master",
+            "children": [
+              {
+                "id": 6,
+                "name": "srv-performance4",
+                "version": "master",
+                "children": []
+              },
+              {
+                "id": 7,
+                "name": "srv-performance5",
+                "version": "master",
+                "children": []
+              },
+              {
+                "id": 8,
+                "name": "srv-performance6",
+                "version": "master",
+                "children": []
+              }
+            ]
+          },
+          {
+            "id": 16,
+            "name": "srv-test-dependency-4",
+            "version": "master",
+            "children": [
+              {
+                "id": 11,
+                "name": "srv-performance8",
+                "version": "master",
+                "children": []
+              },
+              {
+                "id": 12,
+                "name": "srv-performance10",
+                "version": "develop",
+                "children": []
+              }
+            ]
+          },
+          {
+            "id": 17,
+            "name": "srv-performance11",
+            "version": "master",
+            "children": []
+          }
+        ]
+      }
+    ]
+  },
+  "message": "successful",
+  "httpStatus": 200,
+  "timestamp": 1625110844295
+}

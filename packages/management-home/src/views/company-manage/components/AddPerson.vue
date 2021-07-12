@@ -83,7 +83,6 @@ import { checkMail, checkZNName, checkEnName, checkMobile, checkPasswd } from '@
 import { generatePasswd, copyFun } from '../utils';
 import { checkUserInfo } from '@/api/company/users';
 import { userInfo } from '@/layout/messageCenter/user-info';
-console.log('userinfo', userInfo);
 // 定义数据type
 interface DialogState {
   title: string;

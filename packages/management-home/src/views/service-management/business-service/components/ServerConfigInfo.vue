@@ -82,7 +82,9 @@
           <el-button @click="submitDetailModify" type="primary">确定</el-button>
           <el-button @click="closeDetailDialog">取消</el-button>
         </template>
-        <el-button v-else type="primary" @click="isEditable = true">编辑</el-button>
+        <template v-else>
+          <el-button type="primary" @click="isEditable = true" v-if="!isRefrenceService">编辑</el-button>
+        </template>
       </el-form-item>
     </el-form>
   </el-dialog>
@@ -118,6 +120,7 @@ import {
 } from '@/api/settings/config';
 import dateFormat from '@/utils/date-format';
 import { getShowBool } from '@/utils/permission-show-module';
+import { isRefrence } from '../utils/permisson';
 
 export default {
   name: 'ServerConfigInfo',
@@ -275,6 +278,7 @@ export default {
         });
       }
     };
+    const isRefrenceService = inject(isRefrence);
     return {
       ...toRefs(state),
       dateFormat,
@@ -290,6 +294,7 @@ export default {
       deliveryList,
       getShowBool,
       serviceStatus,
+      isRefrenceService,
     };
   },
 };

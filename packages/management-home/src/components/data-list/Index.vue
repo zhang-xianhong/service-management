@@ -21,8 +21,6 @@
         :disabled="loading"
         :current-page="page"
         :page-size="pageSize"
-        :page-sizes="[10, 20, 50, 100]"
-        layout="total, sizes, prev, pager, next, jumper"
         :total="total"
         @size-change="handlePageSizeChange"
         @current-change="handlePageChange"

@@ -1,0 +1,135 @@
+<template>
+  <div class="service-history" v-loading="loading">
+    <ul class="history-timeline">
+      <li class="history-timeline__item" v-for="item in histories" :key="item.id">
+        <div class="history-version">
+          <span role="button" class="toggle" @click="item.collapsed = !item.collapsed">
+            {{ item.serviceVersion }}
+            <i :class="!item.collapsed ? 'el-icon-arrow-down' : 'el-icon-arrow-right'"></i>
+          </span>
+        </div>
+        <div class="history-body">
+          <el-collapse-transition>
+            <div v-show="!item.collapsed">
+              <div class="history-content" v-html="parseDescriptionHtml(item.description)"></div>
+              <el-button type="text" @click="handleShowVersionInfo(item)">更多</el-button>
+            </div>
+          </el-collapse-transition>
+        </div>
+      </li>
+    </ul>
+    <version-info-dialog ref="versionInfoDialogRef" />
+    <div class="sa-list-wrap__empty" v-if="!loading && histories.length === 0">暂无数据</div>
+  </div>
+</template>
+<script lang="ts">
+import { defineComponent, ref } from 'vue';
+import { getRepositoryHistory } from '@/api/repository';
+import VersionInfoDialog from './Version-Info-Dialog.vue';
+import { parseDescriptionHtml } from '../util';
+export default defineComponent({
+  name: 'ServiceHistory',
+  components: {
+    VersionInfoDialog,
+  },
+  props: {
+    info: {
+      type: Object,
+      default: () => ({}),
+    },
+  },
+  setup(props) {
+    const loading = ref(true);
+    const histories = ref([] as any[]);
+    const versionInfoDialogRef = ref(null as any);
+    const fetchData = async () => {
+      loading.value = true;
+      try {
+        const { data } = await getRepositoryHistory({
+          serviceName: props.info.serviceName,
+        });
+        histories.value = data.map((item: any, index: number) => {
+          const newItem = { ...item };
+          newItem.collapsed = index > 0;
+          return newItem;
+        });
+      } catch (e) {
+        console.log(e);
+      } finally {
+        loading.value = false;
+      }
+    };
+    const handleShowVersionInfo = (row: any) => {
+      versionInfoDialogRef.value.handleOpen(row.snapshotNo);
+    };
+    fetchData();
+    return {
+      loading,
+      histories,
+      versionInfoDialogRef,
+      handleShowVersionInfo,
+      parseDescriptionHtml,
+    };
+  },
+});
+</script>
+<style lang="scss" scoped>
+.service-history {
+  padding: 20px;
+  min-height: 200px;
+}
+.history-timeline {
+  position: relative;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  &::before {
+    content: '';
+    position: absolute;
+    width: 1px;
+    left: 180px;
+    height: 100%;
+    top: 0;
+    bottom: 0;
+    background-color: #e4e7ed;
+  }
+  &__item {
+    display: flex;
+    flex-flow: row nowrap;
+    max-width: 640px;
+    margin-bottom: 20px;
+  }
+
+  .history-version {
+    flex-shrink: 0;
+    width: 140px;
+    margin-right: 90px;
+    text-align: right;
+
+    .toggle {
+      display: inline-flex;
+      padding: 5px;
+      align-items: center;
+      i {
+        font-size: 1rem;
+        margin-left: 3px;
+        color: #999;
+      }
+    }
+  }
+
+  .history-body {
+    flex: 1;
+  }
+
+  .history-content {
+    line-height: 20px;
+    max-height: 300px;
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-line-clamp: 15;
+    -webkit-box-orient: vertical;
+  }
+}
+</style>

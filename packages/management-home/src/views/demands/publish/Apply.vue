@@ -162,8 +162,6 @@
         v-if="total"
         :current-page="searchProps.page"
         :page-size="searchProps.pageSize"
-        :page-sizes="[10, 20, 50]"
-        layout="sizes, prev, pager, next, jumper"
         :total="total"
         @size-change="handlePageSizeChange"
         @current-change="handlePageChange"
@@ -311,6 +309,8 @@ export default {
     PackagedPagination,
   },
   setup() {
+    const btnLoading = ref(false);
+
     // 表单相关状态
     const tableState: TableState = reactive({
       tableData: [],
@@ -465,42 +465,55 @@ export default {
     async function submitpublishForm() {
       publishFormRef.value.validate(async (valid: boolean) => {
         if (valid) {
+          btnLoading.value = true;
           // 添加
           if (!publishForm.isEdit) {
             const publishData = publishForm.formData;
-            const { code } = await addPublish(publishData);
-            if (code === 0) {
-              ElMessage({
-                type: 'success',
-                message: '添加成功',
-              });
-              getTableData();
-            } else {
-              ElMessage({
-                type: 'error',
-                message: '添加失败',
-              });
+            try {
+              const { code } = await addPublish(publishData);
+              if (code === 0) {
+                ElMessage({
+                  type: 'success',
+                  message: '添加成功',
+                });
+                getTableData();
+              } else {
+                ElMessage({
+                  type: 'error',
+                  message: '添加失败',
+                });
+              }
+              btnLoading.value = false;
+              closepublishForm();
+            } catch (e) {
+              ElMessage.error(e);
+              btnLoading.value = false;
             }
-            closepublishForm();
           } else {
             // 编辑
             console.log(publishForm);
-            const { code } = await updatePublish(publishForm.id, {
-              description: publishForm.formData.description,
-            });
-            if (code === 0) {
-              ElMessage({
-                type: 'success',
-                message: '更新成功',
+            try {
+              const { code } = await updatePublish(publishForm.id, {
+                description: publishForm.formData.description,
               });
-              getTableData();
-            } else {
-              ElMessage({
-                type: 'error',
-                message: '编辑失败',
-              });
+              if (code === 0) {
+                ElMessage({
+                  type: 'success',
+                  message: '更新成功',
+                });
+                getTableData();
+              } else {
+                ElMessage({
+                  type: 'error',
+                  message: '编辑失败',
+                });
+              }
+              btnLoading.value = false;
+              closepublishForm();
+            } catch (e) {
+              btnLoading.value = false;
+              ElMessage.error(e);
             }
-            closepublishForm();
           }
         }
       });
@@ -690,6 +703,7 @@ export default {
       applicantChange,
       getShowBool,
       getRowOptionStatus,
+      btnLoading,
     };
   },
 };

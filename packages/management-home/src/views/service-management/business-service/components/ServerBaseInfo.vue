@@ -3,7 +3,7 @@
     <div class="baseinfo-title">基本信息</div>
     <el-form :model="formData" label-width="60px" label-position="left" style="height: 87%">
       <el-form-item label="服务名称">
-        <div class="baseinfo-content">{{ formData.name }}</div>
+        <div class="baseinfo-content"><service-name :name="formData.name" /></div>
       </el-form-item>
       <el-form-item label="服务描述">
         <div class="baseinfo-content">{{ formData.description }}</div>
@@ -58,12 +58,21 @@
         </el-input>
       </el-form-item>
       <el-form-item label="服务依赖">
-        <div v-if="isShowMode" class="baseinfo-content">{{ computedDependencyName }}</div>
-        <el-select v-else v-model="formData.dependencies" clearable multiple>
-          <el-option v-for="item in computedServices" :key="item.id" :label="item.name" :value="item.id"></el-option>
-        </el-select>
+        <div v-if="isShowMode">
+          <el-tag :key="d.dependencyServiceName" v-for="d in formData.dependencies">
+            {{ dependencyNameAndVersion(d) }}
+          </el-tag>
+        </div>
+        <el-cascader
+          v-else
+          v-model="formData.dependencies"
+          :options="dependenciesList"
+          :props="serviceCascaderProps"
+          @change="nodeChange"
+        >
+        </el-cascader>
       </el-form-item>
-      <el-form-item v-if="getShowBool('update')">
+      <el-form-item v-if="getShowBool('update') && !isRefrenceService">
         <el-button v-if="isShowMode" type="primary" @click="modifyFormData">编辑</el-button>
         <el-button v-else type="primary" @click="saveFormData">确定</el-button>
       </el-form-item>
@@ -72,14 +81,16 @@
 </template>
 
 <script lang="ts">
-import { reactive, ref, computed } from 'vue';
+import { reactive, ref, computed, inject } from 'vue';
 import useClassifications from '../utils/service-baseinfo-classification';
 import useTags from '../utils/service-baseinfo-tag';
 import { updateService } from '@/api/servers';
-import { allService, getAllService } from '../utils/service-data-utils';
+import { dependenciesList, getServiceDependencies, getServiceVersionType } from '../utils/service-data-utils';
 import OwnerSelect from '@/components/owners-select/Index.vue';
 import { ElMessage } from 'element-plus';
 import { getShowBool } from '@/utils/permission-show-module';
+import { getServiceShowName } from '../../components/utils';
+import { isRefrence } from '../utils/permisson';
 
 export default {
   name: 'ServerBaseInfo',
@@ -105,11 +116,14 @@ export default {
     },
   },
   setup(props: { data: any; id: number; tags: any[]; classifications: any[] }, ctx: any) {
-    getAllService();
+    getServiceDependencies(props.id);
     // 是否为显示模式标识，默认为true
     const isShowMode = ref(true);
 
-    const computedServices = computed(() => allService.value.filter((service: any) => service.id !== props.id));
+    const serviceCascaderProps = ref({
+      multiple: true,
+    } as any);
+    const isRefrenceService = inject(isRefrence); // inject isRefrence
     const ownersArr = props.data.owners?.map((x: any) => x.userId) || [];
     const allOwnersArr = props.data.ownerUsers?.map((x: any) => x.id) || [];
     const realOwners = ownersArr
@@ -133,14 +147,13 @@ export default {
       detail: props.data.detail,
       dependencies: props.data.dependencies,
     });
-    console.log(formData.dependencies, 'this is dependencies');
 
     const computedDependencyName = computed(() => {
-      if (allService.value.length === 0) {
+      if (dependenciesList.value.length === 0) {
         return '';
       }
       const names = formData.dependencies
-        .map((id: number) => allService.value.filter((item: any) => item.id === id)[0]?.name)
+        .map((id: number) => dependenciesList.value.filter((item: any) => item.id === id)[0]?.name)
         .filter((x: any) => x);
       return names.join(',');
     });
@@ -191,7 +204,16 @@ export default {
       if (data.owners.length > 10) {
         return ElMessage.warning('负责人最多支持10个');
       }
-      data.dependencies = formData.dependencies.map((x: any) => ({ id: x }));
+      data.dependencies = formData.dependencies
+        ? formData.dependencies.map((dependency: any) => {
+            const [serviceName, serviceVersion] = dependency;
+            return {
+              serviceName,
+              serviceVersion,
+              serviceVersionType: getServiceVersionType(serviceName, serviceVersion),
+            };
+          })
+        : [];
       const { code } = await updateService(String(props.id), data);
       if (code === 0) {
         isShowMode.value = true;
@@ -200,10 +222,21 @@ export default {
         ctx.emit('changeSource');
       }
     };
+    const nodeChange = (nodes: any) => {
+      const checkNode: any = {};
+      for (const node of nodes) {
+        checkNode[node[0]] = node;
+      }
+      const selectData = Object.values(checkNode);
+      formData.dependencies = selectData;
+    };
 
+    const dependencyNameAndVersion = (data: any) => {
+      const [name, version] = data;
+      return `${getServiceShowName(name)}/${version}`;
+    };
     return {
       isShowMode,
-      computedServices,
       formData,
       classificationName,
       classificationValue,
@@ -217,6 +250,11 @@ export default {
       modifyFormData,
       saveFormData,
       getShowBool,
+      dependenciesList,
+      serviceCascaderProps,
+      nodeChange,
+      dependencyNameAndVersion,
+      isRefrenceService,
     };
   },
 };

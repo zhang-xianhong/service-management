@@ -67,10 +67,6 @@
         </el-col>
       </el-row>
       <div class="detail__body" :class="{ 'cannot-operate': !!maskText, 'is-show-drawer': isShowDownDrawer }">
-        <!-- <el-row :style="{ height: computedHeight, background: '#fff', padding: '12px', marginBottom: '10px' }">
-          <el-col :span="componentName ? 20 : 24" style="height: 100%"> </el-col>
-          <el-col v-if="componentName" :span="4" style="border-left: 1px solid #bbbbbb; height: 100%"> </el-col>
-        </el-row> -->
         <div class="main-container">
           <div class="left-canvas" style="height: 100%">
             <el-row class="project-switch">
@@ -165,6 +161,7 @@
         </div>
       </el-dialog>
     </div>
+    <ReleaseDialog ref="releaseRef" />
   </div>
 </template>
 
@@ -179,7 +176,7 @@ import RelationInfo from './components/RelationInfo.vue';
 import ModelFieldForm from './components/FieldForm.vue';
 import ModelBaseInfo from './components/ModelBaseInfo.vue';
 import ServerConfigInfo from './components/ServerConfigInfo.vue';
-import { getServiceList, getServiceById, updateServiceStatus } from '@/api/servers';
+import { getServiceList, getServiceById, updateServiceStatus, releaseCheck } from '@/api/servers';
 import { getAllTags } from '@/api/settings/tags';
 import { getClassificationList } from '@/api/settings/classification';
 import { getServiceModelList, getModelDetail } from '@/api/schema/model';
@@ -208,9 +205,19 @@ import {
   clearLogInterVal,
   formatLogData,
 } from '@/views/service-management/business-service/utils/service-log-data-utils';
+import {
+  releaseDialogVisible,
+  closeReleaseDialog,
+} from '@/views/service-management/business-service/utils/service-release-data-utils';
 
 import { userProjectList } from '@/layout/messageCenter/user-info';
-
+import ReleaseDialog from './components/ReleaseDialog.vue';
+import { getServiceShowName } from '../components/utils';
+import { useCheckRefrenceService } from './utils/permisson';
+interface RefDialog {
+  openDialog: Function;
+  [attr: string]: any;
+}
 export default {
   name: 'ServiceDetail',
   components: {
@@ -221,6 +228,7 @@ export default {
     RelationInfo,
     ModelBaseInfo,
     ServerConfigInfo,
+    ReleaseDialog,
   },
   setup() {
     const { buttons } = useButtonUtils();
@@ -242,12 +250,21 @@ export default {
 
     // 服务列表
     const serverList = reactive([] as any[]);
+    // 获取组件实例
+    const instance = getCurrentInstance();
+    // 提示信息
+    function msgTips(type: string, content: string) {
+      (instance as any).proxy.$message({
+        type,
+        message: content,
+      });
+    }
 
     const getServerList = async () => {
       const { data } = await getServiceList({});
       data.rows.forEach((x: any) => {
         // eslint-disable-next-line no-param-reassign
-        x.name = x.name ? x.name.replace(/^srv-/g, '') : 'service name not found';
+        x.name = x.name ? getServiceShowName(x.name) : '';
       });
       serverList.push(...(data.rows || []));
     };
@@ -260,6 +277,7 @@ export default {
     // erd图组件参数构造
     provide('serviceId', currentServiceId.value);
     provide('serverInfo', serverInfo);
+    const { isRefrenceService } = useCheckRefrenceService(serverInfo);
     const erdLoading = ref(false);
     const modelList: Ref<any> = ref({
       tables: [],
@@ -310,7 +328,12 @@ export default {
     // 获取服务详情
     const getServerInfo = async () => {
       const { data } = await getServiceById({ id: currentServiceId.value });
-      serverInfo.value = data;
+      const { dependencies, ...info } = data;
+      const dependencyList = dependencies.map((i: any) => [i.dependencyServiceName, i.dependencyServiceVersion]);
+      serverInfo.value = {
+        ...info,
+        dependencies: dependencyList,
+      };
       !modelList.value.tables.length && initModelList();
     };
 
@@ -367,6 +390,11 @@ export default {
       }
       buttons.value[buttons.value.length - 1].disabled = false;
       buttons.value[0].label = +initTimes === 0 ? '初始化' : '同步配置';
+      // 引用服务初始化以后禁用，并且没有同步配置功能
+      if (isRefrenceService.value && +initTimes !== 0) {
+        buttons.value[0].label = '初始化';
+        buttons.value[0].disabled = true;
+      }
       const statusmaps = computeStatusLabel(serverInfo.value.initTimes);
       serverStatusInfo.value = {
         label: (statusmaps as any)[status],
@@ -519,9 +547,22 @@ export default {
           return '';
       }
     });
-
     onBeforeUnmount(() => {
       clearInterval(intervalId);
+    });
+
+    const releaseRef: Ref<RefDialog | null> = ref(null);
+
+    watch(releaseDialogVisible, async (currentValue: any) => {
+      if (currentValue) {
+        // 服务发版前检查
+        const { code, message } = await releaseCheck(currentServiceId.value);
+        if (code === 0) {
+          (releaseRef.value as RefDialog).openDialog(currentServiceId.value);
+        } else {
+          msgTips('error', message);
+        }
+      }
     });
 
     return {
@@ -548,6 +589,7 @@ export default {
       modelSelected,
       modelInfo,
       logDialogVisible,
+      releaseDialogVisible,
       logData,
       clearLogInterVal,
       formatLogData,
@@ -566,6 +608,9 @@ export default {
       reloadCom,
       getServerInfo,
       loading,
+      closeReleaseDialog,
+      releaseRef,
+      isRefrenceService,
     };
   },
 };

@@ -54,8 +54,6 @@
           v-if="total"
           :current-page="page"
           :page-size="pageSize"
-          :page-sizes="[10, 20, 50]"
-          layout="sizes, prev, pager, next, jumper"
           :total="total"
           @size-change="handlePageSizeChange"
           @current-change="handlePageChange"

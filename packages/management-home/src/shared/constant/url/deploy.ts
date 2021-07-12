@@ -9,4 +9,5 @@ export default {
   GET_SERVICE_LIST: ['/service-release/services/versions', '/mock/deploy/service.json'],
   // QUERY_IN_TENT: ['/users/search', 'mock/deploy/tenant-publisher.json'],
   QUERY_IN_TENT: ['/publish/apply-filter', 'mock/deploy/tenant-publisher.json'],
+  GET_SNAPSHOT_NO: ['/service-release/snapshotno/_', 'mock/deploy/snap-shotno.json'],
 };

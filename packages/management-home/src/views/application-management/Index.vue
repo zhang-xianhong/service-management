@@ -39,9 +39,7 @@
       <packaged-pagination
         v-if="applicationList.length && !loading"
         :current-page="searchProps.page"
-        :page-sizes="[1, 5, 10, 20, 50]"
         :page-size="searchProps.pageSize"
-        layout="total, sizes, prev, pager, next, jumper"
         :total="total"
         @size-change="handlePageSizeChange"
         @current-change="handlePageChange"

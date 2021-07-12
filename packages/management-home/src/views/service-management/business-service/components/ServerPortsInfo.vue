@@ -8,9 +8,9 @@
           <template v-else>{{ scope.row.name }}</template>
         </template>
       </el-table-column>
-      <el-table-column label="请求方式" prop="method">
+      <el-table-column label="请求方式" prop="methodType">
         <template #default="scope">
-          <el-select v-if="!scope.row.isSystem" v-model="scope.row.method" placeholder="请选择请求方式">
+          <el-select v-if="!scope.row.isSystem" v-model="scope.row.methodType" placeholder="请选择请求方式">
             <el-option
               v-for="(option, index) in requestMethodOptions"
               :key="index"
@@ -18,7 +18,7 @@
               :value="option.value"
             ></el-option>
           </el-select>
-          <template v-else>{{ getMethodName(scope.row.method) }}</template>
+          <template v-else>{{ getMethodName(scope.row.methodType) }}</template>
         </template>
       </el-table-column>
       <el-table-column label="数据对象" prop="modelId">
@@ -52,7 +52,7 @@
       </el-table-column>
       <el-table-column label="操作" width="120" v-if="getShowBool('update')">
         <template #default="scope">
-          <template v-if="!scope.row.isSystem">
+          <template v-if="!scope.row.isSystem && !isRefrenceService">
             <a class="operation-link" @click="openParamsModel(scope.$index, scope.row)">参数</a>
             <a class="operation-link" @click="addItem(scope.$index)" v-if="scope.$index === 0">添加</a>
             <a class="operation-link" @click="deleteItem(scope.$index, scope.row)">删除</a>
@@ -60,7 +60,7 @@
         </template>
       </el-table-column>
     </el-table>
-    <div class="ports-configuration__operations" v-if="getShowBool('update')">
+    <div class="ports-configuration__operations" v-if="getShowBool('update') && !isRefrenceService">
       <el-button type="primary" @click="updateApis">确定</el-button>
       <el-button @click="cancelChange">取消</el-button>
     </div>
@@ -69,7 +69,7 @@
   <el-dialog title="参数配置" v-model="dialogVisible" width="780px">
     <el-row>
       <el-col :span="4" style="text-align: left; vertical-align: middle; line-height: 32px; font-weight: bolder">
-        {{ getMethodName(dialogState.method) }}
+        {{ getMethodName(dialogState.methodType) }}
       </el-col>
       <el-col :span="20">
         <el-input v-model.trim="dialogState.url" placeholder="请输入URL"></el-input>
@@ -88,7 +88,7 @@
           >query</el-button
         >
         <el-button
-          v-if="dialogState.method == 1"
+          v-if="dialogState.methodType == 1"
           @click="dialogState.paramType = ParamTypeEnum.REQUEST_BODY"
           :type="dialogState.paramType === 1 ? 'primary' : undefined"
         >
@@ -140,10 +140,11 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, reactive, watch, getCurrentInstance, SetupContext, computed } from 'vue';
+import { defineComponent, ref, reactive, watch, getCurrentInstance, SetupContext, computed, inject } from 'vue';
 import { getServiceApis, updateServiceApis } from '@/api/servers';
 import _ from 'lodash';
 import { getShowBool } from '@/utils/permission-show-module';
+import { isRefrence } from '../utils/permisson';
 
 // 参数类型枚举
 enum ParamTypeEnum {
@@ -205,7 +206,7 @@ export default defineComponent({
     const initializeTableData = async () => {
       const { data } = await getServiceApis(props.id);
       tableData.value = [
-        { name: '', method: '', url: '', description: '', isSystem: 0 },
+        { name: '', methodType: '', url: '', description: '', isSystem: 0 },
         ...data.filter((item: any) => item.isSystem === 0),
         ...data.filter((item: any) => item.isSystem === 1),
       ];
@@ -217,7 +218,7 @@ export default defineComponent({
     const addItem = (index: number) => {
       tableData.value.splice(index + 1, 0, {
         name: '',
-        method: '',
+        methodType: '',
         url: '',
         description: '',
         isSystem: 0,
@@ -241,7 +242,7 @@ export default defineComponent({
 
     // 参数弹窗所需数据
     const dialogState = reactive({
-      method: '',
+      methodType: '',
       url: '',
       name: '',
       params: [] as any[],
@@ -279,7 +280,7 @@ export default defineComponent({
       currentItemIndex.value = index;
       dialogVisible.value = true;
       dialogState.name = rowData.name || '';
-      dialogState.method = rowData.method;
+      dialogState.methodType = rowData.methodType;
       dialogState.url = rowData.url;
       dialogState.type = rowData.type;
       dialogState.params = rowData.params || [];
@@ -328,15 +329,15 @@ export default defineComponent({
       console.log(' tableData.valu', tableData.value);
       const reqData = tableData.value.filter((item: any) => item.isSystem === 0);
       const res = reqData.find((item: any) => {
-        const { modelId, method, name } = item;
-        return typeof modelId === 'undefined' || method === '' || name === '';
+        const { modelId, methodType, name } = item;
+        return typeof modelId === 'undefined' || methodType === '' || name === '';
       });
       if (res) {
         let msg = '';
-        const { method, name } = res;
+        const { methodType, name } = res;
         if (name.trim() === '') {
           msg = '接口名称不能为空！';
-        } else if (method === '') {
+        } else if (methodType === '') {
           msg = '请求方式不能为空！';
         } else {
           msg = '数据对象不能为空！';
@@ -368,6 +369,8 @@ export default defineComponent({
         return 'system-row';
       }
     };
+    // ----------------------
+    const isRefrenceService = inject(isRefrence);
 
     return {
       ParamTypeEnum,
@@ -389,6 +392,7 @@ export default defineComponent({
       tableRowClassName,
       currentParams,
       getShowBool,
+      isRefrenceService,
     };
   },
 });

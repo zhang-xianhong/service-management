@@ -1,0 +1,56 @@
+{
+  "code": 0,
+  "data": {
+    "rows": [
+      {
+        "id": 1,
+        "updateTime": "2021-06-28T07:02:43.000Z",
+        "createTime": "2021-06-28T07:02:43.000Z",
+        "createUser": null,
+        "updateUser": null,
+        "version": 0,
+        "snapshotNo": "20210628132450",
+        "serviceName": "PersonMgtSvc",
+        "serviceVersion": "2021062813245011",
+        "description": null,
+        "publishType": 2,
+        "status": 1,
+        "tenantId": 0,
+        "applyId": 0,
+        "applyUserId": 0,
+        "applyUserName": "张三",
+        "auditUserId": 0,
+        "auditUserName": "李四",
+        "auditMsg": "ok",
+        "platformShareType": 1,
+        "platformShareTime": "2021-06-28T07:02:43.000Z",
+        "platformShareDescription": "共享服务",
+        "snapshotInfo": {
+          "id": 1,
+          "updateTime": "2021-06-28T07:23:43.000Z",
+          "createTime": "2021-06-28T07:23:43.000Z",
+          "createUser": null,
+          "updateUser": null,
+          "isDelete": false,
+          "version": 0,
+          "snapshotNo": "20210628132450",
+          "serviceName": "PersonMgtSvc",
+          "serviceNameZh": "人员服务",
+          "serviceVersion": "2021062813245011",
+          "description": null,
+          "codeInfoId": null,
+          "commitId": null,
+          "config": null,
+          "level": 2,
+          "classification": 4,
+          "tag": 1,
+          "developer": "腾讯云智"
+        }
+      }
+    ],
+    "count": 100
+  },
+  "message": "successful",
+  "httpStatus": 200,
+  "timestamp": 1624880041277
+}

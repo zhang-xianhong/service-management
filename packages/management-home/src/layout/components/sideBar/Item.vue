@@ -46,7 +46,4 @@ export default defineComponent({
   display: inline-block;
   margin: auto 12px auto auto;
 }
-.icon-wrap :hover {
-  color: red;
-}
 </style>
