@@ -34,7 +34,7 @@
             <router-link
               :class="{ showlink: props.row.status !== 1 }"
               :to="{
-                path: `/deploy/detail/:${props.row.repositoryId}`,
+                path: `/deploy/detail/${props.row.repositoryId}`,
               }"
               ><service-name :name="props.row.name" />
             </router-link>
