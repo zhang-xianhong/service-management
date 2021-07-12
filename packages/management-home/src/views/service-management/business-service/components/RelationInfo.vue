@@ -14,7 +14,7 @@
           <el-radio :label="1">1对多关联</el-radio>
         </el-radio-group>
       </el-form-item>
-      <el-form-item>
+      <el-form-item v-if="!isRefrenceService">
         <el-button type="danger" @click="remove">删除</el-button>
       </el-form-item>
     </el-form>
@@ -24,6 +24,7 @@
 <script lang="ts">
 import { defineComponent, ref, inject, watch } from 'vue';
 import { removeRelation, updateRelation } from '@/api/schema/model';
+import { isRefrence } from '../utils/permisson';
 
 export default defineComponent({
   name: 'RelationInfo',
@@ -37,6 +38,8 @@ export default defineComponent({
     const serviceId = inject('serviceId');
     const afterUpdate = inject('afterUpdate') as Function;
     const afterRemove = inject('afterRemove') as Function;
+    const isRefrenceService = inject(isRefrence);
+
     const formData = ref(props.data);
     const remove = async () => {
       const { code } = await removeRelation({ ids: [formData.value.relationId] });
@@ -45,6 +48,7 @@ export default defineComponent({
       }
     };
     const relationChange = async () => {
+      if (isRefrenceService) return;
       const { code } = await updateRelation(formData.value.relationId, {
         fromModelId: formData.value.fromModelId,
         toModelId: formData.value.toModelId,
@@ -67,6 +71,7 @@ export default defineComponent({
       relationChange,
       remove,
       showOrNot,
+      isRefrenceService,
     };
   },
 });

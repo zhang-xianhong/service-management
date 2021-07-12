@@ -64,7 +64,7 @@
         >
         </el-cascader>
       </el-form-item>
-      <el-form-item v-if="getShowBool('update') || !isRefrenceService">
+      <el-form-item v-if="getShowBool('update') && !isRefrenceService">
         <el-button v-if="isShowMode" type="primary" @click="modifyFormData">编辑</el-button>
         <el-button v-else type="primary" @click="saveFormData">确定</el-button>
       </el-form-item>

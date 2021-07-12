@@ -65,9 +65,12 @@ export const isRefrence: InjectionKey<Ref<boolean>> = Symbol('is-refrence');
 
 export const useCheckRefrenceService = (info: Ref<ServiceInfo>) => {
   const isRefrenceService = computed(() => {
-    const alowed = [SERVICE_SOURCE.REFRENCE, SERVICE_SOURCE.CLONE];
+    const alowed = [SERVICE_SOURCE.REFRENCE, SERVICE_SOURCE.CLONE, SERVICE_SOURCE.CLONE_RNAME];
     return alowed.includes(info.value.serviceSource);
   });
 
   provide(isRefrence, readonly(isRefrenceService));
+  return {
+    isRefrenceService,
+  };
 };

@@ -51,7 +51,7 @@
         <!--            <el-checkbox v-model="scope.row.isPinyinSupport" :disabled="isFieldDisabled(scope)"></el-checkbox>-->
         <!--          </template>-->
         <!--        </el-table-column>-->
-        <el-table-column prop="operations" label="操作" width="180" v-if="getShowBool('add')">
+        <el-table-column prop="operations" label="操作" width="180" v-if="getShowBool('add') && !isRefrenceService">
           <template #default="scope">
             <a @click="add(scope.$index)" class="operator" v-if="scope.$index === 0">添加</a>
             <a @click="remove(scope.$index)" class="operator" :disabled="isFieldDisabled(scope)">删除</a>
@@ -60,7 +60,7 @@
       </el-table>
     </div>
     <div class="form-field__btns">
-      <el-button type="primary" @click="save" v-if="getShowBool('add')">确定</el-button>
+      <el-button type="primary" @click="save" v-if="getShowBool('add') && !isRefrenceService">确定</el-button>
       <el-button @click="back">取消</el-button>
     </div>
   </div>
@@ -72,6 +72,7 @@ import { getDataTypesAll } from '@/api/settings/data-types';
 import { updateFields } from '@/api/schema/model';
 import { getShowBool } from '@/utils/permission-show-module';
 import _ from 'lodash/fp';
+import { isRefrence } from '../utils/permisson';
 export default defineComponent({
   name: 'ColumnForm',
   setup(props, context) {
@@ -80,6 +81,7 @@ export default defineComponent({
     const currentModel = inject('currentModel') as Ref<any>;
     const serviceId = inject('serviceId') as number;
     const afterUpdate = inject('afterUpdate') as Function;
+    const isRefrenceService = inject(isRefrence);
     const fields: Ref<Array<any>> = ref([]);
     watchEffect(() => {
       fields.value = _.cloneDeep(currentModel.value?.fields || []);
@@ -171,6 +173,7 @@ export default defineComponent({
       save,
       isFieldDisabled,
       getShowBool,
+      isRefrenceService,
     };
   },
 });

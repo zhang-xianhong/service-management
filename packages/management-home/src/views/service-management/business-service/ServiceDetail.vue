@@ -275,6 +275,7 @@ export default {
     // erd图组件参数构造
     provide('serviceId', currentServiceId.value);
     provide('serverInfo', serverInfo);
+    const { isRefrenceService } = useCheckRefrenceService(serverInfo);
     const erdLoading = ref(false);
     const modelList: Ref<any> = ref({
       tables: [],
@@ -386,6 +387,11 @@ export default {
       }
       buttons.value[buttons.value.length - 1].disabled = false;
       buttons.value[0].label = +initTimes === 0 ? '初始化' : '同步配置';
+      // 引用服务初始化以后禁用，并且没有同步配置功能
+      if (isRefrenceService.value && +initTimes !== 0) {
+        buttons.value[0].label = '初始化';
+        buttons.value[0].disabled = true;
+      }
       const statusmaps = computeStatusLabel(serverInfo.value.initTimes);
       serverStatusInfo.value = {
         label: (statusmaps as any)[status],
@@ -553,7 +559,7 @@ export default {
         }
       }
     });
-    useCheckRefrenceService(serverInfo);
+
     return {
       isShowDownDrawer,
       computedHeight,
@@ -598,6 +604,7 @@ export default {
       getServerInfo,
       closeReleaseDialog,
       releaseRef,
+      isRefrenceService,
     };
   },
 };
