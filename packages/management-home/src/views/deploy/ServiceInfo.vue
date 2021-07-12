@@ -21,12 +21,8 @@
           :disabled="isEditable"
           @change="changeService"
         >
-          <el-option
-            v-for="(item, index) in releaseData.serviceList"
-            :key="index"
-            :label="item.name"
-            :value="item.name"
-          >
+          <el-option v-for="(item, index) in releaseData.serviceList" :key="index" :value="item.name">
+            <service-name :name="item.name"></service-name>
           </el-option>
         </el-select>
       </el-form-item>
@@ -65,8 +61,8 @@
       </el-form-item>
     </el-form>
     <div class="dialog-footer">
-      <el-button type="primary" @click="submitReleaseForm">提 交</el-button>
-      <el-button @click="closeReleaseForm">关 闭</el-button>
+      <el-button type="primary" @click="submitReleaseForm" :loading="btnLoading">确定</el-button>
+      <el-button @click="closeReleaseForm">取消</el-button>
     </div>
   </el-dialog>
 </template>
@@ -75,6 +71,7 @@
 import { defineComponent, ref, Ref, computed, SetupContext, PropType } from 'vue';
 import { ElMessage } from 'element-plus';
 import { addApply, updateApply } from '@/api/deploy/deploy-apply';
+import ServiceName from '@/views/service-management/components/ServiceName.vue';
 
 interface ReleaseState {
   disabled: boolean;
@@ -106,7 +103,11 @@ export default defineComponent({
       default: () => ({}),
     },
   },
+  components: {
+    ServiceName,
+  },
   setup(props: { visable: boolean; releaseForms: ReleaseState }, ctx: SetupContext) {
+    const btnLoading = ref(false);
     const labelWidth = ref('80px');
     const isVisable: any = computed(() => props.visable);
     const releaseData: Ref<ReleaseState> = computed(() => props.releaseForms);
@@ -143,40 +144,52 @@ export default defineComponent({
     const submitReleaseForm = async () => {
       releaseFormRef.value.validate(async (valid: boolean) => {
         if (valid) {
+          btnLoading.value = true;
           if (!isEditable.value) {
             const releaseInfo = releaseData.value.serviceInfo;
-            console.log('releaseInfo', releaseInfo);
-            const { code } = await addApply(releaseInfo);
-            if (code === 0) {
-              ElMessage({
-                type: 'success',
-                message: '添加成功',
-              });
-              ctx.emit('getTableInfo');
-            } else {
-              ElMessage({
-                type: 'error',
-                message: '添加失败',
-              });
+            try {
+              const { code } = await addApply(releaseInfo);
+              if (code === 0) {
+                ElMessage({
+                  type: 'success',
+                  message: '添加成功',
+                });
+                ctx.emit('getTableInfo');
+              } else {
+                ElMessage({
+                  type: 'error',
+                  message: '添加失败',
+                });
+              }
+              btnLoading.value = false;
+              closeReleaseForm();
+            } catch (e) {
+              ElMessage.error(e);
+              btnLoading.value = false;
             }
-            closeReleaseForm();
           } else {
-            const { code } = await updateApply(Number(releaseData.value.id), {
-              ...releaseData.value.serviceInfo,
-            });
-            if (code === 0) {
-              ElMessage({
-                type: 'success',
-                message: '更新成功',
+            try {
+              const { code } = await updateApply(Number(releaseData.value.id), {
+                ...releaseData.value.serviceInfo,
               });
-              ctx.emit('getTableInfo');
-            } else {
-              ElMessage({
-                type: 'error',
-                message: '编辑失败',
-              });
+              if (code === 0) {
+                ElMessage({
+                  type: 'success',
+                  message: '更新成功',
+                });
+                ctx.emit('getTableInfo');
+              } else {
+                ElMessage({
+                  type: 'error',
+                  message: '编辑失败',
+                });
+              }
+              closeReleaseForm();
+              btnLoading.value = false;
+            } catch (e) {
+              ElMessage.error(e);
+              btnLoading.value = false;
             }
-            closeReleaseForm();
           }
         }
       });
@@ -192,6 +205,7 @@ export default defineComponent({
       closeReleaseForm,
       submitReleaseForm,
       changeService,
+      btnLoading,
     };
   },
 });

@@ -31,9 +31,9 @@
             <router-link
               :class="{ showlink: props.row.status !== 1 }"
               :to="{
-                path: `/service-repository/platform/${props.row.repositoryId}`,
+                path: `/deploy/detail/${props.row.repositoryId}`,
               }"
-              >{{ props.row.name }}
+              ><service-name :name="props.row.name" />
             </router-link>
           </template>
         </el-table-column>
@@ -170,8 +170,8 @@
           ></el-input>
         </el-form-item>
         <div class="dialog-footer">
-          <el-button type="primary" @click="submitReviewForm(true)">通过</el-button>
-          <el-button @click="submitReviewForm(false)">不通过</el-button>
+          <el-button type="primary" @click="submitReviewForm(true)" :loading="btnLoading">通过</el-button>
+          <el-button @click="submitReviewForm(false)" :loading="btnLoading">不通过</el-button>
           <el-button @click="closeReviewDialog">关闭</el-button>
         </div>
       </el-form>
@@ -201,6 +201,7 @@ import dateFormat from '@/utils/date-format';
 import { getShowBool } from '@/utils/permission-show-module';
 import { userInfo } from '@/layout/messageCenter/user-info';
 import { debounce } from 'lodash';
+import ServiceName from '@/views/service-management/components/ServiceName.vue';
 
 interface TableState {
   tableData: Array<ReviewTableItemStruct>;
@@ -230,8 +231,9 @@ interface RiewFormState {
 }
 
 export default defineComponent({
-  components: { ListWrap, PackagedPagination, VersionInfoDialog },
+  components: { ListWrap, PackagedPagination, VersionInfoDialog, ServiceName },
   setup() {
+    const btnLoading = ref(false);
     const tableState: TableState = reactive({
       tableData: [],
       loading: false,
@@ -409,25 +411,32 @@ export default defineComponent({
     async function submitReviewForm(tempStatus: boolean) {
       reviewForm.value.validate(async (valid: boolean) => {
         if (valid) {
+          btnLoading.value = true;
           const reviewData = {
             id: reviewState.id,
             status: tempStatus ? AUDIT_RESULTS_CODE.PASSED : AUDIT_RESULTS_CODE.FAILED,
             reviewContent: reviewState.formData.reviewContent,
           };
-          const { code } = await reviewApply(reviewData);
-          if (code === 0) {
-            ElMessage({
-              type: 'success',
-              message: '审核成功',
-            });
-            getTableData();
-          } else {
-            ElMessage({
-              type: 'error',
-              message: '审核失败',
-            });
+          try {
+            const { code } = await reviewApply(reviewData);
+            if (code === 0) {
+              ElMessage({
+                type: 'success',
+                message: '审核成功',
+              });
+              getTableData();
+            } else {
+              ElMessage({
+                type: 'error',
+                message: '审核失败',
+              });
+            }
+            btnLoading.value = false;
+            closeReviewDialog();
+          } catch (e) {
+            ElMessage.error(e);
+            btnLoading.value = false;
           }
-          closeReviewDialog();
         }
       });
     }
@@ -483,6 +492,7 @@ export default defineComponent({
       isShowPopover,
       versionInfoDialogRef,
       handleShowVersionInfo,
+      btnLoading,
     };
   },
 });
