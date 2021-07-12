@@ -2,7 +2,15 @@
   <div>
     <el-row>
       <el-col :span="6" style="text-align: left">
-        <el-button icon="el-icon-plus" type="primary" style="width: 90px" @click="openCreateDialog"> 新建 </el-button>
+        <el-button
+          icon="el-icon-plus"
+          type="primary"
+          style="width: 90px"
+          @click="openCreateDialog"
+          v-if="getShowBool('add')"
+        >
+          新建
+        </el-button>
       </el-col>
       <el-col :offset="12" :span="6" style="text-align: right">
         <el-input
@@ -32,19 +40,26 @@
         <el-table-column label="发布名称" prop="name">
           <template #default="props">
             <router-link
+              v-if="getShowBool('selectDetail')"
               :class="{ showlink: props.row.status !== 1 }"
               :to="{
                 path: `/deploy/detail/${props.row.repositoryId}`,
               }"
               ><service-name :name="props.row.name" />
             </router-link>
+            <service-name :name="props.row.name" v-else />
           </template>
         </el-table-column>
         <el-table-column label="版本" width="100" prop="serviceVersion">
           <template #default="props">
-            <el-button type="text" @click="handleShowVersionInfo(props.row)" :disabled="props.row.status !== 1">{{
-              props.row.serviceVersion
-            }}</el-button>
+            <el-button
+              type="text"
+              @click="handleShowVersionInfo(props.row)"
+              :disabled="props.row.status !== 1"
+              v-if="getShowBool('selectDetail')"
+              >{{ props.row.serviceVersion }}</el-button
+            >
+            <span v-else>{{ props.row.serviceVersion }}</span>
           </template>
         </el-table-column>
         <el-table-column label="申请人" prop="publisherName">
@@ -147,9 +162,14 @@
               size="mini"
               @click="updateReleaseInfo(props.row)"
               :disabled="getRowOptionStatus(props.row)"
+              v-if="getShowBool('update')"
               >编辑</el-button
             >
-            <el-button type="text" @click="removeApply(props.row)" :disabled="getRowOptionStatus(props.row)"
+            <el-button
+              type="text"
+              @click="removeApply(props.row)"
+              :disabled="getRowOptionStatus(props.row)"
+              v-if="getShowBool('delete')"
               >删除</el-button
             >
           </template>
@@ -172,6 +192,7 @@
       :releaseForms="releaseForm"
       @close="closeReleaseForm"
       @getTableInfo="getTableData"
+      v-if="getShowBool('add') || getShowBool('update')"
     />
     <div class="black-hovers" @click="blackHoverclick()" v-if="blackHoverVisible"></div>
     <version-info-dialog ref="versionInfoDialogRef" />

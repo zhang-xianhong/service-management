@@ -1,7 +1,7 @@
 <template>
   <div class="erd-container-wrapper" :style="{ width, height }" v-on="handlers">
     <div :style="`width: ${viewWidth}px; height: ${viewHeight}px; position: relative;`">
-      <add-model v-if="getShowBool('add')"></add-model>
+      <add-model v-if="getShowBool('add') && !isRefrenceService"></add-model>
       <erd-relation></erd-relation>
       <template v-if="allTypes.length">
         <erd-table
@@ -129,7 +129,6 @@ export default defineComponent({
         table.dragging = 0;
         coordinate[table.id] = table.position;
       });
-
       if (isRefrenceService?.value) {
         // 引用类型的服务，不允许更新
         return;
@@ -197,6 +196,9 @@ export default defineComponent({
       [relations.value[index][0], relations.value[index][1]] = [relations.value[index][1], relations.value[index][0]];
       const fromIndex = relations.value[index][0];
       const toIndex = relations.value[index][1];
+      if (isRefrenceService?.value) {
+        return; // 引用服务不可以更新
+      }
       const { code } = await updateRelation(String(relations.value[index][3]), {
         fromModelId: (tables.value[fromIndex] as any).id,
         toModelId: (tables.value[toIndex] as any).id,
@@ -292,6 +294,7 @@ export default defineComponent({
       handlers,
       logs,
       getShowBool,
+      isRefrenceService,
     };
   },
 });

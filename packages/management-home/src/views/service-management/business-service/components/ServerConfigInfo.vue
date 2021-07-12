@@ -49,7 +49,7 @@
         </template>
       </el-table-column>
     </el-table>
-    <div class="serverinfo-operations" v-if="getShowBool('update') || !isRefrenceService">
+    <div class="serverinfo-operations" v-if="getShowBool('update')">
       <el-button type="primary" @click="deliveryList">配置下发</el-button>
       <el-button @click="$emit('back')">返回</el-button>
     </div>
@@ -82,7 +82,9 @@
           <el-button @click="submitDetailModify" type="primary">确定</el-button>
           <el-button @click="closeDetailDialog">取消</el-button>
         </template>
-        <el-button v-else type="primary" @click="isEditable = true">编辑</el-button>
+        <template v-else>
+          <el-button type="primary" @click="isEditable = true" v-if="!isRefrenceService">编辑</el-button>
+        </template>
       </el-form-item>
     </el-form>
   </el-dialog>

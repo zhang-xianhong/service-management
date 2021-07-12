@@ -29,19 +29,26 @@
         <el-table-column label="发布名称" prop="name">
           <template #default="props">
             <router-link
+              v-if="getShowBool('selectDetail')"
               :class="{ showlink: props.row.status !== 1 }"
               :to="{
                 path: `/deploy/detail/${props.row.repositoryId}`,
               }"
               ><service-name :name="props.row.name" />
             </router-link>
+            <service-name :name="props.row.name" v-else />
           </template>
         </el-table-column>
         <el-table-column label="版本" width="100" prop="serviceVersion">
           <template #default="props">
-            <el-button type="text" @click="handleShowVersionInfo(props.row)" :disabled="props.row.status !== 1">{{
-              props.row.serviceVersion
-            }}</el-button>
+            <el-button
+              type="text"
+              @click="handleShowVersionInfo(props.row)"
+              :disabled="props.row.status !== 1"
+              v-if="getShowBool('selectDetail')"
+              >{{ props.row.serviceVersion }}</el-button
+            >
+            <span v-else>{{ props.row.serviceVersion }}</span>
           </template>
         </el-table-column>
         <el-table-column label="申请人" prop="publisherName">
@@ -139,7 +146,12 @@
         </el-table-column>
         <el-table-column label="操作">
           <template #default="props">
-            <el-button type="text" size="mini" @click="onReview(props.row)" :disabled="props.row.status !== 0"
+            <el-button
+              type="text"
+              size="mini"
+              @click="onReview(props.row)"
+              :disabled="props.row.status !== 0"
+              v-if="getShowBool('update')"
               >审核</el-button
             >
           </template>
