@@ -14,7 +14,6 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "lerna run --concurrency 1 --stream precommit --since HEAD",
       "commit-msg": "node ./commit-msg $HUSKY_GIT_PARAMS && commitlint -E HUSKY_GIT_PARAMS"
     }
   }
