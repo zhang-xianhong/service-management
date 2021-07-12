@@ -151,6 +151,7 @@ export default defineComponent({
 
       inputData.forEach((x: any) => {
         if (!x.notNull) {
+          // eslint-disable-next-line no-param-reassign
           x.notNull = false;
         }
       });

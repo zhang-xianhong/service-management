@@ -6,3 +6,11 @@ const { deploy } = URL;
 export const getDeployList = (payload: any): Promise<SuccessResponse<any>> =>
   axios.get(getUrl(deploy.GET_DEPLOY_LIST), { params: payload });
 export const deleteApply = (id: string): Promise<SuccessResponse<any>> => axios.post(getUrl(deploy.DELETE_APPLY, id));
+export const addApply = (payload: any): Promise<SuccessResponse<any>> => axios.post(getUrl(deploy.ADD_APPLY), payload);
+export const updateApply = (id: number, payload: any): Promise<SuccessResponse<any>> =>
+  axios.post(getUrl(deploy.UPDATE_APPLY, id.toString()), payload);
+export const getServiceList: (payload?: object) => Promise<SuccessResponse<any>> = (payload: any) =>
+  axios.get(getUrl(deploy.GET_SERVICE_LIST), { params: payload });
+export const findPublisherByName = (payload?: any): Promise<SuccessResponse<any>> =>
+  axios.get(getUrl(deploy.QUERY_IN_TENT), { params: payload });
+// export const findPublisherByName = (): Promise<SuccessResponse<any>> => axios.get(getUrl(deploy.QUERY_IN_TENT));

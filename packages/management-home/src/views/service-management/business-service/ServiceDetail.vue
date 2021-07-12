@@ -6,7 +6,7 @@
     element-loading-background="rgba(0, 0, 0, 0.7)"
   >
     <div class="mask" v-if="maskText">{{ maskText }}</div>
-    <div class="detail">
+    <div class="detail" v-loading="loading" element-loading-text="加载中...">
       <el-row class="detail__head">
         <el-col :span="16">
           <div v-if="getShowBool('init')">
@@ -253,6 +253,7 @@ export default {
     };
 
     getServerList();
+    const loading = ref(true);
 
     // 服务详情信息
 
@@ -304,6 +305,7 @@ export default {
         tables,
         relations,
       };
+      loading.value = false;
     };
     // 获取服务详情
     const getServerInfo = async () => {
@@ -563,6 +565,7 @@ export default {
       pageLoading,
       reloadCom,
       getServerInfo,
+      loading,
     };
   },
 };

@@ -11,18 +11,42 @@
               :readonly="!statusArr[index]"
             />
           </div>
-          <template v-if="index !== 0">
-            <template v-if="index !== 4">
-              <el-button type="text" v-if="!statusArr[index]" @click="checkStatus(index)">修改</el-button>
-              <span v-else>
-                <el-button type="text" @click="save(index, item)">确定</el-button>
-                <el-button type="text" @click="cancel(index, item)">取消</el-button>
-              </span>
+          <span :style="{ pointerEvents: index === currentIndex || currentIndex === 0 ? 'auto' : 'none' }">
+            <template v-if="index !== 0">
+              <template v-if="index !== 4">
+                <el-button
+                  type="text"
+                  v-if="!statusArr[index]"
+                  @click="
+                    checkStatus(index);
+                    currentIndex = index;
+                  "
+                  >修改</el-button
+                >
+                <span v-else>
+                  <el-button
+                    type="text"
+                    @click="
+                      save(index, item);
+                      currentIndex = 0;
+                    "
+                    >确定</el-button
+                  >
+                  <el-button
+                    type="text"
+                    @click="
+                      cancel(index, item);
+                      currentIndex = 0;
+                    "
+                    >取消</el-button
+                  >
+                </span>
+              </template>
+              <template v-else>
+                <el-button type="text" @click="reWritePass()">修改密码</el-button>
+              </template>
             </template>
-            <template v-else>
-              <el-button type="text" @click="reWritePass()">修改密码</el-button>
-            </template>
-          </template>
+          </span>
         </el-form-item>
       </el-form>
     </div>
@@ -66,6 +90,8 @@ export default defineComponent({
     const props = ['userName', 'displayName', 'phoneNumber', 'primaryMail', 'password'];
     const labels = ['用户账号', '用户姓名', '联系电话', '电子邮箱', '用户密码'];
     // const rulesArr = [[], [{ require: true, trigger: 'blur', message: '请输入用户名称' }, {}]];
+
+    const currentIndex = ref(0);
 
     getUserProfile().then((res) => {
       res.data.password = '******';
@@ -226,6 +252,7 @@ export default defineComponent({
       tenantDetail,
       passLoading,
       // rulesArr,
+      currentIndex,
     };
   },
 });
