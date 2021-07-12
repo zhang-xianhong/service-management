@@ -61,7 +61,7 @@
       </el-form-item>
     </el-form>
     <div class="dialog-footer">
-      <el-button type="primary" @click="submitReleaseForm" v-loading="btnLoading">确定</el-button>
+      <el-button type="primary" @click="submitReleaseForm" :loading="btnLoading">确定</el-button>
       <el-button @click="closeReleaseForm">取消</el-button>
     </div>
   </el-dialog>

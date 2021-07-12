@@ -170,8 +170,8 @@
           ></el-input>
         </el-form-item>
         <div class="dialog-footer">
-          <el-button type="primary" @click="submitReviewForm(true)" v-loading="btnLoading">通过</el-button>
-          <el-button @click="submitReviewForm(false)" v-loading="btnLoading">不通过</el-button>
+          <el-button type="primary" @click="submitReviewForm(true)" :loading="btnLoading">通过</el-button>
+          <el-button @click="submitReviewForm(false)" :loading="btnLoading">不通过</el-button>
           <el-button @click="closeReviewDialog">关闭</el-button>
         </div>
       </el-form>
