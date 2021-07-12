@@ -9,7 +9,7 @@ import { ref } from 'vue';
 
 import { ElMessageBox } from 'element-plus';
 
-export default function() {
+export default function () {
   const buttons = ref([] as any);
   // 初始化
   const initialize = () => {
@@ -102,17 +102,17 @@ export default function() {
     //   disabled: false,
     // },
     {
-      label: '日志',
+      label: '发版',
       eventOption: {
-        click: () => log(),
+        click: () => release(),
       },
       disabled: false,
       style: 'margin-left: 5px',
     },
     {
-      label: '发版',
+      label: '日志',
       eventOption: {
-        click: () => release(),
+        click: () => log(),
       },
       disabled: false,
       style: 'margin-left: 5px',

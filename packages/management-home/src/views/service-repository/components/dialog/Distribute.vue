@@ -90,7 +90,6 @@ import { distributeRepository } from '@/api/repository';
 import { getAllProjectList } from '@/api/project';
 import { getTenantDetail } from '@/api/tenant';
 import { getServiceShowName } from '@/views/service-management/components/utils';
-
 export default defineComponent({
   name: 'DistributeDialog',
   components: {
@@ -127,7 +126,8 @@ export default defineComponent({
     // 获取项目列表
     const fetchProjectList = async () => {
       const { data } = await getAllProjectList({});
-      projectList.value = data;
+      // 要过滤启用的状态
+      projectList.value = data.filter((item: any) => item.status === 1);
     };
     const handleClose = () => {
       visible.value = false;

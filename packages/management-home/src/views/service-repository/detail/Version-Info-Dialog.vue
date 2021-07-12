@@ -2,13 +2,14 @@
   <el-dialog title="版本信息" v-model="visible" width="60%" :before-close="handleClose">
     <div class="version-info-wrapper" v-loading="loading">
       <el-tabs v-model="activeTab" type="card">
-        <el-tab-pane label="基本信息" name="base">
+        <el-tab-pane label="基本信息" name="base" class="tab-panel">
           <div class="content-wrap" v-if="snapshot && !loading">
             <p>版本号：{{ snapshot.serviceVersion }}</p>
-            <p>版本描述：{{ snapshot.description }}</p>
+            <p>版本描述：</p>
+            <div v-html="parseDescriptionHtml(snapshot.description)"></div>
           </div>
         </el-tab-pane>
-        <el-tab-pane label="配置项" name="config">
+        <el-tab-pane label="配置项" name="config" class="tab-panel">
           <div class="content-wrap" v-if="snapshot && !loading">
             <list-wrap
               :loading="false"
@@ -34,7 +35,7 @@
             </list-wrap>
           </div>
         </el-tab-pane>
-        <el-tab-pane label="数据库升级脚本" name="sqlStructure">
+        <el-tab-pane label="数据库升级脚本" name="sqlStructure" class="tab-panel">
           <div class="content-wrap" v-if="snapshot && !loading">
             <pre v-highlight>
               <code v-html="formatSql(snapshot.ddlScript)" class="sql"></code>
@@ -42,7 +43,7 @@
             <div class="empty" v-if="!snapshot?.ddlScript?.trim()">暂无数据...</div>
           </div>
         </el-tab-pane>
-        <el-tab-pane label="数据库预置数据" name="sqlData">
+        <el-tab-pane label="数据库预置数据" name="sqlData" class="tab-panel">
           <div class="content-wrap" v-if="snapshot && !loading">
             <pre v-highlight>
               <code v-html="formatSql(snapshot.dmlScript)" class="sql"></code>
@@ -62,6 +63,7 @@
 <script lang="ts">
 import { defineComponent, ref } from 'vue';
 import { getSnapshotInfo } from '@/api/repository';
+import { parseDescriptionHtml } from '../util';
 export default defineComponent({
   name: 'VersionInfoDialog',
   components: {},
@@ -101,6 +103,7 @@ export default defineComponent({
       snapshot,
       loading,
       formatSql,
+      parseDescriptionHtml,
     };
   },
 });
@@ -122,6 +125,11 @@ export default defineComponent({
     border: 1px solid #dedede;
     border-top: none;
     height: 500px;
+  }
+
+  .tab-panel {
+    height: 100%;
+    overflow: hidden;
   }
 
   .content-wrap {

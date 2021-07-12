@@ -11,7 +11,7 @@
         <div class="history-body">
           <el-collapse-transition>
             <div v-show="!item.collapsed">
-              <div class="history-content" v-html="item.description"></div>
+              <div class="history-content" v-html="parseDescriptionHtml(item.description)"></div>
               <el-button type="text" @click="handleShowVersionInfo(item)">更多</el-button>
             </div>
           </el-collapse-transition>
@@ -26,6 +26,7 @@
 import { defineComponent, ref } from 'vue';
 import { getRepositoryHistory } from '@/api/repository';
 import VersionInfoDialog from './Version-Info-Dialog.vue';
+import { parseDescriptionHtml } from '../util';
 export default defineComponent({
   name: 'ServiceHistory',
   components: {
@@ -67,6 +68,7 @@ export default defineComponent({
       histories,
       versionInfoDialogRef,
       handleShowVersionInfo,
+      parseDescriptionHtml,
     };
   },
 });

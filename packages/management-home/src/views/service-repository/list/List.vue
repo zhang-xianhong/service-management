@@ -93,7 +93,7 @@
             {{ scope.row.snapshotInfo?.serviceVersion }}
           </template>
         </el-table-column>
-        <el-table-column prop="opt" label="操作">
+        <el-table-column prop="opt" label="操作" v-if="getShowBool('update')">
           <template #default="scope">
             <!-- {{ scope.row.snapshotInfo?.developer }} -->
             <el-button
@@ -146,6 +146,7 @@ import { getClassificationList } from '@/api/settings/classification';
 import { userInfo } from '@/layout/messageCenter/user-info';
 import { SERVICE_LEVEL, getSharedType, getServiceSource } from './config';
 import { filterClassificationList, getClassificationName, getTagsName } from '../util';
+import { getShowBool } from '@/utils/permission-show-module';
 interface TableState {
   tableData: Array<object>;
   loading: boolean;
@@ -350,6 +351,7 @@ export default defineComponent({
       getClassificationName,
       getServiceSource,
       userInfo,
+      getShowBool,
     };
   },
 });

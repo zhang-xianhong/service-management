@@ -63,3 +63,4 @@ export const getTagsName = (tagIds: any[], tagList: any[]) => {
   const tags = tagList.filter((item) => ids.includes(item.id)).map((item) => item.name);
   return tags.join(',');
 };
+export const parseDescriptionHtml = (content: string) => content.replace(/\r?\n/gm, '<br/>');
