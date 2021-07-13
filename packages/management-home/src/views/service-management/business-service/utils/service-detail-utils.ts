@@ -102,17 +102,17 @@ export default function () {
     //   disabled: false,
     // },
     {
-      label: '日志',
+      label: '发版',
       eventOption: {
-        click: () => log(),
+        click: () => release(),
       },
       disabled: false,
       style: 'margin-left: 5px',
     },
     {
-      label: '发版',
+      label: '日志',
       eventOption: {
-        click: () => release(),
+        click: () => log(),
       },
       disabled: false,
       style: 'margin-left: 5px',

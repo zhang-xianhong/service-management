@@ -251,6 +251,7 @@ const routes: Array<RouteRecordRaw> = [
           isRootLevel: false,
           hidden: true,
           showBackButton: true,
+          activeMenu: '/deploy',
           id: 29,
         },
       },
