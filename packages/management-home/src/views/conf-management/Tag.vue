@@ -60,7 +60,7 @@
         ></packaged-pagination>
       </list-wrap>
     </el-row>
-    <el-dialog :title="dialogTitle" v-model="dialogVisible" width="500px">
+    <el-dialog :title="dialogTitle" v-model="dialogVisible" width="500px" destroy-on-close>
       <el-form :model="form" :rules="rules" ref="formRef">
         <el-form-item
           label="标签名称"
@@ -69,6 +69,7 @@
           :rules="[
             { required: true, message: '内容不能为空', trigger: 'blur' },
             { min: 1, max: 20, message: '内容过长，最多不能超过20个字符', trigger: 'blur' },
+            { validator: validatorTagsPass, trigger: 'blur' },
           ]"
         >
           <el-input ref="tagName" v-model.trim="form.name" autocomplete="off"></el-input>
@@ -86,12 +87,18 @@
 
 <script lang="ts">
 import { defineComponent, ref, onMounted, getCurrentInstance } from 'vue';
-import { listTags, addTag, updateTag, deleteTags } from '@/api/settings/tags';
+import { listTags, addTag, updateTag, deleteTags, checkTagRule } from '@/api/settings/tags';
 import PackagedPagination from '@/components/pagination/Index.vue';
 import _ from 'lodash/fp';
 import { ElMessageBox, ElMessage } from 'element-plus';
 import { getShowBool } from '@/utils/permission-show-module';
+// import { values } from 'lodash';
+// import { values } from 'lodash';
 
+// 状态码
+enum ResCode {
+  Success,
+}
 export default defineComponent({
   name: 'Tag',
   components: {
@@ -239,6 +246,16 @@ export default defineComponent({
       dialogVisible.value = true;
       dialogTitle.value = '新增标签';
     };
+    // 标签重复校验
+    const validatorTagsPass = async(rule: any, value: string, callback: Function) => {
+      const { code, data } = await checkTagRule({
+        name: value,
+      });
+      if (code === ResCode.Success && !data.usable) {
+        callback(new Error('标签已存在!'));
+      }
+      callback();
+    };
     const save = () => {
       tagName.value.handleBlur();
       if (submitting.value || form.value.name.length > 25 || form.value.name.length < 1) {
@@ -253,12 +270,13 @@ export default defineComponent({
               ? await addTag({ name: form.value.name })
               : await updateTag({ id, name: form.value.name });
           loading.value = false;
-          submitting.value = false;
           if (code === 0) {
             dialogVisible.value = false;
             dialogTitle.value === '新增标签' ? ElMessage.success('新增标签成功') : ElMessage.success('编辑标签成功');
             getTagList();
           }
+        }else {
+           submitting.value = false;
         }
       });
     };
@@ -296,6 +314,7 @@ export default defineComponent({
       disabled,
       getShowBool,
       submitting,
+      validatorTagsPass,
     };
   },
 });
