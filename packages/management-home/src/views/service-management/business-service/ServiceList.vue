@@ -114,7 +114,7 @@
     </div>
 
     <el-dialog title="新增服务" v-model="addServiceDialog" width="600px">
-      <div class="add-service-set">
+      <div class="add-service-set" style="width: auto;">
         <el-form :model="serviceDetail">
           <el-form-item
             label="服务英文名"
@@ -149,7 +149,7 @@
           >
             <el-input
               v-model.trim="serviceDetail.description"
-              placeholder="请输入中文服务描述，如项'目管理服务'，创建后无法修改"
+              placeholder="请输入中文服务描述，如'项目管理服务'，创建后无法修改"
               ref="desRef"
             ></el-input>
           </el-form-item>
