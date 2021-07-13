@@ -81,7 +81,9 @@
       </el-form-item>
       <el-form-item label="关联服务">
         <el-select v-model="appInfo.services" multiple placeholder="请选择关联服务" style="width: 100%">
-          <el-option v-for="item in allService" :key="item.id" :label="item.name" :value="item.id"></el-option>
+          <el-option v-for="item in allService" :key="item.id" :label="item.name" :value="item.id">
+            <service-name :name="item.name"></service-name>
+          </el-option>
         </el-select>
       </el-form-item>
     </el-form>
@@ -103,6 +105,7 @@ import { allService, getAllService } from '../service-management/business-servic
 import { debounce } from 'lodash/fp';
 import { userProjectList } from '@/layout/messageCenter/user-info';
 import { getShowBool } from '@/utils/permission-show-module';
+import ServiceName from '@/views/service-management/components/ServiceName.vue';
 
 interface StateInterface {
   applicationList: any[];
@@ -125,6 +128,7 @@ export default defineComponent({
   components: {
     ApplicationCard,
     PackagedPagination,
+    ServiceName,
   },
   setup() {
     const instance = getCurrentInstance();

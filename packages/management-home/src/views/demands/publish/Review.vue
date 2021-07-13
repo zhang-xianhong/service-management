@@ -12,11 +12,11 @@
       </el-col>
     </el-row>
     <list-wrap :loading="loading" :empty="total === 0" :hasCreateAuth="false">
-      <el-table :data="tableData" class="publish-table" @selection-change="handleSelectionChange">
+      <el-table :data="tableData" class="publish-table">
         <el-table-column type="expand">
           <template #default="props">
             <el-form label-position="left" class="publish-table-expand">
-              <el-form-item label="发布说明">
+              <el-form-item label="部署说明">
                 <span>{{ props.row.description }}</span>
               </el-form-item>
               <el-form-item label="审核说明" v-if="props.row.auditInstructions">
@@ -26,8 +26,8 @@
           </template>
         </el-table-column>
         <el-table-column type="index" label="序号" width="50" />
-        <el-table-column label="发布类型" prop="moduleType"></el-table-column>
-        <el-table-column label="发布名称" prop="name"></el-table-column>
+        <el-table-column label="部署类型" prop="moduleType"></el-table-column>
+        <el-table-column label="部署名称" prop="name"></el-table-column>
         <el-table-column label="申请账号" prop="applicantName">
           <template #header>
             <i class="el-icon-search"></i>
@@ -113,8 +113,8 @@
             </el-popover>
           </template>
         </el-table-column>
-        <el-table-column label="发布版本" prop="version"></el-table-column>
-        <el-table-column label="发布时间" prop="publishTime">
+        <el-table-column label="部署版本" prop="version"></el-table-column>
+        <el-table-column label="部署时间" prop="publishTime">
           <template #default="scope">{{ dateFormat(scope.row.publishTime) }}</template>
         </el-table-column>
         <el-table-column label="操作" width="300">
@@ -139,7 +139,7 @@
         @current-change="handlePageChange"
       ></packaged-pagination>
     </list-wrap>
-    <el-dialog title="发布审核" v-model="addpublishDialog" width="600px" @closed="closepublishForm">
+    <el-dialog title="部署审核" v-model="addpublishDialog" width="600px" @closed="closepublishForm">
       <div class="add-publish-set">
         <el-form :model="publishForm.formData" :rules="publishRules" ref="publishFormRef">
           <el-form-item label="审核说明" prop="auditInstructions" :label-width="labelWidth">
@@ -308,7 +308,7 @@ export default {
       togglepublishDialog();
     }
 
-    // 提交发布审核
+    // 提交部署审核
     async function submitpublishForm(status: boolean) {
       publishFormRef.value.validate(async (valid: boolean) => {
         if (valid) {
@@ -346,7 +346,7 @@ export default {
       togglepublishDialog();
     };
 
-    // 发布筛选筛选
+    // 部署筛选筛选
     const filterpublish = debounce(getTableData, 1000);
 
     // 每页条数改变

@@ -72,12 +72,9 @@
             <el-row class="project-switch">
               <!-- 服务下拉选择框 -->
               <el-select v-model="currentServiceId" placeholder="请选择" @change="selectService" style="width: 200px">
-                <el-option
-                  v-for="server in serverList"
-                  :key="server.id"
-                  :value="server.id"
-                  :label="server.name"
-                ></el-option>
+                <el-option v-for="server in serverList" :key="server.id" :value="server.id" :label="server.name">
+                  <service-name :name="server.name"></service-name>
+                </el-option>
               </el-select>
             </el-row>
             <div class="data-model__container">
@@ -183,6 +180,7 @@ import { getServiceModelList, getModelDetail } from '@/api/schema/model';
 import { getDataTypesAll } from '@/api/settings/data-types';
 import { useRoute } from 'vue-router';
 import { getShowBool } from '@/utils/permission-show-module';
+import ServiceName from '@/views/service-management/components/ServiceName.vue';
 import {
   statusMap,
   computeStatusLabel,
@@ -229,6 +227,7 @@ export default {
     ModelBaseInfo,
     ServerConfigInfo,
     ReleaseDialog,
+    ServiceName,
   },
   setup() {
     const { buttons } = useButtonUtils();
@@ -416,7 +415,7 @@ export default {
     const openBaseInfo = () => {
       if (componentName.value === 'ServerBaseInfo') {
         modelInfo.value = null;
-        isShowDownDrawer.value = false;
+        // isShowDownDrawer.value = false;
         componentName.value = '';
       } else {
         componentName.value = 'ServerBaseInfo';
@@ -428,10 +427,9 @@ export default {
 
     // 打开接口配置
     const openPropertyInfo = () => {
-      if (isShowDownDrawer.value) {
-        modelInfo.value = null;
+      if (drawerName.value === 'ServerPortsInfo') {
         isShowDownDrawer.value = false;
-        componentName.value = '';
+        drawerName.value = '';
       } else {
         isShowDownDrawer.value = true;
         drawerName.value = 'ServerPortsInfo';
@@ -440,15 +438,20 @@ export default {
 
     // 打开服务配置
     const openConfigInfo = () => {
-      if (isShowDownDrawer.value) {
-        modelInfo.value = null;
+      if (drawerName.value === 'ServerConfigInfo') {
         isShowDownDrawer.value = false;
-        componentName.value = '';
+        drawerName.value = '';
       } else {
         isShowDownDrawer.value = true;
         drawerName.value = 'ServerConfigInfo';
       }
     };
+
+    watch(isShowDownDrawer, (nn) => {
+      if (!nn) {
+        drawerName.value = '';
+      }
+    });
 
     // 打开gitlab页面
     const openGitlab = () => {

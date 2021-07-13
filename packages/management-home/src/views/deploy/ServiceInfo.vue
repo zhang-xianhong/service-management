@@ -54,8 +54,8 @@
           v-model="releaseData.serviceInfo.publishContent"
           type="textarea"
           :rows="3"
-          placeholder="请输入发布说明，小于512字"
-          maxlength="512"
+          placeholder="请输入发布说明，不得超过1024个字符"
+          :maxlength="1024"
           show-word-limit
         ></el-input>
       </el-form-item>

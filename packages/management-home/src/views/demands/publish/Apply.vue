@@ -28,11 +28,11 @@
       :handleCreate="addNewpublish"
       :hasCreateAuth="getShowBool('add')"
     >
-      <el-table :data="tableData" class="publish-table" @selection-change="handleSelectionChange">
+      <el-table :data="tableData" class="publish-table">
         <el-table-column type="expand">
           <template #default="props">
             <el-form label-position="left" class="publish-table-expand">
-              <el-form-item label="发布说明">
+              <el-form-item label="部署说明">
                 <span>{{ props.row.description }}</span>
               </el-form-item>
               <el-form-item label="审核说明" v-if="props.row.auditInstructions">
@@ -42,8 +42,8 @@
           </template>
         </el-table-column>
         <el-table-column type="index" label="序号" width="50" />
-        <el-table-column label="发布类型" prop="moduleType"></el-table-column>
-        <el-table-column label="发布名称" prop="name">
+        <el-table-column label="部署类型" prop="moduleType"></el-table-column>
+        <el-table-column label="部署名称" prop="name">
           <template #default="props">
             {{ props.row.name }}
           </template>
@@ -133,8 +133,8 @@
             </el-popover>
           </template>
         </el-table-column>
-        <el-table-column label="发布版本" prop="version"></el-table-column>
-        <el-table-column label="发布时间" prop="publishTime">
+        <el-table-column label="部署版本" prop="version"></el-table-column>
+        <el-table-column label="部署时间" prop="publishTime">
           <template #default="scope">{{ dateFormat(scope.row.publishTime) }}</template>
         </el-table-column>
         <el-table-column label="操作" width="300">
@@ -176,10 +176,10 @@
     >
       <div class="add-publish-set">
         <el-form :model="publishForm.formData" :rules="publishRules" ref="publishFormRef">
-          <el-form-item label="发布类型" prop="moduleType" :label-width="labelWidth">
+          <el-form-item label="部署类型" prop="moduleType" :label-width="labelWidth">
             <el-select
               v-model="publishForm.formData.moduleType"
-              placeholder="请选择发布类型"
+              placeholder="请选择部署类型"
               clearable
               :disabled="publishForm.disabled"
             >
@@ -214,10 +214,10 @@
           <el-form-item label="申请账号" prop="applicantName" :label-width="labelWidth">
             <el-input v-model="publishForm.formData.applicantName" :disabled="true"></el-input>
           </el-form-item>
-          <el-form-item label="发布版本" prop="version" :label-width="labelWidth">
+          <el-form-item label="部署版本" prop="version" :label-width="labelWidth">
             <el-select
               v-model="publishForm.formData.version"
-              placeholder="请选择发布版本"
+              placeholder="请选择部署版本"
               clearable
               :disabled="publishForm.disabled"
             >
@@ -229,13 +229,13 @@
               ></el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="发布说明" prop="description" :label-width="labelWidth">
+          <el-form-item label="部署说明" prop="description" :label-width="labelWidth">
             <el-input
               v-model="publishForm.formData.description"
               type="textarea"
               :rows="8"
               maxlength="1024"
-              placeholder="请输入发布说明"
+              placeholder="请输入部署说明"
               show-word-limit
             ></el-input>
           </el-form-item>
@@ -330,7 +330,7 @@ export default {
         sortType: 'descending',
       },
     });
-    // 新增发布表单数据
+    // 新增部署表单数据
     const publishForm: PublishFormState = reactive({
       disabled: false,
       isEdit: false,
@@ -353,11 +353,11 @@ export default {
       ],
     });
     const publishRules = {
-      moduleType: [{ required: true, message: '请选择发布类型', trigger: 'change' }],
-      name: [{ required: true, message: '请输入发布名称', trigger: 'change' }],
+      moduleType: [{ required: true, message: '请选择部署类型', trigger: 'change' }],
+      name: [{ required: true, message: '请输入部署名称', trigger: 'change' }],
       applicant: [{ required: true, message: '请选择申请账号', trigger: 'change' }],
-      version: [{ required: true, message: '请选择发布版本', trigger: 'change' }],
-      description: [{ required: true, message: '请输入发布说明', trigger: 'blur' }],
+      version: [{ required: true, message: '请选择部署版本', trigger: 'change' }],
+      description: [{ required: true, message: '请输入部署说明', trigger: 'blur' }],
     };
 
     // 初始化publishForm
@@ -376,7 +376,7 @@ export default {
       };
     }
 
-    // 获取发布列表数据
+    // 获取部署列表数据
     async function getTableData() {
       try {
         tableState.loading = true;
@@ -461,7 +461,7 @@ export default {
       togglepublishDialog();
     }
 
-    // 提交发布申请
+    // 提交部署申请
     async function submitpublishForm() {
       publishFormRef.value.validate(async (valid: boolean) => {
         if (valid) {
@@ -519,7 +519,7 @@ export default {
       });
     }
 
-    // 新建发布申请
+    // 新建部署申请
     function addNewpublish() {
       togglepublishDialog();
       getServices();
@@ -530,7 +530,7 @@ export default {
       publishForm.disabled = false;
     }
 
-    // 编辑发布
+    // 编辑部署
     const onEdit = async (rowData: any) => {
       publishForm.isEdit = true;
       publishForm.disabled = true;
@@ -542,9 +542,9 @@ export default {
       togglepublishDialog();
     };
 
-    // 删除发布申请
+    // 删除部署申请
     const onDelete = async (rowData: any) => {
-      ElMessageBox.confirm(`是否删除发布申请?`, '提示', {
+      ElMessageBox.confirm(`是否删除部署申请?`, '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning',
@@ -569,7 +569,7 @@ export default {
         });
     };
 
-    // 发布筛选筛选
+    // 部署筛选筛选
     const filterpublish = debounce(getTableData, 1000);
 
     // 每页条数改变

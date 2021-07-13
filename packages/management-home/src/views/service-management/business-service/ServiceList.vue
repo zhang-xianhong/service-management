@@ -465,7 +465,7 @@ export default defineComponent({
         return !res;
       }
       compuMutiArr.value.forEach((x: any) => {
-        if (+x.status === 20 || +x.status === 10 || +x.status === 21) {
+        if (+x.status === 20 || +x.status === 10 || +x.status === 21 || +x.status === 30) {
           res = true;
         }
       });
