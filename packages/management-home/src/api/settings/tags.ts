@@ -13,3 +13,5 @@ export const updateTag: (payload: any) => Promise<SuccessResponse<any>> = ({ id 
   axios.post(getUrl(settings.UPDATE_TAG, id), { name });
 export const deleteTags: (payload: any) => Promise<SuccessResponse<any>> = (payload) =>
   axios.post(getUrl(settings.DELETE_TAG), payload);
+export const checkTagRule: (payload: any) => Promise<SuccessResponse<any>> = (payload) =>
+  axios.post(getUrl(settings.CHECK_TAG_RULE), payload);
