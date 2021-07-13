@@ -11,7 +11,7 @@
       >
       <el-button @click="runService" :disabled="computedDisabled" v-if="false">启动</el-button>
       <el-button @click="stopService" :disabled="computedDisabled" v-if="false">停止</el-button>
-      <el-button @click="deleteHandler" v-if="getShowBool('delete')">删除</el-button>
+      <el-button @click="deleteHandler" v-if="getShowBool('delete')" :disabled="computedDisabledForSS">删除</el-button>
 
       <el-input
         placeholder="请输入服务名称"
