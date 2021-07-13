@@ -21,7 +21,12 @@
         ></el-input>
       </el-col>
     </el-row>
-    <list-wrap :loading="loading" :empty="total === 0" :hasCreateAuth="getShowBool('add')">
+    <list-wrap
+      :loading="loading"
+      :empty="total === 0"
+      :hasCreateAuth="getShowBool('add')"
+      :handleCreate="openCreateDialog"
+    >
       <el-table :data="tableData">
         <el-table-column type="expand">
           <template #default="props">
