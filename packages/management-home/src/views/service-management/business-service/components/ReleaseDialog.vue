@@ -53,7 +53,7 @@
 </template>
 <script lang="ts">
 import { defineComponent, reactive, ref, getCurrentInstance, Ref } from 'vue';
-import { getServiceConfig,getServiceUpgrade, releaseService } from '@/api/servers';
+import { getServiceConfig, getServiceUpgrade, releaseService } from '@/api/servers';
 import CodeEditor from '@/components/sql-editor/Index.vue';
 // 状态码
 enum ResCode {
@@ -76,7 +76,7 @@ interface RefType {
   [attr: string]: any;
 }
 
-interface BaseFormDataType{
+interface BaseFormDataType {
   serviceVersion: string;
   description: string;
   configTemplates: any[];
