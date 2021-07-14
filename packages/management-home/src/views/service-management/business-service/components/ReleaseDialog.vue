@@ -53,7 +53,7 @@
 </template>
 <script lang="ts">
 import { defineComponent, reactive, ref, getCurrentInstance, Ref } from 'vue';
-import { getServiceConfig, releaseService } from '@/api/servers';
+import { getServiceConfig,getServiceUpgrade, releaseService } from '@/api/servers';
 import CodeEditor from '@/components/sql-editor/Index.vue';
 // 状态码
 enum ResCode {
@@ -161,6 +161,19 @@ export default defineComponent({
         console.log('error', error);
       }
     };
+    // 获取配置列表
+    const getUpgradeScript = async (id: any): Promise<void> => {
+      try {
+        const { code, data = [] } = await getServiceUpgrade(id);
+        if (code === ResCode.Success) {
+          baseFormData.ddlScript = data.join(' ');
+        } else {
+          msgTips('error', '获取人员列表失败');
+        }
+      } catch (error) {
+        console.log('error', error);
+      }
+    };
     const handleSelectionChange = (data: any): void => {
       baseFormData.configTemplates = data.map((item: any) => ({
         name: item.name,
@@ -206,6 +219,7 @@ export default defineComponent({
       releaseDialogVisible.value = true;
       serviceId = id;
       getConfigList(serviceId);
+      getUpgradeScript(serviceId);
     };
 
     // 初始化

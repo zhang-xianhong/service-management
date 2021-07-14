@@ -18,6 +18,7 @@ export default {
   GET_SERVICE_TRACE_ID: ['/logs/runtime/traceid', '/mock/services/service-trace-id.json'],
   UPDATE_SERVICE_STATUS: ['/services/sync/status', '/mock/services/update-service-status.json'],
   GET_SERVICE_CONFIG: ['/services/_/config', '/mock/services/get-service-config.json'],
+  GET_SERVICE_UPGRADE_SCRIPT: ['/services/_/upgrade', '/mock/services/get-service-upgrade.json'],
   POST_SERVICE_RELEASE: ['/services/release', '/mock/services/release.json'],
   GET_SERVICE_DEPENDENCY_LIST: ['/services/dependencies', '/mock/services/dependencies.json'],
   GET_RELEASE_CHECK: ['/services/release/check', '/mock/services/check.json'],
