@@ -23,45 +23,52 @@
       </div>
     </el-row>
     <el-row class="user-info">
-      <div class="user-tree">
-        <el-scrollbar>
-          <el-tree
-            ref="userTreeRef"
-            :data="treeData"
-            :default-expand-all="true"
-            :expand-on-click-node="false"
-            :highlight-current="true"
-            node-key="id"
-            :current-node-key="currentKey"
-            @node-click="nodeClickHandler"
-          >
-            <template #default="{ node, data }">
-              <div class="customNode">
-                <svg-icon v-if="node.level < 3" icon-name="folder" icon-class="tree-node-folder"></svg-icon>
-                <svg-icon v-if="node.level === 3" icon-name="member" icon-class="tree-node-member"></svg-icon>
-                <span>{{ node.label }}</span>
-                <i
-                  v-if="node.level === 2 && getShowBool('update') && include"
-                  class="el-icon-circle-plus"
-                  style="float: right"
-                  @click.stop="addMember(node, data)"
-                ></i>
-              </div>
-            </template>
-          </el-tree>
-        </el-scrollbar>
-      </div>
-      <div class="user-table">
-        <el-table :data="userList" height="100%">
-          <el-table-column type="index" width="55"></el-table-column>
-          <el-table-column v-for="column in columns" :key="column.prop" v-bind="column"></el-table-column>
-          <el-table-column prop="operator" width="55" v-if="getShowBool('update') && include">
-            <template #default="{ row, $index }">
-              <i class="el-icon-error remove-user-icon" @click="removeUser(row, $index)"></i>
-            </template>
-          </el-table-column>
-        </el-table>
-      </div>
+      <el-col :span="4">
+        <div class="user-tree">
+          <el-scrollbar>
+            <el-tree
+              ref="userTreeRef"
+              :data="treeData"
+              :default-expand-all="true"
+              :expand-on-click-node="false"
+              :highlight-current="true"
+              node-key="id"
+              :current-node-key="currentKey"
+              @node-click="nodeClickHandler"
+            >
+              <template #default="{ node, data }">
+                <div class="customNode">
+                  <svg-icon v-if="node.level < 3" icon-name="folder" icon-class="tree-node-folder"></svg-icon>
+                  <svg-icon v-if="node.level === 3" icon-name="member" icon-class="tree-node-member"></svg-icon>
+                  <span>{{ node.label }}</span>
+                  <i
+                    v-if="node.level === 2 && getShowBool('update') && include"
+                    class="el-icon-circle-plus"
+                    style="float: right"
+                    @click.stop="addMember(node, data)"
+                  ></i>
+                </div>
+              </template>
+            </el-tree>
+          </el-scrollbar>
+        </div>
+      </el-col>
+      <el-col :span="20">
+        <el-tabs v-model="activeTab">
+          <el-tab-pane label="成员列表" name="userList">
+            <el-table :data="userList" height="100%">
+              <el-table-column type="index" width="55"></el-table-column>
+              <el-table-column v-for="column in columns" :key="column.prop" v-bind="column"></el-table-column>
+              <el-table-column prop="operator" width="55" v-if="getShowBool('update') && include">
+                <template #default="{ row }">
+                  <i class="el-icon-error remove-user-icon" @click="removeUser(row)"></i>
+                </template>
+              </el-table-column>
+            </el-table>
+          </el-tab-pane>
+          <el-tab-pane label="角色权限" name="roleList">角色权限</el-tab-pane>
+        </el-tabs>
+      </el-col>
     </el-row>
     <tree-selector
       :option="allDeptUser"
@@ -312,7 +319,8 @@ export default {
       otherRoleUser.value = _.differenceBy('id')(allUsers.value)(data.children);
       treeSelectorRef.value.show();
     };
-
+    // tab切换菜单
+    const activeTab = ref('userList');
     return {
       userTreeRef,
       editMode,
@@ -334,6 +342,7 @@ export default {
       userProjectList,
       getShowBool,
       include,
+      activeTab,
     };
   },
 };
@@ -383,6 +392,7 @@ export default {
   }
   .user-info {
     height: calc(100% - 320px);
+    display: flex;
   }
   .user-tree {
     width: 300px;
