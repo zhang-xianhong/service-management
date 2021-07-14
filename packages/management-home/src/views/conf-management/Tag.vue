@@ -276,7 +276,7 @@ export default defineComponent({
             getTagList();
           }
         }else {
-           submitting.value = false;
+          submitting.value = false;
         }
       });
     };
