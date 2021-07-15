@@ -76,7 +76,7 @@ interface RefType {
   [attr: string]: any;
 }
 
-interface BaseFormDataType{
+interface BaseFormDataType {
   serviceVersion: string;
   description: string;
   configTemplates: any[];

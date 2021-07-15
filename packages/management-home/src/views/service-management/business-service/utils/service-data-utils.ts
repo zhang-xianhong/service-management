@@ -127,6 +127,13 @@ export function getAllService() {
     }
   });
 }
+
+const serviceStatus: any = {
+  1: '构建中',
+  2: '构建失败',
+  3: '构建超时',
+  10: '有效',
+};
 export function getServiceDependencies(id?: number) {
   console.log('get service dependency');
   return getServiceDependencyList({ serviceId: id }).then((res) => {
@@ -134,12 +141,12 @@ export function getServiceDependencies(id?: number) {
       const { data = [] } = res;
       const serviceList = data.map((i: any) => ({
         label: getServiceShowName(i.serviceName),
-        value: getServiceShowName(i.serviceName),
+        value: i.serviceName,
         children: i.versions?.map((v: any) => ({
           value: v.version,
-          label: v.preparing ? `${v.version}(服务构建中)` : v.version,
+          label: v.versionStatus !== 10 ? `${v.version}(${serviceStatus[v.versionStatus]})` : v.version,
           versionType: v.versionType,
-          disabled: v.preparing,
+          disabled: v.versionStatus !== 10,
         })),
       }));
       dependenciesList.value = serviceList;

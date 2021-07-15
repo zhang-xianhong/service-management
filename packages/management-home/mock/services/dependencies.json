@@ -1,44 +1,58 @@
 {
   "code": 0,
   "data": [
-      {
-          "serviceName": "srv-test-service1",
-          "versions": [
-              {
-                  "version": "master",
-                  "versionType": 1
-              },
-              {
-                  "version": "v2.0",
-                  "versionType": 2,
-                  "preparing": true
-              },
-              {
-                  "version": "v1.0",
-                  "versionType": 2
-              }
-          ]
-      },
-      {
-          "serviceName": "srv-test-service2",
-          "versions": [
-              {
-                  "version": "master",
-                  "versionType": 1
-              },
-              {
-                  "version": "v2.0",
-                  "versionType": 2,
-                  "preparing": true
-              },
-              {
-                  "version": "v1.0",
-                  "versionType": 2
-              }
-          ]
-      }
+    {
+      "serviceName": "public.cqszjj.xiangmu1.srv-brucewli",
+      "versions": [
+        {
+          "version": "master",
+          "versionType": 1,
+          "versionStatus": 10
+        }
+      ]
+    },
+    {
+      "serviceName": "public.cqszjj.xiangmu1.taolei",
+      "versions": [
+        {
+          "version": "master",
+          "versionType": 1,
+          "versionStatus": 10
+        },
+        {
+          "version": "v1.2",
+          "versionType": 2,
+          "versionStatus": 2
+        },
+        {
+          "version": "v2.0",
+          "versionType": 2,
+          "versionStatus": 10
+        }
+      ]
+    },
+    {
+      "serviceName": "public.cqszjj.xiangmu1.xiaowen",
+      "versions": [
+        {
+          "version": "master",
+          "versionType": 1,
+          "versionStatus": 10
+        }
+      ]
+    },
+    {
+      "serviceName": "public.cqszjj.xiangmu1.test-07-15",
+      "versions": [
+        {
+          "version": "master",
+          "versionType": 1,
+          "versionStatus": 10
+        }
+      ]
+    }
   ],
   "message": "successful",
   "httpStatus": 200,
-  "timestamp": 1624880647383
+  "timestamp": 1626330717261
 }

@@ -247,7 +247,7 @@ export default defineComponent({
       dialogTitle.value = '新增标签';
     };
     // 标签重复校验
-    const validatorTagsPass = async(rule: any, value: string, callback: Function) => {
+    const validatorTagsPass = async (rule: any, value: string, callback: Function) => {
       const { code, data } = await checkTagRule({
         name: value,
       });
@@ -275,7 +275,7 @@ export default defineComponent({
             dialogTitle.value === '新增标签' ? ElMessage.success('新增标签成功') : ElMessage.success('编辑标签成功');
             getTagList();
           }
-        }else {
+        } else {
           submitting.value = false;
         }
       });
