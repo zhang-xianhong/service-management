@@ -1,5 +1,5 @@
 <template>
-  <div class="repository-detail">
+  <div class="detail-with-tabs repository-detail">
     <el-tabs v-model="activeTab" v-loading="loading">
       <el-tab-pane label="基本信息" name="base">
         <service-base :loading="loading" :info="serviceInfo" />
@@ -61,28 +61,7 @@ export default defineComponent({
 });
 </script>
 <style lang="scss" scoped>
-.repository-detail {
-  margin: -20px;
-}
 .service-depened-wrapper {
   height: calc(100vh - 200px);
-}
-</style>
-<style lang="scss">
-.repository-detail {
-  .el-tabs__header {
-    background-color: white;
-    .el-tabs__nav {
-      padding-left: 20px;
-      padding-right: 20px;
-    }
-    .el-tabs__active-bar {
-      margin-left: 20px;
-    }
-  }
-  .el-tabs__content {
-    margin: 20px;
-    background-color: white;
-  }
 }
 </style>
