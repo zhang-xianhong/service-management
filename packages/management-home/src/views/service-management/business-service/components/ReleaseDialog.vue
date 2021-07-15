@@ -166,7 +166,7 @@ export default defineComponent({
       try {
         const { code, data = [] } = await getServiceUpgrade(id);
         if (code === ResCode.Success) {
-          baseFormData.ddlScript = data.join(' ');
+          baseFormData.ddlScript = data.join('\n');
         } else {
           msgTips('error', '获取人员列表失败');
         }
