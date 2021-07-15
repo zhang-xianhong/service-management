@@ -29,3 +29,6 @@ export const imgUpload = (payload: any): Promise<SuccessResponse<any>> =>
 
 export const projectNameTest = (payload: any): Promise<SuccessResponse<any>> =>
   axios.post(getUrl(project.PROJECT_NAME_TEST), payload);
+
+export const getRoleAuthList = (payload: Record<string, string>): Promise<SuccessResponse<any>> =>
+  axios.get(getUrl(project.GET_ROLEAUTH_LIST, payload.projectId));

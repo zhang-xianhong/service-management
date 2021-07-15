@@ -23,40 +23,38 @@
       </div>
     </el-row>
     <el-row class="user-info">
-      <el-col :span="4">
-        <div class="user-tree">
-          <el-scrollbar>
-            <el-tree
-              ref="userTreeRef"
-              :data="treeData"
-              :default-expand-all="true"
-              :expand-on-click-node="false"
-              :highlight-current="true"
-              node-key="id"
-              :current-node-key="currentKey"
-              @node-click="nodeClickHandler"
-            >
-              <template #default="{ node, data }">
-                <div class="customNode">
-                  <svg-icon v-if="node.level < 3" icon-name="folder" icon-class="tree-node-folder"></svg-icon>
-                  <svg-icon v-if="node.level === 3" icon-name="member" icon-class="tree-node-member"></svg-icon>
-                  <span>{{ node.label }}</span>
-                  <i
-                    v-if="node.level === 2 && getShowBool('update') && include"
-                    class="el-icon-circle-plus"
-                    style="float: right"
-                    @click.stop="addMember(node, data)"
-                  ></i>
-                </div>
-              </template>
-            </el-tree>
-          </el-scrollbar>
-        </div>
-      </el-col>
-      <el-col :span="20">
+      <div class="user-tree">
+        <el-scrollbar>
+          <el-tree
+            ref="userTreeRef"
+            :data="treeData"
+            :default-expand-all="true"
+            :expand-on-click-node="false"
+            :highlight-current="true"
+            node-key="id"
+            :current-node-key="currentKey"
+            @node-click="nodeClickHandler"
+          >
+            <template #default="{ node, data }">
+              <div class="customNode">
+                <svg-icon v-if="node.level < 3" icon-name="folder" icon-class="tree-node-folder"></svg-icon>
+                <svg-icon v-if="node.level === 3" icon-name="member" icon-class="tree-node-member"></svg-icon>
+                <span>{{ node.label }}</span>
+                <i
+                  v-if="node.level === 2 && getShowBool('update') && include"
+                  class="el-icon-circle-plus"
+                  style="float: right"
+                  @click.stop="addMember(node, data)"
+                ></i>
+              </div>
+            </template>
+          </el-tree>
+        </el-scrollbar>
+      </div>
+      <div class="user-table">
         <el-tabs v-model="activeTab">
           <el-tab-pane label="成员列表" name="userList">
-            <el-table :data="userList" height="100%">
+            <el-table :data="userList">
               <el-table-column type="index" width="55"></el-table-column>
               <el-table-column v-for="column in columns" :key="column.prop" v-bind="column"></el-table-column>
               <el-table-column prop="operator" width="55" v-if="getShowBool('update') && include">
@@ -66,9 +64,42 @@
               </el-table-column>
             </el-table>
           </el-tab-pane>
-          <el-tab-pane label="角色权限" name="roleList">角色权限</el-tab-pane>
+          <el-tab-pane label="角色权限" name="roleList">
+            <div class="roleAuthStyle">
+              <el-row>
+                <el-button type="primary" @click="handleEdit" v-show="isEdit">编辑</el-button>
+                <el-button type="primary" @click="confirm" v-show="!isEdit">确定</el-button>
+                <el-button @click="handleCancel" v-show="!isEdit">取消</el-button>
+              </el-row>
+              <el-row>
+                <el-col>
+                  <el-row v-for="item in authRoleList" :key="item.id">
+                    <span class="auth-model"> {{ item.name }}</span>
+                    <el-checkbox
+                      class="auth-model"
+                      v-model="checkAll[String(item.id)]"
+                      @change="handleCheckAllChange(item)"
+                      :indeterminate="isIndeterminate[String(item.id)]"
+                      :disabled="isEdit"
+                    >
+                      全选
+                    </el-checkbox>
+                    <el-checkbox-group
+                      v-model="checkedItem[String(item.id)]"
+                      @change="handleCheckedItemsChange(item)"
+                      :disabled="isEdit"
+                    >
+                      <el-checkbox v-for="subItem in item.modules" :label="subItem.id" :key="subItem.name">
+                        {{ subItem.name }}
+                      </el-checkbox>
+                    </el-checkbox-group>
+                  </el-row>
+                </el-col>
+              </el-row>
+            </div>
+          </el-tab-pane>
         </el-tabs>
-      </el-col>
+      </div>
     </el-row>
     <tree-selector
       :option="allDeptUser"
@@ -85,11 +116,11 @@
 
 <script lang="ts">
 import _ from 'lodash/fp';
-import { ref, Ref, provide } from 'vue';
+import { ref, Ref, provide, onMounted, getCurrentInstance } from 'vue';
 import TreeSelector from './components/TreeSelector.vue';
 import BasicInfoForm from './components/BasicInfoForm.vue';
 import { ElMessageBox } from 'element-plus';
-import { getMemberList, getProjectDetail, deleteMember } from '@/api/project/project';
+import { getMemberList, getProjectDetail, deleteMember, getRoleAuthList } from '@/api/project/project';
 import { getTenantDepartment } from '@/api/tenant';
 import { userInfo, userProjectList } from '@/layout/messageCenter/user-info';
 import { getShowBool } from '@/utils/permission-show-module';
@@ -319,8 +350,83 @@ export default {
       otherRoleUser.value = _.differenceBy('id')(allUsers.value)(data.children);
       treeSelectorRef.value.show();
     };
+    // 获取组件实例
+    const instance = getCurrentInstance();
+    // 提示信息
+    function msgTips(type: string, content: string) {
+      (instance as any).proxy.$message({
+        type,
+        message: content,
+      });
+    }
     // tab切换菜单
     const activeTab = ref('userList');
+    const checkedItem: any = ref({});
+    // 权限角色数据
+    const authRoleList: Ref<any> = ref([]);
+    // 选中所有
+    const checkAll: any = ref({});
+    const isIndeterminate: any = ref({});
+
+    const isEdit: Ref<boolean> = ref(true);
+
+    // 获取项目角色权限列表
+    const getRoleAuthListData = async () => {
+      const { data, code } = await getRoleAuthList({ projectId: '' });
+      if (code === 0) {
+        authRoleList.value = data;
+        data.forEach((item: any) => {
+          checkedItem.value[String(item.id)] = [];
+          isIndeterminate.value[String(item.id)] = true;
+          checkAll.value[String(item.id)] = false;
+        });
+      }
+    };
+
+    // 全选
+    const handleCheckAllChange = (data: any) => {
+      const { id, modules } = data;
+      const selId = String(id);
+      // 查找id
+      const selData = modules.map((item: any) => item.id);
+      console.log('checkAll[selId]', checkAll[selId]);
+      checkedItem.value[selId] = checkAll.value[selId] ? selData : [];
+      isIndeterminate.value[selId] = false;
+    };
+
+    // 单选
+    const handleCheckedItemsChange = (data: any) => {
+      const { id, modules } = data;
+      const selId = String(id);
+      const checkedCount = checkedItem.value[selId].length;
+      checkAll.value[selId] = checkedCount === modules.length;
+      isIndeterminate.value[selId] = checkedCount > 0 && checkedCount < modules.length;
+    };
+
+    // 确定
+    const confirm = () => {
+      // 校验 至少要选中一项权限点
+      const isEmpty = Object.values(checkedItem.value).find((item: any) => item.length > 0);
+      if (!isEmpty) {
+        msgTips('warning', '权限不能为空');
+        return;
+      }
+      isEdit.value = true;
+      console.log('checkedItem', checkedItem.value);
+    };
+
+    // 编辑
+    const handleEdit = () => {
+      isEdit.value = false;
+    };
+
+    // 取消
+    const handleCancel = () => {
+      isEdit.value = true;
+    };
+    onMounted(() => {
+      getRoleAuthListData();
+    });
     return {
       userTreeRef,
       editMode,
@@ -343,6 +449,16 @@ export default {
       getShowBool,
       include,
       activeTab,
+      authRoleList,
+      handleCheckAllChange,
+      checkAll,
+      checkedItem,
+      handleCheckedItemsChange,
+      isIndeterminate,
+      confirm,
+      isEdit,
+      handleEdit,
+      handleCancel,
     };
   },
 };
@@ -418,6 +534,7 @@ export default {
   }
   .user-table {
     width: calc(100% - 320px);
+    padding: 10px;
     background: white;
     .remove-user-icon {
       font-size: 1.5em;
@@ -426,6 +543,16 @@ export default {
         color: $danger;
       }
     }
+  }
+  .roleAuthStyle {
+    padding: 10px;
+    .auth-model {
+      margin-right: 20px;
+    }
+  }
+  .right-box {
+    height: calc(100% - 320px);
+    display: flex;
   }
 }
 </style>

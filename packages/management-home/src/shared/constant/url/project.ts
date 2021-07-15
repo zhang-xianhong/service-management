@@ -11,4 +11,5 @@ export default {
   DELETE_PROJECT: ['/projects/delete'],
   IMAGE_UPLOAD: ['/files/upload'],
   PROJECT_NAME_TEST: ['/projects/name/usable'],
+  GET_ROLEAUTH_LIST: ['/projects/_/members', '/mock/project/role-auth-list.json'],
 };

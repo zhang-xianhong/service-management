@@ -1,0 +1,260 @@
+{
+    "code": 0,
+    "data": [
+        {
+            "id": 13,
+            "name": "项目列表",
+            "parentId": 4,
+            "description": "",
+            "modules": [
+                {
+                    "id": 15,
+                    "menuId": 13,
+                    "name": "管理项目",
+                    "description": "新建、编辑、删除项目"
+                },
+                {
+                    "id": 16,
+                    "menuId": 13,
+                    "name": "项目列表",
+                    "description": "查询项目列表"
+                },
+                {
+                    "id": 17,
+                    "menuId": 13,
+                    "name": "编辑项目",
+                    "description": "修改项目logo"
+                }
+            ],
+            "children": []
+        },
+        {
+            "id": 14,
+            "name": "部署申请",
+            "parentId": 6,
+            "description": "",
+            "modules": [
+                {
+                    "id": 18,
+                    "menuId": 14,
+                    "name": "管理部署",
+                    "description": "新增、修改、删除部署"
+                },
+                {
+                    "id": 19,
+                    "menuId": 14,
+                    "name": "部署申请",
+                    "description": "查看部署申请列表"
+                }
+            ],
+            "children": []
+        },
+        {
+            "id": 15,
+            "name": "部署审核",
+            "parentId": 6,
+            "description": "",
+            "modules": [
+                {
+                    "id": 20,
+                    "menuId": 15,
+                    "name": "部署审核",
+                    "description": "审核部署申请"
+                },
+                {
+                    "id": 21,
+                    "menuId": 15,
+                    "name": "部署审核列表",
+                    "description": "查看部署审核列表"
+                }
+            ],
+            "children": []
+        },
+        {
+            "id": 16,
+            "name": "业务服务",
+            "parentId": 7,
+            "description": "",
+            "modules": [
+                {
+                    "id": 26,
+                    "menuId": 16,
+                    "name": "模型管理",
+                    "description": "添加、编辑、删除模型"
+                },
+                {
+                    "id": 27,
+                    "menuId": 16,
+                    "name": "模型信息",
+                    "description": "查看模型信息"
+                },
+                {
+                    "id": 28,
+                    "menuId": 16,
+                    "name": "接口管理",
+                    "description": "添加、编辑、删除接口"
+                },
+                {
+                    "id": 29,
+                    "menuId": 16,
+                    "name": "接口信息",
+                    "description": "查看接口信息"
+                },
+                {
+                    "id": 22,
+                    "menuId": 16,
+                    "name": "管理服务",
+                    "description": "新建、编辑、删除服务"
+                },
+                {
+                    "id": 30,
+                    "menuId": 16,
+                    "name": "服务操作",
+                    "description": "初始化、同步配置、启动、停止、日志、发版"
+                },
+                {
+                    "id": 23,
+                    "menuId": 16,
+                    "name": "服务列表",
+                    "description": "查看服务列表"
+                },
+                {
+                    "id": 31,
+                    "menuId": 16,
+                    "name": "服务配置",
+                    "description": "添加服务配置"
+                },
+                {
+                    "id": 24,
+                    "menuId": 16,
+                    "name": "编辑服务",
+                    "description": "编辑服务信息"
+                },
+                {
+                    "id": 25,
+                    "menuId": 16,
+                    "name": "服务详情",
+                    "description": "查看服务详情"
+                }
+            ],
+            "children": []
+        },
+        {
+            "id": 21,
+            "name": "项目详情",
+            "parentId": 4,
+            "description": "",
+            "modules": [
+                {
+                    "id": 42,
+                    "menuId": 21,
+                    "name": "项目成员管理",
+                    "description": "项目成员管理"
+                },
+                {
+                    "id": 40,
+                    "menuId": 21,
+                    "name": "编辑项目",
+                    "description": "修改项目信息"
+                },
+                {
+                    "id": 41,
+                    "menuId": 21,
+                    "name": "项目详情",
+                    "description": "查询项目详情"
+                }
+            ],
+            "children": []
+        },
+        {
+            "id": 23,
+            "name": "应用列表",
+            "parentId": 22,
+            "description": "",
+            "modules": [
+                {
+                    "id": 43,
+                    "menuId": 23,
+                    "name": "管理应用",
+                    "description": "新增、编辑、删除、查询应用"
+                },
+                {
+                    "id": 44,
+                    "menuId": 23,
+                    "name": "编辑应用",
+                    "description": "编辑应用信息"
+                },
+                {
+                    "id": 45,
+                    "menuId": 23,
+                    "name": "查询列表",
+                    "description": "查询应用列表"
+                },
+                {
+                    "id": 46,
+                    "menuId": 23,
+                    "name": "应用详情",
+                    "description": "查看应用详情"
+                },
+                {
+                    "id": 47,
+                    "menuId": 23,
+                    "name": "新建应用",
+                    "description": "新建应用"
+                }
+            ],
+            "children": []
+        },
+        {
+            "id": 30,
+            "name": "发布申请",
+            "parentId": 29,
+            "description": "",
+            "modules": [
+                {
+                    "id": 59,
+                    "menuId": 30,
+                    "name": "发布列表",
+                    "description": "发布申请列表"
+                },
+                {
+                    "id": 57,
+                    "menuId": 30,
+                    "name": "管理发布",
+                    "description": "新增、删除、更新、查询发布"
+                },
+                {
+                    "id": 58,
+                    "menuId": 30,
+                    "name": "编辑发布",
+                    "description": "编辑发布申请"
+                }
+            ],
+            "children": []
+        },
+        {
+            "id": 31,
+            "name": "发布审核",
+            "parentId": 29,
+            "description": "",
+            "modules": [
+                {
+                    "id": 60,
+                    "menuId": 31,
+                    "name": "审核发布",
+                    "description": "审核发布申请"
+                },
+                {
+                    "id": 61,
+                    "menuId": 31,
+                    "name": "发布审核列表",
+                    "description": "发布审核列表"
+                }
+            ],
+            "children": []
+        }
+    ],
+    "message": "successful",
+    "httpStatus": 200,
+    "timestamp": 1626252169685
+}
