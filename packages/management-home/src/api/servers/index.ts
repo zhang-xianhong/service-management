@@ -76,3 +76,6 @@ export const releaseService: (payload: any) => Promise<SuccessResponse<any>> = (
 
 export const releaseCheck: (serviceId: any) => Promise<SuccessResponse<any>> = (serviceId: any) =>
   request.get(getUrl(URL.service.GET_RELEASE_CHECK), { params: { serviceId } });
+
+export const startCheck: (serviceId: any) => Promise<SuccessResponse<any>> = (serviceId: any) =>
+  request.get(getUrl(URL.service.GET_START_CHECK), { params: { serviceId } });
