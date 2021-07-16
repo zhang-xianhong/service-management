@@ -12,4 +12,6 @@ export default {
   IMAGE_UPLOAD: ['/files/upload'],
   PROJECT_NAME_TEST: ['/projects/name/usable'],
   GET_ROLEAUTH_LIST: ['/projects/_/members', '/mock/project/role-auth-list.json'],
+  PROJECT_UPDATE_ROLE: ['/projects/role/_', '/mock/project/role.json'],
+  PROJECT_ROLE_AUTH: ['/projects/role/_', '/mock/project/role-auth.json'],
 };

@@ -32,3 +32,9 @@ export const projectNameTest = (payload: any): Promise<SuccessResponse<any>> =>
 
 export const getRoleAuthList = (payload: Record<string, string>): Promise<SuccessResponse<any>> =>
   axios.get(getUrl(project.GET_ROLEAUTH_LIST, payload.projectId));
+
+export const updateRole = (payload: any): Promise<SuccessResponse<any>> =>
+  axios.post(getUrl(project.PROJECT_UPDATE_ROLE, payload.roleId), payload);
+
+export const getAuthByRoleId = (payload: any): Promise<SuccessResponse<any>> =>
+  axios.get(getUrl(project.PROJECT_ROLE_AUTH, payload.roleId));

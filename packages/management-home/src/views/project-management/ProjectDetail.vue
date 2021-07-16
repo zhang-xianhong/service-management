@@ -37,8 +37,8 @@
           >
             <template #default="{ node, data }">
               <div class="customNode">
-                <svg-icon v-if="node.level < 3" icon-name="folder" icon-class="tree-node-folder"></svg-icon>
-                <svg-icon v-if="node.level === 3" icon-name="member" icon-class="tree-node-member"></svg-icon>
+                <svg-icon v-if="node.level < 2" icon-name="folder" icon-class="tree-node-folder"></svg-icon>
+                <svg-icon v-if="node.level === 2" icon-name="member" icon-class="tree-node-member"></svg-icon>
                 <span>{{ node.label }}</span>
                 <i
                   v-if="node.level === 2 && getShowBool('update') && include"
@@ -67,7 +67,7 @@
           <el-tab-pane label="角色权限" name="roleList">
             <div class="roleAuthStyle">
               <el-row>
-                <el-button type="primary" @click="handleEdit" v-show="isEdit">编辑</el-button>
+                <el-button type="primary" @click="handleEdit" v-show="isEdit" :disabled="editDisable">编辑</el-button>
                 <el-button type="primary" @click="confirm" v-show="!isEdit">确定</el-button>
                 <el-button @click="handleCancel" v-show="!isEdit">取消</el-button>
               </el-row>
@@ -120,7 +120,14 @@ import { ref, Ref, provide, onMounted, getCurrentInstance } from 'vue';
 import TreeSelector from './components/TreeSelector.vue';
 import BasicInfoForm from './components/BasicInfoForm.vue';
 import { ElMessageBox } from 'element-plus';
-import { getMemberList, getProjectDetail, deleteMember, getRoleAuthList } from '@/api/project/project';
+import {
+  getMemberList,
+  getProjectDetail,
+  deleteMember,
+  getRoleAuthList,
+  updateRole,
+  getAuthByRoleId,
+} from '@/api/project/project';
 import { getTenantDepartment } from '@/api/tenant';
 import { userInfo, userProjectList } from '@/layout/messageCenter/user-info';
 import { getShowBool } from '@/utils/permission-show-module';
@@ -133,6 +140,10 @@ const genderLabel = {
   0: '男',
   1: '女',
 };
+// 状态码
+enum ResCode {
+  Success,
+}
 export default {
   name: 'ProjectDetail',
   props: {
@@ -203,7 +214,7 @@ export default {
           gender: genderLabel[user.gender as 0 | 1],
         }));
         const noPaRoles = data.roles.filter((x: any) => x.code !== 'PA' && x.code !== 'VIS');
-        treeData.value[0].children = _.flow(
+        treeData.value = _.flow(
           _.reject({ isOwnerRole: true }),
           _.map((role: any) => ({
             id: role.id,
@@ -217,6 +228,7 @@ export default {
             })(role.members),
           })),
         )(noPaRoles);
+        console.log(' treeData.value', treeData.value);
         userList.value = [];
       }
     };
@@ -290,14 +302,58 @@ export default {
     };
     getProjectInfo();
 
-    const nodeClickHandler = (data: any, node: any) => {
+    // 获取组件实例
+    const instance = getCurrentInstance();
+    // 提示信息
+    function msgTips(type: string, content: string) {
+      (instance as any).proxy.$message({
+        type,
+        message: content,
+      });
+    }
+    // 选中角色的权限点信息
+    const checkedItem: any = ref({});
+    // 获取角色对应权限点
+    const getAuth = async () => {
+      try {
+        const { code, data } = await getAuthByRoleId({ roleId: '' });
+        if (code === ResCode.Success) {
+          const { modules } = data;
+          const checkObj: any = {};
+          Object.entries(checkedItem.value).forEach((item: any) => {
+            checkObj[item[0]] = modules;
+          });
+          checkedItem.value = checkObj;
+        } else {
+          msgTips('error', '获取角色的权限数据失败');
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    const editDisable: Ref<boolean> = ref(true);
+    // 初始化
+    const roleAuthInit = () => {
+      const checkObj: any = {};
+      Object.entries(checkedItem.value).forEach((item: any) => {
+        checkObj[item[0]] = [];
+      });
+      checkedItem.value = checkObj;
+      editDisable.value = true;
+    };
+
+    const nodeClickHandler = async (data: any, node: any) => {
       if (node.level === 1) {
         userList.value = allUsers.value;
+        roleAuthInit();
       }
       if (node.level === 2) {
         userList.value = _.intersectionWith((node: any, user: any) => node.id === user.id)(allUsers.value)(
           node.data.children,
         );
+        // 判断是否可编辑 to-do
+        getAuth();
       }
     };
 
@@ -350,18 +406,9 @@ export default {
       otherRoleUser.value = _.differenceBy('id')(allUsers.value)(data.children);
       treeSelectorRef.value.show();
     };
-    // 获取组件实例
-    const instance = getCurrentInstance();
-    // 提示信息
-    function msgTips(type: string, content: string) {
-      (instance as any).proxy.$message({
-        type,
-        message: content,
-      });
-    }
+
     // tab切换菜单
     const activeTab = ref('userList');
-    const checkedItem: any = ref({});
     // 权限角色数据
     const authRoleList: Ref<any> = ref([]);
     // 选中所有
@@ -380,6 +427,31 @@ export default {
           isIndeterminate.value[String(item.id)] = true;
           checkAll.value[String(item.id)] = false;
         });
+      }
+    };
+
+    // 更新角色权限
+    const updateRoleData = async () => {
+      let moduleIds: number[] = [];
+      // 获取权限点
+      Object.values(checkedItem.value).forEach((item: any) => {
+        moduleIds = [...moduleIds, ...item];
+      });
+      // 去重
+      moduleIds = [...new Set(moduleIds)];
+      try {
+        const { code } = await updateRole({
+          name: '',
+          roleId: '',
+          moduleIds,
+        });
+        if (code === ResCode.Success) {
+          msgTips('success', '编辑成功');
+        } else {
+          msgTips('error', '编辑失败');
+        }
+      } catch (error) {
+        console.log(error);
       }
     };
 
@@ -411,8 +483,9 @@ export default {
         msgTips('warning', '权限不能为空');
         return;
       }
+      // 调用更新权限接口
+      updateRoleData();
       isEdit.value = true;
-      console.log('checkedItem', checkedItem.value);
     };
 
     // 编辑
@@ -459,6 +532,7 @@ export default {
       isEdit,
       handleEdit,
       handleCancel,
+      editDisable,
     };
   },
 };
@@ -546,6 +620,7 @@ export default {
   }
   .roleAuthStyle {
     padding: 10px;
+    color: #444;
     .auth-model {
       margin-right: 20px;
     }
