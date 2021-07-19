@@ -3,7 +3,7 @@
     <div class="dialog-body">
       <el-form :model="form" :rules="formRules" ref="formRef" label-width="100px">
         <el-form-item label="默认值" prop="defaultValue">
-          <el-input v-model.trim="form.defaultValue" placeholder="请输入默认值" />
+          <el-input v-model.trim="form.defaultValue" placeholder="请输入默认值" maxlength="20" />
         </el-form-item>
         <el-form-item label="最小长度" prop="minlength">
           <el-input-number v-model="form.minlength" :min="0" placeholder="请输入最小长度"></el-input-number>
@@ -12,6 +12,12 @@
           <el-input-number v-model="form.maxlength" :min="0" placeholder="请输入最大长度"></el-input-number>
         </el-form-item>
         <el-form-item label="Pattern" prop="pattern">
+          <template v-slot:label
+            >Pattern
+            <el-tooltip effect="light" content="用这则表达式约束字符串" placement="top">
+              <i class="el-icon-question info-icon form-item__tooltip_icon"></i>
+            </el-tooltip>
+          </template>
           <el-input v-model.trim="form.pattern" placeholder="请输入Pattern" />
         </el-form-item>
       </el-form>
@@ -25,49 +31,36 @@
   </el-dialog>
 </template>
 <script lang="ts">
-import { defineComponent, ref, reactive } from 'vue';
-import { ElMessage } from 'element-plus';
+import { defineComponent, reactive } from 'vue';
+import Base from './Base';
+const { visible, submitting, formRef, form, handleClose, handleOpen, handleSubmit } = Base();
 export default defineComponent({
   name: 'StringSettingDialog',
-  components: {},
-  setup() {
-    const visible = ref(false);
-    const submitting = ref(false);
-    const formRef = ref(null as any);
-    const sourceData = ref(null as any);
-    const form = reactive({});
-
-    const formRules = reactive({
-      defaultValue: [],
-      minlength: [],
-      maxlength: [],
-      pattern: [],
-    });
-    const handleClose = () => {
-      visible.value = false;
-      formRef.value.resetFields();
-    };
-    const handleOpen = (row: any) => {
-      sourceData.value = row;
-      visible.value = true;
-      submitting.value = false;
-    };
-    const handleSubmit = async () => {
-      try {
-        submitting.value = true;
-        const valid = await formRef.value.validate();
-        if (!valid) {
-          return;
-        }
-
-        ElMessage.success('设置成功');
-        handleClose();
-      } catch (e) {
-        console.log(e);
-      } finally {
-        submitting.value = false;
+  setup(props, { emit }) {
+    const checkMinlength = (rule: any, value: any, callback: any) => {
+      const minlength = value !== undefined ? Number(value) : undefined;
+      const maxlength = form.maxlength !== undefined ? Number(form.maxlength) : undefined;
+      if (minlength !== undefined && maxlength !== undefined && minlength > maxlength) {
+        callback(new Error('最小值不能大于最大值'));
+      } else {
+        callback();
       }
     };
+    const checkMaxlength = (rule: any, value: any, callback: any) => {
+      const maxlength = value !== undefined ? Number(value) : undefined;
+      const minlength = form.maxlength !== undefined ? Number(form.maxlength) : undefined;
+      if (minlength !== undefined && maxlength !== undefined && minlength > maxlength) {
+        callback(new Error('最大值不能小于最小值'));
+      } else {
+        callback();
+      }
+    };
+    const formRules = reactive({
+      defaultValue: [],
+      minlength: [{ validator: checkMinlength, trigger: 'blur' }],
+      maxlength: [{ validator: checkMaxlength, trigger: 'blur' }],
+      pattern: [],
+    });
     return {
       visible,
       submitting,
@@ -76,19 +69,10 @@ export default defineComponent({
       formRef,
       handleOpen,
       handleClose,
-      handleSubmit,
-      sourceData,
+      handleSubmit: () => {
+        handleSubmit(emit);
+      },
     };
   },
 });
 </script>
-<style lang="scss" scoped>
-.dialog-body {
-  ::v-deep .el-input__inner {
-    width: 100%;
-  }
-  ::v-deep .el-input-number {
-    width: 200px;
-  }
-}
-</style>

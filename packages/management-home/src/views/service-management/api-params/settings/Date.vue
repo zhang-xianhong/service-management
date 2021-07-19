@@ -7,7 +7,36 @@
           <el-radio name="set-date-type" v-model="form.type" :label="2">时间格式</el-radio>
         </el-form-item>
         <el-form-item label="格式限制" prop="format" v-if="form.type === 2">
-          <el-input v-model.trim="form.format" placeholder="请输入格式限制" />
+          <template v-slot:label
+            >格式限制
+            <el-tooltip effect="light" placement="top">
+              <i class="el-icon-question info-icon form-item__tooltip_icon"></i>
+              <template v-slot:content>
+                <div class="date-format-eg">
+                  <p>输入时间格式限制，常用字符参考：</p>
+                  <ul>
+                    <li><code>yyyy</code> 年</li>
+                    <li><code>MM</code> 月</li>
+                    <li><code>dd</code> 日</li>
+                    <li><code>hh</code> 12小时制(1-12)</li>
+                    <li><code>HH</code>24小时制（0-23）</li>
+                    <li><code>mm</code>分</li>
+                    <li><code>ss</code>秒</li>
+                    <li><code>S</code>毫秒</li>
+                    <li><code>E</code>星期几</li>
+                    <li><code>D</code>一年中的第几天</li>
+                    <li><code>F</code>一月中的第几个星期（会把这个月总共的天数除以7）</li>
+                    <li><code>w</code>一年中的第几个星期</li>
+                    <li><code>W</code>一月中的第几星期（会根据实际情况来算）</li>
+                    <li><code>a</code>上下午标识符</li>
+                    <li><code>k</code>表示一天24小时制(1-24)</li>
+                    <li><code>K</code>表示一天12小时制(0-11)</li>
+                  </ul>
+                </div>
+              </template>
+            </el-tooltip>
+          </template>
+          <el-input v-model.trim="form.format" placeholder="请输入格式限制" maxlength="50" />
         </el-form-item>
       </el-form>
     </div>
@@ -20,50 +49,34 @@
   </el-dialog>
 </template>
 <script lang="ts">
-import { defineComponent, ref, reactive } from 'vue';
-import { ElMessage } from 'element-plus';
+import { defineComponent, reactive } from 'vue';
+import Base from './Base';
+const { visible, submitting, formRef, form, handleClose, handleOpen, handleSubmit } = Base();
 export default defineComponent({
   name: 'DateSettingDialog',
-  components: {},
-  setup() {
-    const visible = ref(false);
-    const submitting = ref(false);
-    const formRef = ref(null as any);
-    const sourceData = ref(null as any);
-    const form = reactive({
-      type: 1,
-      format: '',
-    });
-
-    const formRules = reactive({
-      type: [],
-      format: [],
-    });
-    const handleClose = () => {
-      visible.value = false;
-      formRef.value.resetFields();
-    };
-    const handleOpen = (row: any) => {
-      sourceData.value = row;
-      visible.value = true;
-      submitting.value = false;
-    };
-    const handleSubmit = async () => {
-      try {
-        submitting.value = true;
-        const valid = await formRef.value.validate();
-        if (!valid) {
+  setup(props, { emit }) {
+    const checkFormat = (rule: any, value: any, callback: any) => {
+      if (form.type === 2) {
+        if (!value) {
+          callback(new Error('请输入格式限制'));
           return;
         }
-
-        ElMessage.success('设置成功');
-        handleClose();
-      } catch (e) {
-        console.log(e);
-      } finally {
-        submitting.value = false;
+        if (!/[ymdhHmsSEDFwWakK]+/.test(value)) {
+          callback(new Error('格式错误，请参考提示'));
+        }
       }
+      callback();
     };
+    const formRules = reactive({
+      type: [
+        {
+          required: true,
+          message: '请选择类型',
+          trigger: 'blur',
+        },
+      ],
+      format: [{ validator: checkFormat, trigger: 'blur' }],
+    });
     return {
       visible,
       submitting,
@@ -72,19 +85,29 @@ export default defineComponent({
       formRef,
       handleOpen,
       handleClose,
-      handleSubmit,
-      sourceData,
+      handleSubmit: () => {
+        handleSubmit(emit);
+      },
     };
   },
 });
 </script>
 <style lang="scss" scoped>
-.dialog-body {
-  ::v-deep .el-input__inner {
-    width: 100%;
+.date-format-eg {
+  ul {
+    margin: 10px 0 10px 30px;
+    padding: 0;
   }
-  ::v-deep .el-input-number {
-    width: 200px;
+  li {
+    line-height: 20px;
+    code {
+      display: inline-flex;
+      padding: 2px 4px;
+      line-height: 16px;
+      background-color: #f9f9f9;
+      color: red;
+      margin-right: 5px;
+    }
   }
 }
 </style>

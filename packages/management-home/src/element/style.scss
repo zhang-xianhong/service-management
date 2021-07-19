@@ -129,3 +129,16 @@ thead .el-button--text {
     line-height: inherit;
   }
 }
+
+.dialog-body {
+  .el-input__inner {
+    width: 100%;
+  }
+  .el-input-number {
+    width: 200px;
+  }
+}
+
+.form-item__tooltip_icon {
+  color: #999;
+}

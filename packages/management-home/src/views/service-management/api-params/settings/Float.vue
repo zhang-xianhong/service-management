@@ -12,7 +12,13 @@
           <el-input-number v-model="form.max" :min="0" placeholder="请输入最大值限制"></el-input-number>
         </el-form-item>
         <el-form-item label="精度限制" prop="precision">
-          <el-input-number v-model="form.precision" :min="0" placeholder="请输入精度限制"></el-input-number>
+          <template v-slot:label
+            >精度限制
+            <el-tooltip effect="light" content="小数点后最大位数限制" placement="top">
+              <i class="el-icon-question info-icon form-item__tooltip_icon"></i>
+            </el-tooltip>
+          </template>
+          <el-input-number v-model="form.precision" :min="0" max="10" placeholder="请输入精度限制"></el-input-number>
         </el-form-item>
       </el-form>
     </div>
@@ -25,49 +31,18 @@
   </el-dialog>
 </template>
 <script lang="ts">
-import { defineComponent, ref, reactive } from 'vue';
-import { ElMessage } from 'element-plus';
+import { defineComponent, reactive } from 'vue';
+import Base from './Base';
+const { visible, submitting, formRef, form, handleClose, handleOpen, handleSubmit } = Base();
 export default defineComponent({
   name: 'FloatSettingDialog',
-  components: {},
-  setup() {
-    const visible = ref(false);
-    const submitting = ref(false);
-    const formRef = ref(null as any);
-    const sourceData = ref(null as any);
-    const form = reactive({});
-
+  setup(props, { emit }) {
     const formRules = reactive({
       defaultValue: [],
-      min: [],
-      max: [],
-      precision: [],
+      minlength: [],
+      maxlength: [],
+      pattern: [],
     });
-    const handleClose = () => {
-      visible.value = false;
-      formRef.value.resetFields();
-    };
-    const handleOpen = (row: any) => {
-      sourceData.value = row;
-      visible.value = true;
-      submitting.value = false;
-    };
-    const handleSubmit = async () => {
-      try {
-        submitting.value = true;
-        const valid = await formRef.value.validate();
-        if (!valid) {
-          return;
-        }
-
-        ElMessage.success('设置成功');
-        handleClose();
-      } catch (e) {
-        console.log(e);
-      } finally {
-        submitting.value = false;
-      }
-    };
     return {
       visible,
       submitting,
@@ -76,19 +51,10 @@ export default defineComponent({
       formRef,
       handleOpen,
       handleClose,
-      handleSubmit,
-      sourceData,
+      handleSubmit: () => {
+        handleSubmit(emit);
+      },
     };
   },
 });
 </script>
-<style lang="scss" scoped>
-.dialog-body {
-  ::v-deep .el-input__inner {
-    width: 100%;
-  }
-  ::v-deep .el-input-number {
-    width: 200px;
-  }
-}
-</style>

@@ -35,10 +35,3 @@ export const PARAMS_TYPES = [
     value: 'object',
   },
 ];
-export const BASE_PARAMS = {
-  name: '',
-  type: 'string',
-  required: 1,
-  example: '',
-  description: '',
-};

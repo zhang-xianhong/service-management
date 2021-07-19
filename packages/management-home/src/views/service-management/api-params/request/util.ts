@@ -9,11 +9,18 @@ export interface PlainObject {
 
 export interface ParamItem extends PlainObject {
   $id?: string;
+  // 参数
   name?: string;
+  // 参数类型
   type?: TYPE_PARAMS_TYPES;
   required?: number;
+  // 示例
   example?: string;
+  // 描述
   description?: string;
+  // 配置
+  config?: PlainObject;
+  // 子项
   children?: ParamItem[];
 }
 
@@ -25,10 +32,18 @@ export const genParam = (param?: ParamItem) => ({
   required: 1,
   example: '',
   description: '',
+  config: {},
   ...param,
   $id: genId(),
 });
 
+/**
+ * 查找并且更新参数
+ * @param params
+ * @param id
+ * @param cb
+ * @returns
+ */
 export const findAndUpdateParams = (params: ParamItems, id: string, cb: Function) => {
   const findParam = (items: ParamItems) => {
     // eslint-disable-next-line @typescript-eslint/prefer-for-of
@@ -46,7 +61,15 @@ export const findAndUpdateParams = (params: ParamItems, id: string, cb: Function
   findParam(params);
   return params;
 };
+
+/**
+ * 参数转换成示例
+ * @param params
+ * @param result
+ * @returns
+ */
 export const paramsToExample = (params: ParamItems, result: any) => {
+  console.log(params);
   params.forEach((item) => {
     const { name, type, example, children } = item;
     const key = name as string;
@@ -79,6 +102,12 @@ export const paramsToExample = (params: ParamItems, result: any) => {
   });
   return result;
 };
+
+/**
+ * 校验参数
+ * @param name
+ * @returns
+ */
 export const validName = (name: string) => {
   if (!name) {
     return '参数不能为空';
@@ -92,6 +121,11 @@ export const validName = (name: string) => {
   return false;
 };
 
+/**
+ * 校验示例
+ * @param example
+ * @returns
+ */
 export const validExample = (example = '') => {
   if (example?.length < 1 || example?.length > 20) {
     return '参数示例长度在1-20个字符之间';
@@ -99,6 +133,11 @@ export const validExample = (example = '') => {
   return false;
 };
 
+/**
+ * 校验描述
+ * @param description
+ * @returns
+ */
 export const validDescription = (description = '') => {
   if (description?.length > 512) {
     return '参数描述最多支持512个字符';

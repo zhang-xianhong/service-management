@@ -113,11 +113,11 @@
         <el-button>取消</el-button>
       </div>
     </list-wrap>
-    <stringSettingDialog ref="stringSettingDialog" />
-    <intSettingDialog ref="intSettingDialog" />
-    <floatSettingDialog ref="floatSettingDialog" />
-    <dateSettingDialog ref="dateSettingDialog" />
-    <booleanSettingDialog ref="booleanSettingDialog" />
+    <stringSettingDialog ref="stringSettingDialog" @change="handleConfigChange" />
+    <intSettingDialog ref="intSettingDialog" @change="handleConfigChange" />
+    <floatSettingDialog ref="floatSettingDialog" @change="handleConfigChange" />
+    <dateSettingDialog ref="dateSettingDialog" @change="handleConfigChange" />
+    <booleanSettingDialog ref="booleanSettingDialog" @change="handleConfigChange" />
   </div>
 </template>
 <script>
@@ -249,6 +249,8 @@ export default defineComponent({
         formError.value = valid;
       }
     };
+
+    // 设置
     const handleSetting = (row) => {
       let ref = null;
       switch (row.type) {
@@ -269,8 +271,19 @@ export default defineComponent({
           break;
       }
       if (ref) {
-        ref.handleOpen();
+        ref.handleOpen(row);
       }
+    };
+
+    const handleConfigChange = ({ id, config }) => {
+      findAndUpdateParams(list.value, id, (items, index, item) => {
+        items.splice(index, 1, {
+          ...item,
+          config: {
+            ...config,
+          },
+        });
+      });
     };
 
     const previewCode = computed(() => JSON.stringify(paramsToExample(list.value, {}), null, 4));
@@ -300,6 +313,7 @@ export default defineComponent({
       clearError,
       handleInputChange,
       handleSetting,
+      handleConfigChange,
       stringSettingDialog,
       intSettingDialog,
       floatSettingDialog,
