@@ -102,6 +102,9 @@ export default defineComponent({
       {
         key: 'serviceVersion',
         label: '版本',
+        render(col: Column, row: any) {
+          return row.snapshotInfo.serviceVersion;
+        }
       },
       {
         key: 'classification',
