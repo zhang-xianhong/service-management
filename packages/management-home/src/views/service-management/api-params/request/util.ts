@@ -69,7 +69,6 @@ export const findAndUpdateParams = (params: ParamItems, id: string, cb: Function
  * @returns
  */
 export const paramsToExample = (params: ParamItems, result: any) => {
-  console.log(params);
   params.forEach((item) => {
     const { name, type, example, children } = item;
     const key = name as string;
@@ -112,7 +111,7 @@ export const validName = (name: string) => {
   if (!name) {
     return '参数不能为空';
   }
-  if (!/[A-Za-z_]+\w?/.test(name)) {
+  if (!/^[A-Za-z_]+\w?$/.test(name)) {
     return '参数仅支持字母、数字、下划线，且不能以数字开头';
   }
   if (name.length > 50) {

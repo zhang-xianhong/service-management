@@ -7,7 +7,9 @@
         </div>
       </el-tab-pane>
       <el-tab-pane label="返回参数" name="res">
-        <div class="tab-content-wrap">2</div>
+        <div class="tab-content-wrap">
+          <api-list />
+        </div>
       </el-tab-pane>
     </el-tabs>
   </div>
@@ -15,9 +17,11 @@
 <script>
 import { defineComponent, ref } from 'vue';
 import RequestList from './request/List.vue';
+import ApiList from '../api/List.vue';
 export default defineComponent({
   components: {
     RequestList,
+    ApiList,
   },
   setup() {
     const activeTab = ref('req');
