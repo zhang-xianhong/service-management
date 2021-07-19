@@ -1,5 +1,12 @@
 <template>
-  <el-dialog title="发版" v-model="releaseDialogVisible" width="1000px" @close="closeDialog" destroy-on-close>
+  <el-dialog
+    title="发版"
+    v-model="releaseDialogVisible"
+    width="1000px"
+    @close="closeDialog"
+    :close-on-click-modal="false"
+    destroy-on-close
+  >
     <div class="release-steps">
       <el-steps :active="currentActive" finish-status="success" simple>
         <el-step v-for="item in tabMenuData" :key="item.title" :title="item.title"></el-step>
