@@ -18,7 +18,15 @@
         <el-table-column prop="name" label="参数" class-name="col-inline">
           <template #default="scope">
             <span v-if="scope.row.readonly">{{ scope.row.name }}</span>
-            <el-input placeholder="请输入参数名称" v-model.trim="scope.row.name" v-else />
+            <el-input
+              placeholder="请输入参数名称"
+              v-model.trim="scope.row.name"
+              maxlength="50"
+              v-else
+              :ref="(ref) => (inputRefs[`name.${scope.row.$id}`] = ref)"
+              @input="() => clearError(`name.${scope.row.$id}`)"
+              @change="(value) => handleInputChange('name', scope.row.$id, value)"
+            />
           </template>
         </el-table-column>
         <el-table-column prop="type" label="参数类型" width="180">
@@ -55,36 +63,89 @@
         </el-table-column>
         <el-table-column prop="example" label="参数示例">
           <template #default="scope">
-            <el-input placeholder="请输入参数示例" v-model.trim="scope.row.example" />
+            <el-input
+              placeholder="请输入参数示例"
+              v-model.trim="scope.row.example"
+              minlength="1"
+              maxlength="20"
+              :ref="(ref) => (inputRefs[`example.${scope.row.$id}`] = ref)"
+              @input="() => clearError(`example.${scope.row.$id}`)"
+              @change="(value) => handleInputChange('example', scope.row.$id, value)"
+            />
           </template>
         </el-table-column>
         <el-table-column prop="description" label="参数描述">
           <template #default="scope">
-            <el-input placeholder="请输入参数描述" v-model.trim="scope.row.description" />
+            <el-input
+              placeholder="请输入参数描述"
+              v-model.trim="scope.row.description"
+              maxlength="512"
+              :ref="(ref) => (inputRefs[`description.${scope.row.$id}`] = ref)"
+              @input="() => clearError(`description.${scope.row.$id}`)"
+              @change="(value) => handleInputChange('description', scope.row.$id, value)"
+            />
           </template>
         </el-table-column>
         <el-table-column prop="actions" label="操作" align="right" width="150">
           <template #default="scope">
             <el-button type="text" @click="handleAdd(scope.row)">添加</el-button>
             <el-button type="text" v-if="scope.row.type === 'object'">引入</el-button>
-            <el-button type="text" v-else>设置</el-button>
+            <el-button type="text" v-else-if="scope.row.type !== 'array'" @click="handleSetting(scope.row)"
+              >设置</el-button
+            >
             <el-button type="text" @click="handleRemove(scope.row)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
 
+      <div class="error-wrap">{{ formError }}</div>
+
       <div class="code-preview">
+        <h3 class="code-preview__title">
+          预览
+          <el-button type="text">生成预览</el-button>
+        </h3>
         <pre v-highlight><code v-html="previewCode" class="json"></code></pre>
       </div>
+
+      <div class="params-form-btns">
+        <el-button type="primary" @click="handleSave">确定</el-button>
+        <el-button>取消</el-button>
+      </div>
     </list-wrap>
+    <stringSettingDialog ref="stringSettingDialog" />
+    <intSettingDialog ref="intSettingDialog" />
+    <floatSettingDialog ref="floatSettingDialog" />
+    <dateSettingDialog ref="dateSettingDialog" />
+    <booleanSettingDialog ref="booleanSettingDialog" />
   </div>
 </template>
 <script>
 import { defineComponent, ref, computed } from 'vue';
 import { getParamsMethods, postParamsMethods, PARAMS_TYPES } from './config';
-import { genParam, findAndUpdateParams, paramsToExample } from './util';
+import StringSettingDialog from '../settings/String.vue';
+import FloatSettingDialog from '../settings/Float.vue';
+import IntSettingDialog from '../settings/Int.vue';
+import DateSettingDialog from '../settings/Date.vue';
+import BooleanSettingDialog from '../settings/Boolean.vue';
+import {
+  genParam,
+  findAndUpdateParams,
+  paramsToExample,
+  validParams,
+  validName,
+  validExample,
+  validDescription,
+} from './util';
 export default defineComponent({
   name: 'RequestList',
+  components: {
+    StringSettingDialog,
+    FloatSettingDialog,
+    IntSettingDialog,
+    DateSettingDialog,
+    BooleanSettingDialog,
+  },
   props: {
     methodType: {
       type: String,
@@ -95,12 +156,20 @@ export default defineComponent({
     const loading = ref(false);
     const list = ref([genParam()]);
     const paramsMethod = ref('query');
+    const inputRefs = ref({});
+    const formError = ref('');
+    const stringSettingDialog = ref(null);
+    const intSettingDialog = ref(null);
+    const floatSettingDialog = ref(null);
+    const dateSettingDialog = ref(null);
+    const booleanSettingDialog = ref(null);
     const paramsMethods = computed(() => {
       if (props.methodType === 'get') {
         return getParamsMethods;
       }
       return postParamsMethods;
     });
+
     const handleAdd = (row) => {
       findAndUpdateParams(list.value, row.$id, (items, index) => {
         items.splice(index + 1, 0, genParam());
@@ -138,6 +207,72 @@ export default defineComponent({
         });
       }
     };
+
+    const handleSave = () => {
+      const res = validParams(list.value);
+      formError.value = '';
+      if (res) {
+        const error = res[0];
+        const ref = inputRefs.value[`${error.field}.${error.id}`];
+        ref.$el.classList.add('is-error');
+        ref.focus();
+        formError.value = error.message;
+      }
+    };
+
+    const clearError = (refId) => {
+      try {
+        const ref = inputRefs.value[refId];
+        ref.$el.classList.remove('is-error');
+      } catch (e) {
+        console.log(e);
+      }
+    };
+
+    const handleInputChange = (field, id, value) => {
+      formError.value = '';
+      let valid = false;
+      switch (field) {
+        case 'name':
+          valid = validName(value);
+          break;
+        case 'example':
+          valid = validExample(value);
+          break;
+        case 'description':
+          valid = validDescription(value);
+          break;
+      }
+      if (valid) {
+        const ref = inputRefs.value[`${field}.${id}`];
+        ref.$el.classList.add('is-error');
+        formError.value = valid;
+      }
+    };
+    const handleSetting = (row) => {
+      let ref = null;
+      switch (row.type) {
+        case 'string':
+          ref = stringSettingDialog.value;
+          break;
+        case 'float':
+          ref = floatSettingDialog.value;
+          break;
+        case 'int':
+          ref = intSettingDialog.value;
+          break;
+        case 'boolean':
+          ref = booleanSettingDialog.value;
+          break;
+        case 'date':
+          ref = dateSettingDialog.value;
+          break;
+      }
+      if (ref) {
+        ref.handleOpen();
+      }
+    };
+
     const previewCode = computed(() => JSON.stringify(paramsToExample(list.value, {}), null, 4));
     return {
       paramsMethod,
@@ -156,9 +291,20 @@ export default defineComponent({
       loading,
       list,
       previewCode,
+      inputRefs,
+      formError,
       handleAdd,
       handleRemove,
       handleTypeChange,
+      handleSave,
+      clearError,
+      handleInputChange,
+      handleSetting,
+      stringSettingDialog,
+      intSettingDialog,
+      floatSettingDialog,
+      booleanSettingDialog,
+      dateSettingDialog,
     };
   },
 });
@@ -172,5 +318,19 @@ export default defineComponent({
   ::v-deep .el-input {
     width: 100%;
   }
+  ::v-deep .is-error .el-input__inner {
+    border-color: #f56c6c;
+  }
+}
+.params-form-btns {
+  margin: 20px 0 0 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.error-wrap {
+  color: #f56c6c;
+  height: 20px;
+  line-height: 20px;
 }
 </style>

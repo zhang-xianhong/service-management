@@ -122,3 +122,10 @@ thead .el-button--text {
 .el-cascader-menu__list {
   min-height: 46px;
 }
+
+.el-input-number--small {
+  line-height: 28px;
+  .el-input--small {
+    line-height: inherit;
+  }
+}

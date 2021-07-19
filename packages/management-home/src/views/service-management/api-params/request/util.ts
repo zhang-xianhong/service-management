@@ -79,3 +79,75 @@ export const paramsToExample = (params: ParamItems, result: any) => {
   });
   return result;
 };
+export const validName = (name: string) => {
+  if (!name) {
+    return '参数不能为空';
+  }
+  if (!/[A-Za-z_]+\w?/.test(name)) {
+    return '参数仅支持字母、数字、下划线，且不能以数字开头';
+  }
+  if (name.length > 50) {
+    return '参数最多支持50个字符';
+  }
+  return false;
+};
+
+export const validExample = (example = '') => {
+  if (example?.length < 1 || example?.length > 20) {
+    return '参数示例长度在1-20个字符之间';
+  }
+  return false;
+};
+
+export const validDescription = (description = '') => {
+  if (description?.length > 512) {
+    return '参数描述最多支持512个字符';
+  }
+  return false;
+};
+
+/**
+ * 参数校验
+ * @param params
+ * @returns
+ */
+export const validParams = (params: ParamItems): any => {
+  const errors: any = [];
+  for (let i = 0, len = params.length; i < len; i++) {
+    const { name, example = '', children, description = '', $id } = params[i];
+    const checkName = validName(name as string);
+    if (checkName) {
+      errors.push({
+        field: 'name',
+        id: $id,
+        message: checkName,
+      });
+      break;
+    }
+    const checkExample = validExample(example as string);
+    if (checkExample) {
+      errors.push({
+        field: 'example',
+        id: $id,
+        message: checkExample,
+      });
+      break;
+    }
+    const checkDescription = validDescription(description as string);
+    if (checkDescription) {
+      errors.push({
+        field: 'description',
+        id: $id,
+        message: checkDescription,
+      });
+      break;
+    }
+    if (children && children.length > 0) {
+      return validParams(children);
+    }
+  }
+  if (errors.length > 0) {
+    return errors;
+  }
+  return null;
+};

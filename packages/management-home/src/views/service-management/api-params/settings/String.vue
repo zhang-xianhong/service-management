@@ -1,0 +1,94 @@
+<template>
+  <el-dialog title="高级设置" v-model="visible" width="640px" :before-close="handleClose">
+    <div class="dialog-body">
+      <el-form :model="form" :rules="formRules" ref="formRef" label-width="100px">
+        <el-form-item label="默认值" prop="defaultValue">
+          <el-input v-model.trim="form.defaultValue" placeholder="请输入默认值" />
+        </el-form-item>
+        <el-form-item label="最小长度" prop="minlength">
+          <el-input-number v-model="form.minlength" :min="0" placeholder="请输入最小长度"></el-input-number>
+        </el-form-item>
+        <el-form-item label="最大长度" prop="maxlength">
+          <el-input-number v-model="form.maxlength" :min="0" placeholder="请输入最大长度"></el-input-number>
+        </el-form-item>
+        <el-form-item label="Pattern" prop="pattern">
+          <el-input v-model.trim="form.pattern" placeholder="请输入Pattern" />
+        </el-form-item>
+      </el-form>
+    </div>
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button type="primary" @click="handleSubmit" :loading="submitting">确定</el-button>
+        <el-button @click="handleClose">取消</el-button>
+      </span>
+    </template>
+  </el-dialog>
+</template>
+<script lang="ts">
+import { defineComponent, ref, reactive } from 'vue';
+import { ElMessage } from 'element-plus';
+export default defineComponent({
+  name: 'StringSettingDialog',
+  components: {},
+  setup() {
+    const visible = ref(false);
+    const submitting = ref(false);
+    const formRef = ref(null as any);
+    const sourceData = ref(null as any);
+    const form = reactive({});
+
+    const formRules = reactive({
+      defaultValue: [],
+      minlength: [],
+      maxlength: [],
+      pattern: [],
+    });
+    const handleClose = () => {
+      visible.value = false;
+      formRef.value.resetFields();
+    };
+    const handleOpen = (row: any) => {
+      sourceData.value = row;
+      visible.value = true;
+      submitting.value = false;
+    };
+    const handleSubmit = async () => {
+      try {
+        submitting.value = true;
+        const valid = await formRef.value.validate();
+        if (!valid) {
+          return;
+        }
+
+        ElMessage.success('设置成功');
+        handleClose();
+      } catch (e) {
+        console.log(e);
+      } finally {
+        submitting.value = false;
+      }
+    };
+    return {
+      visible,
+      submitting,
+      form,
+      formRules,
+      formRef,
+      handleOpen,
+      handleClose,
+      handleSubmit,
+      sourceData,
+    };
+  },
+});
+</script>
+<style lang="scss" scoped>
+.dialog-body {
+  ::v-deep .el-input__inner {
+    width: 100%;
+  }
+  ::v-deep .el-input-number {
+    width: 200px;
+  }
+}
+</style>
