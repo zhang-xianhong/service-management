@@ -3,13 +3,16 @@
     <div class="dialog-body">
       <el-form :model="form" :rules="formRules" ref="formRef" label-width="100px">
         <el-form-item label="默认值" prop="defaultValue">
-          <el-input v-model.trim="form.defaultValue" placeholder="请输入默认值" />
+          <el-input v-model.trim="form.defaultValue" placeholder="请输入默认值" v-if="isEdit" />
+          <span v-else>{{ form.defaultValue }}</span>
         </el-form-item>
         <el-form-item label="最小值限制" prop="min">
-          <el-input-number v-model="form.min" :min="0" placeholder="请输入最小值限制"></el-input-number>
+          <el-input-number v-model="form.min" placeholder="请输入最小值限制" v-if="isEdit"></el-input-number>
+          <span v-else>{{ form.min }}</span>
         </el-form-item>
         <el-form-item label="最大值限制" prop="max">
-          <el-input-number v-model="form.max" :min="0" placeholder="请输入最大值限制"></el-input-number>
+          <el-input-number v-model="form.max" placeholder="请输入最大值限制" v-if="isEdit"></el-input-number>
+          <span v-else>{{ form.max }}</span>
         </el-form-item>
         <el-form-item label="精度限制" prop="precision">
           <template v-slot:label
@@ -18,13 +21,20 @@
               <i class="el-icon-question info-icon form-item__tooltip_icon"></i>
             </el-tooltip>
           </template>
-          <el-input-number v-model="form.precision" :min="0" max="10" placeholder="请输入精度限制"></el-input-number>
+          <el-input-number
+            v-model="form.precision"
+            :min="0"
+            max="10"
+            placeholder="请输入精度限制"
+            v-if="isEdit"
+          ></el-input-number>
+          <span v-else>{{ form.precision }}</span>
         </el-form-item>
       </el-form>
     </div>
     <template #footer>
       <span class="dialog-footer">
-        <el-button type="primary" @click="handleSubmit" :loading="submitting">确定</el-button>
+        <el-button type="primary" @click="handleSubmit" :loading="submitting" v-if="isEdit">确定</el-button>
         <el-button @click="handleClose">取消</el-button>
       </span>
     </template>
@@ -33,7 +43,7 @@
 <script lang="ts">
 import { defineComponent, reactive } from 'vue';
 import Base from './Base';
-const { visible, submitting, formRef, form, handleClose, handleOpen, handleSubmit } = Base();
+const { handleSubmit, ...baseApi } = Base();
 export default defineComponent({
   name: 'FloatSettingDialog',
   setup(props, { emit }) {
@@ -44,13 +54,8 @@ export default defineComponent({
       pattern: [],
     });
     return {
-      visible,
-      submitting,
-      form,
       formRules,
-      formRef,
-      handleOpen,
-      handleClose,
+      ...baseApi,
       handleSubmit: () => {
         handleSubmit(emit);
       },

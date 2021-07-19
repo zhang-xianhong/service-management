@@ -7,13 +7,15 @@ export default () => {
   const formRef = ref(null as any);
   const source = ref(null as any);
   const form = reactive({} as any);
+  const isEdit = ref(true);
 
   const handleClose = () => {
     visible.value = false;
     formRef.value.resetFields();
   };
 
-  const handleOpen = (row: any) => {
+  const handleOpen = (row: any, editing: boolean) => {
+    isEdit.value = editing;
     source.value = row;
     visible.value = true;
     submitting.value = false;
@@ -45,6 +47,7 @@ export default () => {
     submitting,
     formRef,
     form,
+    isEdit,
     handleClose,
     handleOpen,
     handleSubmit,

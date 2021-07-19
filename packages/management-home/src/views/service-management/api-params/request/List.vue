@@ -17,7 +17,7 @@
       >
         <el-table-column prop="name" label="参数" class-name="col-inline">
           <template #default="scope">
-            <span v-if="scope.row.readonly">{{ scope.row.name }}</span>
+            <span v-if="!isEdit || scope.row.readonly">{{ scope.row.name }}</span>
             <el-input
               placeholder="请输入参数名称"
               v-model.trim="scope.row.name"
@@ -31,7 +31,9 @@
         </el-table-column>
         <el-table-column prop="type" label="参数类型" width="180">
           <template #default="scope">
+            <span v-if="!isEdit">{{ getParamTypeName(scope.row.type) }}</span>
             <el-select
+              v-else
               placeholder="请选择参数类型"
               v-model="scope.row.type"
               @change="
@@ -51,7 +53,8 @@
         </el-table-column>
         <el-table-column prop="required" label="是否必填" width="150">
           <template #default="scope">
-            <el-select placeholder="请选择" v-model="scope.row.required">
+            <span v-if="!isEdit">{{ scope.row.required ? '是' : '否' }}</span>
+            <el-select placeholder="请选择" v-model="scope.row.required" v-else>
               <el-option
                 v-for="item in paramRequireds"
                 :key="item.value"
@@ -63,7 +66,9 @@
         </el-table-column>
         <el-table-column prop="example" label="参数示例">
           <template #default="scope">
+            <span v-if="!isEdit">{{ scope.row.example }}</span>
             <el-input
+              v-else
               placeholder="请输入参数示例"
               v-model.trim="scope.row.example"
               minlength="1"
@@ -76,7 +81,9 @@
         </el-table-column>
         <el-table-column prop="description" label="参数描述">
           <template #default="scope">
+            <tooltip v-if="!isEdit" :content="scope.row.description"></tooltip>
             <el-input
+              v-else
               placeholder="请输入参数描述"
               v-model.trim="scope.row.description"
               maxlength="512"
@@ -88,12 +95,19 @@
         </el-table-column>
         <el-table-column prop="actions" label="操作" align="right" width="150">
           <template #default="scope">
-            <el-button type="text" @click="handleAdd(scope.row)">添加</el-button>
-            <el-button type="text" v-if="scope.row.type === 'object'">引入</el-button>
-            <el-button type="text" v-else-if="scope.row.type !== 'array'" @click="handleSetting(scope.row)"
-              >设置</el-button
-            >
-            <el-button type="text" @click="handleRemove(scope.row)">删除</el-button>
+            <template v-if="isEdit">
+              <el-button type="text" @click="handleAdd(scope.row)">添加</el-button>
+              <el-button type="text" v-if="scope.row.type === 'object'">引入</el-button>
+              <el-button type="text" v-else-if="scope.row.type !== 'array'" @click="handleSetting(scope.row)"
+                >设置</el-button
+              >
+              <el-button type="text" @click="handleRemove(scope.row)">删除</el-button>
+            </template>
+            <template v-else>
+              <el-button type="text" v-if="scope.row.type !== 'array'" @click="handleSetting(scope.row)"
+                >设置</el-button
+              >
+            </template>
           </template>
         </el-table-column>
       </el-table>
@@ -109,8 +123,11 @@
       </div>
 
       <div class="params-form-btns">
-        <el-button type="primary" @click="handleSave">确定</el-button>
-        <el-button>取消</el-button>
+        <el-button type="primary" @click="handleToggleEdit(true)" v-if="!isEdit">编辑</el-button>
+        <template v-else>
+          <el-button type="primary" @click="handleSave">确定</el-button>
+          <el-button @click="handleCancel">取消</el-button>
+        </template>
       </div>
     </list-wrap>
     <stringSettingDialog ref="stringSettingDialog" @change="handleConfigChange" />
@@ -122,7 +139,7 @@
 </template>
 <script>
 import { defineComponent, ref, computed } from 'vue';
-import { getParamsMethods, postParamsMethods, PARAMS_TYPES } from './config';
+import { getParamsMethods, postParamsMethods, PARAMS_TYPES, getParamTypeName } from './config';
 import StringSettingDialog from '../settings/String.vue';
 import FloatSettingDialog from '../settings/Float.vue';
 import IntSettingDialog from '../settings/Int.vue';
@@ -163,6 +180,7 @@ export default defineComponent({
     const floatSettingDialog = ref(null);
     const dateSettingDialog = ref(null);
     const booleanSettingDialog = ref(null);
+    const isEdit = ref(false);
     const paramsMethods = computed(() => {
       if (props.methodType === 'get') {
         return getParamsMethods;
@@ -170,16 +188,26 @@ export default defineComponent({
       return postParamsMethods;
     });
 
+    // 编辑态切换
+    const handleToggleEdit = (value) => {
+      isEdit.value = value;
+    };
+
+    // 添加
     const handleAdd = (row) => {
       findAndUpdateParams(list.value, row.$id, (items, index) => {
         items.splice(index + 1, 0, genParam());
       });
     };
+
+    // 移除
     const handleRemove = (row) => {
       findAndUpdateParams(list.value, row.$id, (items, index) => {
         items.splice(index, 1);
       });
     };
+
+    // 类型改变
     const handleTypeChange = (row, value) => {
       if (value === 'array' || value === 'object') {
         const children = [];
@@ -208,6 +236,7 @@ export default defineComponent({
       }
     };
 
+    // 保存
     const handleSave = () => {
       const res = validParams(list.value);
       formError.value = '';
@@ -220,6 +249,13 @@ export default defineComponent({
       }
     };
 
+    // 取消
+    const handleCancel = () => {
+      handleToggleEdit(false);
+      // TODO. 将list.value重置为初始化值
+    };
+
+    // 清除错误
     const clearError = (refId) => {
       try {
         const ref = inputRefs.value[refId];
@@ -229,6 +265,7 @@ export default defineComponent({
       }
     };
 
+    // validate after input change
     const handleInputChange = (field, id, value) => {
       formError.value = '';
       let valid = false;
@@ -271,10 +308,11 @@ export default defineComponent({
           break;
       }
       if (ref) {
-        ref.handleOpen(row);
+        ref.handleOpen(row, isEdit.value);
       }
     };
 
+    // 设置
     const handleConfigChange = ({ id, config }) => {
       findAndUpdateParams(list.value, id, (items, index, item) => {
         items.splice(index, 1, {
@@ -306,6 +344,9 @@ export default defineComponent({
       previewCode,
       inputRefs,
       formError,
+      isEdit,
+      handleToggleEdit,
+      getParamTypeName,
       handleAdd,
       handleRemove,
       handleTypeChange,
@@ -314,6 +355,7 @@ export default defineComponent({
       handleInputChange,
       handleSetting,
       handleConfigChange,
+      handleCancel,
       stringSettingDialog,
       intSettingDialog,
       floatSettingDialog,

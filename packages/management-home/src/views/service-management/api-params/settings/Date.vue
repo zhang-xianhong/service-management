@@ -3,10 +3,13 @@
     <div class="dialog-body">
       <el-form :model="form" :rules="formRules" ref="formRef" label-width="100px">
         <el-form-item label="类型选择" prop="type">
-          <el-radio name="set-date-type" v-model="form.type" :label="1">时间戳格式</el-radio>
-          <el-radio name="set-date-type" v-model="form.type" :label="2">时间格式</el-radio>
+          <template v-if="isEdit">
+            <el-radio name="set-date-type" v-model="form.type" :label="1">时间戳格式</el-radio>
+            <el-radio name="set-date-type" v-model="form.type" :label="2">时间格式</el-radio>
+          </template>
+          <span v-else>{{ form.type === 1 ? '时间戳格式' : '时间格式' }}</span>
         </el-form-item>
-        <el-form-item label="格式限制" prop="format" v-if="form.type === 2">
+        <!-- <el-form-item label="格式限制" prop="format" v-if="form.type === 2">
           <template v-slot:label
             >格式限制
             <el-tooltip effect="light" placement="top">
@@ -36,13 +39,13 @@
               </template>
             </el-tooltip>
           </template>
-          <el-input v-model.trim="form.format" placeholder="请输入格式限制" maxlength="50" />
-        </el-form-item>
+          <el-input v-model.trim="form.format" placeholder="请输入格式限制" maxlength="50" :disabled="!isEdit"/>
+        </el-form-item> -->
       </el-form>
     </div>
     <template #footer>
       <span class="dialog-footer">
-        <el-button type="primary" @click="handleSubmit" :loading="submitting">确定</el-button>
+        <el-button type="primary" @click="handleSubmit" :loading="submitting" v-if="isEdit">确定</el-button>
         <el-button @click="handleClose">取消</el-button>
       </span>
     </template>
@@ -51,7 +54,7 @@
 <script lang="ts">
 import { defineComponent, reactive } from 'vue';
 import Base from './Base';
-const { visible, submitting, formRef, form, handleClose, handleOpen, handleSubmit } = Base();
+const { handleSubmit, form, ...baseApi } = Base();
 export default defineComponent({
   name: 'DateSettingDialog',
   setup(props, { emit }) {
@@ -78,13 +81,9 @@ export default defineComponent({
       format: [{ validator: checkFormat, trigger: 'blur' }],
     });
     return {
-      visible,
-      submitting,
-      form,
       formRules,
-      formRef,
-      handleOpen,
-      handleClose,
+      form,
+      ...baseApi,
       handleSubmit: () => {
         handleSubmit(emit);
       },

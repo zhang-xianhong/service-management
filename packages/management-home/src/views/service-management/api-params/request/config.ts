@@ -35,3 +35,13 @@ export const PARAMS_TYPES = [
     value: 'object',
   },
 ];
+
+/**
+ * 获取参数类型名称
+ * @param value
+ * @returns
+ */
+export const getParamTypeName = (value: TYPE_PARAMS_TYPES) => {
+  const param = PARAMS_TYPES.find((item) => item.value === value);
+  return param?.name || '';
+};
