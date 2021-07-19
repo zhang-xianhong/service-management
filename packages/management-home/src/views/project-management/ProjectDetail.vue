@@ -24,6 +24,17 @@
     </el-row>
     <el-row class="user-info">
       <div class="user-tree">
+        <div class="user-tree-top">
+          <el-input
+            suffix-icon="el-icon-search"
+            placeholder="请输入部门/人员名称"
+            v-model="userInput"
+          ></el-input>
+          <div class="user-tree-btn">
+            <el-button type="primary" @click="DialogVisible = true">新建</el-button>
+            <el-button @click="closeUserTree(row)">删除</el-button>
+          </div>
+        </div>
         <el-scrollbar>
           <el-tree
             ref="userTreeRef"
@@ -39,18 +50,72 @@
               <div class="customNode">
                 <svg-icon v-if="node.level < 2" icon-name="folder" icon-class="tree-node-folder"></svg-icon>
                 <svg-icon v-if="node.level === 2" icon-name="member" icon-class="tree-node-member"></svg-icon>
-                <span>{{ node.label }}</span>
+                <span>
+                  {{ node.label }}
+                  <el-popover
+                      v-if="node.level === 1"
+                      placement="bottom-start"
+                      :width="300"
+                      :height="200"
+                      trigger="click"
+                      v-model="visible"
+                    >
+                      <el-input
+                        v-model="userTreeInput"
+                        placeholder="新建的一个自定义角色"
+                        suffix-icon="el-icon-error"
+                        :rules="[
+                          { required: true, message: '角色不能为空', trigger: 'blur' },
+                          { min: 1, max: 20, message: '超过字数限制，最多不能超过20个字符', trigger: 'blur' },
+                        ]"
+                      ></el-input>
+                      <div style="float: right">
+                        <el-button type="text" @click="visible = false">保存</el-button>
+                        <el-button type="text" @click="visible = false">取消</el-button>
+                      </div>
+                      <template #reference>
+                        <i class="el-icon-edit" @click="visible = true"></i>
+                      </template>
+                    </el-popover>
+                </span>
                 <i
-                  v-if="node.level === 2 && getShowBool('update') && include"
+                  v-if="node.level === 1"
                   class="el-icon-circle-plus"
                   style="float: right"
                   @click.stop="addMember(node, data)"
                 ></i>
               </div>
-            </template>
-          </el-tree>
-        </el-scrollbar>
-      </div>
+              </template>
+            </el-tree>
+          </el-scrollbar>
+        </div>
+      <el-dialog title="新建角色" v-model="DialogVisible" width="500px" :destroy-on-close="true" @closed="cancel">
+        <el-form :model="form" :rules="rules" ref="formRef">
+          <el-form-item
+            label="角色名称"
+            label-width="80px"
+            prop="name"
+            :rules="[
+              { required: true, message: '角色不能为空', trigger: 'blur' },
+              { min: 1, max: 20, message: '超过字数限制，最多不能超过20个字符', trigger: 'blur' },
+              { validator: validatorTagsPass, trigger: 'blur' },
+            ]"
+          >
+            <el-input
+              ref="tagName"
+              v-model.trim="form.name"
+              autocomplete="off"
+              placeholder="请输入角色名称"
+            ></el-input>
+          </el-form-item>
+        </el-form>
+        <template #footer>
+          <div class="dialog-footer">
+            <el-button type="primary" @click="save()" size="mini" :loading="submitting">确定</el-button>
+            <el-button @click="cancel()">取消</el-button>
+          </div>
+        </template>
+      </el-dialog>
       <div class="user-table">
         <el-tabs v-model="activeTab">
           <el-tab-pane label="成员列表" name="userList">
@@ -119,7 +184,6 @@ import _ from 'lodash/fp';
 import { ref, Ref, provide, onMounted, getCurrentInstance } from 'vue';
 import TreeSelector from './components/TreeSelector.vue';
 import BasicInfoForm from './components/BasicInfoForm.vue';
-import { ElMessageBox } from 'element-plus';
 import {
   getMemberList,
   getProjectDetail,
@@ -127,7 +191,10 @@ import {
   getRoleAuthList,
   updateRole,
   getAuthByRoleId,
+  deleteRole,
+  addRole,
 } from '@/api/project/project';
+import { ElMessage, ElMessageBox } from 'element-plus';
 import { getTenantDepartment } from '@/api/tenant';
 import { userInfo, userProjectList } from '@/layout/messageCenter/user-info';
 import { getShowBool } from '@/utils/permission-show-module';
@@ -159,6 +226,16 @@ export default {
     const selectedUser: Ref<Array<any>> = ref([]);
     const userTreeRef: any = ref(null);
 
+    const formRef: any = ref(null);
+    const tagName: any = ref(null as any);
+    const DialogVisible = ref(false);
+    const form = ref({
+      name: '',
+    });
+    const submitting = ref(false);
+    const visible = ref(false);
+    const iconEdit = ref(false);
+
     // 用户树
     const treeData: Ref<any> = ref([
       {
@@ -168,6 +245,9 @@ export default {
     ]);
     const currentKey = ref('');
     const treeSelectorRole = ref({});
+
+    const userTreeInput = ref('');
+    const userInput = ref('');
 
     // tree selector数据
     const allDeptUser: Ref<Array<any>> = ref([]);
@@ -500,7 +580,68 @@ export default {
     onMounted(() => {
       getRoleAuthListData();
     });
+
+    // 新建角色 提交取消表单
+    // const validatorTagsPass = async(rule: any, value: string, callback: Function) => {
+    //   const { data } = await checkTagRule({
+    //     name: value,
+    //   });
+    //   if (!data.usable) {
+    //     callback(new Error('名称已存在!'));
+    //   }
+    //   callback();
+    // };
+
+    const save = () => {
+      if (submitting.value || form.value.name.length > 25 || form.value.name.length < 1) {
+        return;
+      }
+      console.log(form.value.name);
+      submitting.value = true;
+      formRef.value.validate(async (isValid: boolean) => {
+        if (isValid) {
+          try {
+            const { code } = await addRole({ name: form.value.name })
+              if (code === 0) {
+                ElMessage({
+                  type: 'success',
+                  message: '添加成功',
+                });
+              } else {
+                ElMessage({
+                  type: 'error',
+                  message: '添加失败',
+                });
+              }
+            submitting.value = false;
+          } catch (e) {
+            submitting.value = false;
+          }
+        }
+      });
+    };
+
+    const cancel = () => {
+      DialogVisible.value = false;
+      form.value.name = '';
+    };
+
+    const closeUserTree = () => {
+      const rowId = treeData.value[0].id
+      ElMessageBox.confirm('删除该角色前请先移除【角色名称】下的人员','删除【角色名称】角色', {
+        confirmButtonText: '我知道了',
+        showCancelButton: false,
+        type: 'warning',
+      }).then(async () => {
+        const { code } = await deleteRole({
+          roleId: rowId,
+        });
+        if (code === 0) reloadUserList({ id: rowId });
+      });
+    };
+
     return {
+      closeUserTree,
       userTreeRef,
       editMode,
       treeData,
@@ -533,6 +674,18 @@ export default {
       handleEdit,
       handleCancel,
       editDisable,
+      userTreeInput,
+      userInput,
+      DialogVisible,
+      form,
+      formRef,
+      tagName,
+      submitting,
+      visible,
+      iconEdit,
+      save,
+      cancel,
+      // validatorTagsPass,
     };
   },
 };
@@ -589,6 +742,9 @@ export default {
     margin-right: 20px;
     background: white;
     padding: 20px;
+    .user-tree-btn {
+      margin: 10px;
+    }
     .customNode {
       font-size: 12px;
       width: 100%;

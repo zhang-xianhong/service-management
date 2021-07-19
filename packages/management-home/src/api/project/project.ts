@@ -38,3 +38,9 @@ export const updateRole = (payload: any): Promise<SuccessResponse<any>> =>
 
 export const getAuthByRoleId = (payload: any): Promise<SuccessResponse<any>> =>
   axios.get(getUrl(project.PROJECT_ROLE_AUTH, payload.roleId));
+
+export const deleteRole = (payload: any): Promise<SuccessResponse<any>> =>
+  axios.get(getUrl(project.DELETE_ROLE, payload.roleId));
+
+  export const addRole = (payload: any): Promise<SuccessResponse<any>> =>
+  axios.get(getUrl(project.ADD_ROLE, payload.roleId));

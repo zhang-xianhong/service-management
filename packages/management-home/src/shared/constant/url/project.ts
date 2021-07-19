@@ -14,4 +14,6 @@ export default {
   GET_ROLEAUTH_LIST: ['/projects/_/members', '/mock/project/role-auth-list.json'],
   PROJECT_UPDATE_ROLE: ['/projects/role/_', '/mock/project/role.json'],
   PROJECT_ROLE_AUTH: ['/projects/role/_', '/mock/project/role-auth.json'],
+  DELETE_ROLE: ['/projects/_'],
+  ADD_ROLE: ['/projects/_', '/mock/project/project-members.json']
 };
