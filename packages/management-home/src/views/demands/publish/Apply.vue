@@ -133,7 +133,8 @@
             </el-popover>
           </template>
         </el-table-column>
-        <el-table-column label="部署版本" prop="version"></el-table-column>
+        <el-table-column label="部署版本" prop="publishVersion">
+        </el-table-column>
         <el-table-column label="部署时间" prop="publishTime">
           <template #default="scope">{{ dateFormat(scope.row.publishTime) }}</template>
         </el-table-column>
@@ -214,9 +215,9 @@
           <el-form-item label="申请账号" prop="applicantName" :label-width="labelWidth">
             <el-input v-model="publishForm.formData.applicantName" :disabled="true"></el-input>
           </el-form-item>
-          <el-form-item label="部署版本" prop="version" :label-width="labelWidth">
+          <el-form-item label="部署版本" prop="publishVersion" :label-width="labelWidth">
             <el-select
-              v-model="publishForm.formData.version"
+              v-model="publishForm.formData.publishVersion"
               placeholder="请选择部署版本"
               clearable
               :disabled="publishForm.disabled"
@@ -225,7 +226,7 @@
                 v-for="(item, index) in publishForm.versionOptions"
                 :key="index"
                 :label="item.name"
-                :value="item.id"
+                :value="item.name"
               ></el-option>
             </el-select>
           </el-form-item>
@@ -290,6 +291,7 @@ interface PublishFormState {
   disabled: boolean;
   isEdit: boolean;
   id: string;
+  servides: Array<object>;
   serviceList: Array<object>;
   applicationList: Array<object>;
   versionOptions: Array<object>;
@@ -300,6 +302,7 @@ interface PublishFormState {
     applicant: number;
     applicantName: string;
     version: number;
+    publishVersion: string;
     description: string;
   };
 }
@@ -342,8 +345,10 @@ export default {
         applicant: userInfo.value.userId,
         applicantName: `${userInfo.value.displayName}_${userInfo.value.userName}`,
         version: 1,
+        publishVersion: '',
         description: '',
       },
+      servides: [],
       serviceList: [],
       applicationList: [],
       versionOptions: [{ id: 1, name: '1' }],
@@ -357,6 +362,7 @@ export default {
       name: [{ required: true, message: '请输入部署名称', trigger: 'change' }],
       applicant: [{ required: true, message: '请选择申请账号', trigger: 'change' }],
       version: [{ required: true, message: '请选择部署版本', trigger: 'change' }],
+      publishVersion: [{ required: true, message: '请选择部署版本', trigger: 'change' }],
       description: [{ required: true, message: '请输入部署说明', trigger: 'blur' }],
     };
 
@@ -372,6 +378,7 @@ export default {
         applicant: userInfo.value.userId,
         applicantName: `${userInfo.value.displayName}_${userInfo.value.userName}`,
         version: 1,
+        publishVersion: '',
         description: '',
       };
     }
@@ -397,6 +404,7 @@ export default {
           moduleType: getModuleType(item.moduleType),
         }));
         tableState.tableData = publishData;
+        // console.log("部署申请data", tableState.tableData);
       } catch (error) {
         tableState.loading = false;
         ElMessage({
@@ -418,8 +426,9 @@ export default {
     // 获取服务列表
     async function getServices() {
       const { data } = await getServiceList({ all: true });
-      const servides = data.rows || [];
-      publishForm.serviceList = servides.map((item: any) => ({
+      publishForm.servides = data.rows || [];
+      console.log("publishForm.servides", publishForm.servides);
+      publishForm.serviceList = publishForm.servides.map((item: any) => ({
         id: item.id,
         name: `${item.description}_${item.name}`,
       }));
@@ -427,9 +436,16 @@ export default {
 
     // 改变service方法
     function serviceChange(serviceId: any) {
+      console.log("serviceId", serviceId);
       const data: any = publishForm.serviceList.find((i: any) => i.id === serviceId);
-      publishForm.formData.moduleId = serviceId;
+      // publishForm.formData.moduleId = serviceId;
       publishForm.formData.name = data?.name;
+      const tempServides: any = ref(publishForm.servides.find((item: any) => item.id === serviceId));
+      // console.log("tempServides", tempServides);
+      publishForm.versionOptions = [{
+        id: tempServides.value.id,
+        name: tempServides.value.serviceVersion,
+      }]
     }
 
     function getNameByCode(code: number, type: string): string {

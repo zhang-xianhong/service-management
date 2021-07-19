@@ -113,7 +113,7 @@
             </el-popover>
           </template>
         </el-table-column>
-        <el-table-column label="部署版本" prop="version"></el-table-column>
+        <el-table-column label="部署版本" prop="publishVersion"></el-table-column>
         <el-table-column label="部署时间" prop="publishTime">
           <template #default="scope">{{ dateFormat(scope.row.publishTime) }}</template>
         </el-table-column>
