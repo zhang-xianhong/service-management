@@ -99,7 +99,6 @@
             :rules="[
               { required: true, message: '角色不能为空', trigger: 'blur' },
               { min: 1, max: 20, message: '超过字数限制，最多不能超过20个字符', trigger: 'blur' },
-              { validator: validatorTagsPass, trigger: 'blur' },
             ]"
           >
             <el-input ref="tagName" v-model.trim="form.name" autocomplete="off" placeholder="请输入角色名称"></el-input>
@@ -297,6 +296,7 @@ export default {
           _.map((role: any) => ({
             id: role.id,
             label: role.name,
+            isSystem: role.isSystem,
             children: _.map((member: any) => {
               const user: any = _.find({ id: member.userId })(data.users);
               return {
@@ -306,8 +306,8 @@ export default {
             })(role.members),
           })),
         )(noPaRoles);
+        console.log('treeData.value', treeData.value);
         treeAllData = [...treeData.value];
-        console.log(' treeData.value', treeData.value);
         userList.value = [];
       }
     };
@@ -594,17 +594,6 @@ export default {
       getRoleAuthListData();
     });
 
-    // 新建角色 提交取消表单
-    const validatorTagsPass = (rule: any, value: string, callback: Function) => {
-      // const { data } = await checkTagRule({
-      //   name: value,
-      // });
-      // if (!data.usable) {
-      //   callback(new Error('名称已存在!'));
-      // }
-      callback();
-    };
-
     const save = () => {
       if (submitting.value || form.value.name.length > 25 || form.value.name.length < 1) {
         return;
@@ -698,7 +687,6 @@ export default {
       iconEdit,
       save,
       cancel,
-      validatorTagsPass,
       filterRoleAndUser,
     };
   },
