@@ -114,7 +114,7 @@
     </div>
 
     <el-dialog title="新增服务" v-model="addServiceDialog" width="600px">
-      <div class="add-service-set" style="width: auto;">
+      <div class="add-service-set" style="width: auto">
         <el-form :model="serviceDetail">
           <el-form-item
             label="服务英文名"
@@ -341,6 +341,7 @@ export default defineComponent({
         rememberMutiArray.value = [];
         tableLoading.value = false;
       });
+      console.log('serviceTableList.list', serviceTableList.list);
     };
 
     let intervalId: any = null;
