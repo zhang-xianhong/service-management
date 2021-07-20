@@ -175,7 +175,7 @@
 </template>
 
 <script lang="ts">
-import { reactive, toRefs, ref, onBeforeUnmount } from 'vue';
+import { reactive, toRefs, ref, onBeforeUnmount, onMounted } from 'vue';
 import { getPublishReviewList, reviewPublish, findUserByName } from '@/api/demands/publish';
 import PackagedPagination from '@/components/pagination/Index.vue';
 import { debounce } from 'lodash';
@@ -258,17 +258,6 @@ export default {
     }
 
     const seleteLoading = ref(false);
-    async function remoteMethod() {
-      seleteLoading.value = true;
-      const { data = [] } = await findUserByName();
-      const users = data.map((item: any) => ({
-        id: item.id,
-        name: item.displayName,
-      }));
-      tableState.reviewerFilters = users || [];
-      tableState.applicantFilters = users || [];
-      seleteLoading.value = false;
-    }
 
     // 获取审核列表数据
     async function getTableData() {
@@ -287,7 +276,6 @@ export default {
           moduleType: getModuleType(item.moduleType),
         }));
         tableState.tableData = publishData;
-        await remoteMethod();
       } catch (error) {
         tableState.loading = false;
         ElMessage({
@@ -436,6 +424,18 @@ export default {
       blackHoverclick();
     });
 
+    onMounted(async () => {
+      seleteLoading.value = true;
+      const { data = [] } = await findUserByName();
+      const users = data.map((item: any) => ({
+        id: item.id,
+        name: item.displayName,
+      }));
+      tableState.reviewerFilters = users || [];
+      tableState.applicantFilters = users || [];
+      seleteLoading.value = false;
+    })
+
     return {
       ...toRefs(tableState),
       labelWidth,
@@ -462,7 +462,6 @@ export default {
       applicantTitleClick,
       applicantChange,
       seleteLoading,
-      remoteMethod,
       blackHoverVisible,
       blackHoverclick,
       getShowBool,

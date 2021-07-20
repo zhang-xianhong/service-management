@@ -261,7 +261,7 @@
 </template>
 
 <script lang="ts">
-import { reactive, toRefs, ref, onBeforeUnmount } from 'vue';
+import { reactive, toRefs, ref, onBeforeUnmount, onMounted } from 'vue';
 import {
   getPublishList,
   addPublish,
@@ -391,17 +391,6 @@ export default {
     }
 
     const seleteLoading = ref(false);
-    async function remoteMethod() {
-      seleteLoading.value = true;
-      const { data = [] } = await findUserByName();
-      const users = data.map((item: any) => ({
-        id: item.id,
-        name: item.displayName,
-      }));
-      tableState.reviewerFilters = users || [];
-      tableState.applicantFilters = users || [];
-      seleteLoading.value = false;
-    }
 
     // 获取部署列表数据
     async function getTableData() {
@@ -424,7 +413,6 @@ export default {
           moduleType: getModuleType(item.moduleType),
         }));
         tableState.tableData = publishData;
-        await remoteMethod();
       } catch (error) {
         tableState.loading = false;
         ElMessage({
@@ -658,7 +646,6 @@ export default {
       isShowPopover.value = false;
       blackHoverVisible.value = false;
       await getTableData();
-      await remoteMethod();
       isShowPopover.value = true;
     }
 
@@ -691,6 +678,18 @@ export default {
       return userInfo.value.userId !== row.applicant || row.status !== 0;
     }
 
+    onMounted(async () => {
+      seleteLoading.value = true;
+      const { data = [] } = await findUserByName();
+      const users = data.map((item: any) => ({
+        id: item.id,
+        name: item.displayName,
+      }));
+      tableState.reviewerFilters = users || [];
+      tableState.applicantFilters = users || [];
+      seleteLoading.value = false;
+    })
+
     return {
       ...toRefs(tableState),
       addNewpublish,
@@ -721,7 +720,6 @@ export default {
       blackHoverVisible,
       blackHoverclick,
       seleteLoading,
-      remoteMethod,
       reviewerTitleVisiable,
       reviewerTitleClick,
       reviewerChange,
