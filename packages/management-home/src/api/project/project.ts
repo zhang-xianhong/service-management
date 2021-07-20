@@ -46,10 +46,13 @@ export const getAuthByRoleId = (payload: any) =>
     params: payload,
   });
 
-export const checkRoleRule = (payload: any): Promise<SuccessResponse<any>> =>
-  axios.get(getUrl(project.CHECK_ROLE, payload.roleId));
+export const checkRoleRule = (payload: any) =>
+  apiProxy(SERVERTYPE.AUTH, project.CHECK_ROLE, {
+    method: 'get',
+    data: payload,
+  });
 
-export const ModRolename = (payload: any) =>
+export const ModRoleName = (payload: any) =>
   apiProxy(SERVERTYPE.AUTH, project.MOD_ROLE, {
     method: 'post',
     data: payload,

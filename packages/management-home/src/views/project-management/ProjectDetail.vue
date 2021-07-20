@@ -201,8 +201,8 @@ import {
   getAuthByRoleId,
   deleteRole,
   addRole,
-  // checkRoleRule,
-  ModRolename,
+  checkRoleRule,
+  ModRoleName,
 } from '@/api/project/project';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { getTenantDepartment } from '@/api/tenant';
@@ -625,12 +625,12 @@ export default {
 
     // 新建角色 提交取消表单
     const validatorTagsPass = async (rule: any, value: string, callback: Function) => {
-      // const { code, data } = await checkRoleRule({
-      //   name: value,
-      // });
-      // if (code === 0 && data === null) {
-      //   callback(new Error('名称已存在!'));
-      // }
+      const { code, data } = await checkRoleRule({
+        name: value,
+      });
+      if (code === 0 && data === null) {
+        callback(new Error('名称已存在!'));
+      }
       callback();
     };
 
@@ -676,15 +676,24 @@ export default {
       formRef.value.resetFields();
     };
 
+    const dataList = ref(null as any);
+    const nodeList = ref(null as any);
+
+    const getNodeData = (node: any, data: any) => {
+      isDeleteVisible.value = false;
+      nodeList.value = node;
+      dataList.value = data;
+    };
+
     // 修改角色名称
     const editBoxsave = (id: any) => {
       roleRef.value.validate(async (isValid: boolean) => {
         if (isValid) {
           submitting.value = true;
           try {
-            const { code } = await ModRolename({
+            const { code } = await ModRoleName({
               name: userTreeInput.value.roles,
-              roleId: 381,
+              roleId: dataList.value.id,
             });
             if (code === 0) {
               ElMessage({
@@ -709,18 +718,9 @@ export default {
       });
     };
 
-    const dataList = ref(null as any);
-    const nodeList = ref(null as any);
-
-    const getNodeData = (node: any, data: any) => {
-      isDeleteVisible.value = false;
-      nodeList.value = node;
-      dataList.value = data;
-    };
-
     // 删除警告弹框
     const closeUserTree = () => {
-      const rowId = nodeList.value.id;
+      const rowId = dataList.value.id;
       if (nodeList.value.level === 2 || !dataList.value.children.length) {
         ElMessageBox.confirm(`删除【${dataList.value.label}】 角色`, {
           confirmButtonText: '我知道了',
@@ -728,7 +728,7 @@ export default {
           type: 'warning',
         }).then(async () => {
           const { code } = await deleteRole({
-            roleId: 382,
+            roleId: rowId,
           });
           if (code === 0) reloadUserList({ id: rowId });
         });
