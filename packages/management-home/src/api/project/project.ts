@@ -40,7 +40,13 @@ export const getAuthByRoleId = (payload: any): Promise<SuccessResponse<any>> =>
   axios.get(getUrl(project.PROJECT_ROLE_AUTH, payload.roleId));
 
 export const deleteRole = (payload: any): Promise<SuccessResponse<any>> =>
-  axios.get(getUrl(project.DELETE_ROLE, payload.roleId));
+  axios.post(getUrl(project.DELETE_ROLE, payload.roleId));
 
 export const addRole = (payload: any): Promise<SuccessResponse<any>> =>
-  axios.get(getUrl(project.ADD_ROLE, payload.roleId));
+  axios.post(getUrl(project.ADD_ROLE, payload.roleId));
+
+export const checkRoleRule = (payload: any): Promise<SuccessResponse<any>> =>
+  axios.get(getUrl(project.CHECK_ROLE, payload.roleId));
+
+export const ModRolename = (payload: any): Promise<SuccessResponse<any>> =>
+  axios.post(getUrl(project.MOD_ROLE, payload.roleId));

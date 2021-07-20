@@ -2,7 +2,14 @@
     "code" : 0,
     "message" : "String",
     "requestId" : "String",
-    "data" : {
-       "roleId" : 0
-    }
+    "data" : [
+      {
+         "roleId" : 0
+      },
+      {
+         "roleId" : 0,
+         "name" : "String",
+         "moduleIds" : null
+      }
+    ]
  }

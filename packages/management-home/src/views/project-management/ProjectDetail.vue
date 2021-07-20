@@ -33,7 +33,7 @@
           ></el-input>
           <div class="user-tree-btn">
             <el-button type="primary" @click="DialogVisible = true">新建</el-button>
-            <el-button @click="delUserRole">删除</el-button>
+            <el-button @click="closeUserTree()" :disabled="isDeleteVisible">删除</el-button>
           </div>
         </div>
         <el-scrollbar>
@@ -51,33 +51,41 @@
               <div class="customNode">
                 <svg-icon v-if="node.level < 2" icon-name="folder" icon-class="tree-node-folder"></svg-icon>
                 <svg-icon v-if="node.level === 2" icon-name="member" icon-class="tree-node-member"></svg-icon>
-                <span>
+                <!-- <span @click="isDeleteVisible = false"> -->
+                <span @click="getNodeData(node,data)">
                   {{ node.label }}
                   <el-popover
-                    v-if="node.level === 1"
-                    placement="bottom-start"
-                    :width="300"
-                    :height="200"
-                    trigger="click"
-                    v-model="visible"
-                  >
-                    <el-input
-                      v-model="userTreeInput"
-                      placeholder="新建的一个自定义角色"
-                      suffix-icon="el-icon-error"
-                      :rules="[
-                        { required: true, message: '角色不能为空', trigger: 'blur' },
-                        { min: 1, max: 20, message: '超过字数限制，最多不能超过20个字符', trigger: 'blur' },
-                      ]"
-                    ></el-input>
-                    <div style="float: right">
-                      <el-button type="text" @click="visible = false">保存</el-button>
-                      <el-button type="text" @click="visible = false">取消</el-button>
-                    </div>
-                    <template #reference>
-                      <i class="el-icon-edit" @click="visible = true"></i>
-                    </template>
-                  </el-popover>
+                      v-if="node.level === 1"
+                      placement="bottom-start"
+                      :width="300"
+                      :height="200"
+                      trigger="click"
+                      :visible = "editPopBoxVisible[String(data.id)]"
+                    >
+                      <el-form :model="userTreeInput" ref="roleRef">
+                        <el-form-item
+                          prop="roles"
+                          :rules="[
+                            { required: true, message: '角色不能为空', trigger: 'blur' },
+                            { min: 1, max: 20, message: '超过字数限制，最多不能超过20个字符', trigger: 'blur' },
+                          ]"
+                        >
+                          <el-input
+                            v-model="userTreeInput.roles"
+                            autocomplete="off"
+                            placeholder="新建的一个自定义角色"
+                            suffix-icon="el-icon-error"
+                          ></el-input>
+                        </el-form-item>
+                        <div style="float: right">
+                          <el-button type="text" @click="editBoxsave(String(data.id))" :loading="submitting">保存</el-button>
+                          <el-button type="text" @click="cancel(String(data.id))">取消</el-button>
+                        </div>
+                      </el-form>
+                      <template #reference>
+                        <i class="el-icon-edit" @click="editPopBoxVisible[String(data.id)]=true"></i>
+                      </template>
+                    </el-popover>
                 </span>
                 <i
                   v-if="node.level === 1"
@@ -86,12 +94,12 @@
                   @click.stop="addMember(node, data)"
                 ></i>
               </div>
-            </template>
-          </el-tree>
-        </el-scrollbar>
-      </div>
-      <el-dialog title="新建角色" v-model="DialogVisible" width="500px" :destroy-on-close="true" @closed="cancel">
-        <el-form :model="form" ref="formRef">
+              </template>
+            </el-tree>
+          </el-scrollbar>
+        </div>
+      <el-dialog title="新建角色" v-model="DialogVisible" width="500px" @closed="cancel">
+        <el-form :model="form" :rules="rules" ref="formRef">
           <el-form-item
             label="角色名称"
             label-width="80px"
@@ -106,7 +114,7 @@
         </el-form>
         <template #footer>
           <div class="dialog-footer">
-            <el-button type="primary" @click="save()" size="mini" :loading="submitting">确定</el-button>
+            <el-button type="primary" @click="save" size="mini" :loading="submitting">确定</el-button>
             <el-button @click="cancel()">取消</el-button>
           </div>
         </template>
@@ -167,7 +175,7 @@
       :not-allow="otherRoleUser"
       optionPlaceholder="请输入部门/人员名称"
       optionLabel="选择人员"
-      :role="treeSelectorRole"
+      :s="treeSelectorRole"
       ref="treeSelectorRef"
       @user-changed="reloadUserList"
     ></tree-selector>
@@ -189,6 +197,8 @@ import {
   getAuthByRoleId,
   deleteRole,
   addRole,
+  checkRoleRule,
+  ModRolename,
 } from '@/api/project/project';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { getTenantDepartment } from '@/api/tenant';
@@ -223,6 +233,7 @@ export default {
     const userTreeRef: any = ref(null);
 
     const formRef: any = ref(null);
+    const roleRef: any = ref(null as any);
     const tagName: any = ref(null as any);
     const DialogVisible = ref(false);
     const form = ref({
@@ -231,6 +242,9 @@ export default {
     const submitting = ref(false);
     const visible = ref(false);
     const iconEdit = ref(false);
+    const isSel = ref(false);
+    const currentNodeData = ref({});
+    const isDeleteVisible = ref(true);
 
     // 用户树
     const treeData: Ref<any> = ref([
@@ -240,10 +254,13 @@ export default {
       },
     ]);
     let treeAllData: any = [];
+    const editPopBoxVisible: any = ref({});
     const currentKey = ref('');
     const treeSelectorRole = ref({});
 
-    const userTreeInput = ref('');
+    const userTreeInput = ref({
+      roles: '',
+    });
     const userInput = ref('');
 
     // tree selector数据
@@ -308,16 +325,22 @@ export default {
         )(noPaRoles);
         console.log('treeData.value', treeData.value);
         treeAllData = [...treeData.value];
+
+        const res: any = {};
+        treeData.value.forEach((item: any) => {
+          res[String(item.id)] = false;
+        });
+        editPopBoxVisible.value = res;
         userList.value = [];
       }
     };
     initUserList();
 
-    const reloadUserList = async (role: any) => {
+    const reloadUserList = async (s: any) => {
       await initUserList();
-      if (role?.id) {
-        userTreeRef.value.setCurrentKey(role.id);
-        const treeUser: any = _.find({ id: role.id })(treeData.value[0].children);
+      if (s?.id) {
+        userTreeRef.value.setCurrentKey(s.id);
+        const treeUser: any = _.find({ id: s.id })(treeData.value[0].children);
         userList.value = _.intersectionWith((node: any, user: any) => node.id === user.id)(allUsers.value)(
           treeUser.children,
         );
@@ -423,6 +446,8 @@ export default {
     };
 
     const nodeClickHandler = async (data: any, node: any) => {
+      isSel.value = true;
+      currentNodeData.value = data;
       if (node.level === 1) {
         userList.value = allUsers.value;
         roleAuthInit();
@@ -594,56 +619,121 @@ export default {
       getRoleAuthListData();
     });
 
+    // 新建角色 提交取消表单
+    const validatorTagsPass = async(rule: any, value: string, callback: Function) => {
+      const { data } = await checkRoleRule({
+        name: value,
+      });
+      if (data !== null) {
+        callback(new Error('名称已存在!'));
+      }
+      callback();
+    };
+
+    // 对话框确认
     const save = () => {
       if (submitting.value || form.value.name.length > 25 || form.value.name.length < 1) {
         return;
       }
       console.log(form.value.name);
-      submitting.value = true;
       formRef.value.validate(async (isValid: boolean) => {
         if (isValid) {
+          submitting.value = true;
           try {
-            const { code } = await addRole({ name: form.value.name });
-            if (code === 0) {
-              ElMessage({
-                type: 'success',
-                message: '添加成功',
-              });
-            } else {
-              ElMessage({
-                type: 'error',
-                message: '添加失败',
-              });
-            }
+            const { code } = await addRole({ name: form.value.name })
+              if (code === 0) {
+                ElMessage({
+                  type: 'success',
+                  message: '添加成功',
+                });
+              } else {
+                ElMessage({
+                  type: 'error',
+                  message: '添加失败',
+                });
+              }
+            DialogVisible.value = false;
             submitting.value = false;
           } catch (e) {
+            ElMessage.error(e);
             submitting.value = false;
           }
         }
       });
     };
 
-    const cancel = () => {
+    // 对话框取消
+    const cancel = (id: any) => {
       DialogVisible.value = false;
       form.value.name = '';
+      userTreeInput.value.roles = '';
+      editPopBoxVisible.value[id] = false;
+      formRef.value.resetFields();
     };
 
-    const delUserRole = () => {
-      const rowId = treeData.value[0].id;
-      ElMessageBox.confirm('删除该角色前请先移除【角色名称】下的人员', '删除【角色名称】角色', {
-        confirmButtonText: '我知道了',
-        showCancelButton: false,
-        type: 'warning',
-      }).then(async () => {
-        const { code } = await deleteRole({
-          roleId: rowId,
-        });
-        if (code === 0) reloadUserList({ id: rowId });
+    // 修改角色名称
+    const editBoxsave = (id: any) => {
+      roleRef.value.validate(async (isValid: boolean) => {
+        if (isValid) {
+          submitting.value = true;
+          try {
+            const { code } = await ModRolename({ name: userTreeInput.value.roles })
+              if (code === 0) {
+                ElMessage({
+                  type: 'success',
+                  message: '修改成功',
+                });
+              } else {
+                ElMessage({
+                  type: 'error',
+                  message: '修改失败',
+                });
+              }
+            userTreeInput.value.roles = '';
+            editPopBoxVisible.value[id] = false;
+            submitting.value = false;
+          } catch (e) {
+            ElMessage.error(e);
+            submitting.value = false;
+          }
+        }
       });
     };
 
+    const dataList = ref(null as any);
+    const nodeList = ref(null as any);
+
+    const getNodeData = (node: any, data: any) => {
+      isDeleteVisible.value = false;
+      nodeList.value = node;
+      dataList.value = data;
+    }
+
+    // 删除警告弹框
+    const closeUserTree = () => {
+      const rowId = treeData.value[0].id
+      if (nodeList.value.level === 2 || !dataList.value.children.length) {
+        ElMessageBox.confirm(`删除【${dataList.value.label}】 角色`, {
+          confirmButtonText: '我知道了',
+          showCancelButton: false,
+          type: 'warning',
+        }).then(async () => {
+          const { code } = await deleteRole({
+            roleId: rowId,
+          });
+          if (code === 0) reloadUserList({ id: rowId });
+        });
+      } else {
+        ElMessageBox.confirm(`删除该角色前请先移除【${dataList.value.label}】下的人员`,`删除 【${dataList.value.label} 】角色`, {
+          confirmButtonText: '我知道了',
+          showCancelButton: false,
+          type: 'warning',
+        })
+      }
+    };
+
     return {
-      delUserRole,
+      closeUserTree,
       userTreeRef,
       editMode,
       treeData,
@@ -681,6 +771,7 @@ export default {
       DialogVisible,
       form,
       formRef,
+      roleRef,
       tagName,
       submitting,
       visible,
@@ -688,6 +779,12 @@ export default {
       save,
       cancel,
       filterRoleAndUser,
+      editPopBoxVisible,
+      editBoxsave,
+      isSel,
+      validatorTagsPass,
+      isDeleteVisible,
+      getNodeData
     };
   },
 };
