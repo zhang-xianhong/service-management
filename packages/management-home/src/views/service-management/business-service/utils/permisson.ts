@@ -7,6 +7,15 @@ export const enum SERVICE_SOURCE {
   CLONE,
   CLONE_RNAME,
 }
+
+// 服务来源名称
+export const SERVICE_SOURCE_NAME: any = {
+  1: '自研',
+  2: '引用',
+  3: '克隆',
+  4: '克隆(重命名)',
+};
+
 export interface ServiceInfo {
   id: number;
   updateTime: string;
