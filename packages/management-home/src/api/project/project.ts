@@ -37,13 +37,16 @@ export const getRoleAuthList = () =>
     method: 'get',
   });
 
-export const updateRole = (payload: any): Promise<SuccessResponse<any>> =>
-  axios.post(getUrl(project.PROJECT_UPDATE_ROLE, payload.roleId), payload);
+export const updateRole = (payload: any) =>
+  apiProxy(SERVERTYPE.AUTH, project.UPDATE_ROLE_MODULES, {
+    method: 'post',
+    data: payload,
+  });
 
 export const getAuthByRoleId = (payload: any) =>
   apiProxy(SERVERTYPE.AUTH, project.PROJECT_ROLE_AUTH, {
     method: 'get',
-    params: payload,
+    data: payload,
   });
 
 export const checkRoleRule = (payload: any) =>
