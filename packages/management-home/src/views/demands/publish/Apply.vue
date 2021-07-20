@@ -57,12 +57,10 @@
               </template>
               <el-select
                 v-model="searchProps.applicant"
-                placeholder="请输入申请账号"
+                placeholder="请选择申请账号"
                 clearable
                 multiple
                 filterable
-                remote
-                :remote-method="remoteMethod"
                 @change="applicantChange"
                 :loading="seleteLoading"
               >
@@ -114,12 +112,10 @@
               </template>
               <el-select
                 v-model="searchProps.reviewer"
-                placeholder="请输入审核人"
+                placeholder="请选择审核人"
                 clearable
                 multiple
                 filterable
-                remote
-                :remote-method="remoteMethod"
                 @change="reviewerChange"
                 :loading="seleteLoading"
               >
@@ -133,8 +129,7 @@
             </el-popover>
           </template>
         </el-table-column>
-        <el-table-column label="部署版本" prop="publishVersion">
-        </el-table-column>
+        <el-table-column label="部署版本" prop="publishVersion"> </el-table-column>
         <el-table-column label="部署时间" prop="publishTime">
           <template #default="scope">{{ dateFormat(scope.row.publishTime) }}</template>
         </el-table-column>
@@ -427,7 +422,7 @@ export default {
     async function getServices() {
       const { data } = await getServiceList({ all: true });
       publishForm.servides = data.rows || [];
-      console.log("publishForm.servides", publishForm.servides);
+      console.log('publishForm.servides', publishForm.servides);
       publishForm.serviceList = publishForm.servides.map((item: any) => ({
         id: item.id,
         name: `${item.description}_${item.name}`,
@@ -436,16 +431,18 @@ export default {
 
     // 改变service方法
     function serviceChange(serviceId: any) {
-      console.log("serviceId", serviceId);
+      console.log('serviceId', serviceId);
       const data: any = publishForm.serviceList.find((i: any) => i.id === serviceId);
       // publishForm.formData.moduleId = serviceId;
       publishForm.formData.name = data?.name;
       const tempServides: any = ref(publishForm.servides.find((item: any) => item.id === serviceId));
       // console.log("tempServides", tempServides);
-      publishForm.versionOptions = [{
-        id: tempServides.value.id,
-        name: tempServides.value.serviceVersion,
-      }]
+      publishForm.versionOptions = [
+        {
+          id: tempServides.value.id,
+          name: tempServides.value.serviceVersion,
+        },
+      ];
     }
 
     function getNameByCode(code: number, type: string): string {
