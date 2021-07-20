@@ -417,24 +417,43 @@ export default {
         message: content,
       });
     }
+
+    const dataList = ref(null as any);
+    const nodeList = ref(null as any);
+
+    const getNodeData = (node: any, data: any) => {
+      isDeleteVisible.value = false;
+      nodeList.value = node;
+      dataList.value = data;
+    };
+
     // 选中角色的权限点信息
     const checkedItem: any = ref({});
     // 获取角色对应权限点
     const getAuth = async () => {
+      // 获取当前选中节点数据
+      let roleId: number;
+      console.log('nodeList.value', nodeList.value);
+      const { level, data, parent } = nodeList.value;
+      if (level === 1) {
+        roleId = data.id;
+      } else {
+        roleId = parent.data.id;
+      }
       try {
-        const { code, data } = await getAuthByRoleId({ roleId: 381 });
+        const { code, data } = await getAuthByRoleId({ roleId });
         if (code === ResCode.Success) {
-          const { modules } = data;
+          const { moduleIds } = data;
           const checkObj: any = {};
           Object.entries(checkedItem.value).forEach((item: any) => {
-            checkObj[item[0]] = modules;
+            checkObj[item[0]] = moduleIds;
           });
           checkedItem.value = checkObj;
         } else {
           msgTips('error', '获取角色的权限数据失败');
         }
       } catch (error) {
-        console.log(error);
+        console.log('获取角色', error);
       }
     };
 
@@ -462,8 +481,8 @@ export default {
         } else {
           editDisable.value = false;
         }
-        getAuth();
       }
+      getAuth();
     };
 
     const initDepartments = async () => {
@@ -548,10 +567,12 @@ export default {
       });
       // 去重
       moduleIds = [...new Set(moduleIds)];
+      // 获取当前选中节点数据
+      const { data } = nodeList.value;
+      const roleId = data.id;
       try {
         const { code } = await updateRole({
-          name: '',
-          roleId: '',
+          roleId,
           moduleIds,
         });
         if (code === ResCode.Success) {
@@ -675,16 +696,6 @@ export default {
       editPopBoxVisible.value[id] = false;
       formRef.value.resetFields();
     };
-
-    const dataList = ref(null as any);
-    const nodeList = ref(null as any);
-
-    const getNodeData = (node: any, data: any) => {
-      isDeleteVisible.value = false;
-      nodeList.value = node;
-      dataList.value = data;
-    };
-
     // 修改角色名称
     const editBoxsave = (id: any) => {
       roleRef.value.validate(async (isValid: boolean) => {
