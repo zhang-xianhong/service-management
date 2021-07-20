@@ -51,7 +51,13 @@
         <el-table-column label="申请账号" prop="applicantName">
           <template #header>
             <i class="el-icon-search"></i>
-            <el-popover placement="bottom" :width="200" trigger="manual" :visible="applicantTitleVisiable">
+            <el-popover
+              placement="bottom"
+              :width="200"
+              trigger="manual"
+              :visible="applicantTitleVisiable"
+              v-if="isShowPopover"
+            >
               <template #reference>
                 <el-button type="text" @click="applicantTitleClick">申请账号</el-button>
               </template>
@@ -106,7 +112,13 @@
         <el-table-column label="审核人" prop="reviewerName">
           <template #header>
             <i class="el-icon-search"></i>
-            <el-popover placement="bottom" :width="200" trigger="manual" :visible="reviewerTitleVisiable">
+            <el-popover
+              placement="bottom"
+              :width="200"
+              trigger="manual"
+              :visible="reviewerTitleVisiable"
+              v-if="isShowPopover"
+            >
               <template #reference>
                 <el-button type="text" @click="reviewerTitleClick">审核人</el-button>
               </template>
@@ -378,6 +390,19 @@ export default {
       };
     }
 
+    const seleteLoading = ref(false);
+    async function remoteMethod() {
+      seleteLoading.value = true;
+      const { data = [] } = await findUserByName();
+      const users = data.map((item: any) => ({
+        id: item.id,
+        name: item.displayName,
+      }));
+      tableState.reviewerFilters = users || [];
+      tableState.applicantFilters = users || [];
+      seleteLoading.value = false;
+    }
+
     // 获取部署列表数据
     async function getTableData() {
       try {
@@ -399,7 +424,7 @@ export default {
           moduleType: getModuleType(item.moduleType),
         }));
         tableState.tableData = publishData;
-        // console.log("部署申请data", tableState.tableData);
+        await remoteMethod();
       } catch (error) {
         tableState.loading = false;
         ElMessage({
@@ -597,26 +622,10 @@ export default {
       getTableData();
     };
 
-    const seleteLoading = ref(false);
-    async function remoteMethod(keyword: string) {
-      if (keyword !== '') {
-        seleteLoading.value = true;
-        const { data = [] } = await findUserByName({ keyword });
-        const users = data.map((item: any) => ({
-          id: item.id,
-          name: item.displayName,
-        }));
-        tableState.reviewerFilters = users;
-        tableState.applicantFilters = users;
-        seleteLoading.value = false;
-      } else {
-        tableState.reviewerFilters = [];
-        tableState.applicantFilters = [];
-      }
-    }
     // 筛选
     const blackHoverVisible = ref(false);
     const statusTitleVisiable = ref(false);
+    const isShowPopover = ref(true);
     function statusTitleClick() {
       statusTitleVisiable.value = true;
       blackHoverVisible.value = true;
@@ -646,8 +655,11 @@ export default {
 
     async function reviewerChange() {
       reviewerTitleVisiable.value = false;
+      isShowPopover.value = false;
       blackHoverVisible.value = false;
       await getTableData();
+      await remoteMethod();
+      isShowPopover.value = true;
     }
 
     const applicantTitleVisiable = ref(false);
@@ -658,8 +670,10 @@ export default {
 
     async function applicantChange() {
       applicantTitleVisiable.value = false;
+      isShowPopover.value = false;
       blackHoverVisible.value = false;
       await getTableData();
+      isShowPopover.value = true;
     }
 
     function blackHoverclick() {
@@ -717,6 +731,7 @@ export default {
       getShowBool,
       getRowOptionStatus,
       btnLoading,
+      isShowPopover,
     };
   },
 };
