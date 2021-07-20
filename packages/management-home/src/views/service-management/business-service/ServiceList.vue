@@ -98,7 +98,7 @@
               </template>
             </el-table-column>
             <el-table-column property="source" label="服务来源"></el-table-column>
-            <el-table-column property="version" label="服务版本"></el-table-column>
+            <el-table-column property="serviceVersion" label="服务版本"></el-table-column>
           </el-table>
           <packaged-pagination
             @size-change="handleSizeChange"
