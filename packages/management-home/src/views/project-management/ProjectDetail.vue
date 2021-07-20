@@ -300,6 +300,17 @@ export default {
       },
     ];
 
+    const dataList = ref(null as any);
+    const nodeList = ref(null as any);
+
+    const getNodeData = (node: any, data: any) => {
+      isDeleteVisible.value = false;
+      nodeList.value = node;
+      dataList.value = data;
+      console.log("data",data);
+      console.log("node",node);
+    };
+
     const allUsers = ref([]);
     const initUserList = async () => {
       const { code, data } = await getMemberList({
@@ -353,42 +364,40 @@ export default {
       }
     };
 
-    const findParent = (data: any, id: any, parentNode: any): any => {
-      let result: any = {};
-      if (!data) {
-        return;
-      }
-      for (const item of data) {
-        if (item.id === id) {
-          return parentNode;
-        }
-        if (item.children && item.children.length > 0) {
-          result = findParent(item.children, id, item);
-          if (result.id) {
-            return result;
-          }
-        }
-      }
-      return result;
-    };
-    const removeUser = (row: any) => {
-      const group = findParent(treeData.value[0].children, row.id, null);
-      const rowId =
-        userTreeRef.value.getCurrentKey() === row.id
-          ? group.id || treeData.value[0].id
-          : userTreeRef.value.getCurrentKey();
-      console.log(rowId, 'this is id', group);
-      ElMessageBox.confirm(`是否将 ${row.displayName} 从 ${group.label || treeData.value[0].label} 中移除？`, '提示', {
+    // const findParent = (data: any, id: any, parentNode: any): any => {
+    //   let result: any = {};
+    //   if (!data) {
+    //     return;
+    //   }
+    //   for (const item of data) {
+    //     if (item.id === id) {
+    //       return parentNode;
+    //     }
+    //     if (item.children && item.children.length > 0) {
+    //       result = findParent(item.children, id, item);
+    //       if (result.id) {
+    //         return result;
+    //       }
+    //     }
+    //   }
+    //   return result;
+    // };
+    const removeUser = () => {
+      // const group = findParent(treeData.value[0].children, row.id, null);
+      // const rowId =
+      //   userTreeRef.value.getCurrentKey() === row.id
+      //     ? group.id || treeData.value[0].id
+      //     : userTreeRef.value.getCurrentKey();
+      // console.log(row.displayName, 'this is id', group.label);
+      ElMessageBox.confirm(`是否将 ${dataList.value.label} 从 ${nodeList.value.parent.data.label} 中移除？`, '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning',
       }).then(async () => {
         const { code } = await deleteMember({
-          projectId: Number(props.id),
-          roleId: rowId,
-          ids: [row.id],
+          roleId: dataList.value.label,
         });
-        if (code === 0) reloadUserList({ id: rowId });
+        if (code === 0) reloadUserList({ id: dataList.value.label });
       });
     };
     // 初始化项目信息
@@ -676,15 +685,6 @@ export default {
       formRef.value.resetFields();
     };
 
-    const dataList = ref(null as any);
-    const nodeList = ref(null as any);
-
-    const getNodeData = (node: any, data: any) => {
-      isDeleteVisible.value = false;
-      nodeList.value = node;
-      dataList.value = data;
-    };
-
     // 修改角色名称
     const editBoxsave = (id: any) => {
       roleRef.value.validate(async (isValid: boolean) => {
@@ -721,7 +721,10 @@ export default {
     // 删除警告弹框
     const closeUserTree = () => {
       const rowId = dataList.value.id;
-      if (nodeList.value.level === 2 || !dataList.value.children.length) {
+      if (nodeList.value.level === 2) {
+        removeUser();
+      }
+      if (!dataList.value.children.length) {
         ElMessageBox.confirm(`删除【${dataList.value.label}】 角色`, {
           confirmButtonText: '我知道了',
           showCancelButton: false,
