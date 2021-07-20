@@ -27,7 +27,7 @@
         <div class="user-tree-top">
           <el-input
             suffix-icon="el-icon-search"
-            placeholder="请输入部门/人员名称"
+            placeholder="请输角色名称"
             v-model="userInput"
             @input="filterRoleAndUser"
           ></el-input>
@@ -52,40 +52,42 @@
                 <svg-icon v-if="node.level < 2" icon-name="folder" icon-class="tree-node-folder"></svg-icon>
                 <svg-icon v-if="node.level === 2" icon-name="member" icon-class="tree-node-member"></svg-icon>
                 <!-- <span @click="isDeleteVisible = false"> -->
-                <span @click="getNodeData(node,data)">
+                <span @click="getNodeData(node, data)">
                   {{ node.label }}
                   <el-popover
-                      v-if="node.level === 1"
-                      placement="bottom-start"
-                      :width="300"
-                      :height="200"
-                      trigger="click"
-                      :visible = "editPopBoxVisible[String(data.id)]"
-                    >
-                      <el-form :model="userTreeInput" ref="roleRef">
-                        <el-form-item
-                          prop="roles"
-                          :rules="[
-                            { required: true, message: '角色不能为空', trigger: 'blur' },
-                            { min: 1, max: 20, message: '超过字数限制，最多不能超过20个字符', trigger: 'blur' },
-                          ]"
+                    v-if="node.level === 1"
+                    placement="bottom-start"
+                    :width="300"
+                    :height="200"
+                    trigger="click"
+                    :visible="editPopBoxVisible[String(data.id)]"
+                  >
+                    <el-form :model="userTreeInput" ref="roleRef">
+                      <el-form-item
+                        prop="roles"
+                        :rules="[
+                          { required: true, message: '角色不能为空', trigger: 'blur' },
+                          { min: 1, max: 20, message: '超过字数限制，最多不能超过20个字符', trigger: 'blur' },
+                        ]"
+                      >
+                        <el-input
+                          v-model="userTreeInput.roles"
+                          autocomplete="off"
+                          placeholder="新建的一个自定义角色"
+                          suffix-icon="el-icon-error"
+                        ></el-input>
+                      </el-form-item>
+                      <div style="float: right">
+                        <el-button type="text" @click="editBoxsave(String(data.id))" :loading="submitting"
+                          >保存</el-button
                         >
-                          <el-input
-                            v-model="userTreeInput.roles"
-                            autocomplete="off"
-                            placeholder="新建的一个自定义角色"
-                            suffix-icon="el-icon-error"
-                          ></el-input>
-                        </el-form-item>
-                        <div style="float: right">
-                          <el-button type="text" @click="editBoxsave(String(data.id))" :loading="submitting">保存</el-button>
-                          <el-button type="text" @click="cancel(String(data.id))">取消</el-button>
-                        </div>
-                      </el-form>
-                      <template #reference>
-                        <i class="el-icon-edit" @click="editPopBoxVisible[String(data.id)]=true"></i>
-                      </template>
-                    </el-popover>
+                        <el-button type="text" @click="cancel(String(data.id))">取消</el-button>
+                      </div>
+                    </el-form>
+                    <template #reference>
+                      <i class="el-icon-edit" @click="editPopBoxVisible[String(data.id)] = true"></i>
+                    </template>
+                  </el-popover>
                 </span>
                 <i
                   v-if="node.level === 1"
@@ -94,12 +96,12 @@
                   @click.stop="addMember(node, data)"
                 ></i>
               </div>
-              </template>
-            </el-tree>
-          </el-scrollbar>
-        </div>
+            </template>
+          </el-tree>
+        </el-scrollbar>
+      </div>
       <el-dialog title="新建角色" v-model="DialogVisible" width="500px" @closed="cancel">
-        <el-form :model="form" :rules="rules" ref="formRef">
+        <el-form :model="form" ref="formRef">
           <el-form-item
             label="角色名称"
             label-width="80px"
@@ -115,7 +117,7 @@
         <template #footer>
           <div class="dialog-footer">
             <el-button type="primary" @click="save" size="mini" :loading="submitting">确定</el-button>
-            <el-button @click="cancel()">取消</el-button>
+            <el-button @click="cancel">取消</el-button>
           </div>
         </template>
       </el-dialog>
@@ -436,27 +438,28 @@ export default {
 
     const editDisable: Ref<boolean> = ref(true);
     // 初始化
-    const roleAuthInit = () => {
-      const checkObj: any = {};
-      Object.entries(checkedItem.value).forEach((item: any) => {
-        checkObj[item[0]] = [];
-      });
-      checkedItem.value = checkObj;
-      editDisable.value = true;
-    };
+    // const roleAuthInit = () => {
+    //   const checkObj: any = {};
+    //   Object.entries(checkedItem.value).forEach((item: any) => {
+    //     checkObj[item[0]] = [];
+    //   });
+    //   checkedItem.value = checkObj;
+    //   editDisable.value = true;
+    // };
 
     const nodeClickHandler = async (data: any, node: any) => {
       isSel.value = true;
       currentNodeData.value = data;
       if (node.level === 1) {
-        userList.value = allUsers.value;
-        roleAuthInit();
-      }
-      if (node.level === 2) {
         userList.value = _.intersectionWith((node: any, user: any) => node.id === user.id)(allUsers.value)(
           node.data.children,
         );
         // 判断是否可编辑 to-do
+        if (data.isSystem) {
+          editDisable.value = true;
+        } else {
+          editDisable.value = false;
+        }
         getAuth();
       }
     };
@@ -565,7 +568,6 @@ export default {
       const selId = String(id);
       // 查找id
       const selData = modules.map((item: any) => item.id);
-      console.log('checkAll[selId]', checkAll[selId]);
       checkedItem.value[selId] = checkAll.value[selId] ? selData : [];
       isIndeterminate.value[selId] = false;
     };
@@ -620,7 +622,7 @@ export default {
     });
 
     // 新建角色 提交取消表单
-    const validatorTagsPass = async(rule: any, value: string, callback: Function) => {
+    const validatorTagsPass = async (rule: any, value: string, callback: Function) => {
       const { data } = await checkRoleRule({
         name: value,
       });
@@ -640,18 +642,18 @@ export default {
         if (isValid) {
           submitting.value = true;
           try {
-            const { code } = await addRole({ name: form.value.name })
-              if (code === 0) {
-                ElMessage({
-                  type: 'success',
-                  message: '添加成功',
-                });
-              } else {
-                ElMessage({
-                  type: 'error',
-                  message: '添加失败',
-                });
-              }
+            const { code } = await addRole({ name: form.value.name });
+            if (code === 0) {
+              ElMessage({
+                type: 'success',
+                message: '添加成功',
+              });
+            } else {
+              ElMessage({
+                type: 'error',
+                message: '添加失败',
+              });
+            }
             DialogVisible.value = false;
             submitting.value = false;
           } catch (e) {
@@ -677,18 +679,18 @@ export default {
         if (isValid) {
           submitting.value = true;
           try {
-            const { code } = await ModRolename({ name: userTreeInput.value.roles })
-              if (code === 0) {
-                ElMessage({
-                  type: 'success',
-                  message: '修改成功',
-                });
-              } else {
-                ElMessage({
-                  type: 'error',
-                  message: '修改失败',
-                });
-              }
+            const { code } = await ModRolename({ name: userTreeInput.value.roles });
+            if (code === 0) {
+              ElMessage({
+                type: 'success',
+                message: '修改成功',
+              });
+            } else {
+              ElMessage({
+                type: 'error',
+                message: '修改失败',
+              });
+            }
             userTreeInput.value.roles = '';
             editPopBoxVisible.value[id] = false;
             submitting.value = false;
@@ -707,11 +709,11 @@ export default {
       isDeleteVisible.value = false;
       nodeList.value = node;
       dataList.value = data;
-    }
+    };
 
     // 删除警告弹框
     const closeUserTree = () => {
-      const rowId = treeData.value[0].id
+      const rowId = treeData.value[0].id;
       if (nodeList.value.level === 2 || !dataList.value.children.length) {
         ElMessageBox.confirm(`删除【${dataList.value.label}】 角色`, {
           confirmButtonText: '我知道了',
@@ -724,11 +726,15 @@ export default {
           if (code === 0) reloadUserList({ id: rowId });
         });
       } else {
-        ElMessageBox.confirm(`删除该角色前请先移除【${dataList.value.label}】下的人员`,`删除 【${dataList.value.label} 】角色`, {
-          confirmButtonText: '我知道了',
-          showCancelButton: false,
-          type: 'warning',
-        })
+        ElMessageBox.confirm(
+          `删除该角色前请先移除【${dataList.value.label}】下的人员`,
+          `删除 【${dataList.value.label} 】角色`,
+          {
+            confirmButtonText: '我知道了',
+            showCancelButton: false,
+            type: 'warning',
+          },
+        );
       }
     };
 
@@ -784,7 +790,7 @@ export default {
       isSel,
       validatorTagsPass,
       isDeleteVisible,
-      getNodeData
+      getNodeData,
     };
   },
 };

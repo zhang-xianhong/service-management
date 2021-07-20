@@ -137,7 +137,7 @@
 			"projectId": 10,
 			"name": "项目经理",
 			"code": "PM",
-			"isSystem": true,
+			"isSystem": false,
 			"members": []
 		}, {
 			"id": 70,
