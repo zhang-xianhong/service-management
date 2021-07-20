@@ -353,7 +353,7 @@ export default {
       versionOptions: [{ id: 1, name: '1' }],
       moduleType: [
         { id: 1, name: '服务' },
-        // { id: 2, name: '应用' },
+        { id: 2, name: '应用' },
       ],
     });
     const publishRules = {
