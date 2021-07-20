@@ -52,41 +52,43 @@
                 <svg-icon v-if="node.level < 2" icon-name="folder" icon-class="tree-node-folder"></svg-icon>
                 <svg-icon v-if="node.level === 2" icon-name="member" icon-class="tree-node-member"></svg-icon>
                 <!-- <span @click="isDeleteVisible = false"> -->
-                <span @click="getNodeData(node,data)" >
+                <span @click="getNodeData(node, data)">
                   {{ node.label }}
                   <el-popover
-                      v-if="node.level === 1 && data.isSystem === false"
-                      placement="bottom-start"
-                      :width="300"
-                      :height="200"
-                      trigger="click"
-                      :visible = "editPopBoxVisible[String(data.id)]"
-                    >
-                      <el-form :model="userTreeInput" ref="roleRef">
-                        <el-form-item
-                          prop="roles"
-                          :rules="[
-                            { required: true, message: '角色不能为空', trigger: 'blur' },
-                            { min: 1, max: 20, message: '超过字数限制，最多不能超过20个字符', trigger: 'blur' },
-                            { validator: validatorTagsPass, trigger: 'blur' },
-                          ]"
+                    v-if="node.level === 1 && data.isSystem === false"
+                    placement="bottom-start"
+                    :width="300"
+                    :height="200"
+                    trigger="click"
+                    :visible="editPopBoxVisible[String(data.id)]"
+                  >
+                    <el-form :model="userTreeInput" ref="roleRef">
+                      <el-form-item
+                        prop="roles"
+                        :rules="[
+                          { required: true, message: '角色不能为空', trigger: 'blur' },
+                          { min: 1, max: 20, message: '超过字数限制，最多不能超过20个字符', trigger: 'blur' },
+                          { validator: validatorTagsPass, trigger: 'blur' },
+                        ]"
+                      >
+                        <el-input
+                          v-model="userTreeInput.roles"
+                          autocomplete="off"
+                          placeholder="新建的一个自定义角色"
+                          clearable
+                        ></el-input>
+                      </el-form-item>
+                      <div style="float: right">
+                        <el-button type="text" @click="editBoxsave(String(data.id))" :loading="submitting"
+                          >保存</el-button
                         >
-                          <el-input
-                            v-model="userTreeInput.roles"
-                            autocomplete="off"
-                            placeholder="新建的一个自定义角色"
-                            clearable
-                          ></el-input>
-                        </el-form-item>
-                        <div style="float: right">
-                          <el-button type="text" @click="editBoxsave(String(data.id))" :loading="submitting">保存</el-button>
-                          <el-button type="text" @click="cancel(String(data.id))">取消</el-button>
-                        </div>
-                      </el-form>
-                      <template #reference>
-                        <i class="el-icon-edit" @click="editPopBoxVisible[String(data.id)]=true"></i>
-                      </template>
-                    </el-popover>
+                        <el-button type="text" @click="cancel(String(data.id))">取消</el-button>
+                      </div>
+                    </el-form>
+                    <template #reference>
+                      <i class="el-icon-edit" @click="editPopBoxVisible[String(data.id)] = true"></i>
+                    </template>
+                  </el-popover>
                 </span>
                 <i
                   v-if="node.level === 1"
@@ -420,7 +422,7 @@ export default {
     // 获取角色对应权限点
     const getAuth = async () => {
       try {
-        const { code, data } = await getAuthByRoleId({ roleId: '' });
+        const { code, data } = await getAuthByRoleId({ roleId: 381 });
         if (code === ResCode.Success) {
           const { modules } = data;
           const checkObj: any = {};
@@ -622,7 +624,7 @@ export default {
     });
 
     // 新建角色 提交取消表单
-    const validatorTagsPass = async(rule: any, value: string, callback: Function) => {
+    const validatorTagsPass = async (rule: any, value: string, callback: Function) => {
       // const { code, data } = await checkRoleRule({
       //   name: value,
       // });
@@ -656,6 +658,7 @@ export default {
             }
             DialogVisible.value = false;
             submitting.value = false;
+            initUserList();
           } catch (e) {
             ElMessage.error(e);
             submitting.value = false;
@@ -679,7 +682,10 @@ export default {
         if (isValid) {
           submitting.value = true;
           try {
-            const { code } = await ModRolename({ name: userTreeInput.value.roles });
+            const { code } = await ModRolename({
+              name: userTreeInput.value.roles,
+              roleId: 381,
+            });
             if (code === 0) {
               ElMessage({
                 type: 'success',
@@ -694,6 +700,7 @@ export default {
             userTreeInput.value.roles = '';
             editPopBoxVisible.value[id] = false;
             submitting.value = false;
+            initUserList();
           } catch (e) {
             ElMessage.error(e);
             submitting.value = false;
@@ -713,7 +720,7 @@ export default {
 
     // 删除警告弹框
     const closeUserTree = () => {
-      const rowId = treeData.value[0].id;
+      const rowId = nodeList.value.id;
       if (nodeList.value.level === 2 || !dataList.value.children.length) {
         ElMessageBox.confirm(`删除【${dataList.value.label}】 角色`, {
           confirmButtonText: '我知道了',
@@ -721,7 +728,7 @@ export default {
           type: 'warning',
         }).then(async () => {
           const { code } = await deleteRole({
-            roleId: rowId,
+            roleId: 382,
           });
           if (code === 0) reloadUserList({ id: rowId });
         });
@@ -856,7 +863,7 @@ export default {
       .el-icon-edit {
         opacity: 0;
         filter: alpha(opacity=0);
-        &:hover{
+        &:hover {
           opacity: 1;
           filter: alpha(opacity=1);
         }
