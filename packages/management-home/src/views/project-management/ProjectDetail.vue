@@ -52,10 +52,10 @@
                 <svg-icon v-if="node.level < 2" icon-name="folder" icon-class="tree-node-folder"></svg-icon>
                 <svg-icon v-if="node.level === 2" icon-name="member" icon-class="tree-node-member"></svg-icon>
                 <!-- <span @click="isDeleteVisible = false"> -->
-                <span @click="getNodeData(node,data)">
+                <span @click="getNodeData(node,data)" >
                   {{ node.label }}
                   <el-popover
-                      v-if="node.level === 1"
+                      v-if="node.level === 1 && data.isSystem === false"
                       placement="bottom-start"
                       :width="300"
                       :height="200"
@@ -68,13 +68,14 @@
                           :rules="[
                             { required: true, message: '角色不能为空', trigger: 'blur' },
                             { min: 1, max: 20, message: '超过字数限制，最多不能超过20个字符', trigger: 'blur' },
+                            { validator: validatorTagsPass, trigger: 'blur' },
                           ]"
                         >
                           <el-input
                             v-model="userTreeInput.roles"
                             autocomplete="off"
                             placeholder="新建的一个自定义角色"
-                            suffix-icon="el-icon-error"
+                            clearable
                           ></el-input>
                         </el-form-item>
                         <div style="float: right">
@@ -107,6 +108,7 @@
             :rules="[
               { required: true, message: '角色不能为空', trigger: 'blur' },
               { min: 1, max: 20, message: '超过字数限制，最多不能超过20个字符', trigger: 'blur' },
+              { validator: validatorTagsPass, trigger: 'blur' },
             ]"
           >
             <el-input ref="tagName" v-model.trim="form.name" autocomplete="off" placeholder="请输入角色名称"></el-input>
@@ -197,7 +199,7 @@ import {
   getAuthByRoleId,
   deleteRole,
   addRole,
-  checkRoleRule,
+  // checkRoleRule,
   ModRolename,
 } from '@/api/project/project';
 import { ElMessage, ElMessageBox } from 'element-plus';
@@ -621,12 +623,12 @@ export default {
 
     // 新建角色 提交取消表单
     const validatorTagsPass = async(rule: any, value: string, callback: Function) => {
-      const { data } = await checkRoleRule({
-        name: value,
-      });
-      if (data !== null) {
-        callback(new Error('名称已存在!'));
-      }
+      // const { code, data } = await checkRoleRule({
+      //   name: value,
+      // });
+      // if (code === 0 && data === null) {
+      //   callback(new Error('名称已存在!'));
+      // }
       callback();
     };
 
@@ -784,7 +786,7 @@ export default {
       isSel,
       validatorTagsPass,
       isDeleteVisible,
-      getNodeData
+      getNodeData,
     };
   },
 };
@@ -847,6 +849,14 @@ export default {
     .customNode {
       font-size: 12px;
       width: 100%;
+      .el-icon-edit {
+        opacity: 0;
+        filter: alpha(opacity=0);
+        &:hover{
+          opacity: 1;
+          filter: alpha(opacity=1);
+        }
+      }
       .el-icon-circle-plus {
         font-size: 18px;
         &:hover {
