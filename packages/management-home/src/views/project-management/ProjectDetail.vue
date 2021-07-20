@@ -523,7 +523,7 @@ export default {
 
     // 获取项目角色权限列表
     const getRoleAuthListData = async () => {
-      const { data, code } = await getRoleAuthList({ projectId: '' });
+      const { data, code } = await getRoleAuthList();
       if (code === 0) {
         authRoleList.value = data;
         data.forEach((item: any) => {
