@@ -129,20 +129,20 @@ export default defineComponent({
         releaseData.value.services.find((item: any) => item.serviceName === releaseData.value.serviceInfo.name),
       );
       releaseData.value.versionOptions = temp.value.versions.map((item: any) => {
-        const label = ref("");
+        const label = ref('');
         const statusStr = ['（发版成功）', '（发版中）', '（发版失败）'];
-        if(item.versionStatus === 10) {
+        if (item.versionStatus === 10) {
           label.value = `${item.version}${statusStr[0]}`;
-        } else if(item.versionStatus === 1) {
+        } else if (item.versionStatus === 1) {
           label.value = `${item.version}${statusStr[1]}`;
-        } else if(item.versionStatus === 2) {
+        } else if (item.versionStatus === 2) {
           label.value = `${item.version}${statusStr[2]}`;
         }
         return {
           version: item.version,
           label: label.value,
           versionStatus: item.versionStatus,
-        }
+        };
       });
       const data: any = releaseData.value.serviceList.find((i: any) => i.id === serviceId);
       // releaseData.value.serviceInfo.moduleId = serviceId;
