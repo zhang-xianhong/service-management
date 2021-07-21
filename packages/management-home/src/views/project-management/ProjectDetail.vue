@@ -905,6 +905,8 @@ export default {
     padding: 10px;
     color: #444;
     .auth-model {
+      display: inline-block;
+      min-width: 60px;
       margin-right: 20px;
     }
   }
