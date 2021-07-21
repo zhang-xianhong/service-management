@@ -36,68 +36,66 @@
             <el-button @click="closeUserTree" :disabled="isDeleteVisible">删除</el-button>
           </div>
         </div>
-        <el-scrollbar>
-          <el-tree
-            ref="userTreeRef"
-            :data="treeData"
-            :expand-on-click-node="false"
-            :highlight-current="true"
-            node-key="id"
-            :current-node-key="currentKey"
-            @node-click="nodeClickHandler"
-          >
-            <template #default="{ node, data }">
-              <div class="customNode">
-                <svg-icon v-if="node.level < 2" icon-name="folder" icon-class="tree-node-folder"></svg-icon>
-                <svg-icon v-if="node.level === 2" icon-name="member" icon-class="tree-node-member"></svg-icon>
-                <span>
-                  {{ node.label }}
-                  <el-popover
-                    v-if="node.level === 1 && data.isSystem === false"
-                    placement="bottom-start"
-                    :width="300"
-                    :height="200"
-                    trigger="click"
-                    :visible="editPopBoxVisible[String(data.id)]"
-                  >
-                    <el-form :model="userTreeInput" ref="roleRef">
-                      <el-form-item
-                        prop="roles"
-                        :rules="[
-                          { required: true, message: '角色不能为空', trigger: 'blur' },
-                          { min: 1, max: 20, message: '超过字数限制，最多不能超过20个字符', trigger: 'blur' },
-                          { validator: validatorTagsPass, trigger: 'blur' },
-                        ]"
+        <el-tree
+          ref="userTreeRef"
+          :data="treeData"
+          :expand-on-click-node="false"
+          :highlight-current="true"
+          node-key="id"
+          :current-node-key="currentKey"
+          @node-click="nodeClickHandler"
+        >
+          <template #default="{ node, data }">
+            <div class="customNode">
+              <svg-icon v-if="node.level < 2" icon-name="folder" icon-class="tree-node-folder"></svg-icon>
+              <svg-icon v-if="node.level === 2" icon-name="member" icon-class="tree-node-member"></svg-icon>
+              <span>
+                {{ node.label }}
+                <el-popover
+                  v-if="node.level === 1 && data.isSystem === false"
+                  placement="bottom-start"
+                  :width="300"
+                  :height="200"
+                  trigger="click"
+                  :visible="editPopBoxVisible[String(data.id)]"
+                >
+                  <el-form :model="userTreeInput" ref="roleRef">
+                    <el-form-item
+                      prop="roles"
+                      :rules="[
+                        { required: true, message: '角色不能为空', trigger: 'blur' },
+                        { min: 1, max: 20, message: '超过字数限制，最多不能超过20个字符', trigger: 'blur' },
+                        { validator: validatorTagsPass, trigger: 'blur' },
+                      ]"
+                    >
+                      <el-input
+                        v-model="userTreeInput.roles"
+                        autocomplete="off"
+                        placeholder="新建的一个自定义角色"
+                        clearable
+                      ></el-input>
+                    </el-form-item>
+                    <div style="float: right">
+                      <el-button type="text" @click="editBoxsave(String(data.id))" :loading="submitting"
+                        >保存</el-button
                       >
-                        <el-input
-                          v-model="userTreeInput.roles"
-                          autocomplete="off"
-                          placeholder="新建的一个自定义角色"
-                          clearable
-                        ></el-input>
-                      </el-form-item>
-                      <div style="float: right">
-                        <el-button type="text" @click="editBoxsave(String(data.id))" :loading="submitting"
-                          >保存</el-button
-                        >
-                        <el-button type="text" @click="cancel(String(data.id))">取消</el-button>
-                      </div>
-                    </el-form>
-                    <template #reference>
-                      <i class="el-icon-edit" @click="editPopBoxVisible[String(data.id)] = true"></i>
-                    </template>
-                  </el-popover>
-                </span>
-                <i
-                  v-if="node.level === 1"
-                  class="el-icon-circle-plus"
-                  style="float: right"
-                  @click.stop="addMember(node, data)"
-                ></i>
-              </div>
-            </template>
-          </el-tree>
-        </el-scrollbar>
+                      <el-button type="text" @click="cancel(String(data.id))">取消</el-button>
+                    </div>
+                  </el-form>
+                  <template #reference>
+                    <i class="el-icon-edit" @click="editPopBoxVisible[String(data.id)] = true"></i>
+                  </template>
+                </el-popover>
+              </span>
+              <i
+                v-if="node.level === 1"
+                class="el-icon-circle-plus"
+                style="float: right"
+                @click.stop="addMember(node, data)"
+              ></i>
+            </div>
+          </template>
+        </el-tree>
       </div>
       <el-dialog title="新建角色" v-model="DialogVisible" width="500px" @closed="cancel">
         <el-form :model="form" ref="formRef">
