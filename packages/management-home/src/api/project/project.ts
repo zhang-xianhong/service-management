@@ -40,20 +40,29 @@ export const getRoleAuthList = () =>
     method: 'get',
   });
 
-export const updateRole = (payload: any): Promise<SuccessResponse<any>> =>
-  axios.post(getUrl(project.PROJECT_UPDATE_ROLE, payload.roleId), payload);
+export const updateRole = (payload: any) =>
+  apiProxy(SERVERTYPE.AUTH, project.UPDATE_ROLE_MODULES, {
+    method: 'post',
+    data: payload,
+  });
 
 export const getAuthByRoleId = (payload: any) =>
   apiProxy(SERVERTYPE.AUTH, project.PROJECT_ROLE_AUTH, {
     method: 'get',
-    params: payload,
+    data: payload,
   });
 
-export const checkRoleRule = (payload: any): Promise<SuccessResponse<any>> =>
-  axios.get(getUrl(project.CHECK_ROLE, payload.roleId));
+export const checkRoleRule = (payload: any) =>
+  apiProxy(SERVERTYPE.AUTH, project.CHECK_ROLE, {
+    method: 'get',
+    data: payload,
+  });
 
-export const ModRolename = (payload: any): Promise<SuccessResponse<any>> =>
-  axios.post(getUrl(project.MOD_ROLE, payload.roleId));
+export const ModRoleName = (payload: any) =>
+  apiProxy(SERVERTYPE.AUTH, project.MOD_ROLE, {
+    method: 'post',
+    data: payload,
+  });
 
 export const deleteRole = (payload: any) =>
   apiProxy(SERVERTYPE.AUTH, project.DELETE_ROLE, {
