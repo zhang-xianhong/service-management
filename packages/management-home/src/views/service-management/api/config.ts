@@ -1,1 +1,55 @@
+import { genId } from '@/utils/util';
+
 export const METHOD_TYPES = ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'];
+export const SYSTEM_APIS = [
+  {
+    id: genId(),
+    $id: genId(),
+    name: 'save',
+    methodType: 'POST',
+    isSystem: true,
+    url: '/save',
+    des: '保存',
+    modelId: null,
+  },
+  {
+    id: genId(),
+    $id: genId(),
+    name: 'delete',
+    methodType: 'POST',
+    isSystem: true,
+    url: '/delete',
+    des: '删除',
+    modelId: null,
+  },
+  {
+    id: genId(),
+    $id: genId(),
+    name: 'edit',
+    methodType: 'POST',
+    isSystem: true,
+    url: '/edit',
+    des: '更新',
+    modelId: null,
+  },
+  {
+    id: genId(),
+    $id: genId(),
+    name: 'get',
+    methodType: 'GET',
+    isSystem: true,
+    url: '/get',
+    des: '详情',
+    modelId: null,
+  },
+  {
+    id: genId(),
+    $id: genId(),
+    name: 'list',
+    methodType: 'GET',
+    isSystem: true,
+    url: '/list',
+    des: '列表',
+    modelId: null,
+  },
+];

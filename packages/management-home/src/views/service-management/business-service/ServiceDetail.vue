@@ -42,7 +42,7 @@
             <!-- 接口列表 -->
             <el-tooltip effect="light" content="接口列表" placement="bottom">
               <svg-icon
-                :icon-name="drawerName === 'ServerPortsInfo' ? 'list-hover' : 'list'"
+                :icon-name="drawerName === 'ServerApiList' ? 'list-hover' : 'list'"
                 icon-class="detail-icons__item"
                 @click="openPropertyInfo"
               ></svg-icon>
@@ -167,7 +167,7 @@ import useButtonUtils from './utils/service-detail-utils';
 import useStatusUtils from './utils/service-detail-status';
 import ServerBaseInfo from './components/ServerBaseInfo.vue';
 import Erd from '@/components/data-model/erd/Index.vue';
-import ServerPortsInfo from './components/ServerPortsInfo.vue';
+import ServerApiList from '../api/List.vue';
 import { ref, Ref, reactive, watch, provide, computed, onBeforeUnmount, getCurrentInstance } from 'vue';
 import RelationInfo from './components/RelationInfo.vue';
 import ModelFieldForm from './components/FieldForm.vue';
@@ -222,7 +222,7 @@ export default {
     ServerBaseInfo,
     Erd,
     ModelFieldForm,
-    ServerPortsInfo,
+    ServerApiList,
     RelationInfo,
     ModelBaseInfo,
     ServerConfigInfo,
@@ -233,7 +233,7 @@ export default {
     const { buttons } = useButtonUtils();
 
     // 是否显示底部抽屉
-    const isShowDownDrawer = ref(false);
+    const isShowDownDrawer = ref(true);
 
     const computedHeight = computed(() => (isShowDownDrawer.value ? 'calc(95% - 400px)' : '95%'));
 
@@ -423,16 +423,16 @@ export default {
     };
 
     // 下侧组件名称
-    const drawerName = ref('');
+    const drawerName = ref('ServerApiList');
 
     // 打开接口配置
     const openPropertyInfo = () => {
-      if (drawerName.value === 'ServerPortsInfo') {
+      if (drawerName.value === 'ServerApiList') {
         isShowDownDrawer.value = false;
         drawerName.value = '';
       } else {
         isShowDownDrawer.value = true;
-        drawerName.value = 'ServerPortsInfo';
+        drawerName.value = 'ServerApiList';
       }
     };
 

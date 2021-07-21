@@ -6,6 +6,12 @@
       </el-radio-button>
     </el-radio-group>
 
+    <div class="content-types" v-if="paramsMethod === 'body'">
+      <el-radio v-model="contentType" :label="item" v-for="item in contentTypes" :key="item" :disabled="!isEdit">
+        {{ item }}
+      </el-radio>
+    </div>
+
     <list-wrap :loading="loading" :inProject="false" :empty="list.length === 0" :hasCreateAuth="false">
       <el-table
         :data="list"
@@ -139,7 +145,17 @@
 </template>
 <script>
 import { defineComponent, ref, computed } from 'vue';
-import { getParamsMethods, postParamsMethods, PARAMS_TYPES, getParamTypeName } from './config';
+import qs from 'qs';
+import {
+  getParamsMethods,
+  postParamsMethods,
+  CONTENT_TYPES,
+  getParamTypeName,
+  PARAMS_TYPES_QUERY,
+  PARAMS_TYPE_FORM_DATA,
+  PARAMS_TYPE_BODY,
+  PARAMS_TYPE_RESPONSE,
+} from './config';
 import StringSettingDialog from '../settings/String.vue';
 import FloatSettingDialog from '../settings/Float.vue';
 import IntSettingDialog from '../settings/Int.vue';
@@ -163,16 +179,12 @@ export default defineComponent({
     DateSettingDialog,
     BooleanSettingDialog,
   },
-  props: {
-    methodType: {
-      type: String,
-      default: 'get',
-    },
-  },
   setup(props) {
     const loading = ref(false);
     const list = ref([genParam()]);
+    const methodType = ref('post');
     const paramsMethod = ref('query');
+    const contentType = ref('json');
     const inputRefs = ref({});
     const formError = ref('');
     const stringSettingDialog = ref(null);
@@ -249,12 +261,6 @@ export default defineComponent({
       }
     };
 
-    // 取消
-    const handleCancel = () => {
-      handleToggleEdit(false);
-      // TODO. 将list.value重置为初始化值
-    };
-
     // 清除错误
     const clearError = (refId) => {
       try {
@@ -263,6 +269,14 @@ export default defineComponent({
       } catch (e) {
         console.log(e);
       }
+    };
+
+    // 取消
+    const handleCancel = () => {
+      handleToggleEdit(false);
+      clearError();
+      formError.value = '';
+      // TODO. 将list.value重置为初始化值
     };
 
     // validate after input change
@@ -324,11 +338,44 @@ export default defineComponent({
       });
     };
 
-    const previewCode = computed(() => JSON.stringify(paramsToExample(list.value, {}), null, 4));
+    const previewCode = computed(() => {
+      const json = paramsToExample(list.value, {});
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      const _paramMethod = paramsMethod.value;
+      if (_paramMethod === 'query') {
+        return qs.stringify(json, { arrayFormat: 'brackets' });
+      }
+      return JSON.stringify(json, null, 4);
+    });
+
+    // 可选的参数类型
+    const paramTypes = computed(() => {
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      const _contentType = contentType.value;
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      const _paramMethod = paramsMethod.value;
+      if (_paramMethod === 'query' || _paramMethod === 'headers') {
+        return [...PARAMS_TYPES_QUERY];
+      }
+      if (_paramMethod === 'body') {
+        switch (_contentType) {
+          case 'form-data':
+            return [...PARAMS_TYPE_FORM_DATA];
+          case 'x-www-form-urlencoded':
+            return [...PARAMS_TYPES_QUERY];
+        }
+        return [...PARAMS_TYPE_BODY];
+      }
+      return [...PARAMS_TYPE_RESPONSE];
+    });
+
     return {
+      methodType,
       paramsMethod,
       paramsMethods,
-      paramTypes: [...PARAMS_TYPES],
+      paramTypes,
+      contentTypes: [...CONTENT_TYPES],
+      contentType,
       paramRequireds: [
         {
           name: '是',
@@ -368,6 +415,11 @@ export default defineComponent({
 <style lang="scss" scoped>
 .param-type {
   text-transform: capitalize;
+}
+.content-types {
+  margin: 5px 0 20px 0;
+  display: flex;
+  align-items: center;
 }
 .params-table {
   ::v-deep .el-select,

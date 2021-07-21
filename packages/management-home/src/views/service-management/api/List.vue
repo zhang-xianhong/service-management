@@ -16,19 +16,35 @@
             />
           </template>
         </el-table-column>
-        <el-table-column prop="methodType" label="请求方式" width="150">
+        <el-table-column prop="method" label="请求方式" width="170">
           <template #default="scope">
-            <span v-if="editId !== scope.row.$id">{{ scope.row.methodType }}</span>
-            <el-select v-else placeholder="请选择请求方式" v-model="scope.row.methodType">
+            <span v-if="editId !== scope.row.$id">{{ scope.row.method }}</span>
+            <el-select v-else placeholder="请选择请求方式" v-model="scope.row.method">
               <el-option v-for="item in methodTypes" :key="item" :value="item" :label="item"></el-option>
             </el-select>
           </template>
         </el-table-column>
-        <el-table-column prop="url" label="URL">
+        <el-table-column prop="modelId" label="数据对象" width="200">
+          <template #default="scope">
+            <span v-if="scope.row.isSystem">通用</span>
+            <template v-else>
+              <span v-if="editId !== scope.row.$id">{{ scope.row.methodType }}</span>
+              <el-select v-else placeholder="请选择数据对象" v-model="scope.row.methodType">
+                <el-option
+                  v-for="(model, index) in modelList"
+                  :key="index"
+                  :label="model.name"
+                  :value="model.id"
+                ></el-option>
+              </el-select>
+            </template>
+          </template>
+        </el-table-column>
+        <el-table-column prop="url" label="Path">
           <template #default="scope">
             <span v-if="editId !== scope.row.$id">{{ scope.row.url }}</span>
             <el-input
-              placeholder="请输入URL"
+              placeholder="请输入Path路径"
               v-model.trim="scope.row.url"
               maxlength="500"
               v-else
@@ -77,49 +93,38 @@
 import { defineComponent, ref } from 'vue';
 import { ElMessageBox } from 'element-plus';
 import { METHOD_TYPES } from './config';
-import { validName, validUrl, validDescription } from './util';
+import { validName, validUrl, validDescription, parseList } from './util';
+import { getServiceApis } from '@/api/servers';
+import _ from 'lodash';
 export default defineComponent({
-  setup() {
+  props: {
+    id: {
+      type: String,
+      default: '',
+    },
+    modelList: {
+      type: Array,
+      default: () => [],
+    },
+  },
+  setup(props) {
     const loading = ref(false);
     const isAdd = ref(false);
     const editId = ref('');
-    const list = ref([
-      {
-        $id: 'a',
-        id: 6,
-        url: 'www.test222.com',
-        methodType: 'POST',
-        name: 'customApi',
-        description: '测试接口',
-        serviceId: 1,
-        version: 0,
-        isSystem: 0,
-      },
-      {
-        $id: 'c',
-        id: 9,
-        url: 'www.baidu.com',
-        methodType: 'PUT',
-        name: 'customApi2',
-        description: '',
-        serviceId: 1,
-        version: 0,
-        isSystem: 0,
-      },
-      {
-        $id: 'b',
-        id: 7,
-        url: 'www.smohan.com',
-        methodType: 'GET',
-        name: 'list',
-        description: '测试接口',
-        serviceId: 1,
-        version: 0,
-        isSystem: 1,
-      },
-    ]);
+    const sourceList = ref([]);
+    const list = ref([]);
     const inputRefs = ref({});
     const formError = ref('');
+    const fetchList = async () => {
+      loading.value = true;
+      const { data } = await getServiceApis(props.id);
+      const apiList = parseList(data);
+      sourceList.value = _.cloneDeep(apiList);
+      list.value = _.cloneDeep(apiList);
+      loading.value = false;
+    };
+
+    fetchList();
 
     // 清除错误
     const clearError = (refId) => {
@@ -137,10 +142,10 @@ export default defineComponent({
       let valid = false;
       switch (field) {
         case 'name':
-          valid = validName(value);
+          valid = validName(value, list.value, id);
           break;
         case 'url':
-          valid = validUrl(value);
+          valid = validUrl(value, list.value, id);
           break;
         case 'description':
           valid = validDescription(value);
@@ -164,6 +169,9 @@ export default defineComponent({
       return Promise.resolve(true);
     };
 
+    /**
+     * 移除无效的行
+     */
     const removeEmptyAddRows = () => {
       for (let i = 0, len = list.value.length; i < len; i++) {
         const row = list.value[i];
@@ -194,7 +202,6 @@ export default defineComponent({
 
     // 编辑
     const handleEdit = async (row) => {
-      console.log(row);
       try {
         await beforeEditOrAdd();
         removeEmptyAddRows();
@@ -223,7 +230,7 @@ export default defineComponent({
     const handleCancel = () => {
       isAdd.value = false;
       editId.value = '';
-      removeEmptyAddRows();
+      list.value = _.cloneDeep(sourceList.value);
     };
 
     return {

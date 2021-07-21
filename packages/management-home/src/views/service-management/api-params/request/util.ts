@@ -1,8 +1,5 @@
+import { genId } from '@/utils/util';
 import { TYPE_PARAMS_TYPES } from './config';
-
-/* eslint-disable no-param-reassign */
-export const genId = () => (1 + Math.random() * 4294967295).toString(16);
-
 export interface PlainObject {
   [propName: string]: any;
 }
@@ -93,6 +90,7 @@ export const paramsToExample = (params: ParamItems, result: any) => {
     if (Array.isArray(result)) {
       result.push(value);
     } else {
+      // eslint-disable-next-line no-param-reassign
       result[key] = value;
     }
     if (type === 'object' || (type === 'array' && children?.length)) {
