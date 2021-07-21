@@ -9,7 +9,7 @@ export const SYSTEM_APIS = [
     methodType: 'POST',
     isSystem: true,
     url: '/save',
-    des: '保存',
+    description: '保存',
     modelId: null,
   },
   {
@@ -19,7 +19,7 @@ export const SYSTEM_APIS = [
     methodType: 'POST',
     isSystem: true,
     url: '/delete',
-    des: '删除',
+    description: '删除',
     modelId: null,
   },
   {
@@ -29,7 +29,7 @@ export const SYSTEM_APIS = [
     methodType: 'POST',
     isSystem: true,
     url: '/edit',
-    des: '更新',
+    description: '更新',
     modelId: null,
   },
   {
@@ -39,7 +39,7 @@ export const SYSTEM_APIS = [
     methodType: 'GET',
     isSystem: true,
     url: '/get',
-    des: '详情',
+    description: '详情',
     modelId: null,
   },
   {
@@ -49,7 +49,7 @@ export const SYSTEM_APIS = [
     methodType: 'GET',
     isSystem: true,
     url: '/list',
-    des: '列表',
+    description: '列表',
     modelId: null,
   },
 ];

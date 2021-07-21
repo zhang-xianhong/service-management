@@ -1,3 +1,4 @@
 export default {
-    AUTH: 'auth',
-}
+  AUTH: 'auth',
+  SERVICE_GENERATOR: 'serviceGenerator',
+};

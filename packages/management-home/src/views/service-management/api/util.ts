@@ -45,7 +45,8 @@ export const validUrl = (url: string, list: any[], id: string) => {
   const current = list.find((item) => item.$id === id);
   const urlLowerCase = url.toLocaleLowerCase();
   const hasRepeat = list.find(
-    (item) => item.$id !== id && current.method !== item.method && item.url.toLocaleLowerCase() === urlLowerCase,
+    (item) =>
+      item.$id !== id && current.methodType !== item.methodType && item.url.toLocaleLowerCase() === urlLowerCase,
   );
   if (hasRepeat) {
     return 'URL已存在(不区分大小写)';
@@ -66,10 +67,10 @@ export const parseList = (rows: any[]) =>
   rows.map((item) => {
     const newItem: any = {};
     newItem.$id = item.$id || genId();
-    newItem.id = item.id || null;
+    newItem.id = item.uniqueId || null;
     newItem.name = item.name || '';
     newItem.url = item.url || '';
-    newItem.method = item.methodType || '';
+    newItem.methodType = item.methodType || '';
     newItem.description = item.description || '';
     newItem.modelId = item.modelId || '';
     newItem.modelName = item.modelName || '';

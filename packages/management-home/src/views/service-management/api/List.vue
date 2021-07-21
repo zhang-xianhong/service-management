@@ -1,7 +1,7 @@
 <template>
   <div>
     <list-wrap :loading="loading" :inProject="false" :empty="list.length === 0" :hasCreateAuth="false">
-      <el-table :data="list" style="width: 100%" row-key="$id" default-expand-all class="apis-table">
+      <el-table :data="list" style="width: 100%" height="360px" row-key="$id" default-expand-all class="apis-table">
         <el-table-column prop="name" label="接口名称">
           <template #default="scope">
             <span v-if="editId !== scope.row.$id">{{ scope.row.name }}</span>
@@ -16,10 +16,10 @@
             />
           </template>
         </el-table-column>
-        <el-table-column prop="method" label="请求方式" width="170">
+        <el-table-column prop="methodType" label="请求方式" width="170">
           <template #default="scope">
-            <span v-if="editId !== scope.row.$id">{{ scope.row.method }}</span>
-            <el-select v-else placeholder="请选择请求方式" v-model="scope.row.method">
+            <span v-if="editId !== scope.row.$id">{{ scope.row.methodType }}</span>
+            <el-select v-else placeholder="请选择请求方式" v-model="scope.row.methodType">
               <el-option v-for="item in methodTypes" :key="item" :value="item" :label="item"></el-option>
             </el-select>
           </template>
@@ -28,8 +28,8 @@
           <template #default="scope">
             <span v-if="scope.row.isSystem">通用</span>
             <template v-else>
-              <span v-if="editId !== scope.row.$id">{{ scope.row.methodType }}</span>
-              <el-select v-else placeholder="请选择数据对象" v-model="scope.row.methodType">
+              <span v-if="editId !== scope.row.$id">{{ getModelName(scope.row.modelId) }}</span>
+              <el-select v-else placeholder="请选择数据对象" v-model="scope.row.modelId">
                 <el-option
                   v-for="(model, index) in modelList"
                   :key="index"
@@ -79,7 +79,7 @@
               </template>
               <template v-else>
                 <el-button type="text" @click="handleSave(scope.row)">保存</el-button>
-                <el-button type="text" @click="handleCancel(scope.row)">取消</el-button>
+                <el-button type="text" @click="handleCancel(scope.row)" :disabled="!hasCancelBtn">取消</el-button>
               </template>
             </template>
           </template>
@@ -91,11 +91,12 @@
 </template>
 <script>
 import { defineComponent, ref } from 'vue';
-import { ElMessageBox } from 'element-plus';
-import { METHOD_TYPES } from './config';
+import { ElMessageBox, ElMessage } from 'element-plus';
+import { METHOD_TYPES, SYSTEM_APIS } from './config';
 import { validName, validUrl, validDescription, parseList } from './util';
-import { getServiceApis } from '@/api/servers';
+import { getServiceApiList, updateServiceApi, createServiceApi, delServiceApi } from '@/api/servers/index';
 import _ from 'lodash';
+import { genId } from '@/utils/util';
 export default defineComponent({
   props: {
     id: {
@@ -115,10 +116,25 @@ export default defineComponent({
     const list = ref([]);
     const inputRefs = ref({});
     const formError = ref('');
+    const hasCancelBtn = ref(true);
     const fetchList = async () => {
       loading.value = true;
-      const { data } = await getServiceApis(props.id);
-      const apiList = parseList(data);
+      const { data } = await getServiceApiList({
+        serviceId: props.id,
+      });
+      const rowList = parseList(data || []);
+      if (rowList.length === 0) {
+        isAdd.value = true;
+        const $id = genId();
+        rowList.push({
+          $id,
+        });
+        editId.value = $id;
+        hasCancelBtn.value = false;
+      } else {
+        hasCancelBtn.value = true;
+      }
+      const apiList = [...rowList.reverse(), ...SYSTEM_APIS];
       sourceList.value = _.cloneDeep(apiList);
       list.value = _.cloneDeep(apiList);
       loading.value = false;
@@ -137,25 +153,27 @@ export default defineComponent({
     };
 
     // validate after input change
-    const handleInputChange = (field, id, value) => {
+    const handleInputChange = (field, $id, value) => {
       formError.value = '';
       let valid = false;
       switch (field) {
         case 'name':
-          valid = validName(value, list.value, id);
+          valid = validName(value, list.value, $id);
           break;
         case 'url':
-          valid = validUrl(value, list.value, id);
+          valid = validUrl(value, list.value, $id);
           break;
         case 'description':
           valid = validDescription(value);
           break;
       }
       if (valid) {
-        const ref = inputRefs.value[`${field}.${id}`];
+        const ref = inputRefs.value[`${field}.${$id}`];
         ref.$el.classList.add('is-error');
+        ref.focus();
         formError.value = valid;
       }
+      return valid;
     };
 
     const beforeEditOrAdd = async () => {
@@ -190,8 +208,7 @@ export default defineComponent({
         isAdd.value = true;
         const $id = 'aaa';
         const index = list.value.findIndex((item) => item.$id === row.$id);
-        console.log(index);
-        list.value.splice(index + 1, 0, {
+        list.value.splice(index, 0, {
           $id,
         });
         editId.value = $id;
@@ -217,13 +234,50 @@ export default defineComponent({
         cancelButtonText: '取消',
         type: 'warning',
       }).then(async () => {
-        // todo
+        await delServiceApi({
+          serviceId: props.id,
+          uniqueId: row.id,
+        });
+        ElMessage.success('删除成功');
+        fetchList();
       });
     };
 
     // 保存
-    const handleSave = (row) => {
-      console.log(row);
+    const handleSave = async (row) => {
+      const checkName = handleInputChange('name', row.$id, row.name);
+      if (checkName) {
+        return;
+      }
+      const checkUrl = handleInputChange('url', row.$id, row.path);
+      if (checkUrl) {
+        return;
+      }
+      const checkDesc = handleInputChange('description', row.$id, row.description);
+      if (checkDesc) {
+        return;
+      }
+      const saveData = {
+        ...row,
+        serviceId: props.id,
+      };
+      delete saveData.$id;
+      loading.value = true;
+      const isEdit = isAdd.value === false;
+      let api = createServiceApi;
+      if (isEdit) {
+        saveData.uniqueId = row.id;
+        delete saveData.id;
+        api = updateServiceApi;
+      }
+      try {
+        await api(saveData);
+        ElMessage.success(isEdit ? '保存成功' : '新增成功');
+        fetchList();
+      } catch (e) {
+        console.log(e);
+        loading.value = false;
+      }
     };
 
     // 取消
@@ -231,6 +285,12 @@ export default defineComponent({
       isAdd.value = false;
       editId.value = '';
       list.value = _.cloneDeep(sourceList.value);
+    };
+
+    const getModelName = (modelId) => {
+      const models = props.modelList || [];
+      const model = models.find((item) => item.id === Number(modelId));
+      return model ? model.name : '';
     };
 
     return {
@@ -241,6 +301,7 @@ export default defineComponent({
       formError,
       loading,
       methodTypes: [...METHOD_TYPES],
+      hasCancelBtn,
       handleAdd,
       handleEdit,
       handleRemove,
@@ -249,6 +310,7 @@ export default defineComponent({
       handleSave,
       handleCancel,
       validName,
+      getModelName,
     };
   },
 });
@@ -262,11 +324,14 @@ export default defineComponent({
   ::v-deep .is-error .el-input__inner {
     border-color: #f56c6c;
   }
+  ::v-deep .cell {
+    line-height: 28px;
+  }
 }
 .error-wrap {
   color: #f56c6c;
   height: 20px;
   line-height: 20px;
-  margin: 5px 0;
+  margin: 5px 10px;
 }
 </style>

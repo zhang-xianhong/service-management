@@ -233,7 +233,7 @@ export default {
     const { buttons } = useButtonUtils();
 
     // 是否显示底部抽屉
-    const isShowDownDrawer = ref(true);
+    const isShowDownDrawer = ref(false);
 
     const computedHeight = computed(() => (isShowDownDrawer.value ? 'calc(95% - 400px)' : '95%'));
 
@@ -423,7 +423,7 @@ export default {
     };
 
     // 下侧组件名称
-    const drawerName = ref('ServerApiList');
+    const drawerName = ref('');
 
     // 打开接口配置
     const openPropertyInfo = () => {
