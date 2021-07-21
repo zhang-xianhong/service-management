@@ -142,3 +142,13 @@ thead .el-button--text {
 .form-item__tooltip_icon {
   color: #999;
 }
+.el-checkbox {
+  color: #444;
+}
+.el-checkbox__input.is-disabled+span.el-checkbox__label {
+  color: #888;
+  cursor: not-allowed;
+}
+.el-checkbox__label{
+  font-size: 12px;
+} 

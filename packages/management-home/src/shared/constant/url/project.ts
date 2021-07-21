@@ -11,4 +11,11 @@ export default {
   DELETE_PROJECT: ['/projects/delete'],
   IMAGE_UPLOAD: ['/files/upload'],
   PROJECT_NAME_TEST: ['/projects/name/usable'],
+  GET_ROLEAUTH_LIST: ['role/getModuleList', '/mock/project/role-auth-list.json'],
+  UPDATE_ROLE_MODULES: ['role/modules', '/mock/project/role.json'],
+  DELETE_ROLE: ['role/delete', '/mock/project/role.json'],
+  ADD_ROLE: ['role/create', '/mock/project/role.json'],
+  CHECK_ROLE: ['role/validate', '/mock/project/role-validate.json'],
+  MOD_ROLE: ['role/name', '/mock/project/role.json'],
+  PROJECT_ROLE_AUTH: ['role/get/id', '/mock/project/role-auth.json'],
 };
