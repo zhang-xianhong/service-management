@@ -51,7 +51,6 @@
               <div class="customNode">
                 <svg-icon v-if="node.level < 2" icon-name="folder" icon-class="tree-node-folder"></svg-icon>
                 <svg-icon v-if="node.level === 2" icon-name="member" icon-class="tree-node-member"></svg-icon>
-                <!-- <span @click="isDeleteVisible = false"> -->
                 <span>
                   {{ node.label }}
                   <el-popover
@@ -246,9 +245,8 @@ export default {
     const submitting = ref(false);
     const visible = ref(false);
     const iconEdit = ref(false);
-    const isSel = ref(false);
     const currentNodeData: any = ref();
-    const isDeleteVisible = ref(true);
+    const isDeleteVisible: Ref<boolean> = ref(true);
 
     // 用户树
     const treeData: Ref<any> = ref([
@@ -299,7 +297,7 @@ export default {
         label: '部门',
       },
     ];
-    const nodeList = ref(null as any);
+    const currentNode = ref(null as any);
 
     const allUsers = ref([]);
     const initUserList = async () => {
@@ -362,7 +360,7 @@ export default {
       //     : userTreeRef.value.getCurrentKey();
       // console.log(row.displayName, 'this is id', group.label);
       ElMessageBox.confirm(
-        `是否将 ${currentNodeData.value.label} 从 ${nodeList.value.parent.data.label} 中移除？`,
+        `是否将 ${currentNodeData.value.label} 从 ${currentNode.value.parent.data.label} 中移除？`,
         '提示',
         {
           confirmButtonText: '确定',
@@ -446,8 +444,9 @@ export default {
     // };
 
     const nodeClickHandler = async (data: any, node: any) => {
-      isSel.value = true;
+      console.log("data", data);
       currentNodeData.value = data;
+      currentNode.value = node;
       if (node.level === 1) {
         userList.value = _.intersectionWith((node: any, user: any) => node.id === user.id)(allUsers.value)(
           node.data.children,
@@ -459,7 +458,11 @@ export default {
           editDisable.value = false;
         }
       }
-      isDeleteVisible.value = false;
+      if (data.isSystem) {
+        isDeleteVisible.value = true;
+      } else {
+          isDeleteVisible.value = false;
+      }
       getAuth(node);
     };
 
@@ -546,7 +549,7 @@ export default {
       // 去重
       moduleIds = [...new Set(moduleIds)];
       // 获取当前选中节点数据
-      const { data } = nodeList.value;
+      const { data } = currentNode.value;
       const roleId = data.id;
       try {
         const { code } = await updateRole({
@@ -711,7 +714,7 @@ export default {
     // 删除警告弹框
     const closeUserTree = () => {
       const rowId = currentNodeData.value.id;
-      if (nodeList.value.level === 2) {
+      if (currentNode.value.level === 2) {
         removeUser();
       }
       if (!currentNodeData.value.children.length) {
@@ -772,6 +775,7 @@ export default {
       handleEdit,
       handleCancel,
       editDisable,
+      isDeleteVisible,
       userTreeInput,
       userInput,
       DialogVisible,
@@ -787,7 +791,6 @@ export default {
       filterRoleAndUser,
       editPopBoxVisible,
       editBoxsave,
-      isSel,
       validatorTagsPass,
     };
   },
