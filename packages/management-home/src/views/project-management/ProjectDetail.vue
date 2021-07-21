@@ -52,7 +52,6 @@
               <span>
                 {{ node.label }}
                 <el-popover
-                  v-if="node.level === 1 && data.isSystem === false"
                   placement="bottom-start"
                   :width="300"
                   :height="200"
@@ -83,7 +82,12 @@
                     </div>
                   </el-form>
                   <template #reference>
-                    <i class="el-icon-edit" @click="editPopBoxVisible[String(data.id)] = true"></i>
+                    <el-button
+                      type="text"
+                      class="el-icon-edit"
+                      @click="handleEditRole(data)"
+                      v-show="node.level === 1 && !data.isSystem"
+                    ></el-button>
                   </template>
                 </el-popover>
               </span>
@@ -738,6 +742,15 @@ export default {
       }
     };
 
+    const handleEditRole = (data: any) => {
+      Object.keys(editPopBoxVisible.value).forEach((key: any) => {
+        editPopBoxVisible.value[key] = false;
+      });
+      editPopBoxVisible.value[String(data.id)] = true;
+    };
+    document.onclick = (data: any) => {
+      console.log('点击', data);
+    };
     return {
       closeUserTree,
       userTreeRef,
@@ -790,6 +803,7 @@ export default {
       editBoxsave,
       validatorTagsPass,
       currentNode,
+      handleEditRole,
     };
   },
 };
@@ -853,11 +867,11 @@ export default {
       font-size: 12px;
       width: 100%;
       .el-icon-edit {
-        opacity: 0;
-        filter: alpha(opacity=0);
-        &:hover {
-          opacity: 1;
-          filter: alpha(opacity=1);
+        visibility: hidden;
+      }
+      &:hover {
+        .el-icon-edit {
+          visibility: visible;
         }
       }
       .el-icon-circle-plus {
