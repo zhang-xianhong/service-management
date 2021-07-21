@@ -52,7 +52,7 @@
                 <svg-icon v-if="node.level < 2" icon-name="folder" icon-class="tree-node-folder"></svg-icon>
                 <svg-icon v-if="node.level === 2" icon-name="member" icon-class="tree-node-member"></svg-icon>
                 <!-- <span @click="isDeleteVisible = false"> -->
-                <span @click="getNodeData(node, data)">
+                <span>
                   {{ node.label }}
                   <el-popover
                     v-if="node.level === 1 && data.isSystem === false"
@@ -247,7 +247,7 @@ export default {
     const visible = ref(false);
     const iconEdit = ref(false);
     const isSel = ref(false);
-    const currentNodeData = ref({});
+    const currentNodeData: any = ref();
     const isDeleteVisible = ref(true);
 
     // 用户树
@@ -299,17 +299,7 @@ export default {
         label: '部门',
       },
     ];
-
-    const dataList = ref(null as any);
     const nodeList = ref(null as any);
-
-    const getNodeData = (node: any, data: any) => {
-      isDeleteVisible.value = false;
-      nodeList.value = node;
-      dataList.value = data;
-      console.log("data",data);
-      console.log("node",node);
-    };
 
     const allUsers = ref([]);
     const initUserList = async () => {
@@ -364,24 +354,6 @@ export default {
       }
     };
 
-    // const findParent = (data: any, id: any, parentNode: any): any => {
-    //   let result: any = {};
-    //   if (!data) {
-    //     return;
-    //   }
-    //   for (const item of data) {
-    //     if (item.id === id) {
-    //       return parentNode;
-    //     }
-    //     if (item.children && item.children.length > 0) {
-    //       result = findParent(item.children, id, item);
-    //       if (result.id) {
-    //         return result;
-    //       }
-    //     }
-    //   }
-    //   return result;
-    // };
     const removeUser = () => {
       // const group = findParent(treeData.value[0].children, row.id, null);
       // const rowId =
@@ -389,15 +361,21 @@ export default {
       //     ? group.id || treeData.value[0].id
       //     : userTreeRef.value.getCurrentKey();
       // console.log(row.displayName, 'this is id', group.label);
-      ElMessageBox.confirm(`是否将 ${dataList.value.label} 从 ${nodeList.value.parent.data.label} 中移除？`, '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning',
-      }).then(async () => {
+      ElMessageBox.confirm(
+        `是否将 ${currentNodeData.value.label} 从 ${nodeList.value.parent.data.label} 中移除？`,
+        '提示',
+        {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning',
+        },
+      ).then(async () => {
         const { code } = await deleteMember({
-          roleId: dataList.value.label,
+          ids: [],
+          projectId: props.id,
+          roleId: currentNodeData.value.label,
         });
-        if (code === 0) reloadUserList({ id: dataList.value.label });
+        if (code === 0) reloadUserList({ id: currentNodeData.value.label });
       });
     };
     // 初始化项目信息
@@ -430,11 +408,10 @@ export default {
     // 选中角色的权限点信息
     const checkedItem: any = ref({});
     // 获取角色对应权限点
-    const getAuth = async () => {
+    const getAuth = async (node: any) => {
       // 获取当前选中节点数据
       let roleId: number;
-      console.log('nodeList.value', nodeList.value);
-      const { level, data, parent } = nodeList.value;
+      const { level, data, parent } = node;
       if (level === 1) {
         roleId = data.id;
       } else {
@@ -482,7 +459,8 @@ export default {
           editDisable.value = false;
         }
       }
-      getAuth();
+      isDeleteVisible.value = false;
+      getAuth(node);
     };
 
     const initDepartments = async () => {
@@ -705,7 +683,7 @@ export default {
           try {
             const { code } = await ModRoleName({
               name: userTreeInput.value.roles,
-              roleId: dataList.value.id,
+              roleId: currentNodeData.value.id,
             });
             if (code === 0) {
               ElMessage({
@@ -732,12 +710,12 @@ export default {
 
     // 删除警告弹框
     const closeUserTree = () => {
-      const rowId = dataList.value.id;
+      const rowId = currentNodeData.value.id;
       if (nodeList.value.level === 2) {
         removeUser();
       }
-      if (!dataList.value.children.length) {
-        ElMessageBox.confirm(`删除【${dataList.value.label}】 角色`, {
+      if (!currentNodeData.value.children.length) {
+        ElMessageBox.confirm(`删除【${currentNodeData.value.label}】 角色`, {
           confirmButtonText: '我知道了',
           showCancelButton: false,
           type: 'warning',
@@ -749,8 +727,8 @@ export default {
         });
       } else {
         ElMessageBox.confirm(
-          `删除该角色前请先移除【${dataList.value.label}】下的人员`,
-          `删除 【${dataList.value.label} 】角色`,
+          `删除该角色前请先移除【${currentNodeData.value.label}】下的人员`,
+          `删除 【${currentNodeData.value.label} 】角色`,
           {
             confirmButtonText: '我知道了',
             showCancelButton: false,
@@ -811,8 +789,6 @@ export default {
       editBoxsave,
       isSel,
       validatorTagsPass,
-      isDeleteVisible,
-      getNodeData,
     };
   },
 };
