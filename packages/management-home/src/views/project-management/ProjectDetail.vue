@@ -140,7 +140,7 @@
           <el-tab-pane label="角色权限" name="roleList">
             <div class="roleAuthStyle">
               <el-row>
-                <el-button type="primary" @click="handleEdit" v-show="isEdit" :disabled="editDisable">编辑</el-button>
+                <el-button type="primary" @click="handleEdit" v-if="isEdit" :disabled="editDisable">编辑</el-button>
                 <el-button type="primary" @click="confirm" v-show="!isEdit">确定</el-button>
                 <el-button @click="handleCancel" v-show="!isEdit">取消</el-button>
               </el-row>
