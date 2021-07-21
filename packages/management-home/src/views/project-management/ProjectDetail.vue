@@ -58,14 +58,9 @@
                   trigger="click"
                   :visible="editPopBoxVisible[String(data.id)]"
                 >
-                  <el-form :model="userTreeInput" ref="roleRef">
+                  <el-form :model="userTreeInput" ref="roleRef" :rules="rule" v-if="editPopBoxVisible[String(data.id)]">
                     <el-form-item
                       prop="roles"
-                      :rules="[
-                        { required: true, message: '角色不能为空', trigger: 'blur' },
-                        { min: 1, max: 20, message: '超过字数限制，最多不能超过20个字符', trigger: 'blur' },
-                        { validator: validatorTagsPass, trigger: 'blur' },
-                      ]"
                     >
                       <el-input
                         v-model="userTreeInput.roles"
@@ -86,7 +81,7 @@
                       type="text"
                       class="el-icon-edit"
                       @click="handleEditRole(data)"
-                      v-show="node.level === 1 && !data.isSystem"
+                      v-if="node.level === 1 && !data.isSystem"
                     ></el-button>
                   </template>
                 </el-popover>
@@ -190,7 +185,7 @@
 <script lang="ts">
 import _ from 'lodash/fp';
 import { debounce } from 'lodash';
-import { ref, Ref, provide, onMounted, getCurrentInstance } from 'vue';
+import { ref, Ref, provide, onMounted, getCurrentInstance, computed } from 'vue';
 import TreeSelector from './components/TreeSelector.vue';
 import BasicInfoForm from './components/BasicInfoForm.vue';
 import {
@@ -238,7 +233,7 @@ export default {
     const userTreeRef: any = ref(null);
 
     const formRef: any = ref(null);
-    const roleRef: any = ref(null as any);
+    const roleRef: any = ref(null);
     const tagName: any = ref(null as any);
     const DialogVisible = ref(false);
     const form = ref({
@@ -674,7 +669,16 @@ export default {
       userTreeInput.value.roles = '';
       editPopBoxVisible.value[id] = false;
       formRef.value.resetFields();
+      roleRef.value.resetFields();
     };
+
+    const rule = computed(() => ({
+      roles: [
+        { required: true, message: '角色不能为空', trigger: 'blur' },
+        { min: 1, max: 20, message: '超过字数限制，最多不能超过20个字符', trigger: 'blur' },
+        { validator: validatorTagsPass, trigger: 'blur' },
+      ]
+    }))
 
     // 修改角色名称
     const editBoxsave = (id: any) => {
@@ -804,6 +808,7 @@ export default {
       validatorTagsPass,
       currentNode,
       handleEditRole,
+      rule
     };
   },
 };
