@@ -58,9 +58,14 @@
                   trigger="click"
                   :visible="editPopBoxVisible[String(data.id)]"
                 >
-                  <el-form :model="userTreeInput" ref="roleRef" :rules="rule" v-if="editPopBoxVisible[String(data.id)]">
+                  <el-form :model="userTreeInput" ref="roleRef" v-if="editPopBoxVisible[String(data.id)]">
                     <el-form-item
                       prop="roles"
+                      :rules="[
+                        { required: true, message: '角色不能为空', trigger: 'blur' },
+                        { min: 1, max: 20, message: '超过字数限制，最多不能超过20个字符', trigger: 'blur' },
+                        { validator: validatorTagsPass, trigger: 'blur' },
+                      ]"
                     >
                       <el-input
                         v-model="userTreeInput.roles"
@@ -81,7 +86,7 @@
                       type="text"
                       class="el-icon-edit"
                       @click="handleEditRole(data)"
-                      v-if="node.level === 1 && !data.isSystem"
+                      v-show="node.level === 1 && !data.isSystem"
                     ></el-button>
                   </template>
                 </el-popover>
@@ -185,7 +190,7 @@
 <script lang="ts">
 import _ from 'lodash/fp';
 import { debounce } from 'lodash';
-import { ref, Ref, provide, onMounted, getCurrentInstance, computed } from 'vue';
+import { ref, Ref, provide, onMounted, getCurrentInstance } from 'vue';
 import TreeSelector from './components/TreeSelector.vue';
 import BasicInfoForm from './components/BasicInfoForm.vue';
 import {
@@ -672,14 +677,6 @@ export default {
       roleRef.value.resetFields();
     };
 
-    const rule = computed(() => ({
-      roles: [
-        { required: true, message: '角色不能为空', trigger: 'blur' },
-        { min: 1, max: 20, message: '超过字数限制，最多不能超过20个字符', trigger: 'blur' },
-        { validator: validatorTagsPass, trigger: 'blur' },
-      ]
-    }))
-
     // 修改角色名称
     const editBoxsave = (id: any) => {
       roleRef.value.validate(async (isValid: boolean) => {
@@ -808,7 +805,6 @@ export default {
       validatorTagsPass,
       currentNode,
       handleEditRole,
-      rule
     };
   },
 };
