@@ -1,216 +1,199 @@
 {
-	"code": 0,
-	"data": {
-		"roles": [{
-			"id": 69,
-			"updateTime": "2021-07-13T02:05:55.000Z",
-			"createTime": "2021-07-13T02:05:55.000Z",
-			"createUser": null,
-			"updateUser": null,
-			"tenantId": 44,
-			"projectId": 10,
-			"name": "项目负责人",
-			"code": "PA",
-			"isSystem": true,
-			"members": [{
-				"id": 26,
-				"updateTime": "2021-07-13T07:35:38.000Z",
-				"createTime": "2021-07-13T07:35:38.000Z",
-				"createUser": null,
-				"updateUser": null,
-				"version": 0,
-				"tenantId": 44,
-				"projectId": 10,
-				"roleId": 69,
-				"userId": 318
-			}, {
-				"id": 27,
-				"updateTime": "2021-07-13T07:35:38.000Z",
-				"createTime": "2021-07-13T07:35:38.000Z",
-				"createUser": null,
-				"updateUser": null,
-				"version": 0,
-				"tenantId": 44,
-				"projectId": 10,
-				"roleId": 69,
-				"userId": 365
-			}]
-		}, {
-			"id": 65,
-			"updateTime": "2021-07-13T02:05:55.000Z",
-			"createTime": "2021-07-13T02:05:55.000Z",
-			"createUser": null,
-			"updateUser": null,
-			"tenantId": 44,
-			"projectId": 10,
-			"name": "研发",
-			"code": "RD",
-			"isSystem": true,
-			"members": [{
-				"id": 28,
-				"updateTime": "2021-07-14T07:39:08.000Z",
-				"createTime": "2021-07-14T07:39:08.000Z",
-				"createUser": null,
-				"updateUser": null,
-				"version": 0,
-				"tenantId": 44,
-				"projectId": 10,
-				"roleId": 65,
-				"userId": 280
-			}]
-		}, {
-			"id": 64,
-			"updateTime": "2021-07-13T02:05:55.000Z",
-			"createTime": "2021-07-13T02:05:55.000Z",
-			"createUser": null,
-			"updateUser": null,
-			"tenantId": 44,
-			"projectId": 10,
-			"name": "产品",
-			"code": "UE",
-			"isSystem": true,
-			"members": [{
-				"id": 29,
-				"updateTime": "2021-07-14T10:19:27.000Z",
-				"createTime": "2021-07-14T10:19:27.000Z",
-				"createUser": null,
-				"updateUser": null,
-				"version": 0,
-				"tenantId": 44,
-				"projectId": 10,
-				"roleId": 64,
-				"userId": 303
-			}, {
-				"id": 30,
-				"updateTime": "2021-07-14T10:19:27.000Z",
-				"createTime": "2021-07-14T10:19:27.000Z",
-				"createUser": null,
-				"updateUser": null,
-				"version": 0,
-				"tenantId": 44,
-				"projectId": 10,
-				"roleId": 64,
-				"userId": 318
-			}, {
-				"id": 31,
-				"updateTime": "2021-07-14T10:19:27.000Z",
-				"createTime": "2021-07-14T10:19:27.000Z",
-				"createUser": null,
-				"updateUser": null,
-				"version": 0,
-				"tenantId": 44,
-				"projectId": 10,
-				"roleId": 64,
-				"userId": 343
-			}]
-		}, {
-			"id": 66,
-			"updateTime": "2021-07-13T02:05:55.000Z",
-			"createTime": "2021-07-13T02:05:55.000Z",
-			"createUser": null,
-			"updateUser": null,
-			"tenantId": 44,
-			"projectId": 10,
-			"name": "测试",
-			"code": "QA",
-			"isSystem": true,
-			"members": []
-		}, {
-			"id": 67,
-			"updateTime": "2021-07-13T02:05:55.000Z",
-			"createTime": "2021-07-13T02:05:55.000Z",
-			"createUser": null,
-			"updateUser": null,
-			"tenantId": 44,
-			"projectId": 10,
-			"name": "运维",
-			"code": "OP",
-			"isSystem": true,
-			"members": []
-		}, {
-			"id": 68,
-			"updateTime": "2021-07-13T02:05:55.000Z",
-			"createTime": "2021-07-13T02:05:55.000Z",
-			"createUser": null,
-			"updateUser": null,
-			"tenantId": 44,
-			"projectId": 10,
-			"name": "项目经理",
-			"code": "PM",
-			"isSystem": false,
-			"members": []
-		}, {
-			"id": 70,
-			"updateTime": "2021-07-13T02:05:55.000Z",
-			"createTime": "2021-07-13T02:05:55.000Z",
-			"createUser": null,
-			"updateUser": null,
-			"tenantId": 44,
-			"projectId": 10,
-			"name": "访客",
-			"code": "VIS",
-			"isSystem": true,
-			"members": []
-		}],
-		"users": [{
-			"id": 280,
-			"deptId": 155,
-			"userName": "yangwenhui",
-			"displayName": "杨文辉",
-			"status": 0,
-			"tenantId": 44,
-			"deptName": "asdas",
-			"phoneNumber": "15686272660",
-			"primaryMail": "1353678463@qq.com",
-			"gender": 0,
-			"position": null,
-			"admin": false,
-			"activate": true
-		}, {
-			"id": 303,
-			"deptId": 144,
-			"userName": "one",
-			"displayName": "小一",
-			"status": 0,
-			"tenantId": 44,
-			"deptName": "权限部门",
-			"phoneNumber": "15644557788",
-			"primaryMail": "384297483@163.com",
-			"gender": 0,
-			"position": null,
-			"admin": false,
-			"activate": true
-		}, {
-			"id": 318,
-			"deptId": 131,
-			"userName": "milton",
-			"displayName": "修改后的",
-			"status": 0,
-			"tenantId": 44,
-			"deptName": "地中海",
-			"phoneNumber": "15270589490",
-			"primaryMail": "9364115273@qq.com",
-			"gender": 0,
-			"position": null,
-			"admin": true,
-			"activate": true
-		}, {
-			"id": 343,
-			"deptId": 155,
-			"userName": "jack",
-			"displayName": "杰克",
-			"status": 0,
-			"tenantId": 44,
-			"deptName": "asdas",
-			"phoneNumber": "15387545621",
-			"primaryMail": "463543765@qq.com",
-			"gender": 0,
-			"position": null,
-			"admin": false,
-			"activate": true
-		}]
-	},
-	"message": "successful",
-	"httpStatus": 200,
-	"timestamp": 1626428635067
+  "code": 0,
+  "data": {
+    "roles":  [
+      {
+          "roleId": 1,
+          "name": "产品",
+          "moduleIds": null,
+          "userIds": [
+              333
+          ]
+      },
+      {
+          "roleId": 2,
+          "name": "研发",
+          "moduleIds": null,
+          "userIds": [
+              337,
+              342
+          ]
+      },
+      {
+          "roleId": 3,
+          "name": "测试",
+          "moduleIds": null,
+          "userIds": []
+      },
+      {
+          "roleId": 4,
+          "name": "运维",
+          "moduleIds": null,
+          "userIds": []
+      },
+      {
+          "roleId": 5,
+          "name": "项目经理",
+          "moduleIds": null,
+          "userIds": [
+              345,
+              343
+          ]
+      },
+      {
+          "roleId": 6,
+          "name": "项目负责人",
+          "moduleIds": null,
+          "userIds": []
+      },
+      {
+          "roleId": 7,
+          "name": "访客",
+          "moduleIds": null,
+          "userIds": []
+      },
+      {
+          "roleId": 274,
+          "name": "自定义-设计",
+          "moduleIds": null,
+          "userIds": [
+              341
+          ]
+      },
+      {
+          "roleId": 275,
+          "name": "自定义-运营",
+          "moduleIds": null,
+          "userIds": [
+              339,
+              344
+          ]
+      }
+  ],
+    "users": [
+      {
+        "id": 333,
+        "deptId": 75,
+        "userName": "chonpan",
+        "displayName": "潘崇",
+        "status": 0,
+        "tenantId": 17,
+        "deptName": "cqszjj",
+        "phoneNumber": "18316621655",
+        "primaryMail": "chonpan@tencent.com",
+        "gender": 0,
+        "position": null,
+        "admin": false,
+        "activate": true
+      },
+      {
+        "id": 337,
+        "deptId": 75,
+        "userName": "wxiaopwang",
+        "displayName": "汪晓鹏",
+        "status": 0,
+        "tenantId": 17,
+        "deptName": "cqszjj",
+        "phoneNumber": "17718425232",
+        "primaryMail": "wxiaopwang@tencent.com",
+        "gender": 0,
+        "position": null,
+        "admin": false,
+        "activate": true
+      },
+      {
+        "id": 339,
+        "deptId": 76,
+        "userName": "EMP",
+        "displayName": "人机零",
+        "status": 0,
+        "tenantId": 17,
+        "deptName": "Default Department",
+        "phoneNumber": "18511111113",
+        "primaryMail": "hello@tencent.com",
+        "gender": 0,
+        "position": null,
+        "admin": false,
+        "activate": false
+      },
+      {
+        "id": 341,
+        "deptId": 75,
+        "userName": "brookezhang",
+        "displayName": "张铭",
+        "status": 0,
+        "tenantId": 17,
+        "deptName": "cqszjj",
+        "phoneNumber": "17717171717",
+        "primaryMail": "brookezhang@tencent.com",
+        "gender": 0,
+        "position": null,
+        "admin": false,
+        "activate": false
+      },
+      {
+        "id": 342,
+        "deptId": 75,
+        "userName": "jaggerguo",
+        "displayName": "郭建国",
+        "status": 0,
+        "tenantId": 17,
+        "deptName": "cqszjj",
+        "phoneNumber": "17717171712",
+        "primaryMail": "jaggerguo@tencent.com",
+        "gender": 0,
+        "position": null,
+        "admin": false,
+        "activate": false
+      },
+      {
+        "id": 343,
+        "deptId": 75,
+        "userName": "esthermeng",
+        "displayName": "孟颖慧",
+        "status": 0,
+        "tenantId": 17,
+        "deptName": "cqszjj",
+        "phoneNumber": "17717171713",
+        "primaryMail": "esthermeng@tencent.com",
+        "gender": 0,
+        "position": null,
+        "admin": false,
+        "activate": false
+      },
+      {
+        "id": 344,
+        "deptId": 75,
+        "userName": "paulxhzhang",
+        "displayName": "张献洪",
+        "status": 0,
+        "tenantId": 17,
+        "deptName": "cqszjj",
+        "phoneNumber": "17717171716",
+        "primaryMail": "paulxhzhang@tencent.com",
+        "gender": 0,
+        "position": null,
+        "admin": false,
+        "activate": false
+      },
+      {
+        "id": 345,
+        "deptId": 75,
+        "userName": "aidentao",
+        "displayName": "陶磊",
+        "status": 0,
+        "tenantId": 17,
+        "deptName": "cqszjj",
+        "phoneNumber": "17718171728",
+        "primaryMail": "aidentao@tencent.com",
+        "gender": 0,
+        "position": null,
+        "admin": false,
+        "activate": false
+      }
+    ]
+  },
+  "message": "successful",
+  "httpStatus": 200,
+  "timestamp": 1626836380257
 }

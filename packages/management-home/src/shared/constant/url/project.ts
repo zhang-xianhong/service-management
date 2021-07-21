@@ -5,6 +5,7 @@ export default {
   GET_PROJECT_DETAIL: ['/projects/_', '/mock/project/project-detail.json'],
   UPDATE_PROJECT: ['/projects/_', '/mock/project/project-detail.json'],
   GET_MEMBER_LIST: ['/projects/_/members', '/mock/project/project-members.json'],
+  GET_ROLE_LIST: ['/projects/_/roles', '/mock/project/project-members.json'],
   UPDATE_MEMBER: ['/projects/_/members', '/mock/project/project-members.json'],
   DELETE_MEMBER: ['/projects/_/members/delete', '/mock/project/project-members.json'],
   POST_ADD_PROJECT: ['/projects'],

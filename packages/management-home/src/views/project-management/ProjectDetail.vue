@@ -191,7 +191,7 @@ import { ref, Ref, provide, onMounted, getCurrentInstance } from 'vue';
 import TreeSelector from './components/TreeSelector.vue';
 import BasicInfoForm from './components/BasicInfoForm.vue';
 import {
-  getMemberList,
+  getRoleList,
   getProjectDetail,
   deleteMember,
   getRoleAuthList,
@@ -300,7 +300,7 @@ export default {
 
     const allUsers = ref([]);
     const initUserList = async () => {
-      const { code, data } = await getMemberList({
+      const { code, data } = await getRoleList({
         projectId: props.id,
       });
       if (code === 0) {
@@ -316,13 +316,13 @@ export default {
             id: role.id,
             label: role.name,
             isSystem: role.isSystem,
-            children: _.map((member: any) => {
-              const user: any = _.find({ id: member.userId })(data.users);
+            children: _.map((userId: any) => {
+              const user: any = _.find({ id: userId })(data.users);
               return {
                 label: user?.displayName,
                 id: user?.id,
               };
-            })(role.members),
+            })(role.userIds),
           })),
         )(noPaRoles);
         console.log('treeData.value', treeData.value);
