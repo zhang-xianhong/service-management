@@ -40,7 +40,6 @@
           <el-tree
             ref="userTreeRef"
             :data="treeData"
-            :default-expand-all="true"
             :expand-on-click-node="false"
             :highlight-current="true"
             node-key="id"
