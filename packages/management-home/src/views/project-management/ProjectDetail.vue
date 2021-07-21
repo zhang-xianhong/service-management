@@ -352,13 +352,6 @@ export default {
     };
 
     const removeUser = (row: any) => {
-      // const group = findParent(treeData.value[0].children, row.id, null);
-      // const rowId =
-      //   userTreeRef.value.getCurrentKey() === row.id
-      //     ? group.id || treeData.value[0].id
-      //     : userTreeRef.value.getCurrentKey();
-      // console.log(row.displayName, 'this is id', group.label);
-
       ElMessageBox.confirm(
         `是否将 ${currentNodeData.value.label} 从 ${currentNode.value.parent.data.label} 中移除？`,
         '提示',
@@ -416,7 +409,7 @@ export default {
         roleId = parent.data.id;
       }
       try {
-        const { code, data } = await getAuthByRoleId({ roleId });
+        const { code, data } = await getAuthByRoleId({ roleId, projectId: props.id });
         if (code === ResCode.Success) {
           const { moduleIds } = data;
           const checkObj: any = {};
@@ -556,6 +549,7 @@ export default {
         const { code } = await updateRole({
           roleId,
           moduleIds,
+          projectId: props.id,
         });
         if (code === ResCode.Success) {
           msgTips('success', '编辑成功');
@@ -630,6 +624,7 @@ export default {
     const validatorTagsPass = async (rule: any, value: string, callback: Function) => {
       const { code, data } = await checkRoleRule({
         name: value,
+        projectId: props.id,
       });
       if (code === 0 && data === null) {
         callback(new Error('名称已存在!'));
@@ -647,7 +642,7 @@ export default {
         if (isValid) {
           submitting.value = true;
           try {
-            const { code } = await addRole({ name: form.value.name });
+            const { code } = await addRole({ name: form.value.name, projectId: props.id });
             if (code === 0) {
               ElMessage({
                 type: 'success',
@@ -688,6 +683,7 @@ export default {
             const { code } = await ModRoleName({
               name: userTreeInput.value.roles,
               roleId: currentNodeData.value.id,
+              projectId: props.id,
             });
             if (code === 0) {
               ElMessage({
@@ -727,6 +723,7 @@ export default {
         }).then(async () => {
           const { code } = await deleteRole({
             roleId: rowId,
+            projectId: props.id,
           });
           if (code === 0) reloadUserList({ id: rowId });
         });
