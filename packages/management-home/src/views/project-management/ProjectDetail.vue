@@ -33,7 +33,7 @@
           ></el-input>
           <div class="user-tree-btn">
             <el-button type="primary" @click="DialogVisible = true">新建</el-button>
-            <el-button @click="closeUserTree()" :disabled="isDeleteVisible">删除</el-button>
+            <el-button @click="closeUserTree" :disabled="isDeleteVisible">删除</el-button>
           </div>
         </div>
         <el-scrollbar>
@@ -123,6 +123,7 @@
         </template>
       </el-dialog>
       <div class="user-table">
+        <h2>{{ currentNode?.label || '--' }}</h2>
         <el-tabs v-model="activeTab">
           <el-tab-pane label="成员列表" name="userList">
             <el-table :data="userList">
@@ -178,7 +179,7 @@
       :not-allow="otherRoleUser"
       optionPlaceholder="请输入部门/人员名称"
       optionLabel="选择人员"
-      :s="treeSelectorRole"
+      :role="treeSelectorRole"
       ref="treeSelectorRef"
       @user-changed="reloadUserList"
     ></tree-selector>
@@ -247,6 +248,7 @@ export default {
     const iconEdit = ref(false);
     const currentNodeData: any = ref();
     const isDeleteVisible: Ref<boolean> = ref(true);
+    const currentNode: any = ref();
 
     // 用户树
     const treeData: Ref<any> = ref([
@@ -297,8 +299,6 @@ export default {
         label: '部门',
       },
     ];
-    const currentNode = ref(null as any);
-
     const allUsers = ref([]);
     const initUserList = async () => {
       const { code, data } = await getMemberList({
@@ -352,13 +352,14 @@ export default {
       }
     };
 
-    const removeUser = () => {
+    const removeUser = (row: any) => {
       // const group = findParent(treeData.value[0].children, row.id, null);
       // const rowId =
       //   userTreeRef.value.getCurrentKey() === row.id
       //     ? group.id || treeData.value[0].id
       //     : userTreeRef.value.getCurrentKey();
       // console.log(row.displayName, 'this is id', group.label);
+
       ElMessageBox.confirm(
         `是否将 ${currentNodeData.value.label} 从 ${currentNode.value.parent.data.label} 中移除？`,
         '提示',
@@ -369,9 +370,9 @@ export default {
         },
       ).then(async () => {
         const { code } = await deleteMember({
-          ids: [],
+          ids: row ? [] : [currentNode.value?.data?.id],
           projectId: props.id,
-          roleId: currentNodeData.value.label,
+          roleId: row ? '' : currentNode.value.parent?.data?.id,
         });
         if (code === 0) reloadUserList({ id: currentNodeData.value.label });
       });
@@ -433,6 +434,7 @@ export default {
     };
 
     const editDisable: Ref<boolean> = ref(true);
+    const isEdit: Ref<boolean> = ref(true);
     // 初始化
     // const roleAuthInit = () => {
     //   const checkObj: any = {};
@@ -444,24 +446,26 @@ export default {
     // };
 
     const nodeClickHandler = async (data: any, node: any) => {
-      console.log("data", data);
       currentNodeData.value = data;
       currentNode.value = node;
       if (node.level === 1) {
         userList.value = _.intersectionWith((node: any, user: any) => node.id === user.id)(allUsers.value)(
           node.data.children,
         );
-        // 判断是否可编辑 to-do
-        if (data.isSystem) {
-          editDisable.value = true;
-        } else {
-          editDisable.value = false;
-        }
+      } else {
+        userList.value = _.intersectionWith((node: any, user: any) => node.id === user.id)(allUsers.value)([node.data]);
+      }
+      // 判断是否可编辑 to-do
+      isEdit.value = true;
+      if (data.isSystem || node.level === 2) {
+        editDisable.value = true;
+      } else {
+        editDisable.value = false;
       }
       if (data.isSystem) {
         isDeleteVisible.value = true;
       } else {
-          isDeleteVisible.value = false;
+        isDeleteVisible.value = false;
       }
       getAuth(node);
     };
@@ -523,8 +527,6 @@ export default {
     // 选中所有
     const checkAll: any = ref({});
     const isIndeterminate: any = ref({});
-
-    const isEdit: Ref<boolean> = ref(true);
 
     // 获取项目角色权限列表
     const getRoleAuthListData = async () => {
@@ -715,7 +717,8 @@ export default {
     const closeUserTree = () => {
       const rowId = currentNodeData.value.id;
       if (currentNode.value.level === 2) {
-        removeUser();
+        removeUser(false);
+        return;
       }
       if (!currentNodeData.value.children.length) {
         ElMessageBox.confirm(`删除【${currentNodeData.value.label}】 角色`, {
@@ -792,6 +795,7 @@ export default {
       editPopBoxVisible,
       editBoxsave,
       validatorTagsPass,
+      currentNode,
     };
   },
 };
