@@ -381,7 +381,7 @@ export default {
         projectInfo.templateId = data.template.id;
         projectInfo.templateName = data.template.name;
         projectDetail.value = projectInfo;
-        treeData.value[0].label = data.name;
+        // treeData.value[0].label = data.name;
         const userArr = projectInfo.owners.map((x: any) => x.userId);
         include.value = userInfo.value.admin || userArr.includes(userInfo.value.userId);
       }
