@@ -23,7 +23,7 @@
       </div>
     </el-row>
     <el-row class="user-info">
-      <div class="user-tree">
+      <div class="user-tree" v-loading="loadings">
         <div class="user-tree-top">
           <el-input
             suffix-icon="el-icon-search"
@@ -64,13 +64,14 @@
                       :rules="[
                         { required: true, message: '角色不能为空', trigger: 'blur' },
                         { min: 1, max: 20, message: '超过字数限制，最多不能超过20个字符', trigger: 'blur' },
+                        { pattern: /^[\u4e00-\u9fa5|a-zA-Z|()（）]+$/g, message: '仅支持中英文字母、中文、符号', trigger: 'blur' },
                         { validator: validatorTagsPass, trigger: 'blur' },
                       ]"
                     >
                       <el-input
                         v-model="userTreeInput.roles"
                         autocomplete="off"
-                        placeholder="新建的一个自定义角色"
+                        placeholder="请输入修改的名称"
                         clearable
                       ></el-input>
                     </el-form-item>
@@ -82,12 +83,12 @@
                     </div>
                   </el-form>
                   <template #reference>
-                    <el-button
+                    <i
                       type="text"
                       class="el-icon-edit"
                       @click="handleEditRole(data)"
                       v-show="node.level === 1 && !data.isSystem"
-                    ></el-button>
+                    ></i>
                   </template>
                 </el-popover>
               </span>
@@ -110,6 +111,7 @@
             :rules="[
               { required: true, message: '角色不能为空', trigger: 'blur' },
               { min: 1, max: 20, message: '超过字数限制，最多不能超过20个字符', trigger: 'blur' },
+              { pattern: /^[\u4e00-\u9fa5|a-zA-Z|()（）]+$/g, message: '仅支持中英文字母、中文、符号', trigger: 'blur' },
               { validator: validatorTagsPass, trigger: 'blur' },
             ]"
           >
@@ -250,6 +252,7 @@ export default {
     const currentNodeData: any = ref();
     const isDeleteVisible: Ref<boolean> = ref(true);
     const currentNode: any = ref();
+    const loadings = ref(true);
 
     // 用户树
     const treeData: Ref<any> = ref([
@@ -336,6 +339,7 @@ export default {
         });
         editPopBoxVisible.value = res;
         userList.value = [];
+        loadings.value = false;
       }
     };
     initUserList();
@@ -753,6 +757,7 @@ export default {
       console.log('点击', data);
     };
     return {
+      loadings,
       closeUserTree,
       userTreeRef,
       editMode,
