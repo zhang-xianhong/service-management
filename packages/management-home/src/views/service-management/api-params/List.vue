@@ -415,6 +415,7 @@ export default defineComponent({
 
     // 禁用类型
     const isDisableParamType = (type, row) => {
+      console.log(paramsDefine.value);
       if ((type !== 'array' && type !== 'object') || !paramsDefine.value) {
         return false;
       }
