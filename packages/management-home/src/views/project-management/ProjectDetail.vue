@@ -315,7 +315,7 @@ export default {
         treeData.value = _.flow(
           _.reject({ isOwnerRole: true }),
           _.map((role: any) => ({
-            id: role.id,
+            id: role.roleId,
             label: role.name,
             isSystem: role.isSystem,
             children: _.map((userId: any) => {
