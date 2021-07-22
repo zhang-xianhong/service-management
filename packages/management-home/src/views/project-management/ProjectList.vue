@@ -125,7 +125,7 @@
             <el-radio v-model="projectDetail.status" :label="0">冻结</el-radio>
           </el-form-item>
           <el-form-item
-            label="项目简介"
+            label="项目描述"
             :label-width="labelWidth"
             prop="remark"
             :rules="[{ min: 0, max: 512, message: '最多支持512个字符', trigger: 'blur' }]"

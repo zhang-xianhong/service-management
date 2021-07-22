@@ -26,7 +26,12 @@
       <div class="project-item_mess"><label>负责人</label>{{ dataObj.ownerstr }}</div>
       <div class="project-item_mess">
         <label>项目描述</label>
-        {{ dataObj.description }}
+        <el-tooltip effect="dark" placement="top" popper-class="max-length">
+          <template #content>
+            <div v-html="provpers"></div>
+          </template>
+          <span class="remarks">{{ dataObj.remark }}</span>
+        </el-tooltip>
       </div>
       <div class="project-item_mess">
         <label>项目级别</label>
@@ -37,7 +42,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, getCurrentInstance, ref } from 'vue';
+import { computed, defineComponent, getCurrentInstance, ref } from 'vue';
 import { imgUpload, updateProject } from '@/api/project/project';
 import Message from 'element-plus/es/el-message';
 import { ElMessage } from 'element-plus';
@@ -111,6 +116,16 @@ export default defineComponent({
         path: `/project-management/project-detail/${props.dataObj.id}`,
       });
     };
+    const provpers = computed(() => {
+      const str = props.dataObj?.remark;
+      const length = props.dataObj?.remark?.length || 1;
+      const n = 20;
+      const arr = [];
+      for (let i = 0; i < length / n; i++) {
+        arr.push(str.slice(n * i, n * (i + 1)));
+      }
+      return arr.join('<br />');
+    });
 
     return {
       changePic,
@@ -120,6 +135,7 @@ export default defineComponent({
       levelArr,
       deleteProject,
       jump2detail,
+      provpers,
     };
   },
 });
@@ -188,6 +204,14 @@ export default defineComponent({
       overflow: hidden;
       white-space: nowrap;
       text-overflow: ellipsis;
+      .remarks {
+        width: 150px;
+        display: inline-block;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        vertical-align: bottom;
+      }
       label {
         opacity: 0.7;
         display: inline-block;

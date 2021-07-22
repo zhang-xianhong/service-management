@@ -1,6 +1,7 @@
 import { ref } from 'vue';
 import { getLogRuntime } from '@/api/servers';
 import _ from 'lodash';
+import AnsiUp from 'ansi_up';
 
 export const logDialogVisible = ref(false);
 export const logData = ref([] as any);
@@ -37,8 +38,10 @@ export const clearLogInterVal = () => {
 };
 
 export function formatLogData(str: string) {
-  return str.replace(
-    /^(\d{4}(-\d{2}){2}\s\d{2}(:\d{2}){2},\d{3})/gm,
-    (a, b) => `<span style="color: red; margin-right: 5px">${b}</span>`,
-  );
+  const ansiUp = new AnsiUp();
+  // const data = str.replace(
+  //   /^(\d{4}(-\d{2}){2}\s\d{2}(:\d{2}){2},\d{3})/gm,
+  //   (a, b) => `<span style="color: red; margin-right: 5px">${b}</span>`,
+  // );
+  return ansiUp.ansi_to_html(str);
 }
