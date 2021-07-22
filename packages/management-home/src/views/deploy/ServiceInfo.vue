@@ -120,11 +120,12 @@ export default defineComponent({
       publisher: [{ type: 'number', message: '请输入数值', trigger: 'change' }],
       publishContent: [
         { required: true, message: '请输入发布说明', trigger: 'blur' },
-        { min: 3, max: 512, message: '长度在 3 到 512 个字符', trigger: 'blur' },
+        { min: 3, max: 1024, message: '长度在 3 到 1024 个字符', trigger: 'blur' },
       ],
     };
 
-    const changeService = (serviceId: any) => {
+    const changeService = () => {
+      releaseData.value.serviceInfo.serviceVersion = '';
       const temp: any = ref(
         releaseData.value.services.find((item: any) => item.serviceName === releaseData.value.serviceInfo.name),
       );
@@ -144,9 +145,6 @@ export default defineComponent({
           versionStatus: item.versionStatus,
         };
       });
-      const data: any = releaseData.value.serviceList.find((i: any) => i.id === serviceId);
-      // releaseData.value.serviceInfo.moduleId = serviceId;
-      releaseData.value.serviceInfo.name = data?.name;
     };
 
     const closeReleaseForm = () => {
@@ -179,7 +177,7 @@ export default defineComponent({
               btnLoading.value = false;
               closeReleaseForm();
             } catch (e) {
-              ElMessage.error(e);
+              console.log(e);
               btnLoading.value = false;
             }
           } else {
@@ -202,7 +200,7 @@ export default defineComponent({
               closeReleaseForm();
               btnLoading.value = false;
             } catch (e) {
-              ElMessage.error(e);
+              console.log(e);
               btnLoading.value = false;
             }
           }
