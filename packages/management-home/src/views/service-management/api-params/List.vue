@@ -12,7 +12,13 @@
       </el-radio>
     </div>
 
-    <list-wrap :loading="loading" :inProject="false" :empty="list.length === 0" :hasCreateAuth="false">
+    <list-wrap
+      :loading="loading"
+      :inProject="false"
+      :empty="list.length === 0"
+      :hasCreateAuth="true"
+      :handleCreate="handleAdd"
+    >
       <el-table
         :data="list"
         style="width: 100%"
@@ -50,6 +56,7 @@
             >
               <el-option
                 v-for="item in paramTypes"
+                :disabled="isDisableParamType(item.value, scope.row)"
                 :key="item.value"
                 :value="item.value"
                 :label="item.name"
@@ -72,7 +79,9 @@
         </el-table-column>
         <el-table-column prop="example" label="参数示例">
           <template #default="scope">
-            <span v-if="!isEdit">{{ scope.row.example }}</span>
+            <span v-if="!isEdit || scope.row.type === 'array' || scope.row.type === 'object'">{{
+              scope.row.example
+            }}</span>
             <el-input
               v-else
               placeholder="请输入参数示例"
@@ -102,12 +111,12 @@
         <el-table-column prop="actions" label="操作" align="right" width="150">
           <template #default="scope">
             <template v-if="isEdit">
-              <el-button type="text" @click="handleAdd(scope.row)">添加</el-button>
+              <el-button type="text" @click="handleAdd(scope.row)" v-if="canAdd(scope.row)">添加</el-button>
               <el-button type="text" v-if="scope.row.type === 'object'">引入</el-button>
               <el-button type="text" v-else-if="scope.row.type !== 'array'" @click="handleSetting(scope.row)"
                 >设置</el-button
               >
-              <el-button type="text" @click="handleRemove(scope.row)">删除</el-button>
+              <el-button type="text" @click="handleRemove(scope.row)" v-if="canDel(scope.row)">删除</el-button>
             </template>
             <template v-else>
               <el-button type="text" v-if="scope.row.type !== 'array'" @click="handleSetting(scope.row)"
@@ -117,25 +126,25 @@
           </template>
         </el-table-column>
       </el-table>
-
       <div class="error-wrap">{{ formError }}</div>
-
-      <div class="code-preview">
-        <h3 class="code-preview__title">
-          预览
-          <el-button type="text">生成预览</el-button>
-        </h3>
-        <pre v-highlight><code v-html="previewCode" class="json"></code></pre>
-      </div>
-
-      <div class="params-form-btns">
-        <el-button type="primary" @click="handleToggleEdit(true)" v-if="!isEdit">编辑</el-button>
-        <template v-else>
-          <el-button type="primary" @click="handleSave">确定</el-button>
-          <el-button @click="handleCancel">取消</el-button>
-        </template>
-      </div>
     </list-wrap>
+
+    <div class="code-preview">
+      <h3 class="code-preview__title">
+        预览
+        <el-button type="text" @click="handlePreview" :disabled="list.length === 0">生成预览</el-button>
+      </h3>
+      <pre v-highlight><code v-html="previewCode" class="json" style="background: #f5f5f5; padding: 10px;"></code></pre>
+    </div>
+
+    <div class="params-form-btns" v-if="list.length > 0">
+      <el-button type="primary" @click="handleToggleEdit(true)" v-if="!isEdit">编辑</el-button>
+      <template v-else>
+        <el-button type="primary" @click="handleSave">确定</el-button>
+        <el-button @click="handleCancel">取消</el-button>
+      </template>
+    </div>
+
     <stringSettingDialog ref="stringSettingDialog" @change="handleConfigChange" />
     <intSettingDialog ref="intSettingDialog" @change="handleConfigChange" />
     <floatSettingDialog ref="floatSettingDialog" @change="handleConfigChange" />
@@ -144,7 +153,7 @@
   </div>
 </template>
 <script>
-import { defineComponent, ref, computed } from 'vue';
+import { defineComponent, ref, computed, watch } from 'vue';
 import qs from 'qs';
 import {
   getParamsMethods,
@@ -156,11 +165,11 @@ import {
   PARAMS_TYPE_BODY,
   PARAMS_TYPE_RESPONSE,
 } from './config';
-import StringSettingDialog from '../settings/String.vue';
-import FloatSettingDialog from '../settings/Float.vue';
-import IntSettingDialog from '../settings/Int.vue';
-import DateSettingDialog from '../settings/Date.vue';
-import BooleanSettingDialog from '../settings/Boolean.vue';
+import StringSettingDialog from './settings/String.vue';
+import FloatSettingDialog from './settings/Float.vue';
+import IntSettingDialog from './settings/Int.vue';
+import DateSettingDialog from './settings/Date.vue';
+import BooleanSettingDialog from './settings/Boolean.vue';
 import {
   genParam,
   findAndUpdateParams,
@@ -169,9 +178,11 @@ import {
   validName,
   validExample,
   validDescription,
+  genTreeDefine,
 } from './util';
+import { ElMessage } from 'element-plus';
 export default defineComponent({
-  name: 'RequestList',
+  name: 'ParamsList',
   components: {
     StringSettingDialog,
     FloatSettingDialog,
@@ -179,26 +190,54 @@ export default defineComponent({
     DateSettingDialog,
     BooleanSettingDialog,
   },
+  props: {
+    isResponse: {
+      type: Boolean,
+      default: false,
+    },
+    apiInfo: {
+      type: Object,
+      default() {
+        return {};
+      },
+    },
+  },
   setup(props) {
     const loading = ref(false);
-    const list = ref([genParam()]);
-    const methodType = ref('post');
+    const list = ref([]);
+    const methodType = ref((props.apiInfo.methodType || '').toLowerCase());
     const paramsMethod = ref('query');
     const contentType = ref('json');
     const inputRefs = ref({});
     const formError = ref('');
+    const previewCode = ref('');
     const stringSettingDialog = ref(null);
     const intSettingDialog = ref(null);
     const floatSettingDialog = ref(null);
     const dateSettingDialog = ref(null);
     const booleanSettingDialog = ref(null);
     const isEdit = ref(false);
+    const paramsDefine = ref(null);
     const paramsMethods = computed(() => {
+      if (props.isResponse) {
+        return [];
+      }
       if (props.methodType === 'get') {
         return getParamsMethods;
       }
       return postParamsMethods;
     });
+
+    watch(
+      () => props.apiInfo,
+      (newValue) => {
+        methodType.value = (newValue.methodType || '').toLowerCase();
+      },
+    );
+
+    const updateParamsDefine = () => {
+      paramsDefine.value = genTreeDefine(list.value);
+    };
 
     // 编辑态切换
     const handleToggleEdit = (value) => {
@@ -207,9 +246,15 @@ export default defineComponent({
 
     // 添加
     const handleAdd = (row) => {
-      findAndUpdateParams(list.value, row.$id, (items, index) => {
-        items.splice(index + 1, 0, genParam());
-      });
+      if (!row.$id) {
+        handleToggleEdit(true);
+        list.value.push(genParam());
+      } else {
+        findAndUpdateParams(list.value, row.$id, (items, index) => {
+          items.splice(index + 1, 0, genParam());
+        });
+      }
+      updateParamsDefine();
     };
 
     // 移除
@@ -217,6 +262,7 @@ export default defineComponent({
       findAndUpdateParams(list.value, row.$id, (items, index) => {
         items.splice(index, 1);
       });
+      updateParamsDefine();
     };
 
     // 类型改变
@@ -236,6 +282,8 @@ export default defineComponent({
         findAndUpdateParams(list.value, row.$id, (items, index, item) => {
           items.splice(index, 1, {
             ...item,
+            example: '',
+            config: {},
             children,
           });
         });
@@ -246,6 +294,7 @@ export default defineComponent({
           items.splice(index, 1, item);
         });
       }
+      updateParamsDefine();
     };
 
     // 保存
@@ -295,8 +344,10 @@ export default defineComponent({
           break;
       }
       if (valid) {
-        const ref = inputRefs.value[`${field}.${id}`];
-        ref.$el.classList.add('is-error');
+        try {
+          const ref = inputRefs.value[`${field}.${id}`];
+          ref.$el.classList.add('is-error');
+        } catch (e) {}
         formError.value = valid;
       }
     };
@@ -338,18 +389,11 @@ export default defineComponent({
       });
     };
 
-    const previewCode = computed(() => {
-      const json = paramsToExample(list.value, {});
-      // eslint-disable-next-line @typescript-eslint/naming-convention
-      const _paramMethod = paramsMethod.value;
-      if (_paramMethod === 'query') {
-        return qs.stringify(json, { arrayFormat: 'brackets' });
-      }
-      return JSON.stringify(json, null, 4);
-    });
-
     // 可选的参数类型
     const paramTypes = computed(() => {
+      if (props.isResponse) {
+        return [...PARAMS_TYPE_RESPONSE];
+      }
       // eslint-disable-next-line @typescript-eslint/naming-convention
       const _contentType = contentType.value;
       // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -368,6 +412,74 @@ export default defineComponent({
       }
       return [...PARAMS_TYPE_RESPONSE];
     });
+
+    // 禁用类型
+    const isDisableParamType = (type, row) => {
+      if ((type !== 'array' && type !== 'object') || !paramsDefine.value) {
+        return false;
+      }
+      const define = paramsDefine.value[row.$id];
+      if (define.level >= 3) {
+        let { parent } = define;
+        let step = 2;
+        while (parent) {
+          if (parent.type !== type) {
+            return false;
+          }
+          if (step === 0) {
+            break;
+          }
+          step -= 1;
+          parent = parent.parent;
+        }
+        return true;
+      }
+      return false;
+    };
+
+    // 预览
+    const handlePreview = () => {
+      try {
+        const json = paramsToExample(list.value, {});
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        const _paramMethod = paramsMethod.value;
+        if (!props.isResponse && _paramMethod === 'query') {
+          previewCode.value = qs.stringify(json, { arrayFormat: 'brackets' });
+        } else {
+          previewCode.value = JSON.stringify(json, null, 4);
+        }
+      } catch (e) {
+        console.log(e);
+        ElMessage.error(e.message);
+      }
+    };
+
+    // 是否可添加
+    const canAdd = (row) => {
+      if (!paramsDefine.value || !paramsDefine.value[row.$id]) {
+        return true;
+      }
+      const define = paramsDefine.value[row.$id];
+      if (define.parent && define.parent.type === 'array') {
+        return false;
+      }
+      return true;
+    };
+
+    // 是否可删除
+    const canDel = (row) => {
+      if (!paramsDefine.value || !paramsDefine.value[row.$id]) {
+        return true;
+      }
+      const define = paramsDefine.value[row.$id];
+      if (define.parent) {
+        const { type, length } = define.parent;
+        if (type === 'array' || (type === 'object' && length === 1)) {
+          return false;
+        }
+      }
+      return true;
+    };
 
     return {
       methodType,
@@ -408,6 +520,11 @@ export default defineComponent({
       floatSettingDialog,
       booleanSettingDialog,
       dateSettingDialog,
+      paramsDefine,
+      isDisableParamType,
+      handlePreview,
+      canAdd,
+      canDel,
     };
   },
 });

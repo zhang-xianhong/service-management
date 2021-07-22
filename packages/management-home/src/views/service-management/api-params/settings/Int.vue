@@ -3,7 +3,7 @@
     <div class="dialog-body">
       <el-form :model="form" :rules="formRules" ref="formRef" label-width="100px">
         <el-form-item label="默认值" prop="defaultValue">
-          <el-input v-model.trim="form.defaultValue" placeholder="请输入默认值" v-if="isEdit" />
+          <el-input-number v-model="form.defaultValue" placeholder="请输入默认值" v-if="isEdit"></el-input-number>
           <span v-else>{{ form.defaultValue }}</span>
         </el-form-item>
         <el-form-item label="最小值限制" prop="min">

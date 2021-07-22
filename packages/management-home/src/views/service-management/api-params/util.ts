@@ -59,6 +59,26 @@ export const findAndUpdateParams = (params: ParamItems, id: string, cb: Function
   return params;
 };
 
+const getNumberValue = (example: any, config: any) => {
+  let value;
+  if (example !== '') {
+    value = example;
+  } else if (config) {
+    value = config.defaultValue || config.min;
+  }
+  if (isNaN(Number(value))) {
+    return undefined;
+  }
+  return Number(value);
+};
+
+const getBooleanValue = (example: any, config: any) => {
+  if (example && example.toLocaleLowerCase() === 'false') {
+    return false;
+  }
+  return example ? true : Boolean(config.defaultValue);
+};
+
 /**
  * 参数转换成示例
  * @param params
@@ -67,16 +87,19 @@ export const findAndUpdateParams = (params: ParamItems, id: string, cb: Function
  */
 export const paramsToExample = (params: ParamItems, result: any) => {
   params.forEach((item) => {
-    const { name, type, example, children } = item;
+    const { name, type, example, config, children, required } = item;
     const key = name as string;
+    if (!key) {
+      throw new Error('参数不能为空');
+    }
     let value: any;
     switch (type) {
       case 'float':
       case 'int':
-        value = Number(example);
+        value = getNumberValue(example, config);
         break;
       case 'boolean':
-        value = true;
+        value = getBooleanValue(example, config);
         break;
       case 'array':
         value = [];
@@ -85,21 +108,24 @@ export const paramsToExample = (params: ParamItems, result: any) => {
         value = {};
         break;
       default:
-        value = example;
+        value = example || config?.defaultValue || '';
+    }
+    if (value === undefined || (value === '' && required)) {
+      throw new Error(`请为参数 ${name} 填写示例值或者设置默认值`);
     }
     if (Array.isArray(result)) {
+      // eslint-disable-next-line no-param-reassign
       result.push(value);
-    } else {
+    } else if (result) {
       // eslint-disable-next-line no-param-reassign
       result[key] = value;
     }
     if (type === 'object' || (type === 'array' && children?.length)) {
-      paramsToExample(children as ParamItems, result[key]);
+      return paramsToExample(children as ParamItems, Array.isArray(result) ? value : result[key]);
     }
   });
   return result;
 };
-
 /**
  * 校验参数
  * @param name
@@ -124,6 +150,9 @@ export const validName = (name: string) => {
  * @returns
  */
 export const validExample = (example = '') => {
+  if (example === '') {
+    return false;
+  }
   if (example?.length < 1 || example?.length > 20) {
     return '参数示例长度在1-20个字符之间';
   }
@@ -186,4 +215,39 @@ export const validParams = (params: ParamItems): any => {
     return errors;
   }
   return null;
+};
+
+export interface TreeDefine {
+  level: number;
+  index: number;
+  type: string;
+  length: number;
+  parent?: TreeDefine | null;
+}
+
+export interface TreeDefines {
+  [id: string]: TreeDefine;
+}
+
+export const genTreeDefine = (params: ParamItems) => {
+  const map: TreeDefines = {};
+  const flatten = (items: ParamItems, parent: any = null, level: number) => {
+    items.forEach((item, i) => {
+      const define = {
+        level,
+        type: item.type as string,
+        parent,
+        index: i,
+        length: 0,
+      };
+      // eslint-disable-next-line no-param-reassign
+      parent && (parent.length += 1);
+      map[item.$id as string] = define;
+      if (item.children && item.children.length > 0) {
+        flatten(item.children, define, level + 1);
+      }
+    });
+  };
+  flatten(params, null, 0);
+  return map;
 };

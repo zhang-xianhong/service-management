@@ -1,93 +1,99 @@
 <template>
-  <div>
-    <list-wrap :loading="loading" :inProject="false" :empty="list.length === 0" :hasCreateAuth="false">
-      <el-table :data="list" style="width: 100%" height="360px" row-key="$id" default-expand-all class="apis-table">
-        <el-table-column prop="name" label="接口名称">
-          <template #default="scope">
-            <span v-if="editId !== scope.row.$id">{{ scope.row.name }}</span>
-            <el-input
-              placeholder="请输入接口名称"
-              v-model.trim="scope.row.name"
-              maxlength="256"
-              v-else
-              :ref="(ref) => (inputRefs[`name.${scope.row.$id}`] = ref)"
-              @input="() => clearError(`name.${scope.row.$id}`)"
-              @change="(value) => handleInputChange('name', scope.row.$id, value)"
-            />
-          </template>
-        </el-table-column>
-        <el-table-column prop="methodType" label="请求方式" width="170">
-          <template #default="scope">
-            <span v-if="editId !== scope.row.$id">{{ scope.row.methodType }}</span>
-            <el-select v-else placeholder="请选择请求方式" v-model="scope.row.methodType">
-              <el-option v-for="item in methodTypes" :key="item" :value="item" :label="item"></el-option>
+  <list-wrap :loading="loading" :inProject="false" :empty="list.length === 0" :hasCreateAuth="false">
+    <el-table
+      :data="list"
+      style="width: 100%"
+      height="360px"
+      row-key="$id"
+      class="apis-table"
+      :row-class-name="tableRowClassName"
+    >
+      <el-table-column type="index" width="50" label="序号"></el-table-column>
+      <el-table-column prop="name" label="接口名称">
+        <template #default="scope">
+          <span v-if="editId !== scope.row.$id">{{ scope.row.name }}</span>
+          <el-input
+            placeholder="请输入接口名称"
+            v-model.trim="scope.row.name"
+            maxlength="256"
+            v-else
+            :ref="(ref) => (inputRefs[`name.${scope.row.$id}`] = ref)"
+            @input="() => clearError(`name.${scope.row.$id}`)"
+            @change="(value) => handleInputChange('name', scope.row.$id, value)"
+          />
+        </template>
+      </el-table-column>
+      <el-table-column prop="methodType" label="请求方式" width="170">
+        <template #default="scope">
+          <span v-if="editId !== scope.row.$id">{{ scope.row.methodType }}</span>
+          <el-select v-else placeholder="请选择请求方式" v-model="scope.row.methodType">
+            <el-option v-for="item in methodTypes" :key="item" :value="item" :label="item"></el-option>
+          </el-select>
+        </template>
+      </el-table-column>
+      <el-table-column prop="modelId" label="数据对象" width="200">
+        <template #default="scope">
+          <span v-if="scope.row.isSystem">通用</span>
+          <template v-else>
+            <span v-if="editId !== scope.row.$id">{{ getModelName(scope.row.modelId) }}</span>
+            <el-select v-else placeholder="请选择数据对象" v-model="scope.row.modelId">
+              <el-option
+                v-for="(model, index) in modelList"
+                :key="index"
+                :label="model.name"
+                :value="model.id"
+              ></el-option>
             </el-select>
           </template>
-        </el-table-column>
-        <el-table-column prop="modelId" label="数据对象" width="200">
-          <template #default="scope">
-            <span v-if="scope.row.isSystem">通用</span>
+        </template>
+      </el-table-column>
+      <el-table-column prop="url" label="Path">
+        <template #default="scope">
+          <span v-if="editId !== scope.row.$id">{{ scope.row.url }}</span>
+          <el-input
+            placeholder="请输入Path路径"
+            v-model.trim="scope.row.url"
+            maxlength="500"
+            v-else
+            :ref="(ref) => (inputRefs[`url.${scope.row.$id}`] = ref)"
+            @input="() => clearError(`url.${scope.row.$id}`)"
+            @change="(value) => handleInputChange('url', scope.row.$id, value)"
+          />
+        </template>
+      </el-table-column>
+      <el-table-column prop="description" label="接口描述">
+        <template #default="scope">
+          <tooltip v-if="editId !== scope.row.$id" :content="scope.row.description"></tooltip>
+          <el-input
+            v-else
+            placeholder="请输入接口描述"
+            v-model.trim="scope.row.description"
+            maxlength="512"
+            :ref="(ref) => (inputRefs[`description.${scope.row.$id}`] = ref)"
+            @input="() => clearError(`description.${scope.row.$id}`)"
+            @change="(value) => handleInputChange('description', scope.row.$id, value)"
+          />
+        </template>
+      </el-table-column>
+      <el-table-column prop="actions" label="操作" align="right" width="180">
+        <template #default="scope">
+          <template v-if="!scope.row.isSystem">
+            <template v-if="scope.row.id && editId !== scope.row.$id">
+              <el-button type="text" @click="handleAdd(scope.row)" v-if="scope.$index === 0">添加</el-button>
+              <el-button type="text" @click="handleEdit(scope.row)">编辑</el-button>
+              <el-button type="text" @click="toParamsPage(scope.row)">参数</el-button>
+              <el-button type="text" @click="handleRemove(scope.row)">删除</el-button>
+            </template>
             <template v-else>
-              <span v-if="editId !== scope.row.$id">{{ getModelName(scope.row.modelId) }}</span>
-              <el-select v-else placeholder="请选择数据对象" v-model="scope.row.modelId">
-                <el-option
-                  v-for="(model, index) in modelList"
-                  :key="index"
-                  :label="model.name"
-                  :value="model.id"
-                ></el-option>
-              </el-select>
+              <el-button type="text" @click="handleSave(scope.row)">保存</el-button>
+              <el-button type="text" @click="handleCancel(scope.row)" :disabled="!hasCancelBtn">取消</el-button>
             </template>
           </template>
-        </el-table-column>
-        <el-table-column prop="url" label="Path">
-          <template #default="scope">
-            <span v-if="editId !== scope.row.$id">{{ scope.row.url }}</span>
-            <el-input
-              placeholder="请输入Path路径"
-              v-model.trim="scope.row.url"
-              maxlength="500"
-              v-else
-              :ref="(ref) => (inputRefs[`url.${scope.row.$id}`] = ref)"
-              @input="() => clearError(`url.${scope.row.$id}`)"
-              @change="(value) => handleInputChange('url', scope.row.$id, value)"
-            />
-          </template>
-        </el-table-column>
-        <el-table-column prop="description" label="接口描述">
-          <template #default="scope">
-            <tooltip v-if="editId !== scope.row.$id" :content="scope.row.description"></tooltip>
-            <el-input
-              v-else
-              placeholder="请输入接口描述"
-              v-model.trim="scope.row.description"
-              maxlength="512"
-              :ref="(ref) => (inputRefs[`description.${scope.row.$id}`] = ref)"
-              @input="() => clearError(`description.${scope.row.$id}`)"
-              @change="(value) => handleInputChange('description', scope.row.$id, value)"
-            />
-          </template>
-        </el-table-column>
-        <el-table-column prop="actions" label="操作" align="right" width="180">
-          <template #default="scope">
-            <template v-if="!scope.row.isSystem">
-              <template v-if="scope.row.id && editId !== scope.row.$id">
-                <el-button type="text" @click="handleAdd(scope.row)">添加</el-button>
-                <el-button type="text" @click="handleEdit(scope.row)">编辑</el-button>
-                <el-button type="text">参数</el-button>
-                <el-button type="text" @click="handleRemove(scope.row)">删除</el-button>
-              </template>
-              <template v-else>
-                <el-button type="text" @click="handleSave(scope.row)">保存</el-button>
-                <el-button type="text" @click="handleCancel(scope.row)" :disabled="!hasCancelBtn">取消</el-button>
-              </template>
-            </template>
-          </template>
-        </el-table-column>
-      </el-table>
-      <div class="error-wrap">{{ formError }}</div>
-    </list-wrap>
-  </div>
+        </template>
+      </el-table-column>
+    </el-table>
+    <div class="error-wrap">{{ formError }}</div>
+  </list-wrap>
 </template>
 <script>
 import { defineComponent, ref } from 'vue';
@@ -97,6 +103,7 @@ import { validName, validUrl, validDescription, parseList } from './util';
 import { getServiceApiList, updateServiceApi, createServiceApi, delServiceApi } from '@/api/servers/index';
 import _ from 'lodash';
 import { genId } from '@/utils/util';
+import { useRouter } from 'vue-router';
 export default defineComponent({
   props: {
     id: {
@@ -109,6 +116,7 @@ export default defineComponent({
     },
   },
   setup(props) {
+    const router = useRouter();
     const loading = ref(false);
     const isAdd = ref(false);
     const editId = ref('');
@@ -118,6 +126,9 @@ export default defineComponent({
     const formError = ref('');
     const hasCancelBtn = ref(true);
     const fetchList = async () => {
+      isAdd.value = false;
+      editId.value = '';
+      formError.value = '';
       loading.value = true;
       const { data } = await getServiceApiList({
         serviceId: props.id,
@@ -206,7 +217,7 @@ export default defineComponent({
         await beforeEditOrAdd();
         removeEmptyAddRows();
         isAdd.value = true;
-        const $id = 'aaa';
+        const $id = genId();
         const index = list.value.findIndex((item) => item.$id === row.$id);
         list.value.splice(index, 0, {
           $id,
@@ -249,7 +260,7 @@ export default defineComponent({
       if (checkName) {
         return;
       }
-      const checkUrl = handleInputChange('url', row.$id, row.path);
+      const checkUrl = handleInputChange('url', row.$id, row.url);
       if (checkUrl) {
         return;
       }
@@ -262,6 +273,8 @@ export default defineComponent({
         serviceId: props.id,
       };
       delete saveData.$id;
+      delete saveData.isSystem;
+      delete saveData.modelName;
       loading.value = true;
       const isEdit = isAdd.value === false;
       let api = createServiceApi;
@@ -284,6 +297,7 @@ export default defineComponent({
     const handleCancel = () => {
       isAdd.value = false;
       editId.value = '';
+      formError.value = '';
       list.value = _.cloneDeep(sourceList.value);
     };
 
@@ -291,6 +305,17 @@ export default defineComponent({
       const models = props.modelList || [];
       const model = models.find((item) => item.id === Number(modelId));
       return model ? model.name : '';
+    };
+
+    const tableRowClassName = ({ row }) => {
+      if (row.isSystem) {
+        return 'system-row';
+      }
+    };
+
+    const toParamsPage = (row) => {
+      const path = `/service-management/${props.id}/interface/${row.id}/params`;
+      router.push(path);
     };
 
     return {
@@ -311,6 +336,8 @@ export default defineComponent({
       handleCancel,
       validName,
       getModelName,
+      tableRowClassName,
+      toParamsPage,
     };
   },
 });
@@ -326,6 +353,9 @@ export default defineComponent({
   }
   ::v-deep .cell {
     line-height: 28px;
+  }
+  ::v-deep .system-row {
+    background: #f5f7fa;
   }
 }
 .error-wrap {

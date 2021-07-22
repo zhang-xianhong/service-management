@@ -66,7 +66,7 @@ export const validDescription = (desc: string) => {
 export const parseList = (rows: any[]) =>
   rows.map((item) => {
     const newItem: any = {};
-    newItem.$id = item.$id || genId();
+    newItem.$id = item.uniqueId || item.$id || genId();
     newItem.id = item.uniqueId || null;
     newItem.name = item.name || '';
     newItem.url = item.url || '';

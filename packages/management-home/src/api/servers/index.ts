@@ -105,7 +105,7 @@ export const delServiceApi = (payload: any) =>
     params: payload,
   });
 
-// 删除服务接口
+// 获取服务接口
 export const findServiceApi = (payload: any) =>
   apiProxy(SERVER_TYPES.SERVICE_GENERATOR, service.GET_SERVICE_API_INFO, {
     method: 'GET',

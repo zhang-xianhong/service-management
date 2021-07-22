@@ -282,14 +282,13 @@ const routes: Array<RouteRecordRaw> = [
         },
       },
       {
-        path: 'service-list/:serviceId/interface/:apiId/params',
+        path: ':serviceId/interface/:apiId/params',
         component: () => import('@/views/service-management/api-params/ParamList.vue'),
         name: 'ServiceApiParamList',
         meta: {
           title: '接口参数',
           isRootLevel: false,
           hidden: true,
-          activeMenu: '/service-management/service-list',
           showBackButton: true,
         },
       },
