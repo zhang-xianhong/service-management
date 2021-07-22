@@ -136,7 +136,7 @@ const serviceStatus: any = {
   3: '构建超时',
   10: '有效',
 };
-export function getServiceDependencies(id?: number) {
+export function getServiceDependencies(id?: number, serviceName?: string) {
   console.log('get service dependency');
   return getServiceDependencyList({ serviceId: id }).then((res) => {
     if (res?.data) {
@@ -151,7 +151,8 @@ export function getServiceDependencies(id?: number) {
           disabled: v.versionStatus !== 10,
         })),
       }));
-      dependenciesList.value = serviceList;
+      const list = serviceList.filter((i: any) => i.value !== serviceName);
+      dependenciesList.value = list;
     } else {
       dependenciesList.value = [];
     }
