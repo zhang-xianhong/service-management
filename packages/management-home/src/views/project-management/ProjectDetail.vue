@@ -76,7 +76,7 @@
                       ></el-input>
                     </el-form-item>
                     <div style="float: right">
-                      <el-button type="text" @click="editBoxsave(String(data.id))" :loading="submitting"
+                      <el-button type="text" @click="editBoxsave(data)" :loading="submitting"
                         >保存</el-button
                       >
                       <el-button type="text" @click="cancel(String(data.id))">取消</el-button>
@@ -682,14 +682,15 @@ export default {
     };
 
     // 修改角色名称
-    const editBoxsave = (id: any) => {
+    const editBoxsave = (data: any) => {
+      const ids = String(data.id);
       roleRef.value.validate(async (isValid: boolean) => {
         if (isValid) {
           submitting.value = true;
           try {
             const { code } = await ModRoleName({
               name: userTreeInput.value.roles,
-              roleId: currentNodeData.value.id,
+              roleId: data.id,
               projectId: props.id,
             });
             if (code === 0) {
@@ -704,7 +705,7 @@ export default {
               });
             }
             userTreeInput.value.roles = '';
-            editPopBoxVisible.value[id] = false;
+            editPopBoxVisible.value[ids] = false;
             submitting.value = false;
             initUserList();
           } catch (e) {
