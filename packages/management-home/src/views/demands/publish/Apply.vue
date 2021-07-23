@@ -51,18 +51,22 @@
         <el-table-column label="申请账号" prop="applicantName">
           <template #header>
             <i class="el-icon-search"></i>
-            <el-popover placement="bottom" :width="200" trigger="manual" :visible="applicantTitleVisiable">
+            <el-popover
+              placement="bottom"
+              :width="200"
+              trigger="manual"
+              :visible="applicantTitleVisiable"
+              v-if="isShowPopover"
+            >
               <template #reference>
                 <el-button type="text" @click="applicantTitleClick">申请账号</el-button>
               </template>
               <el-select
                 v-model="searchProps.applicant"
-                placeholder="请输入申请账号"
+                placeholder="请选择申请账号"
                 clearable
                 multiple
                 filterable
-                remote
-                :remote-method="remoteMethod"
                 @change="applicantChange"
                 :loading="seleteLoading"
               >
@@ -108,18 +112,22 @@
         <el-table-column label="审核人" prop="reviewerName">
           <template #header>
             <i class="el-icon-search"></i>
-            <el-popover placement="bottom" :width="200" trigger="manual" :visible="reviewerTitleVisiable">
+            <el-popover
+              placement="bottom"
+              :width="200"
+              trigger="manual"
+              :visible="reviewerTitleVisiable"
+              v-if="isShowPopover"
+            >
               <template #reference>
                 <el-button type="text" @click="reviewerTitleClick">审核人</el-button>
               </template>
               <el-select
                 v-model="searchProps.reviewer"
-                placeholder="请输入审核人"
+                placeholder="请选择审核人"
                 clearable
                 multiple
                 filterable
-                remote
-                :remote-method="remoteMethod"
                 @change="reviewerChange"
                 :loading="seleteLoading"
               >
@@ -133,7 +141,7 @@
             </el-popover>
           </template>
         </el-table-column>
-        <el-table-column label="部署版本" prop="version"></el-table-column>
+        <el-table-column label="部署版本" prop="publishVersion"> </el-table-column>
         <el-table-column label="部署时间" prop="publishTime">
           <template #default="scope">{{ dateFormat(scope.row.publishTime) }}</template>
         </el-table-column>
@@ -214,9 +222,9 @@
           <el-form-item label="申请账号" prop="applicantName" :label-width="labelWidth">
             <el-input v-model="publishForm.formData.applicantName" :disabled="true"></el-input>
           </el-form-item>
-          <el-form-item label="部署版本" prop="version" :label-width="labelWidth">
+          <el-form-item label="部署版本" prop="publishVersion" :label-width="labelWidth">
             <el-select
-              v-model="publishForm.formData.version"
+              v-model="publishForm.formData.publishVersion"
               placeholder="请选择部署版本"
               clearable
               :disabled="publishForm.disabled"
@@ -225,7 +233,7 @@
                 v-for="(item, index) in publishForm.versionOptions"
                 :key="index"
                 :label="item.name"
-                :value="item.id"
+                :value="item.name"
               ></el-option>
             </el-select>
           </el-form-item>
@@ -253,7 +261,7 @@
 </template>
 
 <script lang="ts">
-import { reactive, toRefs, ref, onBeforeUnmount } from 'vue';
+import { reactive, toRefs, ref, onBeforeUnmount, onMounted } from 'vue';
 import {
   getPublishList,
   addPublish,
@@ -290,6 +298,7 @@ interface PublishFormState {
   disabled: boolean;
   isEdit: boolean;
   id: string;
+  servides: Array<object>;
   serviceList: Array<object>;
   applicationList: Array<object>;
   versionOptions: Array<object>;
@@ -300,6 +309,7 @@ interface PublishFormState {
     applicant: number;
     applicantName: string;
     version: number;
+    publishVersion: string;
     description: string;
   };
 }
@@ -342,14 +352,16 @@ export default {
         applicant: userInfo.value.userId,
         applicantName: `${userInfo.value.displayName}_${userInfo.value.userName}`,
         version: 1,
+        publishVersion: '',
         description: '',
       },
+      servides: [],
       serviceList: [],
       applicationList: [],
       versionOptions: [{ id: 1, name: '1' }],
       moduleType: [
         { id: 1, name: '服务' },
-        // { id: 2, name: '应用' },
+        { id: 2, name: '应用' },
       ],
     });
     const publishRules = {
@@ -357,6 +369,7 @@ export default {
       name: [{ required: true, message: '请输入部署名称', trigger: 'change' }],
       applicant: [{ required: true, message: '请选择申请账号', trigger: 'change' }],
       version: [{ required: true, message: '请选择部署版本', trigger: 'change' }],
+      publishVersion: [{ required: true, message: '请选择部署版本', trigger: 'change' }],
       description: [{ required: true, message: '请输入部署说明', trigger: 'blur' }],
     };
 
@@ -372,9 +385,12 @@ export default {
         applicant: userInfo.value.userId,
         applicantName: `${userInfo.value.displayName}_${userInfo.value.userName}`,
         version: 1,
+        publishVersion: '',
         description: '',
       };
     }
+
+    const seleteLoading = ref(false);
 
     // 获取部署列表数据
     async function getTableData() {
@@ -418,8 +434,9 @@ export default {
     // 获取服务列表
     async function getServices() {
       const { data } = await getServiceList({ all: true });
-      const servides = data.rows || [];
-      publishForm.serviceList = servides.map((item: any) => ({
+      publishForm.servides = data.rows || [];
+      console.log('publishForm.servides', publishForm.servides);
+      publishForm.serviceList = publishForm.servides.map((item: any) => ({
         id: item.id,
         name: `${item.description}_${item.name}`,
       }));
@@ -427,9 +444,18 @@ export default {
 
     // 改变service方法
     function serviceChange(serviceId: any) {
+      console.log('serviceId', serviceId);
       const data: any = publishForm.serviceList.find((i: any) => i.id === serviceId);
-      publishForm.formData.moduleId = serviceId;
+      // publishForm.formData.moduleId = serviceId;
       publishForm.formData.name = data?.name;
+      const tempServides: any = ref(publishForm.servides.find((item: any) => item.id === serviceId));
+      // console.log("tempServides", tempServides);
+      publishForm.versionOptions = [
+        {
+          id: tempServides.value.id,
+          name: tempServides.value.serviceVersion,
+        },
+      ];
     }
 
     function getNameByCode(code: number, type: string): string {
@@ -584,26 +610,10 @@ export default {
       getTableData();
     };
 
-    const seleteLoading = ref(false);
-    async function remoteMethod(keyword: string) {
-      if (keyword !== '') {
-        seleteLoading.value = true;
-        const { data = [] } = await findUserByName({ keyword });
-        const users = data.map((item: any) => ({
-          id: item.id,
-          name: item.displayName,
-        }));
-        tableState.reviewerFilters = users;
-        tableState.applicantFilters = users;
-        seleteLoading.value = false;
-      } else {
-        tableState.reviewerFilters = [];
-        tableState.applicantFilters = [];
-      }
-    }
     // 筛选
     const blackHoverVisible = ref(false);
     const statusTitleVisiable = ref(false);
+    const isShowPopover = ref(true);
     function statusTitleClick() {
       statusTitleVisiable.value = true;
       blackHoverVisible.value = true;
@@ -633,8 +643,10 @@ export default {
 
     async function reviewerChange() {
       reviewerTitleVisiable.value = false;
+      isShowPopover.value = false;
       blackHoverVisible.value = false;
       await getTableData();
+      isShowPopover.value = true;
     }
 
     const applicantTitleVisiable = ref(false);
@@ -645,8 +657,10 @@ export default {
 
     async function applicantChange() {
       applicantTitleVisiable.value = false;
+      isShowPopover.value = false;
       blackHoverVisible.value = false;
       await getTableData();
+      isShowPopover.value = true;
     }
 
     function blackHoverclick() {
@@ -663,6 +677,18 @@ export default {
     function getRowOptionStatus(row: any) {
       return userInfo.value.userId !== row.applicant || row.status !== 0;
     }
+
+    onMounted(async () => {
+      seleteLoading.value = true;
+      const { data = [] } = await findUserByName();
+      const users = data.map((item: any) => ({
+        id: item.id,
+        name: item.displayName,
+      }));
+      tableState.reviewerFilters = users || [];
+      tableState.applicantFilters = users || [];
+      seleteLoading.value = false;
+    })
 
     return {
       ...toRefs(tableState),
@@ -694,7 +720,6 @@ export default {
       blackHoverVisible,
       blackHoverclick,
       seleteLoading,
-      remoteMethod,
       reviewerTitleVisiable,
       reviewerTitleClick,
       reviewerChange,
@@ -704,6 +729,7 @@ export default {
       getShowBool,
       getRowOptionStatus,
       btnLoading,
+      isShowPopover,
     };
   },
 };

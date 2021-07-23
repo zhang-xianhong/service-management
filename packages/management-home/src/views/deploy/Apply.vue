@@ -120,6 +120,7 @@
                 placeholder="请选择审核人"
                 clearable
                 multiple
+                filterable
                 @change="reviewerChange"
               >
                 <el-option

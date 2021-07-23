@@ -42,7 +42,7 @@
           <el-option
             v-for="(item, index) in releaseData.versionOptions"
             :key="index"
-            :label="item.version"
+            :label="item.label"
             :value="item.version"
             :disabled="item.versionStatus !== 10"
           >
@@ -120,18 +120,31 @@ export default defineComponent({
       publisher: [{ type: 'number', message: '请输入数值', trigger: 'change' }],
       publishContent: [
         { required: true, message: '请输入发布说明', trigger: 'blur' },
-        { min: 3, max: 512, message: '长度在 3 到 512 个字符', trigger: 'blur' },
+        { min: 3, max: 1024, message: '长度在 3 到 1024 个字符', trigger: 'blur' },
       ],
     };
 
-    const changeService = (serviceId: any) => {
+    const changeService = () => {
+      releaseData.value.serviceInfo.serviceVersion = '';
       const temp: any = ref(
         releaseData.value.services.find((item: any) => item.serviceName === releaseData.value.serviceInfo.name),
       );
-      releaseData.value.versionOptions = temp.value.versions;
-      const data: any = releaseData.value.serviceList.find((i: any) => i.id === serviceId);
-      // releaseData.value.serviceInfo.moduleId = serviceId;
-      releaseData.value.serviceInfo.name = data?.name;
+      releaseData.value.versionOptions = temp.value.versions.map((item: any) => {
+        const label = ref('');
+        const statusStr = ['（发版成功）', '（发版中）', '（发版失败）'];
+        if (item.versionStatus === 10) {
+          label.value = `${item.version}${statusStr[0]}`;
+        } else if (item.versionStatus === 1) {
+          label.value = `${item.version}${statusStr[1]}`;
+        } else if (item.versionStatus === 2) {
+          label.value = `${item.version}${statusStr[2]}`;
+        }
+        return {
+          version: item.version,
+          label: label.value,
+          versionStatus: item.versionStatus,
+        };
+      });
     };
 
     const closeReleaseForm = () => {
@@ -164,7 +177,7 @@ export default defineComponent({
               btnLoading.value = false;
               closeReleaseForm();
             } catch (e) {
-              ElMessage.error(e);
+              console.log(e);
               btnLoading.value = false;
             }
           } else {
@@ -187,7 +200,7 @@ export default defineComponent({
               closeReleaseForm();
               btnLoading.value = false;
             } catch (e) {
-              ElMessage.error(e);
+              console.log(e);
               btnLoading.value = false;
             }
           }

@@ -31,18 +31,22 @@
         <el-table-column label="申请账号" prop="applicantName">
           <template #header>
             <i class="el-icon-search"></i>
-            <el-popover placement="bottom" :width="200" trigger="manual" :visible="applicantTitleVisiable">
+            <el-popover
+              placement="bottom"
+              :width="200"
+              trigger="manual"
+              :visible="applicantTitleVisiable"
+              v-if="isShowPopover"
+            >
               <template #reference>
                 <el-button type="text" @click="applicantTitleClick">申请账号</el-button>
               </template>
               <el-select
                 v-model="searchProps.applicant"
-                placeholder="请输入申请账号"
+                placeholder="请选择申请账号"
                 clearable
                 multiple
                 filterable
-                remote
-                :remote-method="remoteMethod"
                 @change="applicantChange"
                 :loading="seleteLoading"
               >
@@ -88,18 +92,22 @@
         <el-table-column label="审核人" prop="reviewerName">
           <template #header>
             <i class="el-icon-search"></i>
-            <el-popover placement="bottom" :width="200" trigger="manual" :visible="reviewerTitleVisiable">
+            <el-popover
+              placement="bottom"
+              :width="200"
+              trigger="manual"
+              :visible="reviewerTitleVisiable"
+              v-if="isShowPopover"
+            >
               <template #reference>
                 <el-button type="text" @click="reviewerTitleClick">审核人</el-button>
               </template>
               <el-select
                 v-model="searchProps.reviewer"
-                placeholder="请输入审核人"
+                placeholder="请选择审核人"
                 clearable
                 multiple
                 filterable
-                remote
-                :remote-method="remoteMethod"
                 @change="reviewerChange"
                 :loading="seleteLoading"
               >
@@ -113,7 +121,7 @@
             </el-popover>
           </template>
         </el-table-column>
-        <el-table-column label="部署版本" prop="version"></el-table-column>
+        <el-table-column label="部署版本" prop="publishVersion"></el-table-column>
         <el-table-column label="部署时间" prop="publishTime">
           <template #default="scope">{{ dateFormat(scope.row.publishTime) }}</template>
         </el-table-column>
@@ -167,7 +175,7 @@
 </template>
 
 <script lang="ts">
-import { reactive, toRefs, ref, onBeforeUnmount } from 'vue';
+import { reactive, toRefs, ref, onBeforeUnmount, onMounted } from 'vue';
 import { getPublishReviewList, reviewPublish, findUserByName } from '@/api/demands/publish';
 import PackagedPagination from '@/components/pagination/Index.vue';
 import { debounce } from 'lodash';
@@ -248,6 +256,8 @@ export default {
         auditInstructions: '',
       };
     }
+
+    const seleteLoading = ref(false);
 
     // 获取审核列表数据
     async function getTableData() {
@@ -364,6 +374,7 @@ export default {
     // 筛选
     const blackHoverVisible = ref(false);
     const auditResultsTitleVisiable = ref(false);
+    const isShowPopover = ref(true);
     function auditResultsTitleClick() {
       auditResultsTitleVisiable.value = true;
       blackHoverVisible.value = true;
@@ -383,8 +394,10 @@ export default {
 
     async function reviewerChange() {
       reviewerTitleVisiable.value = false;
+      isShowPopover.value = false;
       blackHoverVisible.value = false;
       await getTableData();
+      isShowPopover.value = true;
     }
 
     const applicantTitleVisiable = ref(false);
@@ -395,26 +408,12 @@ export default {
 
     async function applicantChange() {
       applicantTitleVisiable.value = false;
+      isShowPopover.value = false;
       blackHoverVisible.value = false;
       await getTableData();
+      isShowPopover.value = true;
     }
-    const seleteLoading = ref(false);
-    async function remoteMethod(keyword: string) {
-      if (keyword !== '') {
-        seleteLoading.value = true;
-        const { data = [] } = await findUserByName({ keyword });
-        const users = data.map((item: any) => ({
-          id: item.id,
-          name: item.displayName,
-        }));
-        tableState.reviewerFilters = users;
-        tableState.applicantFilters = users;
-        seleteLoading.value = false;
-      } else {
-        tableState.reviewerFilters = [];
-        tableState.applicantFilters = [];
-      }
-    }
+
     function blackHoverclick() {
       auditResultsTitleVisiable.value = false;
       reviewerTitleVisiable.value = false;
@@ -424,6 +423,18 @@ export default {
     onBeforeUnmount(() => {
       blackHoverclick();
     });
+
+    onMounted(async () => {
+      seleteLoading.value = true;
+      const { data = [] } = await findUserByName();
+      const users = data.map((item: any) => ({
+        id: item.id,
+        name: item.displayName,
+      }));
+      tableState.reviewerFilters = users || [];
+      tableState.applicantFilters = users || [];
+      seleteLoading.value = false;
+    })
 
     return {
       ...toRefs(tableState),
@@ -451,10 +462,10 @@ export default {
       applicantTitleClick,
       applicantChange,
       seleteLoading,
-      remoteMethod,
       blackHoverVisible,
       blackHoverclick,
       getShowBool,
+      isShowPopover,
     };
   },
 };
