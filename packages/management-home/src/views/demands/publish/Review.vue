@@ -434,7 +434,7 @@ export default {
       tableState.reviewerFilters = users || [];
       tableState.applicantFilters = users || [];
       seleteLoading.value = false;
-    })
+    });
 
     return {
       ...toRefs(tableState),
