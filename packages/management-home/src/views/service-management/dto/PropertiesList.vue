@@ -1,0 +1,527 @@
+<template>
+  <div>
+    <list-wrap
+      :loading="loading"
+      :inProject="false"
+      :empty="list.length === 0"
+      :hasCreateAuth="true"
+      :handleCreate="handleAdd"
+    >
+      <el-table
+        :data="list"
+        style="width: 100%"
+        row-key="$id"
+        default-expand-all
+        :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
+        class="params-table"
+      >
+        <el-table-column prop="name" label="参数" class-name="col-inline">
+          <template #default="scope">
+            <span v-if="!isEdit || scope.row.readonly">{{ scope.row.name }}</span>
+            <el-input
+              placeholder="请输入参数名称"
+              v-model.trim="scope.row.name"
+              maxlength="50"
+              v-else
+              :ref="(ref) => (inputRefs[`name.${scope.row.$id}`] = ref)"
+              @input="() => clearError(`name.${scope.row.$id}`)"
+              @change="(value) => handleInputChange('name', scope.row.$id, value)"
+            />
+          </template>
+        </el-table-column>
+        <el-table-column prop="type" label="参数类型" width="180">
+          <template #default="scope">
+            <span v-if="!isEdit">{{ getParamTypeName(scope.row.type) }}</span>
+            <el-select
+              v-else
+              placeholder="请选择参数类型"
+              v-model="scope.row.type"
+              @change="
+                (value) => {
+                  handleTypeChange(scope.row, value);
+                }
+              "
+            >
+              <el-option
+                v-for="item in paramTypes"
+                :disabled="isDisableParamType(item.value, scope.row)"
+                :key="item.value"
+                :value="item.value"
+                :label="item.name"
+              ></el-option>
+            </el-select>
+          </template>
+        </el-table-column>
+        <el-table-column prop="required" label="是否必填" width="150">
+          <template #default="scope">
+            <span v-if="!isEdit">{{ scope.row.required ? '是' : '否' }}</span>
+            <el-select placeholder="请选择" v-model="scope.row.required" v-else>
+              <el-option
+                v-for="item in paramRequireds"
+                :key="item.value"
+                :value="item.value"
+                :label="item.name"
+              ></el-option>
+            </el-select>
+          </template>
+        </el-table-column>
+        <el-table-column prop="example" label="参数示例">
+          <template #default="scope">
+            <span v-if="!isEdit || scope.row.type === 'array' || scope.row.type === 'object'">{{
+              scope.row.example
+            }}</span>
+            <el-input
+              v-else
+              placeholder="请输入参数示例"
+              v-model.trim="scope.row.example"
+              minlength="1"
+              maxlength="20"
+              :ref="(ref) => (inputRefs[`example.${scope.row.$id}`] = ref)"
+              @input="() => clearError(`example.${scope.row.$id}`)"
+              @change="(value) => handleInputChange('example', scope.row.$id, value)"
+            />
+          </template>
+        </el-table-column>
+        <el-table-column prop="description" label="参数描述">
+          <template #default="scope">
+            <tooltip v-if="!isEdit" :content="scope.row.description"></tooltip>
+            <el-input
+              v-else
+              placeholder="请输入参数描述"
+              v-model.trim="scope.row.description"
+              maxlength="512"
+              :ref="(ref) => (inputRefs[`description.${scope.row.$id}`] = ref)"
+              @input="() => clearError(`description.${scope.row.$id}`)"
+              @change="(value) => handleInputChange('description', scope.row.$id, value)"
+            />
+          </template>
+        </el-table-column>
+        <el-table-column prop="actions" label="操作" align="right" width="150">
+          <template #default="scope">
+            <template v-if="isEdit">
+              <el-button type="text" @click="handleAdd(scope.row)" v-if="canAdd(scope.row)">添加</el-button>
+              <el-button type="text" v-if="scope.row.type === 'object'">引入</el-button>
+              <el-button type="text" v-else-if="scope.row.type !== 'array'" @click="handleSetting(scope.row)"
+                >设置</el-button
+              >
+              <el-button type="text" @click="handleRemove(scope.row)" v-if="canDel(scope.row)">删除</el-button>
+            </template>
+            <template v-else>
+              <el-button type="text" v-if="scope.row.type !== 'array'" @click="handleSetting(scope.row)"
+                >设置</el-button
+              >
+            </template>
+          </template>
+        </el-table-column>
+      </el-table>
+      <div class="error-wrap">{{ formError }}</div>
+    </list-wrap>
+
+    <div class="code-preview">
+      <h3 class="code-preview__title">
+        预览
+        <el-button type="text" @click="handlePreview" :disabled="list.length === 0">生成预览</el-button>
+      </h3>
+      <pre v-highlight><code v-html="previewCode" class="json" style="background: #f5f5f5; padding: 10px;"></code></pre>
+    </div>
+
+    <div class="params-form-btns" v-if="list.length > 0">
+      <el-button type="primary" @click="handleToggleEdit(true)" v-if="!isEdit">编辑</el-button>
+      <template v-else>
+        <el-button type="primary" @click="handleSave">确定</el-button>
+        <el-button @click="handleCancel">取消</el-button>
+      </template>
+    </div>
+
+    <StringSettingDialog ref="stringSettingDialog" @change="handleConfigChange" />
+    <IntSettingDialog ref="intSettingDialog" @change="handleConfigChange" />
+    <FloatSettingDialog ref="floatSettingDialog" @change="handleConfigChange" />
+    <DateSettingDialog ref="dateSettingDialog" @change="handleConfigChange" />
+    <BooleanSettingDialog ref="booleanSettingDialog" @change="handleConfigChange" />
+  </div>
+</template>
+<script>
+import { defineComponent, ref, computed } from 'vue';
+import qs from 'qs';
+import {
+  CONTENT_TYPES,
+  getParamTypeName,
+  PARAMS_TYPES_QUERY,
+  PARAMS_TYPE_FORM_DATA,
+  PARAMS_TYPE_BODY,
+  PARAMS_TYPE_RESPONSE,
+} from '../api-params/config';
+import StringSettingDialog from '../api-params/settings/String.vue';
+import FloatSettingDialog from '../api-params/settings/Float.vue';
+import IntSettingDialog from '../api-params/settings/Int.vue';
+import DateSettingDialog from '../api-params/settings/Date.vue';
+import BooleanSettingDialog from '../api-params/settings/Boolean.vue';
+import {
+  genParam,
+  findAndUpdateParams,
+  paramsToExample,
+  validParams,
+  validName,
+  validExample,
+  validDescription,
+  genTreeDefine,
+} from '../api-params/util';
+import { ElMessage } from 'element-plus';
+export default defineComponent({
+  name: 'ParamsList',
+  components: {
+    StringSettingDialog,
+    FloatSettingDialog,
+    IntSettingDialog,
+    DateSettingDialog,
+    BooleanSettingDialog,
+  },
+  props: {
+    isResponse: {
+      type: Boolean,
+      default: false,
+    },
+    apiInfo: {
+      type: Object,
+      default() {
+        return {};
+      },
+    },
+  },
+  setup(props) {
+    const loading = ref(false);
+    const list = ref([]);
+    const contentType = ref('json');
+    const inputRefs = ref({});
+    const formError = ref('');
+    const previewCode = ref('');
+    const stringSettingDialog = ref(null);
+    const intSettingDialog = ref(null);
+    const floatSettingDialog = ref(null);
+    const dateSettingDialog = ref(null);
+    const booleanSettingDialog = ref(null);
+    const isEdit = ref(false);
+    const paramsDefine = ref(null);
+
+    const updateParamsDefine = () => {
+      paramsDefine.value = genTreeDefine(list.value);
+    };
+
+    // 编辑态切换
+    const handleToggleEdit = (value) => {
+      isEdit.value = value;
+    };
+
+    // 添加
+    const handleAdd = (row) => {
+      if (!row.$id) {
+        handleToggleEdit(true);
+        list.value.push(genParam());
+      } else {
+        findAndUpdateParams(list.value, row.$id, (items, index) => {
+          items.splice(index + 1, 0, genParam());
+        });
+      }
+      updateParamsDefine();
+    };
+
+    // 移除
+    const handleRemove = (row) => {
+      findAndUpdateParams(list.value, row.$id, (items, index) => {
+        items.splice(index, 1);
+      });
+      updateParamsDefine();
+    };
+
+    // 类型改变
+    const handleTypeChange = (row, value) => {
+      if (value === 'array' || value === 'object') {
+        const children = [];
+        if (value === 'array') {
+          children.push(
+            genParam({
+              readonly: true,
+              name: 'item',
+            }),
+          );
+        } else {
+          children.push(genParam());
+        }
+        findAndUpdateParams(list.value, row.$id, (items, index, item) => {
+          items.splice(index, 1, {
+            ...item,
+            example: '',
+            config: {},
+            children,
+          });
+        });
+      } else {
+        findAndUpdateParams(list.value, row.$id, (items, index, item) => {
+          // eslint-disable-next-line no-param-reassign
+          delete item.children;
+          items.splice(index, 1, item);
+        });
+      }
+      updateParamsDefine();
+    };
+
+    // 保存
+    const handleSave = () => {
+      const res = validParams(list.value);
+      formError.value = '';
+      if (res) {
+        const error = res[0];
+        const ref = inputRefs.value[`${error.field}.${error.id}`];
+        ref.$el.classList.add('is-error');
+        ref.focus();
+        formError.value = error.message;
+      }
+    };
+
+    // 清除错误
+    const clearError = (refId) => {
+      try {
+        const ref = inputRefs.value[refId];
+        ref.$el.classList.remove('is-error');
+      } catch (e) {
+        console.log(e);
+      }
+    };
+
+    // 取消
+    const handleCancel = () => {
+      handleToggleEdit(false);
+      clearError();
+      formError.value = '';
+      // TODO. 将list.value重置为初始化值
+    };
+
+    // validate after input change
+    const handleInputChange = (field, id, value) => {
+      formError.value = '';
+      let valid = false;
+      switch (field) {
+        case 'name':
+          valid = validName(value);
+          break;
+        case 'example':
+          valid = validExample(value);
+          break;
+        case 'description':
+          valid = validDescription(value);
+          break;
+      }
+      if (valid) {
+        try {
+          const ref = inputRefs.value[`${field}.${id}`];
+          ref.$el.classList.add('is-error');
+        } catch (e) {}
+        formError.value = valid;
+      }
+    };
+
+    // 设置
+    const handleSetting = (row) => {
+      let ref = null;
+      switch (row.type) {
+        case 'string':
+          ref = stringSettingDialog.value;
+          break;
+        case 'float':
+          ref = floatSettingDialog.value;
+          break;
+        case 'int':
+          ref = intSettingDialog.value;
+          break;
+        case 'boolean':
+          ref = booleanSettingDialog.value;
+          break;
+        case 'date':
+          ref = dateSettingDialog.value;
+          break;
+      }
+      if (ref) {
+        ref.handleOpen(row, isEdit.value);
+      }
+    };
+
+    // 设置
+    const handleConfigChange = ({ id, config }) => {
+      findAndUpdateParams(list.value, id, (items, index, item) => {
+        items.splice(index, 1, {
+          ...item,
+          config: {
+            ...config,
+          },
+        });
+      });
+    };
+
+    // 可选的参数类型
+    const paramTypes = computed(() => {
+      if (props.isResponse) {
+        return [...PARAMS_TYPE_RESPONSE];
+      }
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      const _contentType = contentType.value;
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      const _paramMethod = paramsMethod.value;
+      if (_paramMethod === 'query' || _paramMethod === 'headers') {
+        return [...PARAMS_TYPES_QUERY];
+      }
+      if (_paramMethod === 'body') {
+        switch (_contentType) {
+          case 'form-data':
+            return [...PARAMS_TYPE_FORM_DATA];
+          case 'x-www-form-urlencoded':
+            return [...PARAMS_TYPES_QUERY];
+        }
+        return [...PARAMS_TYPE_BODY];
+      }
+      return [...PARAMS_TYPE_RESPONSE];
+    });
+
+    // 禁用类型
+    const isDisableParamType = (type, row) => {
+      console.log(paramsDefine.value);
+      if ((type !== 'array' && type !== 'object') || !paramsDefine.value) {
+        return false;
+      }
+      const define = paramsDefine.value[row.$id];
+      if (define.level >= 3) {
+        let { parent } = define;
+        let step = 2;
+        while (parent) {
+          if (parent.type !== type) {
+            return false;
+          }
+          if (step === 0) {
+            break;
+          }
+          step -= 1;
+          parent = parent.parent;
+        }
+        return true;
+      }
+      return false;
+    };
+
+    // 预览
+    const handlePreview = () => {
+      try {
+        const json = paramsToExample(list.value, {});
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        const _paramMethod = paramsMethod.value;
+        if (!props.isResponse && _paramMethod === 'query') {
+          previewCode.value = qs.stringify(json, { arrayFormat: 'brackets' });
+        } else {
+          previewCode.value = JSON.stringify(json, null, 4);
+        }
+      } catch (e) {
+        console.log(e);
+        ElMessage.error(e.message);
+      }
+    };
+
+    // 是否可添加
+    const canAdd = (row) => {
+      if (!paramsDefine.value || !paramsDefine.value[row.$id]) {
+        return true;
+      }
+      const define = paramsDefine.value[row.$id];
+      if (define.parent && define.parent.type === 'array') {
+        return false;
+      }
+      return true;
+    };
+
+    // 是否可删除
+    const canDel = (row) => {
+      if (!paramsDefine.value || !paramsDefine.value[row.$id]) {
+        return true;
+      }
+      const define = paramsDefine.value[row.$id];
+      if (define.parent) {
+        const { type, length } = define.parent;
+        if (type === 'array' || (type === 'object' && length === 1)) {
+          return false;
+        }
+      }
+      return true;
+    };
+
+    return {
+      paramTypes,
+      contentTypes: [...CONTENT_TYPES],
+      contentType,
+      paramRequireds: [
+        {
+          name: '是',
+          value: 1,
+        },
+        {
+          name: '否',
+          value: 0,
+        },
+      ],
+      loading,
+      list,
+      previewCode,
+      inputRefs,
+      formError,
+      isEdit,
+      handleToggleEdit,
+      getParamTypeName,
+      handleAdd,
+      handleRemove,
+      handleTypeChange,
+      handleSave,
+      clearError,
+      handleInputChange,
+      handleSetting,
+      handleConfigChange,
+      handleCancel,
+      stringSettingDialog,
+      intSettingDialog,
+      floatSettingDialog,
+      booleanSettingDialog,
+      dateSettingDialog,
+      paramsDefine,
+      isDisableParamType,
+      handlePreview,
+      canAdd,
+      canDel,
+    };
+  },
+});
+</script>
+<style lang="scss" scoped>
+.param-type {
+  text-transform: capitalize;
+}
+.content-types {
+  margin: 5px 0 20px 0;
+  display: flex;
+  align-items: center;
+}
+.params-table {
+  ::v-deep .el-select,
+  ::v-deep .el-input {
+    width: 100%;
+  }
+  ::v-deep .is-error .el-input__inner {
+    border-color: #f56c6c;
+  }
+}
+.params-form-btns {
+  margin: 20px 0 0 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.error-wrap {
+  color: #f56c6c;
+  height: 20px;
+  line-height: 20px;
+}
+</style>

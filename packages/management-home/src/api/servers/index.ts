@@ -5,6 +5,7 @@ import { SuccessResponse } from '@/types/response';
 import SERVER_TYPES from '@/shared/servertype';
 import service from '@/shared/constant/url/service';
 import { apiProxy } from '../proxy/proxy';
+import { DtoModel } from '@/views/service-management/dto/dto';
 
 export const addService: (payload: object) => Promise<SuccessResponse<any>> = (payload: object) =>
   request.post(getUrl(URL.service.ADD_SERVICE), payload);
@@ -111,3 +112,5 @@ export const findServiceApi = (payload: any) =>
     method: 'GET',
     params: payload,
   });
+export const getDtoModelList: (id: number) => Promise<SuccessResponse<DtoModel[]>> = (schemaId: number) =>
+  request.get(getUrl(URL.service.GET_DTO_MODEL_LIST), { params: { schemaId } });
