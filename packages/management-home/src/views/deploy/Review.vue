@@ -332,7 +332,7 @@ export default defineComponent({
     const reviewForm = ref(null as any);
     const reviewRules = [
       { required: true, message: '审核内容不能为空', trigger: 'blur' },
-      { min: 3, max: 1024, message: '最多支持1024个字符' },
+      { min: 1, max: 1024, message: '长度在 1 到 1024 个字符' },
     ];
 
     const openReviewDialog = () => {
