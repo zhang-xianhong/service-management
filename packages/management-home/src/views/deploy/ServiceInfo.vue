@@ -53,9 +53,9 @@
         <el-input
           v-model="releaseData.serviceInfo.publishContent"
           type="textarea"
-          :rows="3"
+          :rows="5"
           placeholder="请输入发布说明，不得超过1024个字符"
-          :maxlength="1024"
+          :maxlength="512"
           show-word-limit
         ></el-input>
       </el-form-item>
@@ -120,7 +120,7 @@ export default defineComponent({
       publisher: [{ type: 'number', message: '请输入数值', trigger: 'change' }],
       publishContent: [
         { required: true, message: '请输入发布说明', trigger: 'blur' },
-        { min: 3, max: 1024, message: '长度在 3 到 1024 个字符', trigger: 'blur' },
+        { min: 3, max: 512, message: '长度在 3 到 512 个字符', trigger: 'blur' },
       ],
     };
 
