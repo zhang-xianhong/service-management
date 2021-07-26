@@ -64,7 +64,11 @@
                       :rules="[
                         { required: true, message: '角色不能为空', trigger: 'blur' },
                         { min: 1, max: 20, message: '超过字数限制，最多不能超过20个字符', trigger: 'blur' },
-                        { pattern: /^[\u4e00-\u9fa5|a-zA-Z|()（）]+$/g, message: '仅支持中英文字母、中文、符号', trigger: 'blur' },
+                        {
+                          pattern: /^[\u4e00-\u9fa5|a-zA-Z|()（）]+$/g,
+                          message: '仅支持中英文字母、中文、符号',
+                          trigger: 'blur',
+                        },
                         { validator: validatorTagsPass, trigger: 'blur' },
                       ]"
                     >
@@ -76,9 +80,7 @@
                       ></el-input>
                     </el-form-item>
                     <div style="float: right">
-                      <el-button type="text" @click="editBoxsave(data)" :loading="submitting"
-                        >保存</el-button
-                      >
+                      <el-button type="text" @click="editBoxsave(data)" :loading="submitting">保存</el-button>
                       <el-button type="text" @click="cancel(String(data.id))">取消</el-button>
                     </div>
                   </el-form>
@@ -111,7 +113,11 @@
             :rules="[
               { required: true, message: '角色不能为空', trigger: 'blur' },
               { min: 1, max: 20, message: '超过字数限制，最多不能超过20个字符', trigger: 'blur' },
-              { pattern: /^[\u4e00-\u9fa5|a-zA-Z|()（）]+$/g, message: '仅支持中英文字母、中文、符号', trigger: 'blur' },
+              {
+                pattern: /^[\u4e00-\u9fa5|a-zA-Z|()（）]+$/g,
+                message: '仅支持中英文字母、中文、符号',
+                trigger: 'blur',
+              },
               { validator: validatorTagsPass, trigger: 'blur' },
             ]"
           >
