@@ -55,7 +55,7 @@
           type="textarea"
           :rows="5"
           placeholder="请输入发布说明，不得超过1024个字符"
-          :maxlength="512"
+          :maxlength="2048"
           show-word-limit
         ></el-input>
       </el-form-item>
@@ -120,7 +120,7 @@ export default defineComponent({
       publisher: [{ type: 'number', message: '请输入数值', trigger: 'change' }],
       publishContent: [
         { required: true, message: '请输入发布说明', trigger: 'blur' },
-        { min: 3, max: 512, message: '长度在 3 到 512 个字符', trigger: 'blur' },
+        { min: 1, max: 2048, message: '长度在 1 到 2048 个字符', trigger: 'blur' },
       ],
     };
 
