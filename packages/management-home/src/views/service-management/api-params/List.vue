@@ -173,7 +173,7 @@ import FloatSettingDialog from './settings/Float.vue';
 import IntSettingDialog from './settings/Int.vue';
 import DateSettingDialog from './settings/Date.vue';
 import BooleanSettingDialog from './settings/Boolean.vue';
-import DtoListDialog from '../dto/index.vue';
+import DtoListDialog from '../dto/Index.vue';
 import {
   genParam,
   findAndUpdateParams,
