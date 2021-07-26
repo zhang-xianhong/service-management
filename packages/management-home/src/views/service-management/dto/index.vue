@@ -1,59 +1,62 @@
 <template>
-  <div>
-    <el-dialog v-model="showDtoList">
-      <el-button type="primary" @click="editDtoModel()" class="create-dto__bth">新建</el-button>
-      <el-table :data="tableData" max-height="400" @selection-change="handleSelectionChange">
-        <el-table-column type="selection" label="序号"></el-table-column>
-        <el-table-column prop="name" label="模型英文名">
-          <template #default="scope">
-            {{ scope.row.enName }}
-          </template>
-        </el-table-column>
-        <el-table-column prop="chineseName" label="模型中文名">
-          <template #default="scope">
-            {{ scope.row.zhName }}
-          </template>
-        </el-table-column>
-        <el-table-column prop="service" label="服务">
-          <template #default="scope">
-            {{ scope.row.serverName }}
-          </template>
-        </el-table-column>
-        <el-table-column label="操作">
-          <template #default="scope">
-            <el-button @click="editDtoModel(scope.row)" type="text" size="small">编辑</el-button>
-          </template>
-        </el-table-column>
-      </el-table>
-      <template #footer>
-        <span class="dialog-footer">
-          <el-button @click="closeDtoList">取 消</el-button>
-          <el-button type="primary" @click="onConfirmSelect">确 定</el-button>
-        </span>
-      </template>
-    </el-dialog>
+  <el-dialog v-model="showDtoList">
+    <el-button type="primary" @click="editDtoModel()" class="create-dto__bth">新建</el-button>
+    <el-table :data="tableData" max-height="400" @selection-change="handleSelectionChange">
+      <el-table-column label="序号">
+        <template #default="scope">
+          <el-radio name="dto-item" :label="scope.row.rootId" v-model="selectedId" />
+        </template>
+      </el-table-column>
+      <el-table-column prop="name" label="模型英文名">
+        <template #default="scope">
+          {{ scope.row.enName }}
+        </template>
+      </el-table-column>
+      <el-table-column prop="chineseName" label="模型中文名">
+        <template #default="scope">
+          {{ scope.row.zhName }}
+        </template>
+      </el-table-column>
+      <el-table-column prop="service" label="服务">
+        <template #default="scope">
+          {{ scope.row.serverName }}
+        </template>
+      </el-table-column>
+      <el-table-column label="操作">
+        <template #default="scope">
+          <el-button @click="editDtoModel(scope.row)" type="text" size="small">编辑</el-button>
+        </template>
+      </el-table-column>
+    </el-table>
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button @click="closeDtoList">取消</el-button>
+        <el-button type="primary" @click="onConfirmSelect" :disabled="!selectedId">确定</el-button>
+      </span>
+    </template>
+  </el-dialog>
 
-    <!-- 新建Dto modal -->
-    <el-dialog title="新建DTO模型" v-model="showEditDto" width="50%">
-      <edit-dto-model @selectDto="onSelectedDto" :dto-data="currentDto" />
-      <template #footer>
-        <span class="dialog-footer">
-          <el-button @click="onCancle">取 消</el-button>
-          <el-button type="primary" @click="onConfirm">确 定</el-button>
-        </span>
-      </template>
-    </el-dialog>
-  </div>
+  <!-- 新建Dto modal -->
+  <el-dialog title="新建DTO模型" v-model="showEditDto" width="50%">
+    <edit-dto-model @selectDto="onSelectedDto" :dto-data="currentDto" />
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button @click="onCancel">取消</el-button>
+        <el-button type="primary" @click="onConfirm">确定</el-button>
+      </span>
+    </template>
+  </el-dialog>
 </template>
 
 <script lang="ts">
 import { ref } from '@vue/reactivity';
-import { DtoModel, DtoType, useEditDtoDialog, EditMode, useDialog } from './dto';
-import { computed, defineComponent, onBeforeMount, onMounted } from '@vue/runtime-core';
+import { DtoModel, DtoType, useEditDtoDialog, EditMode } from './dto';
+import { defineComponent, onBeforeMount } from '@vue/runtime-core';
 import { TreeNodeData } from 'element-plus/lib/el-tree/src/tree.type';
 import EditDtoModel from './EditDtoModel.vue';
+import { ElMessage } from 'element-plus';
 export default defineComponent({
-  name: 'DtoList',
+  name: 'DtoListDialog',
   components: {
     EditDtoModel,
   },
@@ -176,11 +179,19 @@ export default defineComponent({
       tableData.value = data as any;
     });
 
-    const { currentDto, showDialog: showEditDto, initEdit, onConfirm, onCancle } = useEditDtoDialog();
+    const { currentDto, showDialog: showEditDto, initEdit, onConfirm, onCancel } = useEditDtoDialog();
 
-    const { showDialog: showDtoList, openDialog: openDtoList, closeDialog: closeDtoList } = useDialog();
+    const showDtoList = ref<boolean>(false);
+    const selectedId = ref<number>(); // hold ids of mutilple select
 
-    const selectedID = ref<number[]>(); // hold ids of mutilple select
+    const openDtoList = () => {
+      showDtoList.value = true;
+    };
+
+    const closeDtoList = () => {
+      showDtoList.value = false;
+      selectedId.value = undefined;
+    };
 
     const editDtoModel = (data?: DtoModel) => {
       if (data) {
@@ -196,22 +207,26 @@ export default defineComponent({
       console.log('selected', nodes);
     };
 
-    const handleSelectionChange = (selectionRows: DtoModel[]) => {
-      selectedID.value = selectionRows.map((e) => e.rootId);
-    };
-    onMounted(() => {
-      openDtoList();
-    });
+    // const handleSelectionChange = (selectionRow: DtoModel) => {
+    //   selectedID.value = selectionRow.rootId;
+    // };
 
-    const selecttions = computed(() =>
-      tableData.value.filter((e) => selectedID.value?.includes(e.rootId)).map((e) => e.list),
-    );
+    // const selecttions = computed(() =>
+    //   tableData.value.filter((e) => selectedID.value?.includes(e.rootId)).map((e) => e.list),
+    // );
 
-    const getSelection = () => selecttions;
+    // const getSelection = () => selecttions;
 
     const onConfirmSelect = () => {
-      ctx.emit('on-confirm', selecttions.value);
-      console.log(selecttions.value);
+      const selected = selectedId.value;
+      const row = tableData.value.find((item) => item.rootId === selected);
+      if (!row) {
+        ElMessage.error('请至少选择一项');
+        return;
+      }
+      ctx.emit('on-confirm', row);
+      closeDtoList();
+      // console.log(selecttions.value);
     };
     return {
       tableData,
@@ -221,11 +236,12 @@ export default defineComponent({
       openDtoList,
       closeDtoList,
       onConfirm,
-      onCancle,
+      onCancel,
       editDtoModel,
       onSelectedDto,
-      handleSelectionChange,
-      getSelection,
+      selectedId,
+      // handleSelectionChange,
+      // getSelection,
       onConfirmSelect,
     };
   },

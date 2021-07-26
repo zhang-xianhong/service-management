@@ -112,7 +112,9 @@
           <template #default="scope">
             <template v-if="isEdit">
               <el-button type="text" @click="handleAdd(scope.row)" v-if="canAdd(scope.row)">添加</el-button>
-              <el-button type="text" v-if="scope.row.type === 'object'">引入</el-button>
+              <el-button type="text" @click="handleOpenDto(scope.row)" v-if="scope.row.type === 'object'"
+                >引入</el-button
+              >
               <el-button type="text" v-else-if="scope.row.type !== 'array'" @click="handleSetting(scope.row)"
                 >设置</el-button
               >
@@ -145,6 +147,7 @@
       </template>
     </div>
 
+    <dto-list-dialog ref="dtoListDialog" @on-confirm="handleDtoConfirm" />
     <stringSettingDialog ref="stringSettingDialog" @change="handleConfigChange" />
     <intSettingDialog ref="intSettingDialog" @change="handleConfigChange" />
     <floatSettingDialog ref="floatSettingDialog" @change="handleConfigChange" />
@@ -170,6 +173,7 @@ import FloatSettingDialog from './settings/Float.vue';
 import IntSettingDialog from './settings/Int.vue';
 import DateSettingDialog from './settings/Date.vue';
 import BooleanSettingDialog from './settings/Boolean.vue';
+import DtoListDialog from '../dto/index.vue';
 import {
   genParam,
   findAndUpdateParams,
@@ -179,6 +183,7 @@ import {
   validExample,
   validDescription,
   genTreeDefine,
+  dtoToParams,
 } from './util';
 import { ElMessage } from 'element-plus';
 export default defineComponent({
@@ -189,6 +194,7 @@ export default defineComponent({
     IntSettingDialog,
     DateSettingDialog,
     BooleanSettingDialog,
+    DtoListDialog,
   },
   props: {
     isResponse: {
@@ -203,10 +209,12 @@ export default defineComponent({
     },
   },
   setup(props) {
+    // eslint-disable-next-line vue/no-setup-props-destructure
+    const { apiInfo } = props;
     const loading = ref(false);
     const list = ref([]);
-    const methodType = ref((props.apiInfo.methodType || '').toLowerCase());
-    const paramsMethod = ref('query');
+    const methodType = ref((apiInfo.methodType || '').toLowerCase());
+    const paramsMethod = ref(apiInfo.methodType === 'POST' ? 'body' : 'query');
     const contentType = ref('json');
     const inputRefs = ref({});
     const formError = ref('');
@@ -216,6 +224,7 @@ export default defineComponent({
     const floatSettingDialog = ref(null);
     const dateSettingDialog = ref(null);
     const booleanSettingDialog = ref(null);
+    const dtoListDialog = ref(null);
     const isEdit = ref(false);
     const paramsDefine = ref(null);
     const paramsMethods = computed(() => {
@@ -482,6 +491,27 @@ export default defineComponent({
       return true;
     };
 
+    const currentQuoteParamId = ref(null);
+    const handleOpenDto = (row) => {
+      currentQuoteParamId.value = row.$id;
+      dtoListDialog.value.openDtoList();
+    };
+
+    const handleDtoConfirm = (row) => {
+      const currentParamId = currentQuoteParamId.value;
+      if (!currentParamId) {
+        return;
+      }
+      const params = dtoToParams(row);
+      findAndUpdateParams(list.value, currentParamId, (items, index, item) => {
+        item.children.push(...params);
+        items.splice(index, 1, {
+          ...item,
+        });
+      });
+      updateParamsDefine();
+    };
+
     return {
       methodType,
       paramsMethod,
@@ -521,9 +551,12 @@ export default defineComponent({
       floatSettingDialog,
       booleanSettingDialog,
       dateSettingDialog,
+      dtoListDialog,
       paramsDefine,
       isDisableParamType,
       handlePreview,
+      handleOpenDto,
+      handleDtoConfirm,
       canAdd,
       canDel,
     };

@@ -92,7 +92,7 @@ export const useEditDtoDialog = () => {
     closeDialog();
   };
 
-  const onCancle = () => {
+  const onCancel = () => {
     closeDialog();
   };
 
@@ -107,7 +107,7 @@ export const useEditDtoDialog = () => {
     showDialog,
     initEdit,
     openDialog,
-    onCancle,
+    onCancel,
     onConfirm,
   };
 };

@@ -251,3 +251,29 @@ export const genTreeDefine = (params: ParamItems) => {
   flatten(params, null, 0);
   return map;
 };
+
+/**
+ * 将DTO转换成参数列表
+ * @param dtoInfo
+ * @returns
+ */
+export const dtoToParams = (dtoInfo: any) => {
+  const { list } = dtoInfo;
+  const transform = (items: any[]) =>
+    items.map((item) => {
+      const newItem: ParamItem = {
+        $id: genId(),
+        name: item.name,
+        description: item.desc,
+        type: item.type,
+        children: [],
+        config: item.config || {},
+        required: item.required || 1,
+      };
+      if (item.children) {
+        newItem.children = transform(item.children);
+      }
+      return newItem;
+    });
+  return transform(list);
+};
