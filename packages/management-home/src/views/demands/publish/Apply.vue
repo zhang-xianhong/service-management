@@ -59,11 +59,11 @@
               v-if="isShowPopover"
             >
               <template #reference>
-                <el-button type="text" @click="applicantTitleClick">申请账号</el-button>
+                <el-button type="text" @click="applicantTitleClick">申请人</el-button>
               </template>
               <el-select
                 v-model="searchProps.applicant"
-                placeholder="请选择申请账号"
+                placeholder="请选择申请人"
                 clearable
                 multiple
                 filterable

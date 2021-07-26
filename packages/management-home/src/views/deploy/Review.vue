@@ -178,7 +178,7 @@
             type="textarea"
             placeholder="请输入审核说明，不超过1024个字"
             :rows="5"
-            maxlength="1024"
+            maxlength="2048"
             show-word-limit
           ></el-input>
         </el-form-item>
@@ -333,7 +333,7 @@ export default defineComponent({
     const reviewForm = ref(null as any);
     const reviewRules = [
       { required: true, message: '审核内容不能为空', trigger: 'blur' },
-      { min: 3, max: 1024, message: '最多支持1024个字符' },
+      { min: 1, max: 2048, message: '长度在 1 到 2048 个字符' },
     ];
 
     const openReviewDialog = () => {
