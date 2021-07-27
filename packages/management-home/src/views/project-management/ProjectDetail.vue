@@ -32,8 +32,10 @@
             @input="filterRoleAndUser"
           ></el-input>
           <div class="user-tree-btn">
-            <el-button type="primary" @click="DialogVisible = true">新建</el-button>
-            <el-button @click="closeUserTree" :disabled="isDeleteVisible">删除</el-button>
+            <el-button type="primary" @click="DialogVisible = true" v-if="getShowBool('updateRole')">新建</el-button>
+            <el-button @click="closeUserTree" :disabled="isDeleteVisible" v-if="getShowBool('updateRole')"
+              >删除</el-button
+            >
           </div>
         </div>
         <el-tree
@@ -47,8 +49,16 @@
         >
           <template #default="{ node, data }">
             <div class="customNode">
-              <svg-icon v-if="node.level < 2" icon-name="folder" icon-class="tree-node-folder"></svg-icon>
-              <svg-icon v-if="node.level === 2" icon-name="member" icon-class="tree-node-member"></svg-icon>
+              <svg-icon
+                v-if="node.level < 2 && getShowBool('updateMember')"
+                icon-name="folder"
+                icon-class="tree-node-folder"
+              ></svg-icon>
+              <svg-icon
+                v-if="node.level === 2 && getShowBool('updateRole')"
+                icon-name="member"
+                icon-class="tree-node-member"
+              ></svg-icon>
               <span>
                 {{ node.label }}
                 <el-popover
@@ -132,14 +142,18 @@
               <el-table-column v-for="column in columns" :key="column.prop" v-bind="column"></el-table-column>
               <el-table-column prop="operator" width="55" v-if="getShowBool('update') && include">
                 <template #default="{ row }">
-                  <i class="el-icon-error remove-user-icon" @click="removeUser(row)"></i>
+                  <i
+                    class="el-icon-error remove-user-icon"
+                    @click="removeUser(row)"
+                    v-if="getShowBool('updateMember')"
+                  ></i>
                 </template>
               </el-table-column>
             </el-table>
           </el-tab-pane>
           <el-tab-pane label="角色权限" name="roleList">
             <div class="roleAuthStyle">
-              <el-row>
+              <el-row v-if="getShowBool('updateRole')">
                 <el-button type="primary" @click="handleEdit" v-if="isEdit" :disabled="editDisable">编辑</el-button>
                 <el-button type="primary" @click="confirm" v-show="!isEdit">确定</el-button>
                 <el-button @click="handleCancel" v-show="!isEdit">取消</el-button>
