@@ -207,13 +207,13 @@ export default defineComponent({
         releaseBaseForm.value.validate((valid: boolean) => {
           if (valid) {
             currentActive.value = currentActive.value + 1;
-            // const defaultSelConfig: any = configTableData.value.filter(
-            //   (item: any) => item.scope === ConfigOrigin['通用配置'],
-            // );
+            const defaultSelConfig: any = configTableData.value.filter(
+              (item: any) => item.scope === ConfigOrigin['服务配置'],
+            );
             // // 自动选中系统配置
-            // defaultSelConfig.forEach((item: any) => {
-            //   tableRef.value.toggleRowSelection(item);
-            // });
+            defaultSelConfig.forEach((item: any) => {
+              tableRef.value.toggleRowSelection(item);
+            });
           }
         });
         // await nextTick();
