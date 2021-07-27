@@ -88,6 +88,11 @@ body {
   overflow: hidden;
 }
 
+.el-cascader-menu__list {
+  min-height: 46px;
+  max-height: 320px !important;
+}
+
 #nav {
   padding: 30px;
 
