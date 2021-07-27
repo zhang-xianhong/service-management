@@ -1,12 +1,12 @@
 <template>
   <div>
-    <el-radio-group v-model="paramsMethod" style="margin-bottom: 20px">
+    <el-radio-group v-model="paramsMethod" style="margin-bottom: 20px" @change="handleParamsMethodChange">
       <el-radio-button :label="item" v-for="item in paramsMethods" :key="item" class="param-type">
         {{ item }}
       </el-radio-button>
     </el-radio-group>
 
-    <div class="content-types" v-if="paramsMethod === 'body'">
+    <div class="content-types" v-if="paramsMethod === 'body' && !isResponse">
       <el-radio v-model="contentType" :label="item" v-for="item in contentTypes" :key="item" :disabled="!isEdit">
         {{ item }}
       </el-radio>
@@ -24,12 +24,13 @@
         style="width: 100%"
         row-key="$id"
         default-expand-all
+        :span-method="objectSpanMethod"
         :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
         class="params-table"
       >
         <el-table-column prop="name" label="参数" class-name="col-inline">
           <template #default="scope">
-            <span v-if="!isEdit || scope.row.readonly">{{ scope.row.name }}</span>
+            <span v-if="!isEdit || scope.row.readonly || scope.row.builtin">{{ scope.row.name }}</span>
             <el-input
               placeholder="请输入参数名称"
               v-model.trim="scope.row.name"
@@ -41,9 +42,14 @@
             />
           </template>
         </el-table-column>
+        <el-table-column prop="serverName">
+          <template #default="scope">
+            <template v-if="scope.row.serverName"> 来源：{{ scope.row.serverName }} </template>
+          </template>
+        </el-table-column>
         <el-table-column prop="type" label="参数类型" width="180">
           <template #default="scope">
-            <span v-if="!isEdit">{{ getParamTypeName(scope.row.type) }}</span>
+            <span v-if="!isEdit || scope.row.readonly">{{ getParamTypeName(scope.row.type) }}</span>
             <el-select
               v-else
               placeholder="请选择参数类型"
@@ -66,7 +72,7 @@
         </el-table-column>
         <el-table-column prop="required" label="是否必填" width="150">
           <template #default="scope">
-            <span v-if="!isEdit">{{ scope.row.required ? '是' : '否' }}</span>
+            <span v-if="!isEdit || scope.row.readonly">{{ scope.row.required ? '是' : '否' }}</span>
             <el-select placeholder="请选择" v-model="scope.row.required" v-else>
               <el-option
                 v-for="item in paramRequireds"
@@ -79,7 +85,7 @@
         </el-table-column>
         <el-table-column prop="example" label="参数示例">
           <template #default="scope">
-            <span v-if="!isEdit || scope.row.type === 'array' || scope.row.type === 'object'">{{
+            <span v-if="!isEdit || scope.row.type === 'Array' || scope.row.type === 'Object'">{{
               scope.row.example
             }}</span>
             <el-input
@@ -94,17 +100,17 @@
             />
           </template>
         </el-table-column>
-        <el-table-column prop="description" label="参数描述">
+        <el-table-column prop="desc" label="参数描述">
           <template #default="scope">
-            <tooltip v-if="!isEdit" :content="scope.row.description"></tooltip>
+            <tooltip v-if="!isEdit" :content="scope.row.desc"></tooltip>
             <el-input
               v-else
               placeholder="请输入参数描述"
-              v-model.trim="scope.row.description"
+              v-model.trim="scope.row.desc"
               maxlength="512"
-              :ref="(ref) => (inputRefs[`description.${scope.row.$id}`] = ref)"
-              @input="() => clearError(`description.${scope.row.$id}`)"
-              @change="(value) => handleInputChange('description', scope.row.$id, value)"
+              :ref="(ref) => (inputRefs[`desc.${scope.row.$id}`] = ref)"
+              @input="() => clearError(`desc.${scope.row.$id}`)"
+              @change="(value) => handleInputChange('desc', scope.row.$id, value)"
             />
           </template>
         </el-table-column>
@@ -112,16 +118,36 @@
           <template #default="scope">
             <template v-if="isEdit">
               <el-button type="text" @click="handleAdd(scope.row)" v-if="canAdd(scope.row)">添加</el-button>
-              <el-button type="text" @click="handleOpenDto(scope.row)" v-if="scope.row.type === 'object'"
-                >引入</el-button
+
+              <el-dropdown
+                v-if="scope.row.type === 'Object' && !(scope.row.dtoId && scope.row.importType === 1)"
+                trigger="click"
+                style="margin: 0 5px"
               >
-              <el-button type="text" v-else-if="scope.row.type !== 'array'" @click="handleSetting(scope.row)"
+                <el-button type="text"
+                  >引入<i class="el-icon-arrow-down el-icon--right" style="margin-left: 0"></i
+                ></el-button>
+                <template #dropdown>
+                  <el-dropdown-menu>
+                    <el-dropdown-item key="1" @click="handleOpenDto(scope.row, 1)">只读引入</el-dropdown-item>
+                    <el-dropdown-item key="2" @click="handleOpenDto(scope.row, 2)">克隆引入</el-dropdown-item>
+                  </el-dropdown-menu>
+                </template>
+              </el-dropdown>
+
+              <el-button
+                type="text"
+                v-else-if="scope.row.type !== 'Array' && scope.row.type !== 'Object'"
+                @click="handleSetting(scope.row)"
                 >设置</el-button
               >
               <el-button type="text" @click="handleRemove(scope.row)" v-if="canDel(scope.row)">删除</el-button>
             </template>
             <template v-else>
-              <el-button type="text" v-if="scope.row.type !== 'array'" @click="handleSetting(scope.row)"
+              <el-button
+                type="text"
+                v-if="scope.row.type !== 'Array' && scope.row.type !== 'Object'"
+                @click="handleSetting(scope.row)"
                 >设置</el-button
               >
             </template>
@@ -156,7 +182,7 @@
   </div>
 </template>
 <script>
-import { defineComponent, ref, computed, watch } from 'vue';
+import { defineComponent, ref, computed, watch, reactive } from 'vue';
 import qs from 'qs';
 import {
   getParamsMethods,
@@ -184,6 +210,7 @@ import {
   validDescription,
   genTreeDefine,
   dtoToParams,
+  paramsToSaveData,
 } from './util';
 import { ElMessage } from 'element-plus';
 export default defineComponent({
@@ -212,7 +239,6 @@ export default defineComponent({
     // eslint-disable-next-line vue/no-setup-props-destructure
     const { apiInfo } = props;
     const loading = ref(false);
-    const list = ref([]);
     const methodType = ref((apiInfo.methodType || '').toLowerCase());
     const paramsMethod = ref(apiInfo.methodType === 'POST' ? 'body' : 'query');
     const contentType = ref('json');
@@ -227,6 +253,14 @@ export default defineComponent({
     const dtoListDialog = ref(null);
     const isEdit = ref(false);
     const paramsDefine = ref(null);
+
+    const listMap = reactive({
+      body: [],
+      query: [],
+      headers: [],
+    });
+    const list = computed(() => listMap[paramsMethod.value]);
+
     const paramsMethods = computed(() => {
       if (props.isResponse) {
         return [];
@@ -245,7 +279,12 @@ export default defineComponent({
     );
 
     const updateParamsDefine = () => {
-      paramsDefine.value = genTreeDefine(list.value);
+      paramsDefine.value = genTreeDefine(listMap[paramsMethod.value]);
+    };
+
+    const handleParamsMethodChange = () => {
+      formError.value = '';
+      updateParamsDefine();
     };
 
     // 编辑态切换
@@ -257,9 +296,9 @@ export default defineComponent({
     const handleAdd = (row) => {
       if (!row.$id) {
         handleToggleEdit(true);
-        list.value.push(genParam());
+        listMap[paramsMethod.value].push(genParam());
       } else {
-        findAndUpdateParams(list.value, row.$id, (items, index) => {
+        findAndUpdateParams(listMap[paramsMethod.value], row.$id, (items, index) => {
           items.splice(index + 1, 0, genParam());
         });
       }
@@ -268,7 +307,7 @@ export default defineComponent({
 
     // 移除
     const handleRemove = (row) => {
-      findAndUpdateParams(list.value, row.$id, (items, index) => {
+      findAndUpdateParams(listMap[paramsMethod.value], row.$id, (items, index) => {
         items.splice(index, 1);
       });
       updateParamsDefine();
@@ -276,19 +315,19 @@ export default defineComponent({
 
     // 类型改变
     const handleTypeChange = (row, value) => {
-      if (value === 'array' || value === 'object') {
+      if (value === 'Array' || value === 'Object') {
         const children = [];
-        if (value === 'array') {
+        if (value === 'Array') {
           children.push(
             genParam({
-              readonly: true,
+              builtin: true,
               name: 'item',
             }),
           );
         } else {
           children.push(genParam());
         }
-        findAndUpdateParams(list.value, row.$id, (items, index, item) => {
+        findAndUpdateParams(listMap[paramsMethod.value], row.$id, (items, index, item) => {
           items.splice(index, 1, {
             ...item,
             example: '',
@@ -297,7 +336,7 @@ export default defineComponent({
           });
         });
       } else {
-        findAndUpdateParams(list.value, row.$id, (items, index, item) => {
+        findAndUpdateParams(listMap[paramsMethod.value], row.$id, (items, index, item) => {
           // eslint-disable-next-line no-param-reassign
           delete item.children;
           items.splice(index, 1, item);
@@ -308,15 +347,42 @@ export default defineComponent({
 
     // 保存
     const handleSave = () => {
-      const res = validParams(list.value);
       formError.value = '';
-      if (res) {
-        const error = res[0];
-        const ref = inputRefs.value[`${error.field}.${error.id}`];
-        ref.$el.classList.add('is-error');
-        ref.focus();
-        formError.value = error.message;
+      const error = Object.values(listMap).some((list) => {
+        const res = validParams(list);
+        if (res) {
+          const error = res[0];
+          try {
+            const ref = inputRefs.value[`${error.field}.${error.id}`];
+            ref.$el.classList.add('is-error');
+            ref.focus();
+          } catch (e) {}
+          formError.value = error.message;
+          return true;
+        }
+        return false;
+      });
+      if (error) {
+        return false;
       }
+
+      const baseInfo = {
+        serviceId: apiInfo.serviceId,
+        apiId: apiInfo.apiId,
+      };
+      const saveData = [];
+      Object.keys(listMap).forEach((key) => {
+        const list = [...listMap[key]];
+        if (list.length) {
+          saveData.push({
+            ...baseInfo,
+            paramIn: key,
+            contentType: key === 'body' ? contentType.value : '',
+            list: paramsToSaveData(list),
+          });
+        }
+      });
+      console.log(saveData);
     };
 
     // 清除错误
@@ -334,7 +400,7 @@ export default defineComponent({
       handleToggleEdit(false);
       clearError();
       formError.value = '';
-      // TODO. 将list.value重置为初始化值
+      // TODO. 将listMap[paramsMethod.value]重置为初始化值
     };
 
     // validate after input change
@@ -348,7 +414,7 @@ export default defineComponent({
         case 'example':
           valid = validExample(value);
           break;
-        case 'description':
+        case 'desc':
           valid = validDescription(value);
           break;
       }
@@ -365,19 +431,21 @@ export default defineComponent({
     const handleSetting = (row) => {
       let ref = null;
       switch (row.type) {
-        case 'string':
+        case 'String':
           ref = stringSettingDialog.value;
           break;
-        case 'float':
+        case 'Float':
+        case 'Double':
           ref = floatSettingDialog.value;
           break;
-        case 'int':
+        case 'Int32':
+        case 'Int64':
           ref = intSettingDialog.value;
           break;
-        case 'boolean':
+        case 'Boolean':
           ref = booleanSettingDialog.value;
           break;
-        case 'date':
+        case 'Date':
           ref = dateSettingDialog.value;
           break;
       }
@@ -388,7 +456,7 @@ export default defineComponent({
 
     // 设置
     const handleConfigChange = ({ id, config }) => {
-      findAndUpdateParams(list.value, id, (items, index, item) => {
+      findAndUpdateParams(listMap[paramsMethod.value], id, (items, index, item) => {
         items.splice(index, 1, {
           ...item,
           config: {
@@ -424,12 +492,11 @@ export default defineComponent({
 
     // 禁用类型
     const isDisableParamType = (type, row) => {
-      console.log(paramsDefine.value);
-      if ((type !== 'array' && type !== 'object') || !paramsDefine.value) {
+      if ((type !== 'Array' && type !== 'Object') || !paramsDefine.value) {
         return false;
       }
       const define = paramsDefine.value[row.$id];
-      if (define.level >= 3) {
+      if (define && define.level >= 3) {
         let { parent } = define;
         let step = 2;
         while (parent) {
@@ -450,7 +517,7 @@ export default defineComponent({
     // 预览
     const handlePreview = () => {
       try {
-        const json = paramsToExample(list.value, {});
+        const json = paramsToExample(listMap[paramsMethod.value], {});
         // eslint-disable-next-line @typescript-eslint/naming-convention
         const _paramMethod = paramsMethod.value;
         if (!props.isResponse && _paramMethod === 'query') {
@@ -470,7 +537,7 @@ export default defineComponent({
         return true;
       }
       const define = paramsDefine.value[row.$id];
-      if (define.parent && define.parent.type === 'array') {
+      if (define.parent && (define.parent.type === 'Array' || define.parent.isReadonlyImport)) {
         return false;
       }
       return true;
@@ -478,13 +545,14 @@ export default defineComponent({
 
     // 是否可删除
     const canDel = (row) => {
+      // 引用只读
       if (!paramsDefine.value || !paramsDefine.value[row.$id]) {
         return true;
       }
       const define = paramsDefine.value[row.$id];
       if (define.parent) {
-        const { type, length } = define.parent;
-        if (type === 'array' || (type === 'object' && length === 1)) {
+        const { type, length, isReadonlyImport } = define.parent;
+        if (isReadonlyImport || type === 'Array' || (type === 'Object' && length === 1)) {
           return false;
         }
       }
@@ -492,18 +560,24 @@ export default defineComponent({
     };
 
     const currentQuoteParamId = ref(null);
-    const handleOpenDto = (row) => {
+    // 引入方式
+    const currentQuoteType = ref(1);
+
+    // 打开DTO模态框
+    const handleOpenDto = (row, type) => {
       currentQuoteParamId.value = row.$id;
+      currentQuoteType.value = type;
       dtoListDialog.value.openDtoList();
     };
 
+    // DTO确定
     const handleDtoConfirm = (row) => {
       const currentParamId = currentQuoteParamId.value;
       if (!currentParamId) {
         return;
       }
-      const params = dtoToParams(row);
-      findAndUpdateParams(list.value, currentParamId, (items, index, item) => {
+      const params = dtoToParams(row, currentQuoteType.value);
+      findAndUpdateParams(listMap[paramsMethod.value], currentParamId, (items, index, item) => {
         item.children.push(...params);
         items.splice(index, 1, {
           ...item,
@@ -512,6 +586,26 @@ export default defineComponent({
       updateParamsDefine();
     };
 
+    const objectSpanMethod = ({ row, columnIndex }) => {
+      if (!row.serverName) {
+        if (columnIndex === 0) {
+          return {
+            rowspan: 1,
+            colspan: 2,
+          };
+        }
+        if (columnIndex === 1) {
+          return {
+            rowspan: 1,
+            colspan: 0,
+          };
+        }
+      }
+      return {
+        rowspan: 1,
+        colspan: 1,
+      };
+    };
     return {
       methodType,
       paramsMethod,
@@ -559,6 +653,8 @@ export default defineComponent({
       handleDtoConfirm,
       canAdd,
       canDel,
+      handleParamsMethodChange,
+      objectSpanMethod,
     };
   },
 });

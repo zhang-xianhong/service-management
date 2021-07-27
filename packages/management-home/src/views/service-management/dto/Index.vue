@@ -41,8 +41,8 @@
     <edit-dto-model @selectDto="onSelectedDto" :dto-data="currentDto" />
     <template #footer>
       <span class="dialog-footer">
-        <el-button @click="onCancel">取消</el-button>
         <el-button type="primary" @click="onConfirm">确定</el-button>
+        <el-button @click="onCancel">取消</el-button>
       </span>
     </template>
   </el-dialog>
@@ -76,14 +76,14 @@ export default defineComponent({
           list: [
             {
               name: 'key_1',
-              type: 'object',
+              type: 'Object',
               desc: '这是一个对象',
               dtoId: 12,
               _id: '12',
               children: [
                 {
                   name: 'key_1_1',
-                  type: 'string',
+                  type: 'String',
                   required: 1,
                   dtoId: 121,
                   _id: '121',
@@ -96,14 +96,14 @@ export default defineComponent({
                 },
                 {
                   name: 'key_1_2',
-                  type: 'object',
+                  type: 'Object',
                   dtoId: 122,
                   _id: '122',
                   desc: '这是一个nest对象',
                   children: [
                     {
                       name: 'key_1_2_1',
-                      type: 'string',
+                      type: 'String',
                       required: 1,
                       dtoId: 1221,
                       _id: '1221',
@@ -131,14 +131,14 @@ export default defineComponent({
           list: [
             {
               name: 'key_1',
-              type: 'object',
+              type: 'Object',
               desc: '这是一个对象',
               dtoId: 22,
               _id: '22',
               children: [
                 {
                   name: 'key_1_1',
-                  type: 'string',
+                  type: 'String',
                   required: 1,
                   dtoId: 121,
                   _id: '221',
@@ -151,14 +151,14 @@ export default defineComponent({
                 },
                 {
                   name: 'key_1_2',
-                  type: 'object',
+                  type: 'Object',
                   dtoId: 222,
                   _id: '222',
                   desc: '这是一个nest对象',
                   children: [
                     {
                       name: 'key_1_2_1',
-                      type: 'string',
+                      type: 'String',
                       required: 1,
                       dtoId: 2221,
                       _id: '2221',

@@ -10,11 +10,18 @@ export interface ParamItem extends PlainObject {
   name?: string;
   // 参数类型
   type?: TYPE_PARAMS_TYPES;
+  // 是否必填
   required?: number;
   // 示例
   example?: string;
   // 描述
-  description?: string;
+  desc?: string;
+  //  引入时关联的DTO信息
+  dtoId?: number;
+  //  引入类型：1. 只读，2：克隆
+  importType?: number;
+  // 是否只读
+  readonly?: boolean;
   // 配置
   config?: PlainObject;
   // 子项
@@ -25,10 +32,10 @@ export type ParamItems = ParamItem[];
 
 export const genParam = (param?: ParamItem) => ({
   name: '',
-  type: 'string',
+  type: 'String',
   required: 1,
   example: '',
-  description: '',
+  desc: '',
   config: {},
   ...param,
   $id: genId(),
@@ -94,17 +101,19 @@ export const paramsToExample = (params: ParamItems, result: any) => {
     }
     let value: any;
     switch (type) {
-      case 'float':
-      case 'int':
+      case 'Float':
+      case 'Int32':
+      case 'Int64':
+      case 'Double':
         value = getNumberValue(example, config);
         break;
-      case 'boolean':
+      case 'Boolean':
         value = getBooleanValue(example, config);
         break;
-      case 'array':
+      case 'Array':
         value = [];
         break;
-      case 'object':
+      case 'Object':
         value = {};
         break;
       default:
@@ -120,7 +129,7 @@ export const paramsToExample = (params: ParamItems, result: any) => {
       // eslint-disable-next-line no-param-reassign
       result[key] = value;
     }
-    if (type === 'object' || (type === 'array' && children?.length)) {
+    if (type === 'Object' || (type === 'Array' && children?.length)) {
       return paramsToExample(children as ParamItems, Array.isArray(result) ? value : result[key]);
     }
   });
@@ -179,7 +188,7 @@ export const validDescription = (description = '') => {
 export const validParams = (params: ParamItems): any => {
   const errors: any = [];
   for (let i = 0, len = params.length; i < len; i++) {
-    const { name, example = '', children, description = '', $id } = params[i];
+    const { name, example = '', children, desc = '', $id } = params[i];
     const checkName = validName(name as string);
     if (checkName) {
       errors.push({
@@ -198,10 +207,10 @@ export const validParams = (params: ParamItems): any => {
       });
       break;
     }
-    const checkDescription = validDescription(description as string);
+    const checkDescription = validDescription(desc as string);
     if (checkDescription) {
       errors.push({
-        field: 'description',
+        field: 'desc',
         id: $id,
         message: checkDescription,
       });
@@ -223,6 +232,7 @@ export interface TreeDefine {
   type: string;
   length: number;
   parent?: TreeDefine | null;
+  isReadonlyImport?: boolean;
 }
 
 export interface TreeDefines {
@@ -239,6 +249,8 @@ export const genTreeDefine = (params: ParamItems) => {
         parent,
         index: i,
         length: 0,
+        // 只读引用
+        isReadonlyImport: Boolean(item.dtoId && item.importType === 1),
       };
       // eslint-disable-next-line no-param-reassign
       parent && (parent.length += 1);
@@ -257,18 +269,22 @@ export const genTreeDefine = (params: ParamItems) => {
  * @param dtoInfo
  * @returns
  */
-export const dtoToParams = (dtoInfo: any) => {
+export const dtoToParams = (dtoInfo: any, importType: number) => {
   const { list } = dtoInfo;
   const transform = (items: any[]) =>
     items.map((item) => {
       const newItem: ParamItem = {
         $id: genId(),
         name: item.name,
-        description: item.desc,
+        desc: item.desc,
         type: item.type,
         children: [],
         config: item.config || {},
         required: item.required || 1,
+        importType,
+        dtoId: item.dtoId,
+        readonly: importType === 1,
+        serverName: dtoInfo.serverName,
       };
       if (item.children) {
         newItem.children = transform(item.children);
@@ -276,4 +292,35 @@ export const dtoToParams = (dtoInfo: any) => {
       return newItem;
     });
   return transform(list);
+};
+
+/**
+ * 解析存储数据
+ * @param params
+ * @returns
+ */
+export const paramsToSaveData = (params: ParamItems) => {
+  const parse = (items: ParamItems) =>
+    items.map((item) => {
+      const newItem: ParamItem = {
+        name: item.name,
+        desc: item.desc,
+        type: item.type,
+        example: item.example,
+        required: item.required,
+        children: [],
+        config: {
+          ...item.config,
+          type: item.type,
+        },
+      };
+      if (item.dtoId) {
+        newItem.dtoId = item.dtoId;
+      }
+      if (item.children && item.children.length) {
+        newItem.children = parse(item.children);
+      }
+      return newItem;
+    });
+  return parse(params);
 };
