@@ -54,7 +54,13 @@
         <el-table-column prop="operations" label="操作" width="180" v-if="getShowBool('add') && !isRefrenceService">
           <template #default="scope">
             <a @click="add(scope.$index)" class="operator" v-if="scope.$index === 0">添加</a>
-            <a @click="remove(scope.$index)" class="operator" :disabled="isFieldDisabled(scope)">删除</a>
+            <a
+              @click="remove(scope.$index)"
+              class="operator"
+              :disabled="isFieldDisabled(scope)"
+              v-if="scope.$index !== 0"
+              >删除</a
+            >
           </template>
         </el-table-column>
       </el-table>
