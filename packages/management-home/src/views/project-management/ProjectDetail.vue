@@ -319,7 +319,8 @@ export default {
           status: userStatus[user.status as 0 | -1],
           gender: genderLabel[user.gender as 0 | 1],
         }));
-        const noPaRoles = data.roles.filter((x: any) => x.code !== 'PA' && x.code !== 'VIS');
+        // roleId： 6是项目负责人；7是访客 不显示
+        const noPaRoles = data.roles.filter((x: any) => x.roleId !== 6 && x.roleId !== 7);
         treeData.value = _.flow(
           _.reject({ isOwnerRole: true }),
           _.map((role: any) => ({
