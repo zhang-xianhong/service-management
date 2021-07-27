@@ -178,6 +178,14 @@
                     >
                       <el-checkbox v-for="subItem in item.modules" :label="subItem.id" :key="subItem.name">
                         {{ subItem.name }}
+                        <el-tooltip
+                          v-if="subItem.id === 22"
+                          effect="light"
+                          content="服务操作包含初始化、同步配置、发版、启动、停止、查看日志"
+                          placement="top-start"
+                        >
+                          <i class="el-icon-question"></i>
+                        </el-tooltip>
                       </el-checkbox>
                     </el-checkbox-group>
                   </el-row>
@@ -325,7 +333,8 @@ export default {
           status: userStatus[user.status as 0 | -1],
           gender: genderLabel[user.gender as 0 | 1],
         }));
-        const noPaRoles = data.roles.filter((x: any) => x.code !== 'PA' && x.code !== 'VIS');
+        // roleId： 6是项目负责人；7是访客 不显示
+        const noPaRoles = data.roles.filter((x: any) => x.roleId !== 6 && x.roleId !== 7);
         treeData.value = _.flow(
           _.reject({ isOwnerRole: true }),
           _.map((role: any) => ({
