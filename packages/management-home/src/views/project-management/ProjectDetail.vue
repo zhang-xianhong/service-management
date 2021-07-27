@@ -164,6 +164,14 @@
                     >
                       <el-checkbox v-for="subItem in item.modules" :label="subItem.id" :key="subItem.name">
                         {{ subItem.name }}
+                        <el-tooltip
+                          v-if="subItem.id === 22"
+                          effect="light"
+                          content="服务操作包含初始化、同步配置、发版、启动、停止、查看日志"
+                          placement="top-start"
+                        >
+                          <i class="el-icon-question"></i>
+                        </el-tooltip>
                       </el-checkbox>
                     </el-checkbox-group>
                   </el-row>
