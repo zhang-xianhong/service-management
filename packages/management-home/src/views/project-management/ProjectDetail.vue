@@ -365,20 +365,26 @@ export default {
 
     const reloadUserList = async (s: any) => {
       await initUserList();
+      console.log('s', s);
       if (s?.id) {
         userTreeRef.value.setCurrentKey(s.id);
         const treeUser: any = _.find({ id: s.id })(treeData.value[0].children);
         userList.value = _.intersectionWith((node: any, user: any) => node.id === user.id)(allUsers.value)(
-          treeUser.children,
+          treeUser?.children || [],
         );
       } else {
         userList.value = allUsers.value;
       }
+      console.log('userList.value', userList.value);
     };
 
     const removeUser = (row: any) => {
+      console.log('row', row);
+      console.log('currentNodeData', currentNodeData.value);
       ElMessageBox.confirm(
-        `是否将 ${currentNodeData.value.label} 从 ${currentNode.value.parent.data.label} 中移除？`,
+        `是否将 ${row ? row.displayName : currentNodeData.value.label} 从 ${
+          row ? currentNode.value.label : currentNode.value.parent.data.label
+        } 中移除？`,
         '提示',
         {
           confirmButtonText: '确定',
@@ -387,9 +393,9 @@ export default {
         },
       ).then(async () => {
         const { code } = await deleteMember({
-          ids: row ? [] : [currentNode.value?.data?.id],
+          ids: row ? [row.id] : [currentNode.value?.data?.id],
           projectId: props.id,
-          roleId: row ? '' : currentNode.value.parent?.data?.id,
+          roleId: row ? currentNode.value?.data?.id : currentNode.value.parent?.data?.id,
         });
         if (code === 0) reloadUserList({ id: currentNodeData.value.label });
       });
