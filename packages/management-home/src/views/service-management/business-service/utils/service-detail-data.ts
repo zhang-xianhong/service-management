@@ -1,4 +1,12 @@
-import { buildService, getChanges, getChangesApply, startService, stopService, getServiceTraceId } from '@/api/servers';
+import {
+  buildService,
+  getChanges,
+  getChangesApply,
+  startCheck,
+  startService,
+  stopService,
+  getServiceTraceId,
+} from '@/api/servers';
 import { ref } from 'vue';
 import { logSetTimeOut } from '@/views/service-management/business-service/utils/service-log-data-utils';
 import { release } from '@/views/service-management/business-service/utils/service-release-data-utils';
@@ -79,4 +87,12 @@ export const stopServiceData = () => {
 
 export const releaseServiceData = () => {
   release();
+};
+export const checkBeforeStart = async () => {
+  try {
+    const { code } = await startCheck({ serviceId: currentServiceIdForData.value });
+    return code;
+  } catch (error) {
+    console.log(error);
+  }
 };

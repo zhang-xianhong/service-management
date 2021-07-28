@@ -27,7 +27,7 @@
         <el-form-item label="Pattern" prop="pattern">
           <template v-slot:label
             >Pattern
-            <el-tooltip effect="light" content="用这则表达式约束字符串" placement="top">
+            <el-tooltip effect="light" content="用正则表达式约束字符串" placement="top">
               <i class="el-icon-question info-icon form-item__tooltip_icon"></i>
             </el-tooltip>
           </template>
@@ -39,7 +39,7 @@
     <template #footer>
       <span class="dialog-footer">
         <el-button type="primary" @click="handleSubmit" :loading="submitting" v-if="isEdit">确定</el-button>
-        <el-button @click="handleClose">取消</el-button>
+        <el-button @click="handleClose">{{ isEdit ? '取消' : '关闭' }}</el-button>
       </span>
     </template>
   </el-dialog>

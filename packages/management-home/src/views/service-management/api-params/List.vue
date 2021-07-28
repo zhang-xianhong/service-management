@@ -1,4 +1,3 @@
-/* eslint-disable no-restricted-syntax */
 <template>
   <div>
     <el-radio-group v-model="paramsMethod" style="margin-bottom: 20px" @change="handleParamsMethodChange">
@@ -296,18 +295,33 @@ export default defineComponent({
       });
       const res = responseToParams(data.data);
       sourceData.value = _.cloneDeep(res);
-      console.log(res);
-      for (const k in res) {
-        listMap[k] = res[k].list;
-        if (k === 'body') {
-          contentType.value = res[k].contentType || 'json';
-        }
-      }
+      // eslint-disable-next-line @typescript-eslint/no-use-before-define
+      resetListMap();
       loading.value = false;
     };
 
     fetchApiParams();
 
+    // 数据重置
+    const resetListMap = () => {
+      const res = _.cloneDeep(sourceData.value);
+      // eslint-disable-next-line no-restricted-syntax
+      postParamsMethods.forEach((k) => {
+        const item = res[k];
+        if (item) {
+          listMap[k] = item.list;
+          if (k === 'body') {
+            contentType.value = item.contentType || 'json';
+          }
+        } else {
+          listMap[k] = [];
+        }
+      });
+      // eslint-disable-next-line @typescript-eslint/no-use-before-define
+      updateParamsDefine();
+    };
+
+    // 更新节点描述
     const updateParamsDefine = () => {
       paramsDefine.value = genTreeDefine(listMap[paramsMethod.value]);
     };
@@ -440,7 +454,7 @@ export default defineComponent({
       handleToggleEdit(false);
       clearError();
       formError.value = '';
-      // TODO. 将listMap[paramsMethod.value]重置为初始化值
+      resetListMap();
     };
 
     // validate after input change
@@ -626,6 +640,7 @@ export default defineComponent({
       updateParamsDefine();
     };
 
+    // 合并单元格
     const objectSpanMethod = ({ row, columnIndex }) => {
       if (!row.serverName || !row.readonly) {
         if (columnIndex === 0) {
