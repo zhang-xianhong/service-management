@@ -179,7 +179,7 @@
                       @change="handleCheckedItemsChange(item)"
                       :disabled="isEdit"
                     >
-                      <el-checkbox v-for="subItem in item.modules" :label="subItem.id" :key="subItem.name">
+                      <el-checkbox v-for="subItem in item.children" :label="subItem.id" :key="subItem.name">
                         {{ subItem.name }}
                         <el-tooltip
                           v-if="subItem.id === 22"
@@ -234,6 +234,7 @@ import { ElMessage, ElMessageBox } from 'element-plus';
 import { getTenantDepartment } from '@/api/tenant';
 import { userInfo, userProjectList } from '@/layout/messageCenter/user-info';
 import { getShowBool } from '@/utils/permission-show-module';
+import { getTreeArr } from './utils/project-data-utils';
 
 const userStatus = {
   '-1': '冻结',
@@ -416,7 +417,7 @@ export default {
         projectInfo.templateName = data.template.name;
         projectDetail.value = projectInfo;
         // treeData.value[0].label = data.name;
-        const userArr = projectInfo.owners.map((x: any) => x.userId);
+        const userArr = projectInfo?.owners?.map((x: any) => x.userId) || [];
         include.value = userInfo.value.admin || userArr.includes(userInfo.value.userId);
       }
     };
@@ -560,8 +561,9 @@ export default {
     const getRoleAuthListData = async () => {
       const { data, code } = await getRoleAuthList();
       if (code === 0) {
-        authRoleList.value = data;
-        data.forEach((item: any) => {
+        const resData: any = getTreeArr({ key: 'id', pKey: 'moduleParentId', data });
+        authRoleList.value = resData;
+        resData.forEach((item: any) => {
           checkedItem.value[String(item.id)] = [];
           isIndeterminate.value[String(item.id)] = true;
           checkAll.value[String(item.id)] = false;
@@ -599,21 +601,21 @@ export default {
 
     // 全选
     const handleCheckAllChange = (data: any) => {
-      const { id, modules } = data;
+      const { id, children } = data;
       const selId = String(id);
       // 查找id
-      const selData = modules.map((item: any) => item.id);
+      const selData = children.map((item: any) => item.id);
       checkedItem.value[selId] = checkAll.value[selId] ? selData : [];
       isIndeterminate.value[selId] = false;
     };
 
     // 单选
     const handleCheckedItemsChange = (data: any) => {
-      const { id, modules } = data;
+      const { id, children } = data;
       const selId = String(id);
       const checkedCount = checkedItem.value[selId].length;
-      checkAll.value[selId] = checkedCount === modules.length;
-      isIndeterminate.value[selId] = checkedCount > 0 && checkedCount < modules.length;
+      checkAll.value[selId] = checkedCount === children.length;
+      isIndeterminate.value[selId] = checkedCount > 0 && checkedCount < children.length;
     };
 
     // 确定
@@ -948,11 +950,11 @@ export default {
   }
   ::v-deep .el-checkbox-group {
     font-size: 0;
-    width: 700px;
+    width: 750px;
     overflow: auto;
     .el-checkbox__label {
       display: inline-block;
-      min-width: 85px;
+      min-width: 110px;
     }
     .el-checkbox {
       margin: 0;
