@@ -1,14 +1,14 @@
 <template>
   <div>
-    <el-form :model="localDtoData" class="create-dto-form">
+    <el-form class="create-dto-form">
       <el-form-item label="模型名称">
         <div class="dto-name__container">
-          <el-input v-bind:modelValue="localDtoData.enName"></el-input>
+          <el-input v-model="localDtoData.name"></el-input>
           <div class="btn-group"><span @click="openDialog">克隆</span> <span @click="reset">重置</span></div>
         </div>
       </el-form-item>
     </el-form>
-    <PropertiesList :properties="localDtoData.list" @onChange="updateProperties"></PropertiesList>
+    <PropertiesList :propertiesList="localDtoData.list" ref="propertiesListRef"></PropertiesList>
     <el-dialog title="选择属性" v-model="showDialog" width="50%">
       <select-dto ref="dtoSelector"></select-dto>
       <template #footer>
@@ -23,11 +23,10 @@
 
 <script lang="ts">
 import { ref } from '@vue/reactivity';
-import { defineComponent, PropType } from '@vue/runtime-core';
+import { defineComponent, PropType, watch } from '@vue/runtime-core';
 import SelectDto from './SelectDto.vue';
-import { DataType, DtoModel, DtoProperties, useDialog } from './dto';
+import { DtoModel, DtoProperties, useDialog } from './dto';
 import PropertiesList from './PropertiesList.vue';
-// import Properties from './Properties.vue';
 export default defineComponent({
   name: 'EditDtoModel',
   props: {
@@ -39,59 +38,55 @@ export default defineComponent({
 
   components: {
     SelectDto,
-    // Properties,
     PropertiesList,
   },
 
   emits: ['selectDto'],
 
-  setup(props, ctx) {
+  setup(props) {
     const { openDialog, closeDialog, showDialog } = useDialog();
 
     const dtoSelector = ref<InstanceType<typeof SelectDto>>();
 
     const localDtoData = ref({ ...props.dtoData });
+    watch(
+      () => props.dtoData,
+      () => {
+        console.log('changejfojfeo');
+
+        localDtoData.value = { ...props.dtoData };
+      },
+    );
+
+    const propertiesListRef = ref<InstanceType<typeof PropertiesList>>();
 
     const onConfirm = () => {
       const nodes = dtoSelector.value?.getCheckedNodes();
-      ctx.emit('selectDto', nodes);
+      console.log(nodes);
+
+      localDtoData.value.list = [...localDtoData.value.list, ...(nodes as DtoProperties[])];
       closeDialog();
     };
 
     const reset = () => {
-      console.log('reset');
+      localDtoData.value.name = '';
     };
 
-    const add = (row: DtoProperties) => {
-      console.log('add', row);
+    const getData = () => {
+      localDtoData.value.list = propertiesListRef.value.properties;
+      return localDtoData.value;
     };
-    const config = (row: DtoProperties) => {
-      console.log('config', row);
-    };
-    const refrence = (row: DtoProperties) => {
-      console.log('refrence', row);
-    };
-    const remove = (row: DtoProperties) => {
-      console.log('remove', row);
-    };
-    const updateProperties = (properties: DtoProperties[]) => {
-      localDtoData.value.list = properties;
-    };
-    const isPrimitive = (type: DataType) => !['array', 'object'].includes(type);
+
     return {
       dtoSelector,
       showDialog,
       localDtoData,
-      updateProperties,
+      propertiesListRef,
       reset,
       onConfirm,
       openDialog,
       closeDialog,
-      add,
-      config,
-      refrence,
-      remove,
-      isPrimitive,
+      getData,
     };
   },
 });
@@ -99,6 +94,7 @@ export default defineComponent({
 <style lang="scss" scoped>
 .dto-name__container {
   display: flex;
+  width: 50%;
   .btn-group {
     width: 200px;
     color: #006eff;

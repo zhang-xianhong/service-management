@@ -1,8 +1,19 @@
-import { ref } from 'vue';
+import { dtoModelAPI } from '@/api/servers';
+import { computed, ref } from 'vue';
 
-export type DataType = 'string' | 'int' | 'float' | 'date' | 'boolean' | 'array' | 'object';
+export type DataType = 'String' | 'Int32' | 'Int64' | 'Float' | 'Double' | 'Date' | 'Boolean' | 'Array' | 'Object';
 
+export interface DtoApiParams {
+  serviceId: string;
+  uniqueId: string;
+}
 export const enum DtoType {
+  RequestDTO = 1,
+  ResponseDTO,
+  SharedDTO,
+  NestedDTO,
+}
+export const enum DtoModelDtoType {
   RequestDTO = 1,
   ResponseDTO,
   SharedDTO,
@@ -14,30 +25,30 @@ export const enum CollectionType {
   Array,
   Set,
 }
-
 export interface DtoModel {
-  serviceId: string;
-  apiId: string;
-  enName: string;
-  zhName?: string;
-  serverName: string;
+  serviceId: number;
+  apiId: number;
+  name: string;
+  zhName: string;
+  uniqueId: string;
   rootId: number;
   dtoType: DtoType;
   list: DtoProperties[];
 }
+export type CreatDtoModel = Omit<DtoModel, 'uniqueId' | 'rootId'>;
 
 export interface DtoProperties {
-  _id: string;
-  name?: string;
-  type?: DataType;
-  required?: number;
-  example?: any;
-  desc?: string;
-  config?: Config;
-  dtoId?: number;
-  propertyOrder?: string;
-  collectionType?: CollectionType;
-  children?: DtoProperties[];
+  uniqueId: string;
+  name: string;
+  type: DataType;
+  required: number;
+  example: any;
+  desc: string;
+  config: Config;
+  dtoId: number;
+  propertyOrder: string;
+  collectionType: CollectionType;
+  children: DtoProperties[];
 }
 export type UpdateDtoProperties = Partial<DtoProperties>;
 
@@ -50,15 +61,15 @@ export const enum EditMode {
   Update,
 }
 
-export const EMPTY_DTO: DtoModel = {
-  enName: '',
+export const EMPTY_DTO: CreatDtoModel = {
+  name: '',
   list: [],
-  serviceId: '',
-  apiId: '',
-  serverName: '',
-  rootId: 0,
-  dtoType: DtoType.NestedDTO,
+  zhName: '',
+  serviceId: 0,
+  apiId: 0,
+  dtoType: DtoType.RequestDTO,
 };
+export type CreatOrUpdateDtoModel = DtoModel | CreatDtoModel;
 
 export const useDialog = () => {
   const showDialog = ref<boolean>(false);
@@ -69,14 +80,13 @@ export const useDialog = () => {
   const closeDialog = () => {
     showDialog.value = false;
   };
-
   return { openDialog, closeDialog, showDialog };
 };
 
 export const useEditDtoDialog = () => {
   const editMode = ref<EditMode>();
 
-  const currentDto = ref<DtoModel>(); // update or create current DtoModel
+  const currentDto = ref<CreatOrUpdateDtoModel>(EMPTY_DTO); // update or create current DtoModel
 
   const { openDialog, closeDialog, showDialog } = useDialog(); // diaglog controller
 
@@ -84,30 +94,62 @@ export const useEditDtoDialog = () => {
     editMode.value = mode;
   };
 
-  const setModelData = (data: DtoModel) => {
+  const setModelData = (data: CreatOrUpdateDtoModel) => {
     currentDto.value = data;
   };
 
-  const onConfirm = () => {
-    closeDialog();
-  };
-
-  const onCancel = () => {
-    closeDialog();
-  };
-
-  const initEdit = (mode: EditMode, data?: DtoModel) => {
+  const initEdit = (mode: EditMode, data: CreatOrUpdateDtoModel) => {
     setCurrentMode(mode);
     openDialog();
-    setModelData(data ?? EMPTY_DTO);
+    setModelData(data);
+  };
+
+  const syncDtoData = () => {
+    if (editMode.value === EditMode.Create) {
+      return dtoModelAPI.create(currentDto.value);
+    }
+    return dtoModelAPI.update(currentDto.value as DtoModel);
   };
 
   return {
     currentDto,
     showDialog,
     initEdit,
+    setDtoModel: setModelData,
     openDialog,
-    onCancel,
-    onConfirm,
+    closeDialog,
+    syncDtoData,
+  };
+};
+// ----------------------------------------
+
+const dtoList = ref<DtoModel[]>();
+
+export const useDtoList = () => {
+  const loading = ref<boolean>(false);
+
+  const setDtoList = (data: DtoModel[]) => {
+    dtoList.value = data;
+  };
+  const fetchDtoList = async (serviceId: string) => {
+    loading.value = true;
+    try {
+      const { data, code } = await dtoModelAPI.findAll(serviceId);
+
+      loading.value = false;
+
+      if (code === 0) {
+        setDtoList(data);
+      }
+    } catch (error) {
+      loading.value = false;
+      console.log(error);
+    }
+  };
+  return {
+    fetchDtoList,
+    setDtoList,
+    loading: computed(() => loading.value),
+    dtoList: computed(() => dtoList.value),
   };
 };

@@ -5,7 +5,7 @@ import { SuccessResponse } from '@/types/response';
 import SERVER_TYPES from '@/shared/servertype';
 import service from '@/shared/constant/url/service';
 import { apiProxy } from '../proxy/proxy';
-import { DtoModel } from '@/views/service-management/dto/dto';
+import { DtoModel, DtoApiParams, CreatDtoModel } from '@/views/service-management/dto/dto';
 
 export const addService: (payload: object) => Promise<SuccessResponse<any>> = (payload: object) =>
   request.post(getUrl(URL.service.ADD_SERVICE), payload);
@@ -112,5 +112,45 @@ export const findServiceApi = (payload: any) =>
     method: 'GET',
     params: payload,
   });
-export const getDtoModelList: (id: number) => Promise<SuccessResponse<DtoModel[]>> = (schemaId: number) =>
-  request.get(getUrl(URL.service.GET_DTO_MODEL_LIST), { params: { schemaId } });
+
+// 获取 dto list
+export const getAllDtoModel: (serviceId: string) => Promise<SuccessResponse<DtoModel[]>> = (serviceId) =>
+  apiProxy(SERVER_TYPES.SERVICE_GENERATOR, service.GET_DTO_MODEL_ALL_LIST, {
+    method: 'GET',
+    params: {
+      serviceId,
+    },
+  });
+
+// 获取 dto
+export const getDtoModel: (params: DtoApiParams) => Promise<SuccessResponse<DtoModel[]>> = (params) =>
+  apiProxy(SERVER_TYPES.SERVICE_GENERATOR, service.GET_DTO_MODEL, {
+    method: 'GET',
+    params,
+  });
+// 更新 dto
+export const updateDtoModelList: (data: DtoModel) => Promise<SuccessResponse<DtoModel[]>> = (data) =>
+  apiProxy(SERVER_TYPES.SERVICE_GENERATOR, service.UPDATE_DTO_MODEL, {
+    method: 'POST',
+    data,
+  });
+// 新建 dto
+export const createDtoModelList: (data: CreatDtoModel) => Promise<SuccessResponse<DtoModel[]>> = (data) =>
+  apiProxy(SERVER_TYPES.SERVICE_GENERATOR, service.ADD_DTO_MODEL, {
+    method: 'POST',
+    data,
+  });
+// 删除 dto
+export const removeDtoModelList: (data: DtoApiParams) => Promise<SuccessResponse<DtoModel[]>> = (data) =>
+  apiProxy(SERVER_TYPES.SERVICE_GENERATOR, service.REMOVE_DTO_MODEL, {
+    method: 'POST',
+    data,
+  });
+
+export const dtoModelAPI = {
+  findAll: getAllDtoModel,
+  findOne: getDtoModel,
+  create: createDtoModelList,
+  update: updateDtoModelList,
+  remove: removeDtoModelList,
+};

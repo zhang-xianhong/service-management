@@ -5,37 +5,42 @@
       :inProject="false"
       :empty="list.length === 0"
       :hasCreateAuth="true"
-      :handleCreate="handleAdd"
+      :handleCreate="
+        () => {
+          handleAdd();
+        }
+      "
     >
       <el-table
         :data="list"
         style="width: 100%"
         row-key="$id"
         default-expand-all
+        :span-method="objectSpanMethod"
         :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
         class="params-table"
       >
-        <el-table-column prop="name" label="参数" class-name="col-inline">
+        <el-table-column prop="name" label="属性" class-name="col-inline">
           <template #default="scope">
-            <span v-if="!isEdit || scope.row.readonly">{{ scope.row.name }}</span>
+            <span v-if="scope.row.readonly">{{ scope.row.name }}</span>
             <el-input
-              placeholder="请输入参数名称"
+              placeholder="请输入属性名称"
               v-model.trim="scope.row.name"
               maxlength="50"
               v-else
+              @blur="validator"
               :ref="(ref) => (inputRefs[`name.${scope.row.$id}`] = ref)"
               @input="() => clearError(`name.${scope.row.$id}`)"
               @change="(value) => handleInputChange('name', scope.row.$id, value)"
             />
           </template>
         </el-table-column>
-        <el-table-column prop="type" label="参数类型" width="180">
+        <el-table-column prop="type" label="属性类型" width="180">
           <template #default="scope">
-            <span v-if="!isEdit">{{ getParamTypeName(scope.row.type) }}</span>
             <el-select
-              v-else
-              placeholder="请选择参数类型"
+              placeholder="请选择属性类型"
               v-model="scope.row.type"
+              @blur="validtor"
               @change="
                 (value) => {
                   handleTypeChange(scope.row, value);
@@ -54,8 +59,7 @@
         </el-table-column>
         <el-table-column prop="required" label="是否必填" width="150">
           <template #default="scope">
-            <span v-if="!isEdit">{{ scope.row.required ? '是' : '否' }}</span>
-            <el-select placeholder="请选择" v-model="scope.row.required" v-else>
+            <el-select placeholder="请选择" v-model="scope.row.required">
               <el-option
                 v-for="item in paramRequireds"
                 :key="item.value"
@@ -65,30 +69,27 @@
             </el-select>
           </template>
         </el-table-column>
-        <el-table-column prop="example" label="参数示例">
+        <el-table-column prop="example" label="属性示例">
           <template #default="scope">
-            <span v-if="!isEdit || scope.row.type === 'array' || scope.row.type === 'object'">{{
-              scope.row.example
-            }}</span>
+            <span v-if="scope.row.type === 'Array' || scope.row.type === 'Object'">{{ scope.row.example }}</span>
             <el-input
               v-else
-              placeholder="请输入参数示例"
+              placeholder="请输入示例值"
               v-model.trim="scope.row.example"
               minlength="1"
               maxlength="20"
+              @blur="validator"
               :ref="(ref) => (inputRefs[`example.${scope.row.$id}`] = ref)"
               @input="() => clearError(`example.${scope.row.$id}`)"
               @change="(value) => handleInputChange('example', scope.row.$id, value)"
             />
           </template>
         </el-table-column>
-        <el-table-column prop="description" label="参数描述">
+        <el-table-column prop="description" label="属性描述">
           <template #default="scope">
-            <tooltip v-if="!isEdit" :content="scope.row.description"></tooltip>
             <el-input
-              v-else
-              placeholder="请输入参数描述"
-              v-model.trim="scope.row.description"
+              placeholder="请输入属性描述"
+              v-model.trim="scope.row.desc"
               maxlength="512"
               :ref="(ref) => (inputRefs[`description.${scope.row.$id}`] = ref)"
               @input="() => clearError(`description.${scope.row.$id}`)"
@@ -98,19 +99,23 @@
         </el-table-column>
         <el-table-column prop="actions" label="操作" align="right" width="150">
           <template #default="scope">
-            <template v-if="isEdit">
-              <el-button type="text" @click="handleAdd(scope.row)" v-if="canAdd(scope.row)">添加</el-button>
-              <el-button type="text" v-if="scope.row.type === 'object'">引入</el-button>
-              <el-button type="text" v-else-if="scope.row.type !== 'array'" @click="handleSetting(scope.row)"
-                >设置</el-button
-              >
-              <el-button type="text" @click="handleRemove(scope.row)" v-if="canDel(scope.row)">删除</el-button>
-            </template>
-            <template v-else>
-              <el-button type="text" v-if="scope.row.type !== 'array'" @click="handleSetting(scope.row)"
-                >设置</el-button
-              >
-            </template>
+            <el-button type="text" @click="handleAdd(scope.row)" v-if="canAdd(scope.row)">添加</el-button>
+            <el-dropdown v-if="scope.row.type === 'Object'" trigger="click" style="margin: 0 5px">
+              <el-button type="text"
+                >引入<i class="el-icon-arrow-down el-icon--right" style="margin-left: 0"></i
+              ></el-button>
+              <template #dropdown>
+                <el-dropdown-menu>
+                  <el-dropdown-item key="1" @click="handleOpenDto(scope.row, 1)">只读引入</el-dropdown-item>
+                  <el-dropdown-item key="2" @click="handleOpenDto(scope.row, 2)">克隆引入</el-dropdown-item>
+                </el-dropdown-menu>
+              </template>
+            </el-dropdown>
+
+            <el-button type="text" v-else-if="scope.row.type !== 'Array'" @click="handleSetting(scope.row)"
+              >设置</el-button
+            >
+            <el-button type="text" @click="handleRemove(scope.row)" v-if="canDel(scope.row)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -124,15 +129,6 @@
       </h3>
       <pre v-highlight><code v-html="previewCode" class="json" style="background: #f5f5f5; padding: 10px;"></code></pre>
     </div>
-
-    <div class="params-form-btns" v-if="list.length > 0">
-      <el-button type="primary" @click="handleToggleEdit(true)" v-if="!isEdit">编辑</el-button>
-      <template v-else>
-        <el-button type="primary" @click="handleSave">确定</el-button>
-        <el-button @click="handleCancel">取消</el-button>
-      </template>
-    </div>
-
     <StringSettingDialog ref="stringSettingDialog" @change="handleConfigChange" />
     <IntSettingDialog ref="intSettingDialog" @change="handleConfigChange" />
     <FloatSettingDialog ref="floatSettingDialog" @change="handleConfigChange" />
@@ -141,16 +137,8 @@
   </div>
 </template>
 <script>
-import { defineComponent, ref, computed } from 'vue';
-import qs from 'qs';
-import {
-  CONTENT_TYPES,
-  getParamTypeName,
-  PARAMS_TYPES_QUERY,
-  PARAMS_TYPE_FORM_DATA,
-  PARAMS_TYPE_BODY,
-  PARAMS_TYPE_RESPONSE,
-} from '../api-params/config';
+import { defineComponent, ref, computed, watch } from 'vue';
+import { CONTENT_TYPES, getParamTypeName, PARAMS_TYPE_BODY } from '../api-params/config';
 import StringSettingDialog from '../api-params/settings/String.vue';
 import FloatSettingDialog from '../api-params/settings/Float.vue';
 import IntSettingDialog from '../api-params/settings/Int.vue';
@@ -168,7 +156,7 @@ import {
 } from '../api-params/util';
 import { ElMessage } from 'element-plus';
 export default defineComponent({
-  name: 'ParamsList',
+  name: 'PropertiesList',
   components: {
     StringSettingDialog,
     FloatSettingDialog,
@@ -177,20 +165,21 @@ export default defineComponent({
     BooleanSettingDialog,
   },
   props: {
-    isResponse: {
-      type: Boolean,
-      default: false,
-    },
-    apiInfo: {
-      type: Object,
-      default() {
-        return {};
-      },
+    propertiesList: {
+      type: Array,
+      default: () => [],
     },
   },
+  emits: ['onChange'],
   setup(props) {
     const loading = ref(false);
-    const list = ref([]);
+    const list = ref([...props.propertiesList]);
+    watch(
+      () => props.propertiesList,
+      () => {
+        list.value = [...props.propertiesList];
+      },
+    );
     const contentType = ref('json');
     const inputRefs = ref({});
     const formError = ref('');
@@ -200,22 +189,15 @@ export default defineComponent({
     const floatSettingDialog = ref(null);
     const dateSettingDialog = ref(null);
     const booleanSettingDialog = ref(null);
-    const isEdit = ref(false);
+    const dtoListDialog = ref(null);
     const paramsDefine = ref(null);
 
     const updateParamsDefine = () => {
       paramsDefine.value = genTreeDefine(list.value);
     };
-
-    // 编辑态切换
-    const handleToggleEdit = (value) => {
-      isEdit.value = value;
-    };
-
     // 添加
     const handleAdd = (row) => {
-      if (!row.$id) {
-        handleToggleEdit(true);
+      if (!row?.$id) {
         list.value.push(genParam());
       } else {
         findAndUpdateParams(list.value, row.$id, (items, index) => {
@@ -235,9 +217,9 @@ export default defineComponent({
 
     // 类型改变
     const handleTypeChange = (row, value) => {
-      if (value === 'array' || value === 'object') {
+      if (value === 'Array' || value === 'Object') {
         const children = [];
-        if (value === 'array') {
+        if (value === 'Array') {
           children.push(
             genParam({
               readonly: true,
@@ -265,8 +247,8 @@ export default defineComponent({
       updateParamsDefine();
     };
 
-    // 保存
-    const handleSave = () => {
+    // 校验
+    const validator = () => {
       const res = validParams(list.value);
       formError.value = '';
       if (res) {
@@ -290,7 +272,6 @@ export default defineComponent({
 
     // 取消
     const handleCancel = () => {
-      handleToggleEdit(false);
       clearError();
       formError.value = '';
       // TODO. 将list.value重置为初始化值
@@ -307,7 +288,7 @@ export default defineComponent({
         case 'example':
           valid = validExample(value);
           break;
-        case 'description':
+        case 'desc':
           valid = validDescription(value);
           break;
       }
@@ -324,24 +305,26 @@ export default defineComponent({
     const handleSetting = (row) => {
       let ref = null;
       switch (row.type) {
-        case 'string':
+        case 'String':
           ref = stringSettingDialog.value;
           break;
-        case 'float':
+        case 'Float':
+        case 'Double':
           ref = floatSettingDialog.value;
           break;
-        case 'int':
+        case 'Int32':
+        case 'Int64':
           ref = intSettingDialog.value;
           break;
-        case 'boolean':
+        case 'Boolean':
           ref = booleanSettingDialog.value;
           break;
-        case 'date':
+        case 'Date':
           ref = dateSettingDialog.value;
           break;
       }
       if (ref) {
-        ref.handleOpen(row, isEdit.value);
+        ref.handleOpen(row, true);
       }
     };
 
@@ -358,33 +341,12 @@ export default defineComponent({
     };
 
     // 可选的参数类型
-    const paramTypes = computed(() => {
-      if (props.isResponse) {
-        return [...PARAMS_TYPE_RESPONSE];
-      }
-      // eslint-disable-next-line @typescript-eslint/naming-convention
-      const _contentType = contentType.value;
-      // eslint-disable-next-line @typescript-eslint/naming-convention
-      const _paramMethod = paramsMethod.value;
-      if (_paramMethod === 'query' || _paramMethod === 'headers') {
-        return [...PARAMS_TYPES_QUERY];
-      }
-      if (_paramMethod === 'body') {
-        switch (_contentType) {
-          case 'form-data':
-            return [...PARAMS_TYPE_FORM_DATA];
-          case 'x-www-form-urlencoded':
-            return [...PARAMS_TYPES_QUERY];
-        }
-        return [...PARAMS_TYPE_BODY];
-      }
-      return [...PARAMS_TYPE_RESPONSE];
-    });
+    const paramTypes = computed(() => [...PARAMS_TYPE_BODY]);
 
     // 禁用类型
     const isDisableParamType = (type, row) => {
       console.log(paramsDefine.value);
-      if ((type !== 'array' && type !== 'object') || !paramsDefine.value) {
+      if ((type !== 'Array' && type !== 'Object') || !paramsDefine.value) {
         return false;
       }
       const define = paramsDefine.value[row.$id];
@@ -411,12 +373,7 @@ export default defineComponent({
       try {
         const json = paramsToExample(list.value, {});
         // eslint-disable-next-line @typescript-eslint/naming-convention
-        const _paramMethod = paramsMethod.value;
-        if (!props.isResponse && _paramMethod === 'query') {
-          previewCode.value = qs.stringify(json, { arrayFormat: 'brackets' });
-        } else {
-          previewCode.value = JSON.stringify(json, null, 4);
-        }
+        previewCode.value = JSON.stringify(json, null, 4);
       } catch (e) {
         console.log(e);
         ElMessage.error(e.message);
@@ -429,7 +386,7 @@ export default defineComponent({
         return true;
       }
       const define = paramsDefine.value[row.$id];
-      if (define.parent && define.parent.type === 'array') {
+      if (define.parent && define.parent.type === 'Array') {
         return false;
       }
       return true;
@@ -443,13 +400,76 @@ export default defineComponent({
       const define = paramsDefine.value[row.$id];
       if (define.parent) {
         const { type, length } = define.parent;
-        if (type === 'array' || (type === 'object' && length === 1)) {
+        if (type === 'Array' || (type === 'Object' && length === 1)) {
           return false;
         }
       }
       return true;
     };
 
+    const currentQuoteParamId = ref(null);
+    // 引入方式
+    const currentQuoteType = ref(1);
+
+    // 打开DTO模态框
+    const handleOpenDto = (row, type) => {
+      currentQuoteParamId.value = row.$id;
+      currentQuoteType.value = type;
+      dtoListDialog.value.openDtoList();
+    };
+
+    const paramsToSaveData = (params) => {
+      const parse = (items) =>
+        items.map((item) => {
+          const { $id, config, ...dto } = item;
+          const newItem = {
+            ...dto,
+            config: JSON.stringify(config),
+          };
+          if (item.children && item.children.length) {
+            newItem.children = parse(item.children);
+          }
+          return newItem;
+        });
+      return parse(params);
+    };
+    const properties = computed(() => paramsToSaveData(list.value));
+    // DTO确定
+    // const handleDtoConfirm = (row) => {
+    //   const currentParamId = currentQuoteParamId.value;
+    //   if (!currentParamId) {
+    //     return;
+    //   }
+    //   const params = dtoToParams(row, currentQuoteType.value);
+    //   findAndUpdateParams(listMap[paramsMethod.value], currentParamId, (items, index, item) => {
+    //     item.children.push(...params);
+    //     items.splice(index, 1, {
+    //       ...item,
+    //     });
+    //   });
+    //   updateParamsDefine();
+    // };
+
+    // const objectSpanMethod = ({ row, columnIndex }) => {
+    //   if (!row.serverName) {
+    //     if (columnIndex === 0) {
+    //       return {
+    //         rowspan: 1,
+    //         colspan: 2,
+    //       };
+    //     }
+    //     if (columnIndex === 1) {
+    //       return {
+    //         rowspan: 1,
+    //         colspan: 0,
+    //       };
+    //     }
+    //   }
+    //   return {
+    //     rowspan: 1,
+    //     colspan: 1,
+    //   };
+    // };
     return {
       paramTypes,
       contentTypes: [...CONTENT_TYPES],
@@ -466,16 +486,14 @@ export default defineComponent({
       ],
       loading,
       list,
+      properties,
       previewCode,
       inputRefs,
       formError,
-      isEdit,
-      handleToggleEdit,
       getParamTypeName,
       handleAdd,
       handleRemove,
       handleTypeChange,
-      handleSave,
       clearError,
       handleInputChange,
       handleSetting,
@@ -491,6 +509,8 @@ export default defineComponent({
       handlePreview,
       canAdd,
       canDel,
+      validator,
+      handleOpenDto,
     };
   },
 });
