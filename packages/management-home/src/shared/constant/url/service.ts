@@ -22,4 +22,5 @@ export default {
   POST_SERVICE_RELEASE: ['/services/release', '/mock/services/release.json'],
   GET_SERVICE_DEPENDENCY_LIST: ['/services/dependencies', '/mock/services/dependencies.json'],
   GET_RELEASE_CHECK: ['/services/release/check', '/mock/services/check.json'],
+  GET_START_CHECK: ['/services/start/check', '/mock/services/check.json'],
 };

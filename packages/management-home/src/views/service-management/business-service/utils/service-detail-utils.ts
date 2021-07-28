@@ -4,6 +4,7 @@ import {
   startServiceData,
   stopServiceData,
   releaseServiceData,
+  checkBeforeStart,
 } from '@/views/service-management/business-service/utils/service-detail-data';
 import { ref } from 'vue';
 
@@ -21,9 +22,11 @@ export default function () {
     }).then(() => getSqlData());
   };
   // 启动
-  const start = () => {
+  const start = async () => {
+    const code = await checkBeforeStart();
     console.log('启动');
-    ElMessageBox.confirm(`请确认此服务已初始化, 是否继续?`, '提示', {
+    const message = code === 0 ? '请确认此服务已初始化, 是否继续?' : '您有模型信息配置未同步,是否继续?';
+    ElMessageBox.confirm(message, '提示', {
       confirmButtonText: '确定',
       cancelButtonText: '取消',
       type: 'warning',

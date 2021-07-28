@@ -41,14 +41,14 @@
       ],
       "dependencies": [
           {
-              "dependencyServiceName": "srv-test-service1",
+              "dependencyServiceName": "public.cqszjj.xiangmu1.xiaowen",
               "dependencyServiceVersionType": 1,
               "dependencyServiceVersion": "master"
           },
           {
-              "dependencyServiceName": "srv-test-service2",
+              "dependencyServiceName": "public.cqszjj.xiangmu1.taolei",
               "dependencyServiceVersionType": 2,
-              "dependencyServiceVersion": "v1.0"
+              "dependencyServiceVersion": "v2.0"
           }
       ],
       "sshHost": "http://9.134.38.8"
