@@ -82,12 +82,7 @@
                         { validator: validatorTagsPass, trigger: 'blur' },
                       ]"
                     >
-                      <el-input
-                        v-model="userTreeInput.roles"
-                        autocomplete="off"
-                        placeholder="请输入修改的名称"
-                        clearable
-                      ></el-input>
+                      <el-input v-model="userTreeInput.roles" autocomplete="off" clearable></el-input>
                     </el-form-item>
                     <div style="float: right">
                       <el-button type="text" @click="editBoxsave(data)" :loading="submitting">保存</el-button>
@@ -788,9 +783,7 @@ export default {
         editPopBoxVisible.value[key] = false;
       });
       editPopBoxVisible.value[String(data.id)] = true;
-    };
-    document.onclick = (data: any) => {
-      console.log('点击', data);
+      userTreeInput.value.roles = data.label;
     };
     return {
       loadings,
