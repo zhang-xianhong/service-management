@@ -172,7 +172,7 @@
                       :indeterminate="isIndeterminate[String(item.id)]"
                       :disabled="isEdit"
                     >
-                      全选
+                      全部
                     </el-checkbox>
                     <el-checkbox-group
                       v-model="checkedItem[String(item.id)]"
@@ -935,18 +935,28 @@ export default {
       }
     }
   }
-  .roleAuthStyle {
-    padding: 10px;
-    color: #444;
-    .auth-model {
-      display: inline-block;
-      min-width: 60px;
-      margin-right: 20px;
-    }
+}
+</style>
+<style lang="scss" scoped>
+.roleAuthStyle {
+  padding: 10px;
+  color: #444;
+  .auth-model {
+    display: inline-block;
+    min-width: 60px;
+    // margin-right: 20px;
   }
-  .right-box {
-    height: calc(100% - 320px);
-    display: flex;
+  ::v-deep .el-checkbox-group {
+    font-size: 0;
+    width: 700px;
+    overflow: auto;
+    .el-checkbox__label {
+      display: inline-block;
+      min-width: 85px;
+    }
+    .el-checkbox {
+      margin: 0;
+    }
   }
 }
 </style>
