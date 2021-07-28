@@ -114,3 +114,25 @@ export const findServiceApi = (payload: any) =>
   });
 export const getDtoModelList: (id: number) => Promise<SuccessResponse<DtoModel[]>> = (schemaId: number) =>
   request.get(getUrl(URL.service.GET_DTO_MODEL_LIST), { params: { schemaId } });
+
+/**
+ * 更新服务参数
+ * @param payload
+ * @returns
+ */
+export const saveApiParams = (payload: any) =>
+  apiProxy(SERVER_TYPES.SERVICE_GENERATOR, service.SAVE_SERVICE_API_PARAMS, {
+    method: 'POST',
+    data: payload,
+  });
+
+/**
+ * 获取服务参数
+ * @param payload
+ * @returns
+ */
+export const getApiParams = (payload: any) =>
+  apiProxy(SERVER_TYPES.SERVICE_GENERATOR, service.GET_SERVICE_API_PARAMS, {
+    method: 'GET',
+    params: payload,
+  });

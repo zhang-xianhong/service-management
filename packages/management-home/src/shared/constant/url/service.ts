@@ -28,4 +28,7 @@ export default {
   DELETE_SERVICE_API: ['/api/delete'],
   UPDATE_SERVICE_API: ['/api/update'],
   GET_DTO_MODEL_LIST: ['/mock/service/dto-list.json', '/mock/service/dto-list.json'],
+
+  GET_SERVICE_API_PARAMS: ['/api/param/select'],
+  SAVE_SERVICE_API_PARAMS: ['/api/param/update'],
 };
