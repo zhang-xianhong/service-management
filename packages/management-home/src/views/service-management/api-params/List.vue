@@ -215,7 +215,7 @@ import {
   paramsToSaveData,
   responseToParams,
 } from './util';
-import { ElMessage } from 'element-plus';
+import { ElMessage, ElMessageBox } from 'element-plus';
 import { getApiParams, saveApiParams } from '@/api/servers';
 import _ from 'lodash';
 export default defineComponent({
@@ -359,34 +359,52 @@ export default defineComponent({
 
     // 类型改变
     const handleTypeChange = (row, value) => {
-      if (value === 'Array' || value === 'Object') {
-        const children = [];
-        if (value === 'Array') {
-          children.push(
-            genParam({
-              builtin: true,
-              name: 'item',
-            }),
-          );
-        } else {
-          children.push(genParam());
-        }
-        findAndUpdateParams(listMap[paramsMethod.value], row.$id, (items, index, item) => {
-          items.splice(index, 1, {
-            ...item,
-            example: '',
-            config: {},
-            children,
+      const define = paramsDefine.value[row.$id];
+      const oldType = define.type;
+      const afterTypeChange = () => {
+        if (value === 'Array' || value === 'Object') {
+          const children = [];
+          if (value === 'Array') {
+            children.push(
+              genParam({
+                builtin: true,
+                name: 'item',
+              }),
+            );
+          } else {
+            children.push(genParam());
+          }
+          findAndUpdateParams(listMap[paramsMethod.value], row.$id, (items, index, item) => {
+            items.splice(index, 1, {
+              ...item,
+              example: '',
+              config: {},
+              children,
+            });
           });
-        });
-      } else {
-        findAndUpdateParams(listMap[paramsMethod.value], row.$id, (items, index, item) => {
-          // eslint-disable-next-line no-param-reassign
-          delete item.children;
-          items.splice(index, 1, item);
-        });
+        } else {
+          findAndUpdateParams(listMap[paramsMethod.value], row.$id, (items, index, item) => {
+            // eslint-disable-next-line no-param-reassign
+            delete item.children;
+            items.splice(index, 1, item);
+          });
+        }
+        updateParamsDefine();
+      };
+      if (['Array', 'Object'].includes(oldType)) {
+        ElMessageBox.confirm('是否确认对属性进行修改？修改后将清除该属性子属性', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning',
+        })
+          .then(() => {
+            afterTypeChange();
+          })
+          .catch(() => {
+            // eslint-disable-next-line no-param-reassign
+            row.type = oldType;
+          });
       }
-      updateParamsDefine();
     };
 
     // 保存
@@ -591,6 +609,7 @@ export default defineComponent({
         return true;
       }
       const define = paramsDefine.value[row.$id];
+      console.log(define);
       if (define.parent && (define.parent.type === 'Array' || define.parent.isReadonlyImport)) {
         return false;
       }
