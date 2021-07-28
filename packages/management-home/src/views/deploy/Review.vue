@@ -25,7 +25,8 @@
             </el-form>
           </template>
         </el-table-column>
-        <el-table-column label="序号" type="index" width="60"></el-table-column>
+        <el-table-column label="序号" width="60" prop="index">
+        </el-table-column>
         <el-table-column label="发布类型" width="80" prop="moduleType"></el-table-column>
         <el-table-column label="发布名称" prop="name">
           <template #default="props">
@@ -176,7 +177,7 @@
           <el-input
             v-model="reviewState.formData.reviewContent"
             type="textarea"
-            placeholder="请输入审核说明，不超过1024个字"
+            placeholder="请输入审核说明，不超过2048个字"
             :rows="5"
             maxlength="2048"
             show-word-limit
@@ -297,10 +298,11 @@ export default defineComponent({
         tableState.loading = false;
         const { count, rows = [] } = data;
         tableState.total = count;
-        tableState.tableData = rows.map((item: any) => ({
+        tableState.tableData = rows.map((item: any, index: number) => ({
           ...item,
           moduleType: getModuleType(item.type),
           reviewResult: getReviewResult(item.status),
+          index: index + 1,
         }));
         tableState.auditResultsFilters = Object.entries(STATUS).map((item) => ({
           id: item[0],

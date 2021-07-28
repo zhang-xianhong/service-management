@@ -25,7 +25,7 @@
             </el-form>
           </template>
         </el-table-column>
-        <el-table-column type="index" label="序号" width="50" />
+        <el-table-column prop="index" label="序号" width="50" />
         <el-table-column label="部署类型" prop="moduleType"></el-table-column>
         <el-table-column label="部署名称" prop="name"></el-table-column>
         <el-table-column label="申请账号" prop="applicantName">
@@ -271,9 +271,10 @@ export default {
         }));
         const { count, rows = [] } = data;
         tableState.total = count;
-        const publishData = rows.map((item: any) => ({
+        const publishData = rows.map((item: any, index: number) => ({
           ...item,
           moduleType: getModuleType(item.moduleType),
+          index: index + 1,
         }));
         tableState.tableData = publishData;
       } catch (error) {

@@ -41,7 +41,7 @@
             </el-form>
           </template>
         </el-table-column>
-        <el-table-column label="序号" type="index" width="60"> </el-table-column>
+        <el-table-column label="序号" prop="index" width="60"> </el-table-column>
         <el-table-column label="发布类型" prop="moduleType"></el-table-column>
         <el-table-column label="发布名称" prop="name">
           <template #default="props">
@@ -318,10 +318,11 @@ export default defineComponent({
         tableState.loading = false;
         const { count, rows = [] } = data;
         tableState.total = count;
-        tableState.tableData = rows.map((item: any) => ({
+        tableState.tableData = rows.map((item: any, index: number) => ({
           ...item,
           moduleType: getModuleType(item.type),
           reviewResult: getReviewResult(item.status),
+          index: index + 1,
         }));
         tableState.auditResultsFilters = Object.entries(STATUS).map((item) => ({
           id: item[0],
