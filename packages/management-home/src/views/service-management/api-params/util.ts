@@ -144,7 +144,7 @@ export const validName = (name: string) => {
   if (!name) {
     return '参数不能为空';
   }
-  if (!/^[A-Za-z_]+\w?$/.test(name)) {
+  if (!/^[A-Za-z_]+(\w+)?$/.test(name)) {
     return '参数仅支持字母、数字、下划线，且不能以数字开头';
   }
   if (name.length > 50) {
@@ -285,6 +285,7 @@ export const dtoToParams = (dtoInfo: any, importType: number) => {
         dtoId: item.dtoId,
         readonly: importType === 1,
         serverName: dtoInfo.serverName,
+        modelName: dtoInfo.enName,
       };
       if (item.children) {
         newItem.children = transform(item.children);
@@ -302,17 +303,17 @@ export const dtoToParams = (dtoInfo: any, importType: number) => {
 export const paramsToSaveData = (params: ParamItems) => {
   const parse = (items: ParamItems) =>
     items.map((item) => {
-      const newItem: ParamItem = {
+      const newItem: any = {
         name: item.name,
         desc: item.desc,
         type: item.type,
         example: item.example,
         required: item.required,
         children: [],
-        config: {
+        config: JSON.stringify({
           ...item.config,
           type: item.type,
-        },
+        }),
       };
       if (item.dtoId) {
         newItem.dtoId = item.dtoId;
@@ -323,4 +324,37 @@ export const paramsToSaveData = (params: ParamItems) => {
       return newItem;
     });
   return parse(params);
+};
+export const responseToParams = (data: any[]) => {
+  const res = (data || []).filter((item) => ['Body', 'Params', 'Headers'].includes(item.paramIn));
+  const listMap: any = {};
+  const parseList = (items: any) =>
+    items.map((item: any) => {
+      const newItem: any = {
+        $id: genId(),
+        name: item.name,
+        desc: item.desc,
+        type: item.type,
+        example: item.example,
+        required: item.required,
+        children: [],
+        config: JSON.parse(item.config) || {},
+      };
+      if (item.dtoId) {
+        newItem.dtoId = item.dtoId;
+      }
+      if (item.children && item.children.length) {
+        newItem.children = parseList(item.children);
+      }
+      return newItem;
+    });
+
+  res.forEach((item) => {
+    listMap[item.paramIn.toLocaleLowerCase()] = {
+      contentType: item.contentType,
+      list: parseList(item.list),
+    };
+  });
+
+  return listMap;
 };

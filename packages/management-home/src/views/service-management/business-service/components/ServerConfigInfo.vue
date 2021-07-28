@@ -35,7 +35,7 @@
           <el-input v-else v-model.trim="scope.row.version" placeholder="请输入版本号"></el-input>
         </template>
       </el-table-column>
-      <el-table-column label="操作" width="160" v-if="getShowBool('update')">
+      <el-table-column label="操作" width="160" v-if="getShowBool('updateConfig')">
         <template #default="scope">
           <template v-if="!scope.row.isEdit">
             <a class="operation-link" @click="addItem(scope.$index)">添加</a>
@@ -50,7 +50,13 @@
       </el-table-column>
     </el-table>
     <div class="serverinfo-operations" v-if="getShowBool('update')">
-      <el-button type="primary" @click="deliveryList" :disabled="serviceStatus !== 21">配置下发</el-button>
+      <el-button
+        type="primary"
+        @click="deliveryList"
+        :disabled="serviceStatus !== 21"
+        v-if="getShowBool('updateConfig')"
+        >配置下发</el-button
+      >
       <el-button @click="$emit('back')">返回</el-button>
     </div>
   </div>
@@ -77,7 +83,7 @@
       <!--        <el-input v-if="isEditable"></el-input>-->
       <!--        <template v-else>{{ detailInfo.description }}</template>-->
       <!--      </el-form-item>-->
-      <el-form-item>
+      <el-form-item v-if="getShowBool('updateConfig')">
         <template v-if="isEditable">
           <el-button @click="submitDetailModify" type="primary">确定</el-button>
           <el-button @click="closeDetailDialog">取消</el-button>

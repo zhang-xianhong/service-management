@@ -72,6 +72,9 @@ export const updateServiceStatus: (ids: any) => Promise<SuccessResponse<any>> = 
 export const getServiceConfig: (id: any) => Promise<SuccessResponse<any>> = (id: any) =>
   request.get(getUrl(URL.service.GET_SERVICE_CONFIG, id));
 
+export const getServiceUpgrade: (id: any) => Promise<SuccessResponse<any>> = (id: any) =>
+  request.get(getUrl(URL.service.GET_SERVICE_UPGRADE_SCRIPT, id));
+
 export const releaseService: (payload: any) => Promise<SuccessResponse<any>> = (payload: any) =>
   request.post(getUrl(URL.service.POST_SERVICE_RELEASE), payload);
 
@@ -154,3 +157,26 @@ export const dtoModelAPI = {
   update: updateDtoModelList,
   remove: removeDtoModelList,
 };
+/**
+ * 更新服务参数
+ * @param payload
+ * @returns
+ */
+export const saveApiParams = (payload: any) =>
+  apiProxy(SERVER_TYPES.SERVICE_GENERATOR, service.SAVE_SERVICE_API_PARAMS, {
+    method: 'POST',
+    data: payload,
+  });
+
+/**
+ * 获取服务参数
+ * @param payload
+ * @returns
+ */
+export const getApiParams = (payload: any) =>
+  apiProxy(SERVER_TYPES.SERVICE_GENERATOR, service.GET_SERVICE_API_PARAMS, {
+    method: 'GET',
+    params: payload,
+  });
+export const startCheck: (serviceId: any) => Promise<SuccessResponse<any>> = (serviceId: any) =>
+  request.get(getUrl(URL.service.GET_START_CHECK), { params: { serviceId } });

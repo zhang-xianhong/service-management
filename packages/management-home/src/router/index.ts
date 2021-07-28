@@ -154,7 +154,7 @@ const routes: Array<RouteRecordRaw> = [
           title: '项目列表',
           icon: 'project-list',
           isRootLevel: false,
-          id: 13,
+          id: 4,
           hidden: false,
         },
       },
@@ -167,7 +167,7 @@ const routes: Array<RouteRecordRaw> = [
           isRootLevel: false,
           hidden: true,
           activeMenu: '/project-management/project-list',
-          id: 21,
+          id: 4,
           showBackButton: true,
         },
         props: true,
@@ -194,7 +194,7 @@ const routes: Array<RouteRecordRaw> = [
         meta: {
           title: '部署申请',
           isRootLevel: false,
-          id: 14,
+          id: 6,
         },
       },
       {
@@ -204,7 +204,7 @@ const routes: Array<RouteRecordRaw> = [
         meta: {
           title: '部署审核',
           isRootLevel: false,
-          id: 15,
+          id: 6,
         },
       },
     ],
@@ -228,7 +228,7 @@ const routes: Array<RouteRecordRaw> = [
         meta: {
           title: '发布申请',
           isRootLevel: false,
-          id: 30,
+          id: 29,
         },
       },
       {
@@ -238,7 +238,7 @@ const routes: Array<RouteRecordRaw> = [
         meta: {
           title: '发布审核',
           isRootLevel: false,
-          id: 31,
+          id: 29,
         },
       },
       {
@@ -277,7 +277,7 @@ const routes: Array<RouteRecordRaw> = [
         meta: {
           title: '业务服务',
           isRootLevel: false,
-          id: 16,
+          id: 7,
           hidden: false,
         },
       },
@@ -302,7 +302,7 @@ const routes: Array<RouteRecordRaw> = [
           hidden: true,
           activeMenu: '/service-management/service-list',
           showBackButton: true,
-          id: 16,
+          id: 7,
         },
       },
       // {

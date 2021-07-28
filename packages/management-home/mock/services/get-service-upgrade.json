@@ -1,0 +1,11 @@
+{
+  "code": 0,
+  "data": [
+    "CREATE TABLE IF NOT EXISTS `public_cqszjj_xiangmu1_srv_brucewli_name`(\n\t`id` BIGINT AUTO_INCREMENT COMMENT '自增主键',\n\t`name` VARCHAR(20) NOT NULL DEFAULT '' COMMENT '名字',\n\tPRIMARY KEY(`id`)\n) ENGINE=innoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COMMENT 'b';",
+    "select * from aaa where a = 1 and b = 2;",
+    "select * from aaa where a = 1 and b = 2;"
+  ],
+  "message": "successful",
+  "httpStatus": 200,
+  "timestamp": 1626255940641
+}

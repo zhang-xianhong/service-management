@@ -176,7 +176,7 @@ export default {
         if (treeNode.isLeaf) {
           treeNode.isIndeterminate = false;
           treeNode.checked = ids.includes(treeNode.id);
-          treeNode.disabled = treeNode.checked || notAllowIds.includes(treeNode.id);
+          // treeNode.disabled = treeNode.checked || notAllowIds.includes(treeNode.id);
         } else {
           setChecked(treeNode._children, ids, notAllowIds);
         }

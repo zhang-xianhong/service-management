@@ -42,9 +42,11 @@
             />
           </template>
         </el-table-column>
-        <el-table-column prop="serverName">
+        <el-table-column prop="serverName" align="right">
           <template #default="scope">
-            <template v-if="scope.row.serverName"> 来源：{{ scope.row.serverName }} </template>
+            <span v-if="scope.row.serverName" class="import-info">
+              <tooltip :content="`来源：${scope.row.serverName}_${scope.row.modelName}`"></tooltip>
+            </span>
           </template>
         </el-table-column>
         <el-table-column prop="type" label="参数类型" width="180">
@@ -168,7 +170,7 @@
     <div class="params-form-btns" v-if="list.length > 0">
       <el-button type="primary" @click="handleToggleEdit(true)" v-if="!isEdit">编辑</el-button>
       <template v-else>
-        <el-button type="primary" @click="handleSave">确定</el-button>
+        <el-button type="primary" @click="handleSave" :loading="submitting">确定</el-button>
         <el-button @click="handleCancel">取消</el-button>
       </template>
     </div>
@@ -211,8 +213,11 @@ import {
   genTreeDefine,
   dtoToParams,
   paramsToSaveData,
+  responseToParams,
 } from './util';
 import { ElMessage } from 'element-plus';
+import { getApiParams, saveApiParams } from '@/api/servers';
+import _ from 'lodash';
 export default defineComponent({
   name: 'ParamsList',
   components: {
@@ -253,6 +258,8 @@ export default defineComponent({
     const dtoListDialog = ref(null);
     const isEdit = ref(false);
     const paramsDefine = ref(null);
+    const submitting = ref(false);
+    const sourceData = ref(null);
 
     const listMap = reactive({
       body: [],
@@ -278,6 +285,43 @@ export default defineComponent({
       },
     );
 
+    // 获取接口参数
+    const fetchApiParams = async () => {
+      loading.value = true;
+      const { data } = await getApiParams({
+        serviceId: apiInfo.serviceId,
+        apiUniqueId: apiInfo.uniqueId,
+        type: props.isResponse ? 2 : 1,
+      });
+      const res = responseToParams(data.data);
+      sourceData.value = _.cloneDeep(res);
+      // eslint-disable-next-line @typescript-eslint/no-use-before-define
+      resetListMap();
+      loading.value = false;
+    };
+
+    fetchApiParams();
+
+    // 数据重置
+    const resetListMap = () => {
+      const res = _.cloneDeep(sourceData.value);
+      // eslint-disable-next-line no-restricted-syntax
+      postParamsMethods.forEach((k) => {
+        const item = res[k];
+        if (item) {
+          listMap[k] = item.list;
+          if (k === 'body') {
+            contentType.value = item.contentType || 'json';
+          }
+        } else {
+          listMap[k] = [];
+        }
+      });
+      // eslint-disable-next-line @typescript-eslint/no-use-before-define
+      updateParamsDefine();
+    };
+
+    // 更新节点描述
     const updateParamsDefine = () => {
       paramsDefine.value = genTreeDefine(listMap[paramsMethod.value]);
     };
@@ -346,7 +390,7 @@ export default defineComponent({
     };
 
     // 保存
-    const handleSave = () => {
+    const handleSave = async () => {
       formError.value = '';
       const error = Object.values(listMap).some((list) => {
         const res = validParams(list);
@@ -368,7 +412,7 @@ export default defineComponent({
 
       const baseInfo = {
         serviceId: apiInfo.serviceId,
-        apiId: apiInfo.apiId,
+        apiId: apiInfo.uniqueId,
       };
       const saveData = [];
       Object.keys(listMap).forEach((key) => {
@@ -376,13 +420,23 @@ export default defineComponent({
         if (list.length) {
           saveData.push({
             ...baseInfo,
-            paramIn: key,
+            paramIn: _.startCase(key),
             contentType: key === 'body' ? contentType.value : '',
             list: paramsToSaveData(list),
           });
         }
       });
-      console.log(saveData);
+
+      try {
+        submitting.value = true;
+        await saveApiParams({
+          data: saveData,
+          type: props.isResponse ? 2 : 1,
+        });
+        ElMessage.success('保存成功');
+        fetchApiParams();
+      } catch (e) {}
+      submitting.value = false;
     };
 
     // 清除错误
@@ -400,7 +454,7 @@ export default defineComponent({
       handleToggleEdit(false);
       clearError();
       formError.value = '';
-      // TODO. 将listMap[paramsMethod.value]重置为初始化值
+      resetListMap();
     };
 
     // validate after input change
@@ -586,8 +640,9 @@ export default defineComponent({
       updateParamsDefine();
     };
 
+    // 合并单元格
     const objectSpanMethod = ({ row, columnIndex }) => {
-      if (!row.serverName) {
+      if (!row.serverName || !row.readonly) {
         if (columnIndex === 0) {
           return {
             rowspan: 1,
@@ -655,6 +710,7 @@ export default defineComponent({
       canDel,
       handleParamsMethodChange,
       objectSpanMethod,
+      submitting,
     };
   },
 });
@@ -675,6 +731,12 @@ export default defineComponent({
   }
   ::v-deep .is-error .el-input__inner {
     border-color: #f56c6c;
+  }
+  .import-info {
+    color: #999;
+    ::v-deep .sa-tooltip__content {
+      right: 0;
+    }
   }
 }
 .params-form-btns {

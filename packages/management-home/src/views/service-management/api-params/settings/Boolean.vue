@@ -14,7 +14,7 @@
     <template #footer>
       <span class="dialog-footer">
         <el-button type="primary" @click="handleSubmit" :loading="submitting" v-if="isEdit">确定</el-button>
-        <el-button @click="handleClose">取消</el-button>
+        <el-button @click="handleClose">{{ isEdit ? '取消' : '关闭' }}</el-button>
       </span>
     </template>
   </el-dialog>
