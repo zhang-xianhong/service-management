@@ -42,10 +42,10 @@
             />
           </template>
         </el-table-column>
-        <el-table-column prop="serverName" align="right">
+        <el-table-column prop="dtoName" align="right">
           <template #default="scope">
-            <span v-if="scope.row.serverName" class="import-info">
-              <tooltip :content="`来源：${scope.row.serverName}_${scope.row.modelName}`"></tooltip>
+            <span v-if="scope.row.dtoName" class="import-info">
+              <tooltip :content="`来源：${scope.row.dtoName}`"></tooltip>
             </span>
           </template>
         </el-table-column>
@@ -164,7 +164,10 @@
         预览
         <el-button type="text" @click="handlePreview" :disabled="list.length === 0">生成预览</el-button>
       </h3>
-      <pre v-highlight><code v-html="previewCode" class="json" style="background: #f5f5f5; padding: 10px;"></code></pre>
+      <pre
+        v-highlight
+        v-if="list.length > 0"
+      ><code v-html="previewCode" class="json" style="background: #f5f5f5; padding: 10px;"></code></pre>
     </div>
 
     <div class="params-form-btns" v-if="list.length > 0">
@@ -647,7 +650,6 @@ export default defineComponent({
 
     // DTO确定
     const handleDtoConfirm = (row) => {
-      debugger;
       const currentParamId = currentQuoteParamId.value;
       if (!currentParamId) {
         return;
@@ -664,7 +666,7 @@ export default defineComponent({
 
     // 合并单元格
     const objectSpanMethod = ({ row, columnIndex }) => {
-      if (!row.serverName || !row.readonly) {
+      if (!row.dtoName || !row.readonly) {
         if (columnIndex === 0) {
           return {
             rowspan: 1,

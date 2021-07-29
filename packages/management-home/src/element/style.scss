@@ -135,7 +135,8 @@ thead .el-button--text {
     width: 100%;
   }
   .el-input-number {
-    width: 200px;
+    width: 100%;
+    max-width: 300px;
   }
 }
 
