@@ -282,7 +282,7 @@ export const dtoToParams = (dtoInfo: any, importType: number) => {
         config: item.config || {},
         required: item.required || 1,
         importType,
-        dtoId: item.dtoId,
+        dtoId: dtoInfo.uniqueId,
         readonly: importType === 1,
         serverName: dtoInfo.serverName,
         dtoName: dtoInfo.name,
