@@ -120,7 +120,7 @@ import {
 } from '@/api/settings/config';
 import dateFormat from '@/utils/date-format';
 import { getShowBool } from '@/utils/permission-show-module';
-import { isRefrence } from '../utils/permisson';
+import { CONFIG_LEVEL, isRefrence } from '../utils/permisson';
 import { ElMessageBox } from 'element-plus';
 
 export default {
@@ -223,6 +223,7 @@ export default {
       const configData = {
         ...rowData,
         serviceId,
+        scope: CONFIG_LEVEL.SERVICE,
       };
       // 数据校验
       const RegName = /^[a-zA-Z][A-Za-z0-9-._]+$/;
