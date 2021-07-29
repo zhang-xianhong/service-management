@@ -84,7 +84,7 @@ export default defineComponent({
     } = useEditDtoDialog();
 
     const showDtoList = ref<boolean>(false);
-    const selectedId = ref<number>(); // hold ids of mutilple select
+    const selectedId = ref<any>(); // hold ids of mutilple select
 
     const editDtoModelRef = ref<InstanceType<typeof EditDtoModel>>();
 
@@ -115,7 +115,7 @@ export default defineComponent({
 
     const onConfirmSelect = () => {
       const selected = selectedId.value;
-      const row = dtoList.value?.find((item) => item.rootId === selected);
+      const row = dtoList.value?.find((item) => item.uniqueId === selected);
       if (!row) {
         ElMessage.error('请至少选择一项');
         return;

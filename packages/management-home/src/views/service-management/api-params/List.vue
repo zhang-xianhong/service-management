@@ -404,6 +404,8 @@ export default defineComponent({
             // eslint-disable-next-line no-param-reassign
             row.type = oldType;
           });
+      } else {
+        afterTypeChange();
       }
     };
 
@@ -645,6 +647,7 @@ export default defineComponent({
 
     // DTO确定
     const handleDtoConfirm = (row) => {
+      debugger;
       const currentParamId = currentQuoteParamId.value;
       if (!currentParamId) {
         return;
