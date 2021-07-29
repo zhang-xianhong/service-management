@@ -6,5 +6,9 @@ export const apiProxy = (module: string, action: string[], data: any): Promise<S
   const url = !getUrl(proxy.PROXY).includes('mock')
     ? `${getUrl(proxy.PROXY)}?module=${module}&action=${getUrl(action)}`
     : getUrl(action);
-  return request.post(url, data);
+  return request.post(url, data, {
+    headers: {
+      'x-sa-proxy': true,
+    },
+  });
 };

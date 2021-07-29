@@ -56,7 +56,7 @@
               <svg-icon icon-name="daily" icon-class="detail-icons__item detail-icons__item--disabled"></svg-icon>
             </el-tooltip> -->
             <!-- 服务配置 -->
-            <el-tooltip effect="light" content="服务配置" placement="bottom">
+            <el-tooltip effect="light" content="服务配置" placement="bottom" v-if="getShowBool('selectConfig')">
               <svg-icon
                 :icon-name="drawerName === 'ServerConfigInfo' ? 'setting-hover' : 'setting'"
                 icon-class="detail-icons__item"

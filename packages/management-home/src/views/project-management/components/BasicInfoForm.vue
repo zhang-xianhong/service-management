@@ -19,7 +19,7 @@
           ></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="负 责 人">
+      <el-form-item label="负 责 人" v-if="false">
         <div v-if="!editMode" class="form-content">{{ ownersName }}</div>
         <owner-select
           v-else
@@ -29,10 +29,26 @@
           @change="selectOwners"
         ></owner-select>
       </el-form-item>
+      <el-form-item label="项目状态" prop="status">
+        <div v-if="!editMode" class="form-content">{{ getLabel(detailInfo.status)(statusOptions) }}</div>
+        <el-radio-group class="form-content" v-if="editMode" v-model="formData.status">
+          <el-radio v-for="status in statusOptions" :key="status.value" :label="status.value">{{
+            status.label
+          }}</el-radio>
+        </el-radio-group>
+      </el-form-item>
       <el-form-item label="项目级别" prop="level">
         <div v-if="!editMode" class="form-content">{{ getLabel(detailInfo.level)(projectLevels) }}</div>
         <el-radio-group class="form-content" v-if="editMode" v-model="formData.level">
           <el-radio v-for="level in projectLevels" :key="level.value" :label="level.value">{{ level.label }}</el-radio>
+        </el-radio-group>
+      </el-form-item>
+      <el-form-item label="许可类型" prop="license">
+        <div v-if="!editMode" class="form-content">{{ getLabel(detailInfo.license)(licenseTypes) }}</div>
+        <el-radio-group class="form-content" v-if="editMode" v-model="formData.license">
+          <el-radio v-for="license in licenseTypes" :key="license.value" :label="license.value">{{
+            license.label
+          }}</el-radio>
         </el-radio-group>
       </el-form-item>
       <el-form-item label="项目简介" prop="remark">
@@ -45,22 +61,6 @@
           v-model="formData.remark"
           placeholder="请输入中文项目简介，最多支持512个字"
         ></el-input>
-      </el-form-item>
-      <el-form-item label="许可类型" prop="license">
-        <div v-if="!editMode" class="form-content">{{ getLabel(detailInfo.license)(licenseTypes) }}</div>
-        <el-radio-group class="form-content" v-if="editMode" v-model="formData.license">
-          <el-radio v-for="license in licenseTypes" :key="license.value" :label="license.value">{{
-            license.label
-          }}</el-radio>
-        </el-radio-group>
-      </el-form-item>
-      <el-form-item label="项目状态" prop="status">
-        <div v-if="!editMode" class="form-content">{{ getLabel(detailInfo.status)(statusOptions) }}</div>
-        <el-radio-group class="form-content" v-if="editMode" v-model="formData.status">
-          <el-radio v-for="status in statusOptions" :key="status.value" :label="status.value">{{
-            status.label
-          }}</el-radio>
-        </el-radio-group>
       </el-form-item>
     </el-form>
     <div style="text-align: center" v-if="editMode">
@@ -224,9 +224,9 @@ export default {
     const rules = {
       name: [{ required: true, message: '请输入项目英文名', trigger: 'blur' }],
       description: [{ required: true, message: '请输入项目中文名', trigger: 'blur' }],
-      templateId: [{ required: true, message: '请选择代码模板', trigger: 'blur' }],
-      level: [{ required: true, message: '请选择项目级别', trigger: 'blur' }],
-      status: [{ required: true, message: '请选择项目状态', trigger: 'blur' }],
+      // templateId: [{ required: true, message: '请选择代码模板', trigger: 'blur' }],
+      // level: [{ required: true, message: '请选择项目级别', trigger: 'blur' }],
+      // status: [{ required: true, message: '请选择项目状态', trigger: 'blur' }],
       remark: [{ max: 512, message: '最多支持512个字符', trigger: 'blur' }],
     };
     return {

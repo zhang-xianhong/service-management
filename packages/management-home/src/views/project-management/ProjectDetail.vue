@@ -23,7 +23,7 @@
       </div>
     </el-row>
     <el-row class="user-info">
-      <div class="user-tree">
+      <div class="user-tree" v-loading="loadings">
         <div class="user-tree-top">
           <el-input
             suffix-icon="el-icon-search"
@@ -32,8 +32,10 @@
             @input="filterRoleAndUser"
           ></el-input>
           <div class="user-tree-btn">
-            <el-button type="primary" @click="DialogVisible = true">新建</el-button>
-            <el-button @click="closeUserTree" :disabled="isDeleteVisible">删除</el-button>
+            <el-button type="primary" @click="DialogVisible = true" v-if="getShowBool('updateRole')">新建</el-button>
+            <el-button @click="closeUserTree" :disabled="isDeleteVisible" v-if="getShowBool('updateRole')"
+              >删除</el-button
+            >
           </div>
         </div>
         <el-tree
@@ -47,8 +49,16 @@
         >
           <template #default="{ node, data }">
             <div class="customNode">
-              <svg-icon v-if="node.level < 2" icon-name="folder" icon-class="tree-node-folder"></svg-icon>
-              <svg-icon v-if="node.level === 2" icon-name="member" icon-class="tree-node-member"></svg-icon>
+              <svg-icon
+                v-if="node.level < 2 && getShowBool('updateMember')"
+                icon-name="folder"
+                icon-class="tree-node-folder"
+              ></svg-icon>
+              <svg-icon
+                v-if="node.level === 2 && getShowBool('updateRole')"
+                icon-name="member"
+                icon-class="tree-node-member"
+              ></svg-icon>
               <span>
                 {{ node.label }}
                 <el-popover
@@ -64,30 +74,28 @@
                       :rules="[
                         { required: true, message: '角色不能为空', trigger: 'blur' },
                         { min: 1, max: 20, message: '超过字数限制，最多不能超过20个字符', trigger: 'blur' },
+                        {
+                          pattern: /^[\u4e00-\u9fa5|a-zA-Z|()（）]+$/g,
+                          message: '仅支持中英文字母、中文、符号',
+                          trigger: 'blur',
+                        },
                         { validator: validatorTagsPass, trigger: 'blur' },
                       ]"
                     >
-                      <el-input
-                        v-model="userTreeInput.roles"
-                        autocomplete="off"
-                        placeholder="新建的一个自定义角色"
-                        clearable
-                      ></el-input>
+                      <el-input v-model="userTreeInput.roles" autocomplete="off" clearable></el-input>
                     </el-form-item>
                     <div style="float: right">
-                      <el-button type="text" @click="editBoxsave(String(data.id))" :loading="submitting"
-                        >保存</el-button
-                      >
+                      <el-button type="text" @click="editBoxsave(data)" :loading="submitting">保存</el-button>
                       <el-button type="text" @click="cancel(String(data.id))">取消</el-button>
                     </div>
                   </el-form>
                   <template #reference>
-                    <el-button
+                    <i
                       type="text"
                       class="el-icon-edit"
                       @click="handleEditRole(data)"
                       v-show="node.level === 1 && !data.isSystem"
-                    ></el-button>
+                    ></i>
                   </template>
                 </el-popover>
               </span>
@@ -110,6 +118,11 @@
             :rules="[
               { required: true, message: '角色不能为空', trigger: 'blur' },
               { min: 1, max: 20, message: '超过字数限制，最多不能超过20个字符', trigger: 'blur' },
+              {
+                pattern: /^[\u4e00-\u9fa5|a-zA-Z|()（）]+$/g,
+                message: '仅支持中英文字母、中文、符号',
+                trigger: 'blur',
+              },
               { validator: validatorTagsPass, trigger: 'blur' },
             ]"
           >
@@ -132,14 +145,18 @@
               <el-table-column v-for="column in columns" :key="column.prop" v-bind="column"></el-table-column>
               <el-table-column prop="operator" width="55" v-if="getShowBool('update') && include">
                 <template #default="{ row }">
-                  <i class="el-icon-error remove-user-icon" @click="removeUser(row)"></i>
+                  <i
+                    class="el-icon-error remove-user-icon"
+                    @click="removeUser(row)"
+                    v-if="getShowBool('updateMember')"
+                  ></i>
                 </template>
               </el-table-column>
             </el-table>
           </el-tab-pane>
           <el-tab-pane label="角色权限" name="roleList">
             <div class="roleAuthStyle">
-              <el-row>
+              <el-row v-if="getShowBool('updateRole')">
                 <el-button type="primary" @click="handleEdit" v-if="isEdit" :disabled="editDisable">编辑</el-button>
                 <el-button type="primary" @click="confirm" v-show="!isEdit">确定</el-button>
                 <el-button @click="handleCancel" v-show="!isEdit">取消</el-button>
@@ -155,15 +172,23 @@
                       :indeterminate="isIndeterminate[String(item.id)]"
                       :disabled="isEdit"
                     >
-                      全选
+                      全部
                     </el-checkbox>
                     <el-checkbox-group
                       v-model="checkedItem[String(item.id)]"
                       @change="handleCheckedItemsChange(item)"
                       :disabled="isEdit"
                     >
-                      <el-checkbox v-for="subItem in item.modules" :label="subItem.id" :key="subItem.name">
+                      <el-checkbox v-for="subItem in item.children" :label="subItem.id" :key="subItem.name">
                         {{ subItem.name }}
+                        <el-tooltip
+                          v-if="subItem.id === 22"
+                          effect="light"
+                          :content="subItem.description"
+                          placement="top-start"
+                        >
+                          <i class="el-icon-question"></i>
+                        </el-tooltip>
                       </el-checkbox>
                     </el-checkbox-group>
                   </el-row>
@@ -209,6 +234,7 @@ import { ElMessage, ElMessageBox } from 'element-plus';
 import { getTenantDepartment } from '@/api/tenant';
 import { userInfo, userProjectList } from '@/layout/messageCenter/user-info';
 import { getShowBool } from '@/utils/permission-show-module';
+import { getTreeArr } from './utils/project-data-utils';
 
 const userStatus = {
   '-1': '冻结',
@@ -250,6 +276,7 @@ export default {
     const currentNodeData: any = ref();
     const isDeleteVisible: Ref<boolean> = ref(true);
     const currentNode: any = ref();
+    const loadings = ref(true);
 
     // 用户树
     const treeData: Ref<any> = ref([
@@ -311,7 +338,8 @@ export default {
           status: userStatus[user.status as 0 | -1],
           gender: genderLabel[user.gender as 0 | 1],
         }));
-        const noPaRoles = data.roles.filter((x: any) => x.code !== 'PA' && x.code !== 'VIS');
+        // roleId： 6是项目负责人；7是访客 不显示
+        const noPaRoles = data.roles.filter((x: any) => x.roleId !== 6 && x.roleId !== 7);
         treeData.value = _.flow(
           _.reject({ isOwnerRole: true }),
           _.map((role: any) => ({
@@ -336,26 +364,33 @@ export default {
         });
         editPopBoxVisible.value = res;
         userList.value = [];
+        loadings.value = false;
       }
     };
     initUserList();
 
     const reloadUserList = async (s: any) => {
       await initUserList();
+      console.log('s', s);
       if (s?.id) {
         userTreeRef.value.setCurrentKey(s.id);
         const treeUser: any = _.find({ id: s.id })(treeData.value[0].children);
         userList.value = _.intersectionWith((node: any, user: any) => node.id === user.id)(allUsers.value)(
-          treeUser.children,
+          treeUser?.children || [],
         );
       } else {
         userList.value = allUsers.value;
       }
+      console.log('userList.value', userList.value);
     };
 
     const removeUser = (row: any) => {
+      console.log('row', row);
+      console.log('currentNodeData', currentNodeData.value);
       ElMessageBox.confirm(
-        `是否将 ${currentNodeData.value.label} 从 ${currentNode.value.parent.data.label} 中移除？`,
+        `是否将 ${row ? row.displayName : currentNodeData.value.label} 从 ${
+          row ? currentNode.value.label : currentNode.value.parent.data.label
+        } 中移除？`,
         '提示',
         {
           confirmButtonText: '确定',
@@ -364,9 +399,9 @@ export default {
         },
       ).then(async () => {
         const { code } = await deleteMember({
-          ids: row ? [] : [currentNode.value?.data?.id],
+          ids: row ? [row.id] : [currentNode.value?.data?.id],
           projectId: props.id,
-          roleId: row ? '' : currentNode.value.parent?.data?.id,
+          roleId: row ? currentNode.value?.data?.id : currentNode.value.parent?.data?.id,
         });
         if (code === 0) reloadUserList({ id: currentNodeData.value.label });
       });
@@ -382,7 +417,7 @@ export default {
         projectInfo.templateName = data.template.name;
         projectDetail.value = projectInfo;
         // treeData.value[0].label = data.name;
-        const userArr = projectInfo.owners.map((x: any) => x.userId);
+        const userArr = projectInfo?.owners?.map((x: any) => x.userId) || [];
         include.value = userInfo.value.admin || userArr.includes(userInfo.value.userId);
       }
     };
@@ -526,8 +561,9 @@ export default {
     const getRoleAuthListData = async () => {
       const { data, code } = await getRoleAuthList();
       if (code === 0) {
-        authRoleList.value = data;
-        data.forEach((item: any) => {
+        const resData: any = getTreeArr({ key: 'id', pKey: 'moduleParentId', data });
+        authRoleList.value = resData;
+        resData.forEach((item: any) => {
           checkedItem.value[String(item.id)] = [];
           isIndeterminate.value[String(item.id)] = true;
           checkAll.value[String(item.id)] = false;
@@ -565,21 +601,21 @@ export default {
 
     // 全选
     const handleCheckAllChange = (data: any) => {
-      const { id, modules } = data;
+      const { id, children } = data;
       const selId = String(id);
       // 查找id
-      const selData = modules.map((item: any) => item.id);
+      const selData = children.map((item: any) => item.id);
       checkedItem.value[selId] = checkAll.value[selId] ? selData : [];
       isIndeterminate.value[selId] = false;
     };
 
     // 单选
     const handleCheckedItemsChange = (data: any) => {
-      const { id, modules } = data;
+      const { id, children } = data;
       const selId = String(id);
       const checkedCount = checkedItem.value[selId].length;
-      checkAll.value[selId] = checkedCount === modules.length;
-      isIndeterminate.value[selId] = checkedCount > 0 && checkedCount < modules.length;
+      checkAll.value[selId] = checkedCount === children.length;
+      isIndeterminate.value[selId] = checkedCount > 0 && checkedCount < children.length;
     };
 
     // 确定
@@ -678,14 +714,15 @@ export default {
     };
 
     // 修改角色名称
-    const editBoxsave = (id: any) => {
+    const editBoxsave = (data: any) => {
+      const ids = String(data.id);
       roleRef.value.validate(async (isValid: boolean) => {
         if (isValid) {
           submitting.value = true;
           try {
             const { code } = await ModRoleName({
               name: userTreeInput.value.roles,
-              roleId: currentNodeData.value.id,
+              roleId: data.id,
               projectId: props.id,
             });
             if (code === 0) {
@@ -700,7 +737,7 @@ export default {
               });
             }
             userTreeInput.value.roles = '';
-            editPopBoxVisible.value[id] = false;
+            editPopBoxVisible.value[ids] = false;
             submitting.value = false;
             initUserList();
           } catch (e) {
@@ -748,11 +785,10 @@ export default {
         editPopBoxVisible.value[key] = false;
       });
       editPopBoxVisible.value[String(data.id)] = true;
-    };
-    document.onclick = (data: any) => {
-      console.log('点击', data);
+      userTreeInput.value.roles = data.label;
     };
     return {
+      loadings,
       closeUserTree,
       userTreeRef,
       editMode,
@@ -901,18 +937,28 @@ export default {
       }
     }
   }
-  .roleAuthStyle {
-    padding: 10px;
-    color: #444;
-    .auth-model {
-      display: inline-block;
-      min-width: 60px;
-      margin-right: 20px;
-    }
+}
+</style>
+<style lang="scss" scoped>
+.roleAuthStyle {
+  padding: 10px;
+  color: #444;
+  .auth-model {
+    display: inline-block;
+    min-width: 60px;
+    // margin-right: 20px;
   }
-  .right-box {
-    height: calc(100% - 320px);
-    display: flex;
+  ::v-deep .el-checkbox-group {
+    font-size: 0;
+    width: 750px;
+    overflow: auto;
+    .el-checkbox__label {
+      display: inline-block;
+      min-width: 110px;
+    }
+    .el-checkbox {
+      margin: 0;
+    }
   }
 }
 </style>
