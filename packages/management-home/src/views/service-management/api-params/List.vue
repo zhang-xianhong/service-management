@@ -291,15 +291,17 @@ export default defineComponent({
     // 获取接口参数
     const fetchApiParams = async () => {
       loading.value = true;
-      const { data } = await getApiParams({
-        serviceId: apiInfo.serviceId,
-        apiUniqueId: apiInfo.uniqueId,
-        type: props.isResponse ? 2 : 1,
-      });
-      const res = responseToParams(data.data);
-      sourceData.value = _.cloneDeep(res);
-      // eslint-disable-next-line @typescript-eslint/no-use-before-define
-      resetListMap();
+      try {
+        const { data } = await getApiParams({
+          serviceId: apiInfo.serviceId,
+          apiUniqueId: apiInfo.uniqueId,
+          type: props.isResponse ? 2 : 1,
+        });
+        const res = responseToParams(data.data);
+        sourceData.value = _.cloneDeep(res);
+        // eslint-disable-next-line @typescript-eslint/no-use-before-define
+        resetListMap();
+      } catch (e) {}
       loading.value = false;
     };
 
