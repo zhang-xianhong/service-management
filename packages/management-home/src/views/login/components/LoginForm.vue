@@ -18,9 +18,9 @@
       <el-form-item prop="captchaCode">
         <el-input class="form-item" v-model="loginInfo.captchaCode" placeholder="验证码" @change="onInputCaptchaCode">
           <template #suffix>
-            <el-button id="success-btn" v-if="isPassed" type="success" circle>
+            <span class="passed-icon" v-if="isPassed">
               <i class="el-icon-check"></i>
-            </el-button>
+            </span>
             <img @click="getCaptchaUrl" :src="captchaUrl" />
           </template>
         </el-input>
@@ -193,9 +193,9 @@ export default defineComponent({
     }
   }
 }
-#success-btn {
-  height: 16px;
-  width: 16px;
+.passed-icon {
+  height: 20px;
+  width: 20px;
   border-radius: 50% !important;
   transform: translateY(-90%);
   min-height: 0px;
@@ -203,5 +203,7 @@ export default defineComponent({
   justify-content: center;
   align-items: center;
   margin-right: 8px;
+  background-color: #67c23a;
+  color: white;
 }
 </style>
