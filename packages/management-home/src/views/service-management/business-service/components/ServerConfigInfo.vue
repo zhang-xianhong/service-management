@@ -155,8 +155,6 @@ export default {
       { label: '键', prop: 'name' },
       { label: '值', prop: 'value' },
       { label: '默认值', prop: 'defaultValue' },
-      { label: '类型', prop: 'type' },
-      { label: '版本', prop: 'version' },
     ];
 
     // 获取服务配置数据
