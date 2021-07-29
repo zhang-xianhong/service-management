@@ -319,4 +319,9 @@ export default defineComponent({
     }
   }
 }
+.dialog-footer {
+  width: 100%;
+  display: block;
+  text-align: center;
+}
 </style>
