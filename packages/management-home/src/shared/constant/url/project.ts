@@ -19,4 +19,5 @@ export default {
   CHECK_ROLE: ['role/validateName', '/mock/project/role-validate.json'],
   MOD_ROLE: ['role/modifyRoleName', '/mock/project/role.json'],
   PROJECT_ROLE_AUTH: ['role/getRole/roleId', '/mock/project/role-auth.json'],
+  UPDATE_ROLE_MEMBERS: ['/user/updateUserRoles', '/mock/project/role-auth.json'],
 };

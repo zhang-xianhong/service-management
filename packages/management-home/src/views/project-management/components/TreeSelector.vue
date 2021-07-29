@@ -105,7 +105,7 @@
 /* eslint-disable no-param-reassign */
 import _ from 'lodash/fp';
 import { computed, inject, ref, Ref, watchEffect, nextTick } from 'vue';
-import { updateMembers } from '@/api/project/project';
+import { updateRoleMembers } from '@/api/project/project';
 export default {
   name: 'TreeSelector',
   props: {
@@ -255,10 +255,10 @@ export default {
       }
     };
     const submit = async () => {
-      const { code } = await updateMembers({
+      const { code } = await updateRoleMembers({
         projectId,
         roleId: props.role.id,
-        members: _.map('id')(selectedUser.value.concat(props.checked)),
+        userIds: _.map('id')(selectedUser.value.concat(props.checked)),
       });
       if (code === 0) {
         dialogVisible.value = false;

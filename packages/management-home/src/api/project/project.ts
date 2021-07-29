@@ -75,3 +75,9 @@ export const addRole = (payload: any) =>
     method: 'post',
     data: payload,
   });
+
+export const updateRoleMembers = (payload: any) =>
+  apiProxy(SERVER_TYPE.AUTH, project.UPDATE_ROLE_MEMBERS, {
+    method: 'post',
+    data: payload,
+  });

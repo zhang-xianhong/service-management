@@ -221,7 +221,7 @@ import BasicInfoForm from './components/BasicInfoForm.vue';
 import {
   getRoleList,
   getProjectDetail,
-  deleteMember,
+  updateRoleMembers,
   getRoleAuthList,
   updateRole,
   getAuthByRoleId,
@@ -398,10 +398,14 @@ export default {
           type: 'warning',
         },
       ).then(async () => {
-        const { code } = await deleteMember({
-          ids: row ? [row.id] : [currentNode.value?.data?.id],
+        const users = row ? currentNodeData.value?.children : currentNode.value.parent.data?.children;
+        const removeUserId = row ? row.id : currentNodeData.value.id;
+        const updateUsers = users.filter((user: any) => user.id !== removeUserId).map((user: any) => user.id);
+        const roleId = row ? currentNode.value?.data?.id : currentNode.value.parent?.data?.id;
+        const { code } = await updateRoleMembers({
+          userIds: updateUsers,
           projectId: props.id,
-          roleId: row ? currentNode.value?.data?.id : currentNode.value.parent?.data?.id,
+          roleId: roleId,
         });
         if (code === 0) reloadUserList({ id: currentNodeData.value.label });
       });
