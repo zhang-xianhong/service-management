@@ -196,6 +196,7 @@
                 :key="index"
                 :label="item.name"
                 :value="item.id"
+                :disabled="item.id === 2"
               ></el-option>
             </el-select>
           </el-form-item>
@@ -232,8 +233,9 @@
               <el-option
                 v-for="(item, index) in publishForm.versionOptions"
                 :key="index"
-                :label="item.name"
+                :label="item.label"
                 :value="item.name"
+                :disabled="item.versionStatus !== 10"
               ></el-option>
             </el-select>
           </el-form-item>
@@ -267,9 +269,9 @@ import {
   addPublish,
   updatePublish,
   deletePublish,
-  getServiceList,
   findUserByName,
 } from '@/api/demands/publish';
+import { getServiceList } from '@/api/deploy/deploy-apply';
 import PackagedPagination from '@/components/pagination/Index.vue';
 import { debounce } from 'lodash';
 import { ElMessageBox, ElMessage } from 'element-plus';
@@ -433,29 +435,38 @@ export default {
 
     // 获取服务列表
     async function getServices() {
-      const { data } = await getServiceList({ all: true });
-      publishForm.servides = data.rows || [];
-      console.log('publishForm.servides', publishForm.servides);
-      publishForm.serviceList = publishForm.servides.map((item: any) => ({
-        id: item.id,
-        name: `${item.description}_${item.name}`,
+      const { data } = await getServiceList();
+      publishForm.servides = data;
+      publishForm.serviceList = data.map((item: any) => ({
+        id: item.serviceName,
+        name: item.serviceName,
       }));
     }
 
     // 改变service方法
-    function serviceChange(serviceId: any) {
-      console.log('serviceId', serviceId);
-      const data: any = publishForm.serviceList.find((i: any) => i.id === serviceId);
-      // publishForm.formData.moduleId = serviceId;
+    function serviceChange(serviceName: any) {
+      const data: any = publishForm.serviceList.find((i: any) => i.id === serviceName);
       publishForm.formData.name = data?.name;
-      const tempServides: any = ref(publishForm.servides.find((item: any) => item.id === serviceId));
-      // console.log("tempServides", tempServides);
-      publishForm.versionOptions = [
-        {
-          id: tempServides.value.id,
-          name: tempServides.value.serviceVersion,
-        },
-      ];
+      publishForm.formData.publishVersion = '';
+      const temp: any = ref(
+        publishForm.servides.find((item: any) => item.serviceName === publishForm.formData.name),
+      );
+      publishForm.versionOptions = temp.value.versions.map((item: any) => {
+        const label = ref('');
+        const statusStr = ['（发版成功）', '（发版中）', '（发版失败）'];
+        if (item.versionStatus === 10) {
+          label.value = `${item.version}${statusStr[0]}`;
+        } else if (item.versionStatus === 1) {
+          label.value = `${item.version}${statusStr[1]}`;
+        } else if (item.versionStatus === 2) {
+          label.value = `${item.version}${statusStr[2]}`;
+        }
+        return {
+          name: item.version,
+          label: label.value,
+          versionStatus: item.versionStatus,
+        };
+      });
     }
 
     function getNameByCode(code: number, type: string): string {
@@ -512,7 +523,7 @@ export default {
               btnLoading.value = false;
               closepublishForm();
             } catch (e) {
-              ElMessage.error(e);
+              console.log(e);
               btnLoading.value = false;
             }
           } else {
@@ -538,7 +549,7 @@ export default {
               closepublishForm();
             } catch (e) {
               btnLoading.value = false;
-              ElMessage.error(e);
+              console.log(e);
             }
           }
         }
