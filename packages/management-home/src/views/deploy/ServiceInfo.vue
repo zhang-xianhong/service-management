@@ -8,7 +8,7 @@
     <el-form :model="releaseData.serviceInfo" :rules="releaseRules" label-position="left" ref="releaseFormRef">
       <el-form-item label="发布类型" prop="type" :label-width="labelWidth">
         <el-select placeholder="请选择类型" v-model="releaseData.serviceInfo.type" clearable :disabled="isEditable">
-          <el-option v-for="(item, index) in releaseData.types" :key="index" :label="item.name" :value="item.id">
+          <el-option v-for="(item, index) in releaseData.types" :key="index" :label="item.name" :value="item.id" :disabled="item.id === 2">
           </el-option>
         </el-select>
       </el-form-item>
