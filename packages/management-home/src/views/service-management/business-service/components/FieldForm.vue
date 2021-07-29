@@ -53,13 +53,16 @@
         <!--        </el-table-column>-->
         <el-table-column prop="operations" label="操作" width="180" v-if="getShowBool('add') && !isRefrenceService">
           <template #default="scope">
-            <a @click="add(scope.$index)" class="operator" v-if="scope.$index === 0">添加</a>
-            <a
+            <el-button type="text" @click="add(scope.$index)" class="operator" v-if="scope.$index === 0"
+              >添加</el-button
+            >
+            <el-button
               @click="remove(scope.$index)"
               class="operator"
               :disabled="isFieldDisabled(scope)"
               v-if="scope.$index !== 0"
-              >删除</a
+              type="text"
+              >删除</el-button
             >
           </template>
         </el-table-column>
@@ -174,7 +177,11 @@ export default defineComponent({
         context.emit('back');
       }
     };
-    const isFieldDisabled = (scope: any) => scope.row.isSystem;
+    const isFieldDisabled = (scope: any) => {
+      const aa = scope.row.isSystem || scope.row.typeId === 1;
+      console.log(aa, 'this is aa');
+      return aa;
+    };
 
     onMounted(() => {
       initTypeOption();
