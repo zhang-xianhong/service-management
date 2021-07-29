@@ -102,6 +102,9 @@ export default defineComponent({
         name: '',
         description: '',
         type: '',
+        isUnique: false,
+        notNull: false,
+        isIndex: false,
       });
     };
     const remove = (index: number) => {
