@@ -8,7 +8,7 @@ export const apiProxy = (module: string, action: string[], data: any): Promise<S
     : getUrl(action);
   return request.post(url, data, {
     headers: {
-      isProxy: true,
+      'x-sa-proxy': true,
     },
   });
 };
