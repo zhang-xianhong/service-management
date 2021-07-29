@@ -23,9 +23,10 @@ export default function() {
   };
   // 启动
   const start = async () => {
-    const code = await checkBeforeStart();
+    const { code, data } = (await checkBeforeStart()) as any;
     console.log('启动');
-    const message = code === 0 ? '请确认此服务已初始化, 是否继续?' : '您有模型信息配置未同步,是否继续?';
+    console.log(code, data, 1234567, code === 0 && data === 'ok');
+    const message = code === 0 && data === 'ok' ? '请确认此服务已初始化, 是否继续?' : data;
     ElMessageBox.confirm(message, '提示', {
       confirmButtonText: '确定',
       cancelButtonText: '取消',

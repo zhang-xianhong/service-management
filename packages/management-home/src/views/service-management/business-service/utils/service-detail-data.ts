@@ -11,7 +11,6 @@ import { ref } from 'vue';
 import { logSetTimeOut } from '@/views/service-management/business-service/utils/service-log-data-utils';
 import { release } from '@/views/service-management/business-service/utils/service-release-data-utils';
 import Message from 'element-plus/es/el-message';
-import { ElMessage } from 'element-plus';
 export const thenRefresh = ref(false);
 
 export const serverInfo = ref({} as any);
@@ -42,14 +41,9 @@ export const getSqlData = () => {
 };
 
 export const getTraceAndLog = () => {
-  getServiceTraceId(currentServiceIdForData.value)
-    .then((res) => {
-      logSetTimeOut(res.data.traceNode || 'sa-ci-cd', res.data.traceId);
-    })
-    .catch((e) => {
-      console.log(e);
-      ElMessage.warning('暂无日志信息');
-    });
+  getServiceTraceId(currentServiceIdForData.value).then((res) => {
+    logSetTimeOut(res.data.traceNode || 'sa-ci-cd', res.data.traceId);
+  });
 };
 
 export const clearSql = () => {
@@ -96,8 +90,8 @@ export const releaseServiceData = () => {
 };
 export const checkBeforeStart = async () => {
   try {
-    const { code } = await startCheck(currentServiceIdForData.value);
-    return code;
+    const { code, data } = await startCheck(currentServiceIdForData.value);
+    return { code, data };
   } catch (error) {
     console.log(error);
   }
