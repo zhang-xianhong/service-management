@@ -194,7 +194,7 @@ const routes: Array<RouteRecordRaw> = [
         meta: {
           title: '部署申请',
           isRootLevel: false,
-          id: 6,
+          id: 14,
         },
       },
       {
@@ -204,7 +204,7 @@ const routes: Array<RouteRecordRaw> = [
         meta: {
           title: '部署审核',
           isRootLevel: false,
-          id: 6,
+          id: 15,
         },
       },
     ],
@@ -228,7 +228,7 @@ const routes: Array<RouteRecordRaw> = [
         meta: {
           title: '发布申请',
           isRootLevel: false,
-          id: 29,
+          id: 30,
         },
       },
       {
@@ -238,7 +238,7 @@ const routes: Array<RouteRecordRaw> = [
         meta: {
           title: '发布审核',
           isRootLevel: false,
-          id: 29,
+          id: 31,
         },
       },
       {
