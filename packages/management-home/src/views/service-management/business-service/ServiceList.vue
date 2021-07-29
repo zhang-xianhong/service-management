@@ -182,6 +182,7 @@
           </el-form-item>
           <el-form-item label="服务依赖" :label-width="labelWidth" prop="dependencies">
             <el-cascader
+              filterable
               v-model="serviceDetail.dependencies"
               :options="dependenciesList"
               :props="serviceCascaderProps"

@@ -65,6 +65,7 @@
         </div>
         <el-cascader
           v-else
+          filterable
           v-model="formData.dependencies"
           :options="dependenciesList"
           :props="serviceCascaderProps"
