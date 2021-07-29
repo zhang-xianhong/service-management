@@ -35,7 +35,7 @@
         style="width: 100%"
         @selection-change="handleSelectionChange"
       >
-        <el-table-column type="selection" width="55"> </el-table-column>
+        <el-table-column type="selection" width="55" :selectable="handleSelAble"> </el-table-column>
         <el-table-column type="index" label="序号" width="50"> </el-table-column>
         <el-table-column label="配置来源" width="100">
           <template #default="scope">{{ ConfigOrigin[scope.row.scope] }}</template>
@@ -122,6 +122,8 @@ export default defineComponent({
         id: 'preScript',
       },
     ];
+    // 发版默认配置是否加载完成
+    let isConfigOnLoad = false;
     const releaseBaseForm: Ref<RefType> = ref({});
     const finishing: Ref<boolean> = ref(false);
     // 获取组件实例
@@ -189,6 +191,16 @@ export default defineComponent({
       }));
     };
 
+    function defaultSel() {
+      // 默认选中的配置
+      const defaultSelConfig: any = configTableData.value.filter(
+        (item: any) => item.scope === ConfigOrigin['服务配置'] || item.select,
+      );
+      // 自动选中系统配置
+      defaultSelConfig.forEach((item: any) => {
+        tableRef.value.toggleRowSelection(item);
+      });
+    }
     const releaseDialogVisible: Ref<boolean> = ref(false);
     // 当前step
     const currentActive = ref(0);
@@ -207,13 +219,10 @@ export default defineComponent({
         releaseBaseForm.value.validate((valid: boolean) => {
           if (valid) {
             currentActive.value = currentActive.value + 1;
-            const defaultSelConfig: any = configTableData.value.filter(
-              (item: any) => item.scope === ConfigOrigin['服务配置'],
-            );
-            // // 自动选中系统配置
-            defaultSelConfig.forEach((item: any) => {
-              tableRef.value.toggleRowSelection(item);
-            });
+            if (!isConfigOnLoad) {
+              isConfigOnLoad = true;
+              defaultSel();
+            }
           }
         });
         // await nextTick();
@@ -221,7 +230,6 @@ export default defineComponent({
         currentActive.value = currentActive.value + 1;
       }
     };
-
     // 打开dialog
     const openDialog = (id: number): void => {
       releaseDialogVisible.value = true;
@@ -239,6 +247,7 @@ export default defineComponent({
       baseFormData.ddlScript = '';
       baseFormData.dmlScript = '';
       configTableData.value = [];
+      isConfigOnLoad = false;
     };
 
     // 关闭dialog
@@ -271,6 +280,8 @@ export default defineComponent({
         console.log('error', error);
       }
     };
+    // 服务默认选择类型
+    const handleSelAble = (row: any) => row.scope !== 0;
     return {
       releaseDialogVisible,
       baseFormData,
@@ -289,6 +300,7 @@ export default defineComponent({
       finished,
       releaseBaseForm,
       finishing,
+      handleSelAble,
     };
   },
 });

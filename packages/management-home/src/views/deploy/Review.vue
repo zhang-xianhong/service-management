@@ -25,8 +25,7 @@
             </el-form>
           </template>
         </el-table-column>
-        <el-table-column label="序号" width="60" prop="index">
-        </el-table-column>
+        <el-table-column label="序号" prop="index" width="60"></el-table-column>
         <el-table-column label="发布类型" width="80" prop="moduleType"></el-table-column>
         <el-table-column label="发布名称" prop="name">
           <template #default="props">
