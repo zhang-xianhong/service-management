@@ -100,7 +100,7 @@
                 </el-popover>
               </span>
               <i
-                v-if="node.level === 1"
+                v-if="node.level === 1 && getShowBool('updateMember')"
                 class="el-icon-circle-plus"
                 style="float: right"
                 @click.stop="addMember(node, data)"
