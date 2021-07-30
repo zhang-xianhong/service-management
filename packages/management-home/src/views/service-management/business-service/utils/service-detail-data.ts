@@ -90,7 +90,7 @@ export const releaseServiceData = () => {
 };
 export const checkBeforeStart = async () => {
   try {
-    const { code } = await startCheck({ serviceId: currentServiceIdForData.value });
+    const { code } = await startCheck(currentServiceIdForData.value);
     return code;
   } catch (error) {
     console.log(error);

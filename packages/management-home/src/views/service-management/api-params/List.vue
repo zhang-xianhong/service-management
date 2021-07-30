@@ -45,7 +45,7 @@
         <el-table-column prop="dtoName" align="right">
           <template #default="scope">
             <span v-if="scope.row.dtoName" class="import-info">
-              <tooltip :content="`来源：${scope.row.dtoName}`"></tooltip>
+              <tooltip :content="`来源：${scope.row.serviceName}_${scope.row.dtoName}`"></tooltip>
             </span>
           </template>
         </el-table-column>
@@ -170,7 +170,7 @@
       ><code v-html="previewCode" class="json" style="background: #f5f5f5; padding: 10px;"></code></pre>
     </div>
 
-    <div class="params-form-btns" v-if="list.length > 0">
+    <div class="params-form-btns">
       <el-button type="primary" @click="handleToggleEdit(true)" v-if="!isEdit">编辑</el-button>
       <template v-else>
         <el-button type="primary" @click="handleSave" :loading="submitting">确定</el-button>
@@ -291,15 +291,17 @@ export default defineComponent({
     // 获取接口参数
     const fetchApiParams = async () => {
       loading.value = true;
-      const { data } = await getApiParams({
-        serviceId: apiInfo.serviceId,
-        apiUniqueId: apiInfo.uniqueId,
-        type: props.isResponse ? 2 : 1,
-      });
-      const res = responseToParams(data.data);
-      sourceData.value = _.cloneDeep(res);
-      // eslint-disable-next-line @typescript-eslint/no-use-before-define
-      resetListMap();
+      try {
+        const { data } = await getApiParams({
+          serviceId: apiInfo.serviceId,
+          apiUniqueId: apiInfo.uniqueId,
+          type: props.isResponse ? 2 : 1,
+        });
+        const res = responseToParams(data.data);
+        sourceData.value = _.cloneDeep(res);
+        // eslint-disable-next-line @typescript-eslint/no-use-before-define
+        resetListMap();
+      } catch (e) {}
       loading.value = false;
     };
 
@@ -314,12 +316,18 @@ export default defineComponent({
         if (item) {
           listMap[k] = item.list;
           if (k === 'body') {
-            contentType.value = item.contentType || 'json';
+            contentType.value = item.contentType;
           }
         } else {
           listMap[k] = [];
         }
       });
+      if (!contentType.value || props.isResponse) {
+        contentType.value = 'json';
+      }
+      if (!paramsMethod.value || props.isResponse) {
+        paramsMethod.value = 'body';
+      }
       // eslint-disable-next-line @typescript-eslint/no-use-before-define
       updateParamsDefine();
     };
@@ -438,16 +446,15 @@ export default defineComponent({
         apiId: apiInfo.uniqueId,
       };
       const saveData = [];
-      Object.keys(listMap).forEach((key) => {
+      const keys = props.isResponse ? ['body'] : Object.keys(listMap);
+      keys.forEach((key) => {
         const list = [...listMap[key]];
-        if (list.length) {
-          saveData.push({
-            ...baseInfo,
-            paramIn: _.startCase(key),
-            contentType: key === 'body' ? contentType.value : '',
-            list: paramsToSaveData(list),
-          });
-        }
+        saveData.push({
+          ...baseInfo,
+          paramIn: _.startCase(key),
+          contentType: key === 'body' ? contentType.value : '',
+          list: paramsToSaveData(list),
+        });
       });
 
       try {

@@ -284,8 +284,8 @@ export const dtoToParams = (dtoInfo: any, importType: number) => {
         importType,
         dtoId: dtoInfo.uniqueId,
         readonly: importType === 1,
-        serverName: dtoInfo.serverName,
         dtoName: dtoInfo.name,
+        serviceName: dtoInfo.serviceName,
       };
       if (item.children) {
         newItem.children = transform(item.children);
@@ -339,6 +339,10 @@ export const responseToParams = (data: any[]) => {
         required: item.required,
         children: [],
         config: JSON.parse(item.config) || {},
+        importType: item.importType,
+        readonly: item.importType === 1,
+        dtoName: item.dtoName,
+        serviceName: item.serviceName,
       };
       if (item.dtoId) {
         newItem.dtoId = item.dtoId;
