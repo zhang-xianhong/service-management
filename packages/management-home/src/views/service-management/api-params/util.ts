@@ -286,6 +286,7 @@ export const dtoToParams = (dtoInfo: any, importType: number) => {
         readonly: importType === 1,
         serverName: dtoInfo.serverName,
         dtoName: dtoInfo.name,
+        serviceName: dtoInfo.serviceName,
       };
       if (item.children) {
         newItem.children = transform(item.children);
