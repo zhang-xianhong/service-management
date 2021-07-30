@@ -270,7 +270,7 @@ export default {
     }
 
     const getServerList = async () => {
-      const { data } = await getServiceList({});
+      const { data } = await getServiceList({ all: true });
       data.rows.forEach((x: any) => {
         // eslint-disable-next-line no-param-reassign
         x.name = x.name ? getServiceShowName(x.name) : '';

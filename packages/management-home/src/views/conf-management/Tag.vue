@@ -261,9 +261,9 @@ export default defineComponent({
       if (submitting.value || form.value.name.length > 25 || form.value.name.length < 1) {
         return;
       }
-      submitting.value = true;
       formRef.value.validate(async (isValid: boolean) => {
         if (isValid) {
+          submitting.value = true;
           loading.value = true;
           const { code } =
             dialogTitle.value === '新增标签'
@@ -273,10 +273,9 @@ export default defineComponent({
           if (code === 0) {
             dialogVisible.value = false;
             dialogTitle.value === '新增标签' ? ElMessage.success('新增标签成功') : ElMessage.success('编辑标签成功');
+            submitting.value = false;
             getTagList();
           }
-        } else {
-          submitting.value = false;
         }
       });
     };

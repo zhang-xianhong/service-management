@@ -20,5 +20,5 @@ export const reviewPublish = (id: string, payload: any): Promise<SuccessResponse
   axios.post(getUrl(publish.REVIEW_PUBLISH, id), payload);
 export const getServiceList: (payload: object) => Promise<SuccessResponse<any>> = (payload: any) =>
   axios.get(getUrl(service.GET_SERVICE_LIST), { params: payload });
-export const findUserByName = (payload: any): Promise<SuccessResponse<any>> =>
+export const findUserByName = (payload?: any): Promise<SuccessResponse<any>> =>
   axios.get(getUrl(tenant.QUERY_IN_TENT), { params: payload });

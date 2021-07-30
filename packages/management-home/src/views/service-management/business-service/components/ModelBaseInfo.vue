@@ -27,6 +27,7 @@
           :props="{ multiple: true, label: 'name', value: 'id' }"
           @change="selectClassification"
           clearable
+          filterable
         ></el-cascader>
       </el-form-item>
       <el-form-item label="标签">

@@ -46,8 +46,8 @@ export default defineComponent({
 
     const parseApiList = (info: any) => {
       try {
-        apiList.value = info.snapshotInfo.config.serviceApis.map((item: any) => item);
-        models.value = info.snapshotInfo.config.modelInfos.map((item: any) => item);
+        apiList.value = JSON.parse(info.snapshotInfo.config || '{}').serviceApis.map((item: any) => item);
+        models.value = JSON.parse(info.snapshotInfo.config || '{}').modelInfos.map((item: any) => item);
       } catch (e) {
         apiList.value = [];
       }

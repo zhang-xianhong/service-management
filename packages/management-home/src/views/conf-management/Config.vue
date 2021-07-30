@@ -326,6 +326,7 @@ export default defineComponent({
                 message: '添加失败',
               });
             }
+            submitting.value = false;
             closeConfigForm();
           } else {
             // 编辑

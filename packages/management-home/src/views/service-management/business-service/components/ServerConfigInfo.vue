@@ -40,7 +40,7 @@
           <template v-if="!scope.row.isEdit">
             <a class="operation-link" @click="addItem(scope.$index)">添加</a>
             <a class="operation-link" @click="openHistoryDialog(scope.row)">变更历史</a>
-            <a class="operation-link" @click="deleteItem(scope.row)">删除</a>
+            <a class="operation-link" @click="deleteItem(scope.row)" v-if="scope.row.scope">删除</a>
           </template>
           <template v-else>
             <a class="operation-link" @click="saveModify(scope.row)">确定</a>
@@ -126,7 +126,8 @@ import {
 } from '@/api/settings/config';
 import dateFormat from '@/utils/date-format';
 import { getShowBool } from '@/utils/permission-show-module';
-import { isRefrence } from '../utils/permisson';
+import { CONFIG_LEVEL, isRefrence } from '../utils/permisson';
+import { ElMessageBox } from 'element-plus';
 
 export default {
   name: 'ServerConfigInfo',
@@ -160,8 +161,6 @@ export default {
       { label: '键', prop: 'name' },
       { label: '值', prop: 'value' },
       { label: '默认值', prop: 'defaultValue' },
-      { label: '类型', prop: 'type' },
-      { label: '版本', prop: 'version' },
     ];
 
     // 获取服务配置数据
@@ -230,6 +229,7 @@ export default {
       const configData = {
         ...rowData,
         serviceId,
+        scope: CONFIG_LEVEL.SERVICE,
       };
       // 数据校验
       const RegName = /^[a-zA-Z][A-Za-z0-9-._]+$/;
@@ -264,15 +264,21 @@ export default {
     };
 
     // 删除配置项
-    const deleteItem = async (rowData: any) => {
-      const { code } = await deleteConfig(rowData.id);
-      if (code === 0) {
-        proxy.$message({
-          type: 'success',
-          message: '删除成功',
-        });
-        getTableData();
-      }
+    const deleteItem = (rowData: any) => {
+      ElMessageBox.confirm('确认是否删除,删除后不可恢复', '提示', {
+        confirmButtonText: '确认',
+        cancelButtonText: '取消',
+        type: 'warning',
+      }).then(async () => {
+        const { code } = await deleteConfig(rowData.id);
+        if (code === 0) {
+          proxy.$message({
+            type: 'success',
+            message: '删除成功',
+          });
+          getTableData();
+        }
+      });
     };
 
     const deliveryList = async () => {

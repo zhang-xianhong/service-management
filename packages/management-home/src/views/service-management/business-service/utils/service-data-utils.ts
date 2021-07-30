@@ -5,6 +5,7 @@ import { reactive, ref } from 'vue';
 import { getClassificationList } from '@/api/settings/classification';
 import { statusMap } from '@/views/service-management/business-service/utils/service-status-map';
 import { getServiceShowName } from '../../components/utils';
+import { SERVICE_SOURCE_NAME } from './permisson';
 
 export const serviceTableList = reactive({
   list: [],
@@ -22,6 +23,7 @@ export const tagMap = ref({} as any);
 export const sortMap = ref({} as any);
 export const ownersMap = ref({} as any);
 
+const getServiceSourceName = (code: number) => SERVICE_SOURCE_NAME[code];
 export function refreshServiceList(payload = {} as any) {
   let data = {} as any;
   if (payload) {
@@ -69,7 +71,7 @@ export function refreshServiceList(payload = {} as any) {
             .filter((x: any) => x)
             .join(',');
         }
-        x.source = x.source || '新建';
+        x.source = getServiceSourceName(x.serviceSource);
       });
     }
     serviceTableList.list = res.data.rows;
@@ -134,7 +136,7 @@ const serviceStatus: any = {
   3: '构建超时',
   10: '有效',
 };
-export function getServiceDependencies(id?: number) {
+export function getServiceDependencies(id?: number, serviceName?: string) {
   console.log('get service dependency');
   return getServiceDependencyList({ serviceId: id }).then((res) => {
     if (res?.data) {
@@ -149,7 +151,8 @@ export function getServiceDependencies(id?: number) {
           disabled: v.versionStatus !== 10,
         })),
       }));
-      dependenciesList.value = serviceList;
+      const list = serviceList.filter((i: any) => i.value !== serviceName);
+      dependenciesList.value = list;
     } else {
       dependenciesList.value = [];
     }

@@ -7,6 +7,22 @@ export const enum SERVICE_SOURCE {
   CLONE,
   CLONE_RNAME,
 }
+
+// 配置级别 0:服务级别，1:项目级别，2租户级别',
+export const enum CONFIG_LEVEL {
+  SERVICE = 0,
+  PROJECT,
+  TENANT,
+}
+
+// 服务来源名称
+export const SERVICE_SOURCE_NAME: any = {
+  1: '自研',
+  2: '引用',
+  3: '克隆',
+  4: '克隆(重命名)',
+};
+
 export interface ServiceInfo {
   id: number;
   updateTime: string;
@@ -65,7 +81,7 @@ export const isRefrence: InjectionKey<Ref<boolean>> = Symbol('is-refrence');
 
 export const useCheckRefrenceService = (info: Ref<ServiceInfo>) => {
   const isRefrenceService = computed(() => {
-    const alowed = [SERVICE_SOURCE.REFRENCE, SERVICE_SOURCE.CLONE, SERVICE_SOURCE.CLONE_RNAME];
+    const alowed = [SERVICE_SOURCE.REFRENCE, SERVICE_SOURCE.CLONE];
     return alowed.includes(info.value.serviceSource);
   });
 
