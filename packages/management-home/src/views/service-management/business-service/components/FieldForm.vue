@@ -76,12 +76,13 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref, inject, Ref, watchEffect, getCurrentInstance } from 'vue';
+import { defineComponent, getCurrentInstance, inject, onMounted, Ref, ref, watchEffect } from 'vue';
 import { getDataTypesAll } from '@/api/settings/data-types';
 import { updateFields } from '@/api/schema/model';
 import { getShowBool } from '@/utils/permission-show-module';
 import _ from 'lodash/fp';
 import { isRefrence } from '../utils/permisson';
+
 export default defineComponent({
   name: 'ColumnForm',
   setup(props, context) {
@@ -180,11 +181,7 @@ export default defineComponent({
         context.emit('back');
       }
     };
-    const isFieldDisabled = (scope: any) => {
-      const aa = scope.row.isSystem || scope.row.typeId === 1;
-      console.log(aa, 'this is aa');
-      return aa;
-    };
+    const isFieldDisabled = (scope: any) => scope.row.isSystem || scope.row.typeId === 1;
 
     onMounted(() => {
       initTypeOption();
