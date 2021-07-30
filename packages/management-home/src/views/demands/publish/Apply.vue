@@ -360,7 +360,7 @@ export default {
       servides: [],
       serviceList: [],
       applicationList: [],
-      versionOptions: [{ id: 1, name: '1' }],
+      versionOptions: [],
       moduleType: [
         { id: 1, name: '服务' },
         { id: 2, name: '应用' },
