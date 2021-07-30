@@ -316,12 +316,18 @@ export default defineComponent({
         if (item) {
           listMap[k] = item.list;
           if (k === 'body') {
-            contentType.value = item.contentType || 'json';
+            contentType.value = item.contentType;
           }
         } else {
           listMap[k] = [];
         }
       });
+      if (!contentType.value || props.isResponse) {
+        contentType.value = 'json';
+      }
+      if (!paramsMethod.value || props.isResponse) {
+        paramsMethod.value = 'body';
+      }
       // eslint-disable-next-line @typescript-eslint/no-use-before-define
       updateParamsDefine();
     };
@@ -440,7 +446,8 @@ export default defineComponent({
         apiId: apiInfo.uniqueId,
       };
       const saveData = [];
-      Object.keys(listMap).forEach((key) => {
+      const keys = props.isResponse ? ['body'] : Object.keys(listMap);
+      keys.forEach((key) => {
         const list = [...listMap[key]];
         saveData.push({
           ...baseInfo,
