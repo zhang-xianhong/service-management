@@ -11,7 +11,7 @@ export const enum DtoType {
   RequestDTO = 1,
   ResponseDTO,
   SharedDTO,
-  NestedDTO,
+  NestedDTO, //
 }
 export const enum DtoModelDtoType {
   RequestDTO = 1,

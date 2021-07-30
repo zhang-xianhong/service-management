@@ -575,6 +575,15 @@ const routes: Array<RouteRecordRaw> = [
       },
     ],
   },
+  // {
+  //   path: '/dto-dev',
+  //   name: 'dto-dev',
+  //   component: () => import('@/views/service-management/dto/Index.vue'),
+  //   meta: {
+  //     isRootLevel: true,
+  //     title: '没有权限',
+  //   },
+  // },
 ];
 
 export const reCreateRouter = (routes: Array<RouteRecordRaw>): Router =>

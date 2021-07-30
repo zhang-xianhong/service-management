@@ -358,3 +358,24 @@ export const responseToParams = (data: any[]) => {
 
   return listMap;
 };
+
+export const parseList = (items: any) =>
+  items.map((item: any) => {
+    const newItem: any = {
+      $id: genId(),
+      name: item.name,
+      desc: item.desc,
+      type: item.type,
+      example: item.example,
+      required: item.required,
+      children: [],
+      config: JSON.parse(item.config) || {},
+    };
+    if (item.dtoId) {
+      newItem.dtoId = item.dtoId;
+    }
+    if (item.children && item.children.length) {
+      newItem.children = parseList(item.children);
+    }
+    return newItem;
+  });
