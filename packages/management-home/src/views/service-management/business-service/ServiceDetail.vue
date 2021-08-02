@@ -39,6 +39,14 @@
                 @click="openBaseInfo"
               ></svg-icon>
             </el-tooltip>
+            <!-- dto模型 -->
+            <el-tooltip effect="light" content="DTO模型" placement="bottom">
+              <svg-icon
+                :icon-name="drawerName === 'ServerApiList' ? 'list-hover' : 'list'"
+                icon-class="detail-icons__item"
+                @click="openDtoList"
+              ></svg-icon>
+            </el-tooltip>
             <!-- 接口列表 -->
             <el-tooltip effect="light" content="接口列表" placement="bottom">
               <svg-icon
@@ -181,6 +189,7 @@ import { getDataTypesAll } from '@/api/settings/data-types';
 import { useRoute } from 'vue-router';
 import { getShowBool } from '@/utils/permission-show-module';
 import ServiceName from '@/views/service-management/components/ServiceName.vue';
+import DtoList from '../dto/DtoList.vue';
 import {
   statusMap,
   computeStatusLabel,
@@ -228,6 +237,7 @@ export default {
     ServerConfigInfo,
     ReleaseDialog,
     ServiceName,
+    DtoList,
   },
   setup() {
     const { buttons } = useButtonUtils();
@@ -436,6 +446,10 @@ export default {
       }
     };
 
+    const openDtoList = () => {
+      isShowDownDrawer.value = true;
+      drawerName.value = 'DtoList';
+    };
     // 打开服务配置
     const openConfigInfo = () => {
       if (drawerName.value === 'ServerConfigInfo') {
@@ -614,6 +628,7 @@ export default {
       closeReleaseDialog,
       releaseRef,
       isRefrenceService,
+      openDtoList,
     };
   },
 };

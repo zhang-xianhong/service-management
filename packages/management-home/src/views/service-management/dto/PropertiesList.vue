@@ -16,7 +16,6 @@
         style="width: 100%"
         row-key="$id"
         default-expand-all
-        :span-method="objectSpanMethod"
         :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
         class="params-table"
       >
@@ -28,7 +27,6 @@
               v-model.trim="scope.row.name"
               maxlength="50"
               v-else
-              @blur="validator"
               :ref="(ref) => (inputRefs[`name.${scope.row.$id}`] = ref)"
               @input="() => clearError(`name.${scope.row.$id}`)"
               @change="(value) => handleInputChange('name', scope.row.$id, value)"
@@ -40,7 +38,6 @@
             <el-select
               placeholder="请选择属性类型"
               v-model="scope.row.type"
-              @blur="validtor"
               @change="
                 (value) => {
                   handleTypeChange(scope.row, value);
@@ -78,7 +75,6 @@
               v-model.trim="scope.row.example"
               minlength="1"
               maxlength="20"
-              @blur="validator"
               :ref="(ref) => (inputRefs[`example.${scope.row.$id}`] = ref)"
               @input="() => clearError(`example.${scope.row.$id}`)"
               @change="(value) => handleInputChange('example', scope.row.$id, value)"
@@ -129,11 +125,17 @@
       </h3>
       <pre v-highlight><code v-html="previewCode" class="json" style="background: #f5f5f5; padding: 10px;"></code></pre>
     </div>
+
     <StringSettingDialog ref="stringSettingDialog" @change="handleConfigChange" />
     <IntSettingDialog ref="intSettingDialog" @change="handleConfigChange" />
     <FloatSettingDialog ref="floatSettingDialog" @change="handleConfigChange" />
     <DateSettingDialog ref="dateSettingDialog" @change="handleConfigChange" />
     <BooleanSettingDialog ref="booleanSettingDialog" @change="handleConfigChange" />
+    <SelectDtoProperties
+      ref="dtoPropertiesDialog"
+      @on-confirm="handleDtoConfirm"
+      :referenceType="currentQuoteType"
+    ></SelectDtoProperties>
   </div>
 </template>
 <script>
@@ -144,6 +146,7 @@ import FloatSettingDialog from '../api-params/settings/Float.vue';
 import IntSettingDialog from '../api-params/settings/Int.vue';
 import DateSettingDialog from '../api-params/settings/Date.vue';
 import BooleanSettingDialog from '../api-params/settings/Boolean.vue';
+import SelectDtoProperties from './SelectDtoProperties.vue';
 import {
   genParam,
   findAndUpdateParams,
@@ -153,8 +156,11 @@ import {
   validExample,
   validDescription,
   genTreeDefine,
+  dtoToParams,
+  parseList,
 } from '../api-params/util';
 import { ElMessage } from 'element-plus';
+
 export default defineComponent({
   name: 'PropertiesList',
   components: {
@@ -163,6 +169,7 @@ export default defineComponent({
     IntSettingDialog,
     DateSettingDialog,
     BooleanSettingDialog,
+    SelectDtoProperties,
   },
   props: {
     propertiesList: {
@@ -173,13 +180,8 @@ export default defineComponent({
   emits: ['onChange'],
   setup(props) {
     const loading = ref(false);
-    const list = ref([...props.propertiesList]);
-    watch(
-      () => props.propertiesList,
-      () => {
-        list.value = [...props.propertiesList];
-      },
-    );
+    const list = ref([]);
+
     const contentType = ref('json');
     const inputRefs = ref({});
     const formError = ref('');
@@ -189,8 +191,8 @@ export default defineComponent({
     const floatSettingDialog = ref(null);
     const dateSettingDialog = ref(null);
     const booleanSettingDialog = ref(null);
-    const dtoListDialog = ref(null);
     const paramsDefine = ref(null);
+    const dtoPropertiesDialog = ref(null);
 
     const updateParamsDefine = () => {
       paramsDefine.value = genTreeDefine(list.value);
@@ -257,7 +259,9 @@ export default defineComponent({
         ref.$el.classList.add('is-error');
         ref.focus();
         formError.value = error.message;
+        return false;
       }
+      return true;
     };
 
     // 清除错误
@@ -411,11 +415,13 @@ export default defineComponent({
     // 引入方式
     const currentQuoteType = ref(1);
 
-    // 打开DTO模态框
     const handleOpenDto = (row, type) => {
+      // type 1:只读引入 2: 克隆引入
       currentQuoteParamId.value = row.$id;
       currentQuoteType.value = type;
-      dtoListDialog.value.openDtoList();
+
+      // eslint-disable-next-line no-unused-expressions
+      dtoPropertiesDialog?.value.openDialog();
     };
 
     const paramsToSaveData = (params) => {
@@ -433,46 +439,65 @@ export default defineComponent({
         });
       return parse(params);
     };
-    const properties = computed(() => paramsToSaveData(list.value));
-    // DTO确定
-    // const handleDtoConfirm = (row) => {
-    //   const currentParamId = currentQuoteParamId.value;
-    //   if (!currentParamId) {
-    //     return;
-    //   }
-    //   const params = dtoToParams(row, currentQuoteType.value);
-    //   findAndUpdateParams(listMap[paramsMethod.value], currentParamId, (items, index, item) => {
-    //     item.children.push(...params);
-    //     items.splice(index, 1, {
-    //       ...item,
-    //     });
-    //   });
-    //   updateParamsDefine();
-    // };
 
-    // const objectSpanMethod = ({ row, columnIndex }) => {
-    //   if (!row.serverName) {
-    //     if (columnIndex === 0) {
-    //       return {
-    //         rowspan: 1,
-    //         colspan: 2,
-    //       };
-    //     }
-    //     if (columnIndex === 1) {
-    //       return {
-    //         rowspan: 1,
-    //         colspan: 0,
-    //       };
-    //     }
-    //   }
-    //   return {
-    //     rowspan: 1,
-    //     colspan: 1,
-    //   };
-    // };
+    /**
+     *  properties 添加到目标对象下,有两种引入方式，
+     *  克隆引入
+     *    拷贝属性至当前的dto list下面，和当前的属性合并
+     *  只读引入
+     *    替换当前的 dto list下面，但是将这个dto
+     */
+    const handleDtoConfirm = (data) => {
+      // 读取选中的节点数据
+
+      const currentParamId = currentQuoteParamId.value;
+      if (!currentParamId) {
+        return;
+      }
+      const params = dtoToParams(data, currentQuoteType.value);
+
+      findAndUpdateParams(list.value, currentParamId, (items, index, item) => {
+        item.children.push(...params);
+        items.splice(index, 1, {
+          ...item,
+        });
+      });
+
+      updateParamsDefine();
+
+      dtoPropertiesDialog.value.closeDialog();
+    };
+
+    const initEdit = () => {
+      list.value = parseList([...props.propertiesList]);
+      updateParamsDefine();
+      handlePreview();
+    };
+    initEdit();
+    watch(
+      () => props.propertiesList,
+      () => {
+        initEdit();
+      },
+    );
+
+    // getData 提供外部调用
+    const getData = () => {
+      const properties = paramsToSaveData(list.value);
+      const res = validator();
+      if (res) {
+        if (properties.length === 0) {
+          ElMessage.error('请至少添加一个属性');
+          return false;
+        }
+        return properties;
+      }
+      return false;
+    };
     return {
       paramTypes,
       contentTypes: [...CONTENT_TYPES],
+      dtoPropertiesDialog,
       contentType,
       paramRequireds: [
         {
@@ -486,7 +511,6 @@ export default defineComponent({
       ],
       loading,
       list,
-      properties,
       previewCode,
       inputRefs,
       formError,
@@ -509,8 +533,10 @@ export default defineComponent({
       handlePreview,
       canAdd,
       canDel,
-      validator,
       handleOpenDto,
+      handleDtoConfirm,
+      currentQuoteType,
+      getData,
     };
   },
 });
