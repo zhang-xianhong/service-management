@@ -100,7 +100,7 @@
               ></el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="负责人" :label-width="labelWidth">
+          <el-form-item label="负责人" :label-width="labelWidth" v-if="false">
             <fetch-owners-select @get-owners="setOwner" :use-project="false"></fetch-owners-select>
           </el-form-item>
           <el-form-item
