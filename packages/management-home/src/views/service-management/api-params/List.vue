@@ -275,7 +275,7 @@ export default defineComponent({
       if (props.isResponse) {
         return [];
       }
-      if (props.methodType === 'get') {
+      if (apiInfo.methodType === 'GET') {
         return getParamsMethods;
       }
       return postParamsMethods;
