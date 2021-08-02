@@ -355,7 +355,6 @@ export default {
             })(role.userIds),
           })),
         )(noPaRoles);
-        console.log('treeData.value', treeData.value);
         treeAllData = [...treeData.value];
 
         const res: any = {};
@@ -371,7 +370,6 @@ export default {
 
     const reloadUserList = async (s: any) => {
       await initUserList();
-      console.log('s', s);
       if (s?.id) {
         userTreeRef.value.setCurrentKey(s.id);
         const treeUser: any = _.find({ id: s.id })(treeData.value[0].children);
@@ -381,12 +379,9 @@ export default {
       } else {
         userList.value = allUsers.value;
       }
-      console.log('userList.value', userList.value);
     };
 
     const removeUser = (row: any) => {
-      console.log('row', row);
-      console.log('currentNodeData', currentNodeData.value);
       ElMessageBox.confirm(
         `是否将 ${row ? row.displayName : currentNodeData.value.label} 从 ${
           row ? currentNode.value.label : currentNode.value.parent.data.label
@@ -405,7 +400,7 @@ export default {
         const { code } = await updateRoleMembers({
           userIds: updateUsers,
           projectId: props.id,
-          roleId: roleId,
+          roleId,
         });
         if (code === 0) reloadUserList({ id: currentNodeData.value.label });
       });
@@ -468,16 +463,6 @@ export default {
 
     const editDisable: Ref<boolean> = ref(true);
     const isEdit: Ref<boolean> = ref(true);
-    // 初始化
-    // const roleAuthInit = () => {
-    //   const checkObj: any = {};
-    //   Object.entries(checkedItem.value).forEach((item: any) => {
-    //     checkObj[item[0]] = [];
-    //   });
-    //   checkedItem.value = checkObj;
-    //   editDisable.value = true;
-    // };
-
     const nodeClickHandler = async (data: any, node: any) => {
       currentNodeData.value = data;
       currentNode.value = node;
@@ -679,7 +664,6 @@ export default {
       if (submitting.value || form.value.name.length > 25 || form.value.name.length < 1) {
         return;
       }
-      console.log(form.value.name);
       formRef.value.validate(async (isValid: boolean) => {
         if (isValid) {
           submitting.value = true;
@@ -950,7 +934,6 @@ export default {
   .auth-model {
     display: inline-block;
     min-width: 60px;
-    // margin-right: 20px;
   }
   ::v-deep .el-checkbox-group {
     font-size: 0;
