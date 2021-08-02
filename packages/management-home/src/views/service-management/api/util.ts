@@ -1,3 +1,4 @@
+import { isKeyword } from '@/utils/keyword';
 import { genId } from '@/utils/util';
 
 /**
@@ -13,6 +14,9 @@ export const validName = (name: string, list: any[], id: string) => {
   }
   if (!/^[A-Za-z_]+\w?$/.test(name)) {
     return '接口名称仅支持字母、数字、下划线，且不能以数字开头';
+  }
+  if (isKeyword(name)) {
+    return `禁止使用${name}关键字`;
   }
   if (name.length > 256) {
     return '接口名称最多支持256个字符';

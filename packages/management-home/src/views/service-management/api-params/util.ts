@@ -1,3 +1,4 @@
+import { isKeyword } from '@/utils/keyword';
 import { genId } from '@/utils/util';
 import { TYPE_PARAMS_TYPES } from './config';
 export interface PlainObject {
@@ -146,6 +147,9 @@ export const validName = (name: string) => {
   }
   if (!/^[A-Za-z_]+(\w+)?$/.test(name)) {
     return '参数仅支持字母、数字、下划线，且不能以数字开头';
+  }
+  if (isKeyword(name)) {
+    return `禁止使用${name}关键字`;
   }
   if (name.length > 50) {
     return '参数最多支持50个字符';
