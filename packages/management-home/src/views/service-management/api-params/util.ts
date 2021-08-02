@@ -326,7 +326,7 @@ export const paramsToSaveData = (params: ParamItems) => {
   return parse(params);
 };
 export const responseToParams = (data: any[]) => {
-  const res = (data || []).filter((item) => ['Body', 'Params', 'Headers'].includes(item.paramIn));
+  const res = (data || []).filter((item) => ['Body', 'Query', 'Headers'].includes(item.paramIn));
   const listMap: any = {};
   const parseList = (items: any) =>
     items.map((item: any) => {
