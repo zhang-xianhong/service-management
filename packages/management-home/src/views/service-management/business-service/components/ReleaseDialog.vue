@@ -61,7 +61,7 @@
 <script lang="ts">
 import { defineComponent, reactive, ref, getCurrentInstance, Ref } from 'vue';
 import { getServiceConfig, getServiceUpgrade, releaseService } from '@/api/servers';
-import { closeReleaseDialog } from '@/views/service-management/business-service/utils/service-release-data-utils';
+import { closeReleaseDialog, encode } from '@/views/service-management/business-service/utils/service-release-data-utils';
 import CodeEditor from '@/components/sql-editor/Index.vue';
 // 状态码
 enum ResCode {
@@ -261,8 +261,11 @@ export default defineComponent({
     const finished = async (): Promise<void> => {
       finishing.value = true;
       try {
+        const { ddlScript, dmlScript, ...formData } = baseFormData;
         const data = {
-          ...baseFormData,
+          ddlScript: encode(ddlScript),
+          dmlScript: encode(dmlScript),
+          ...formData,
           serviceId,
         };
         // 发版
