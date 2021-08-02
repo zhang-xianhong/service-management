@@ -30,6 +30,8 @@ export default defineComponent({
 
     const closeDtoList = () => {
       showDtoList.value = false;
+      // eslint-disable-next-line no-unused-expressions
+      dtoListRef.value?.resetList();
     };
 
     const onConfirmSelect = () => {

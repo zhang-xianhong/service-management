@@ -123,7 +123,10 @@
         预览
         <el-button type="text" @click="handlePreview" :disabled="list.length === 0">生成预览</el-button>
       </h3>
-      <pre v-highlight><code v-html="previewCode" class="json" style="background: #f5f5f5; padding: 10px;"></code></pre>
+      <pre
+        v-highlight
+        v-if="list.length > 0"
+      ><code v-html="previewCode" class="json" style="background: #f5f5f5; padding: 10px;"></code></pre>
     </div>
 
     <StringSettingDialog ref="stringSettingDialog" @change="handleConfigChange" />

@@ -86,6 +86,8 @@ export default defineComponent({
 
     const editDtoModelRef = ref<InstanceType<typeof EditDtoModel>>();
     const editDtoModel = (data?: DtoModel) => {
+      // eslint-disable-next-line no-unused-expressions
+      editDtoModelRef.value?.dtoForm?.resetFields();
       if (data) {
         // update
         initEdit(EditMode.Update, data);
@@ -115,6 +117,11 @@ export default defineComponent({
       }
       return row;
     };
+    const resetList = () => {
+      selectedId.value = '';
+      // eslint-disable-next-line no-unused-expressions
+      editDtoModelRef.value?.dtoForm?.resetFields();
+    };
     return {
       dtoList,
       currentDto,
@@ -127,6 +134,7 @@ export default defineComponent({
       editDtoModel,
       fetchDtoList,
       getSelectedData,
+      resetList,
     };
   },
 });
