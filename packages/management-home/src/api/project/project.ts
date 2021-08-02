@@ -49,13 +49,13 @@ export const updateRole = (payload: any) =>
 export const getAuthByRoleId = (payload: any) =>
   apiProxy(SERVER_TYPE.AUTH, project.PROJECT_ROLE_AUTH, {
     method: 'get',
-    data: payload,
+    params: payload,
   });
 
 export const checkRoleRule = (payload: any) =>
   apiProxy(SERVER_TYPE.AUTH, project.CHECK_ROLE, {
     method: 'get',
-    data: payload,
+    params: payload,
   });
 
 export const ModRoleName = (payload: any) =>
