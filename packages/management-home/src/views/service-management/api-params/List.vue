@@ -275,7 +275,7 @@ export default defineComponent({
       if (props.isResponse) {
         return [];
       }
-      if (props.methodType === 'get') {
+      if (apiInfo.methodType === 'GET') {
         return getParamsMethods;
       }
       return postParamsMethods;
@@ -298,6 +298,7 @@ export default defineComponent({
           type: props.isResponse ? 2 : 1,
         });
         const res = responseToParams(data.data);
+        console.log(res);
         sourceData.value = _.cloneDeep(res);
         // eslint-disable-next-line @typescript-eslint/no-use-before-define
         resetListMap();

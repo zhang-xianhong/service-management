@@ -1,0 +1,10 @@
+
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="16px" height="16px" viewBox="0 0 16 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <g id="unicom" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="编组">
+            <rect id="矩形" fill="#FFFFFF" opacity="0" x="0" y="0" width="16" height="16"></rect>
+            <path d="M13,6.268 L4.047,11.437 L3,10.839 L3,9.732 L11.953,4.562 L13,5.161 L13,6.268 Z M8,0 L2.713,3.021 C2.643,3.011 2.573,3 2.5,3 C1.672,3 1,3.671 1,4.5 C1,5.329 1.672,6 2.5,6 C3.296,6 3.94,5.378 3.99,4.595 L8,2.304 L9.943,3.414 L1,8.577 L1,12 L8,16 L13.287,12.978 C13.357,12.989 13.427,13 13.5,13 C14.328,13 15,12.329 15,11.5 C15,10.671 14.328,10 13.5,10 C12.704,10 12.06,10.622 12.01,11.405 L8,13.696 L6.057,12.586 L15,7.423 L15,4 L8,0 Z" id="Fill-1" fill="#888888"></path>
+        </g>
+    </g>
+</svg>
