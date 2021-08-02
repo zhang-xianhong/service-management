@@ -42,7 +42,7 @@
             <!-- dto模型 -->
             <el-tooltip effect="light" content="DTO模型" placement="bottom">
               <svg-icon
-                :icon-name="drawerName === 'ServerApiList' ? 'list-hover' : 'list'"
+                :icon-name="drawerName === 'DtoList' ? 'unicom-hover' : 'unicom'"
                 icon-class="detail-icons__item"
                 @click="openDtoList"
               ></svg-icon>
