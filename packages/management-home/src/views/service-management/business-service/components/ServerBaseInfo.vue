@@ -65,6 +65,7 @@
         </div>
         <el-cascader
           v-else
+          filterable
           v-model="formData.dependencies"
           :options="dependenciesList"
           :props="serviceCascaderProps"
@@ -116,7 +117,7 @@ export default {
     },
   },
   setup(props: { data: any; id: number; tags: any[]; classifications: any[] }, ctx: any) {
-    getServiceDependencies(props.id);
+    getServiceDependencies(props.id, props.data.name);
     // 是否为显示模式标识，默认为true
     const isShowMode = ref(true);
 

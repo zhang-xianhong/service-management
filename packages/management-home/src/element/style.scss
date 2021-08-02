@@ -122,6 +122,27 @@ thead .el-button--text {
 .el-cascader-menu__list {
   min-height: 46px;
 }
+
+.el-input-number--small {
+  line-height: 28px;
+  .el-input--small {
+    line-height: inherit;
+  }
+}
+
+.dialog-body {
+  .el-input__inner {
+    width: 100%;
+  }
+  .el-input-number {
+    width: 100%;
+    max-width: 300px;
+  }
+}
+
+.form-item__tooltip_icon {
+  color: #999;
+}
 .el-checkbox {
   color: #444;
 }

@@ -1,0 +1,53 @@
+{
+    "code": 0,
+    "data": [
+        {
+            "param": "",
+            "type": "string",
+            "required": true,
+            "sample": "t",
+            "des": "",
+            "validationFormat": {
+                "type": "String",
+                "maxLength": 256
+            },
+            "id":"xxx-12",
+            "zhName":"创建列表1",
+            "enName":"creat_list1",
+            "serverName":"service_list"
+        },
+        {
+            "param": "",
+            "type": "string",
+            "required": true,
+            "sample": "t",
+            "des": "",
+            "validationFormat": {
+                "type": "String",
+                "maxLength": 256
+            },
+            "id":"xxx-13",
+            "zhName":"创建列表2",
+            "enName":"creat_list2",
+            "serverName":"service_list"
+        },
+        {
+            "param": "",
+            "type": "string",
+            "required": true,
+            "sample": "t",
+            "des": "",
+            "validationFormat": {
+                "type": "String",
+                "maxLength": 256
+            },
+            "id":"xxx-14",
+            "zhName":"创建列表3",
+            "enName":"creat_list3",
+            "serverName":"service_list"
+        }
+    ],
+    "message": "successful",
+    "httpStatus": 200,
+    "timestamp": 1616488671841
+}

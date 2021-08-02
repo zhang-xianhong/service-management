@@ -282,6 +282,17 @@ const routes: Array<RouteRecordRaw> = [
         },
       },
       {
+        path: ':serviceId/interface/:apiId/params',
+        component: () => import('@/views/service-management/api-params/ParamList.vue'),
+        name: 'ServiceApiParamList',
+        meta: {
+          title: '接口参数',
+          isRootLevel: false,
+          hidden: true,
+          showBackButton: true,
+        },
+      },
+      {
         path: 'service-list/detail/:id',
         component: () => import('@/views/service-management/business-service/ServiceDetail.vue'),
         name: 'ServiceDetail',
@@ -495,11 +506,22 @@ const routes: Array<RouteRecordRaw> = [
         },
       },
       {
+        path: 'datatype/addedit',
+        component: () => import(/* webpackChunkName: "datatype-edit" */ '@/views/conf-management/DataTypeEdit.vue'),
+        name: 'DataTypeAddEdit',
+        meta: {
+          title: '新建数据类型',
+          hidden: true,
+          isRootLevel: false,
+          id: 19,
+        },
+      },
+      {
         path: 'datatype/edit/:id',
         component: () => import(/* webpackChunkName: "datatype-edit" */ '@/views/conf-management/DataTypeEdit.vue'),
         name: 'DataTypeEdit',
         meta: {
-          title: '新增数据类型',
+          title: '编辑数据类型',
           hidden: true,
           isRootLevel: false,
           id: 19,
@@ -564,6 +586,15 @@ const routes: Array<RouteRecordRaw> = [
       },
     ],
   },
+  // {
+  //   path: '/dto-dev',
+  //   name: 'dto-dev',
+  //   component: () => import('@/views/service-management/dto/Index.vue'),
+  //   meta: {
+  //     isRootLevel: true,
+  //     title: '没有权限',
+  //   },
+  // },
 ];
 
 export const reCreateRouter = (routes: Array<RouteRecordRaw>): Router =>

@@ -121,4 +121,11 @@ export default defineComponent({
     cursor: move;
   }
 }
+.g6-component-toolbar {
+  top: 20px !important;
+  left: 50% !important;
+  transform: translateX(-50%);
+  z-index: 11;
+  cursor: pointer;
+}
 </style>

@@ -297,7 +297,6 @@ const initGraph = (container, data) => {
   let { width, height } = defaultConfig;
   width = container.clientWidth || width;
   height = container.clientHeight || height || 400;
-  console.log(container.clientWidth, container.clientHeight);
   // const toolbar = new G6.ToolBar({
   //   position: { x: width / 2, y: 60 },
   // });
@@ -307,7 +306,7 @@ const initGraph = (container, data) => {
     ...config,
     width,
     height,
-    plugins: [tooltip],
+    plugins: [tooltip, minimap],
     enabledStack: false,
   });
   if (typeof onInit === 'function') {
@@ -367,7 +366,7 @@ export default (container, data) => {
     graph.changeSize(container.scrollWidth, container.scrollHeight);
   };
 
-  // window.addEventListener('resize', resizeHandler);
+  window.addEventListener('resize', resizeHandler);
 
   return {
     graph,

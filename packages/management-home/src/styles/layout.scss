@@ -22,3 +22,37 @@ $breadCurmbColor: #ffffff;
   sideBarBgcolor: $sideBarBgcolor;
   contentBgcolor: $contentBgcolor;
 }
+
+
+.detail-with-tabs {
+  margin: -20px;
+  .el-tabs__header {
+    background-color: white;
+    .el-tabs__nav {
+      padding-left: 20px;
+      padding-right: 20px;
+    }
+    .el-tabs__active-bar {
+      margin-left: 20px;
+    }
+  }
+  .el-tabs__content {
+    margin: 20px;
+    background-color: white;
+  }
+
+  .tab-content-wrap {
+    padding: 20px;
+  }
+}
+
+.col-inline {
+  .cell {
+    display: flex;
+    align-items: center;
+  }
+}
+
+.hljs-number {
+  color: #006eff;
+}

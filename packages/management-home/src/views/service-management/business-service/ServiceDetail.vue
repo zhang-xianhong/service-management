@@ -39,10 +39,18 @@
                 @click="openBaseInfo"
               ></svg-icon>
             </el-tooltip>
+            <!-- dto模型 -->
+            <el-tooltip effect="light" content="DTO模型" placement="bottom">
+              <svg-icon
+                :icon-name="drawerName === 'ServerApiList' ? 'list-hover' : 'list'"
+                icon-class="detail-icons__item"
+                @click="openDtoList"
+              ></svg-icon>
+            </el-tooltip>
             <!-- 接口列表 -->
             <el-tooltip effect="light" content="接口列表" placement="bottom">
               <svg-icon
-                :icon-name="drawerName === 'ServerPortsInfo' ? 'list-hover' : 'list'"
+                :icon-name="drawerName === 'ServerApiList' ? 'list-hover' : 'list'"
                 icon-class="detail-icons__item"
                 @click="openPropertyInfo"
               ></svg-icon>
@@ -167,7 +175,7 @@ import useButtonUtils from './utils/service-detail-utils';
 import useStatusUtils from './utils/service-detail-status';
 import ServerBaseInfo from './components/ServerBaseInfo.vue';
 import Erd from '@/components/data-model/erd/Index.vue';
-import ServerPortsInfo from './components/ServerPortsInfo.vue';
+import ServerApiList from '../api/List.vue';
 import { ref, Ref, reactive, watch, provide, computed, onBeforeUnmount, getCurrentInstance } from 'vue';
 import RelationInfo from './components/RelationInfo.vue';
 import ModelFieldForm from './components/FieldForm.vue';
@@ -181,6 +189,7 @@ import { getDataTypesAll } from '@/api/settings/data-types';
 import { useRoute } from 'vue-router';
 import { getShowBool } from '@/utils/permission-show-module';
 import ServiceName from '@/views/service-management/components/ServiceName.vue';
+import DtoList from '../dto/DtoList.vue';
 import {
   statusMap,
   computeStatusLabel,
@@ -222,12 +231,13 @@ export default {
     ServerBaseInfo,
     Erd,
     ModelFieldForm,
-    ServerPortsInfo,
+    ServerApiList,
     RelationInfo,
     ModelBaseInfo,
     ServerConfigInfo,
     ReleaseDialog,
     ServiceName,
+    DtoList,
   },
   setup() {
     const { buttons } = useButtonUtils();
@@ -260,7 +270,7 @@ export default {
     }
 
     const getServerList = async () => {
-      const { data } = await getServiceList({});
+      const { data } = await getServiceList({ all: true });
       data.rows.forEach((x: any) => {
         // eslint-disable-next-line no-param-reassign
         x.name = x.name ? getServiceShowName(x.name) : '';
@@ -427,15 +437,19 @@ export default {
 
     // 打开接口配置
     const openPropertyInfo = () => {
-      if (drawerName.value === 'ServerPortsInfo') {
+      if (drawerName.value === 'ServerApiList') {
         isShowDownDrawer.value = false;
         drawerName.value = '';
       } else {
         isShowDownDrawer.value = true;
-        drawerName.value = 'ServerPortsInfo';
+        drawerName.value = 'ServerApiList';
       }
     };
 
+    const openDtoList = () => {
+      isShowDownDrawer.value = true;
+      drawerName.value = 'DtoList';
+    };
     // 打开服务配置
     const openConfigInfo = () => {
       if (drawerName.value === 'ServerConfigInfo') {
@@ -614,6 +628,7 @@ export default {
       closeReleaseDialog,
       releaseRef,
       isRefrenceService,
+      openDtoList,
     };
   },
 };

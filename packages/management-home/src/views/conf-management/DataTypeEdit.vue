@@ -14,7 +14,7 @@
       </el-select>
     </el-form-item>
     <el-form-item v-if="typeForm.type === 'Float' || typeForm.type === 'Double'" label="精度" prop="length" required>
-      <el-input-number v-model="typeForm.precision" :min="0" :max="10"></el-input-number>
+      <el-input-number v-model="typeForm.precision" :min="0" :max="10" :step="1" :precision="0"></el-input-number>
     </el-form-item>
     <el-form-item label="长度" prop="length" required>
       <el-input-number v-model="typeForm.length" :min="1" :max="4294967295"></el-input-number>
@@ -54,7 +54,7 @@ export default {
     });
 
     // 是否为新建数据类型
-    const isCreate = computed(() => route.params.id === '0');
+    const isCreate = computed(() => !route.params.id);
 
     const submitting = ref(false);
 
@@ -88,6 +88,7 @@ export default {
       ],
       type: [{ required: true, message: '请输入数据类型', trigger: 'blur' }],
       length: [{ required: true, message: '请输入长度', trigger: 'blur' }],
+      precision: [{ required: true, message: '请输入精度', trigger: 'blur' }],
       description: [
         { required: true, message: '请输入类型描述', trigger: 'blur' },
         { max: 255, message: '长度不超过 255 个字符', trigger: 'blur' },
