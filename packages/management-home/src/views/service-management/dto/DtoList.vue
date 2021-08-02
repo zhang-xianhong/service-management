@@ -10,8 +10,10 @@
       <el-table :data="dtoList" max-height="400">
         <el-table-column label="序号">
           <template #default="scope">
-            <el-radio name="dto-item" :label="scope.row.uniqueId" v-model="selectedId" v-if="selectable" />
-            <span v-else>{{ scope.row.uniqueId }}</span>
+            <el-radio name="dto-item" :label="scope.row.uniqueId" v-model="selectedId" v-if="selectable">{{
+              scope.$index + 1
+            }}</el-radio>
+            <span v-else>{{ scope.$index + 1 }}</span>
           </template>
         </el-table-column>
         <el-table-column prop="name" label="模型英文名">
