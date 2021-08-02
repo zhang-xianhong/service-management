@@ -24,12 +24,12 @@
             <el-radio-button :label="1">引用</el-radio-button>
           </el-radio-group>
         </el-form-item>
-        <el-form-item label="是否重命名" prop="rename" key="rename" v-if="form.platformShareType === 2">
+        <!-- <el-form-item label="是否重命名" prop="rename" key="rename" v-if="form.platformShareType === 2">
           <el-radio-group v-model="form.rename" name="rename" @change="handleClearValidate">
             <el-radio-button :label="1">是</el-radio-button>
             <el-radio-button :label="0">否</el-radio-button>
           </el-radio-group>
-        </el-form-item>
+        </el-form-item> -->
         <el-form-item :label="`${useNewName ? '原服务英文名' : '服务英文名'}`">
           <service-name :name="sourceData.serviceName" v-if="sourceData" />
         </el-form-item>
@@ -113,7 +113,7 @@ export default defineComponent({
     const form = reactive({
       projectId: '',
       platformShareType: 2,
-      rename: 0,
+      rename: 1,
       serviceName: '',
       serviceNameZh: '',
     });

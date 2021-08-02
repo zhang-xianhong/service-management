@@ -107,7 +107,8 @@ const components = [
 const plugins = [ElInfiniteScroll, ElLoading, ElMessage, ElMessageBox, ElNotification];
 
 // 设置语言
-locale.use(lang);
+// eslint-disable-next-line no-unused-expressions
+locale?.use(lang);
 
 export default {
   // element-plus UI组件按需引入

@@ -126,7 +126,7 @@ export default {
 
     // 新增数据类型
     function addDataType() {
-      router.push('datatype/edit/0');
+      router.push('datatype/addedit');
     }
 
     // 编辑数据类型

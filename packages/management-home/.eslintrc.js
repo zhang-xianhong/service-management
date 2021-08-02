@@ -28,5 +28,6 @@ module.exports = {
         '@typescript-eslint/no-this-alias': ["off"],
         'comma-dangle': 0,
         'standard/no-callback-literal': 0,
+        'vue/script-setup-uses-vars': 0
     },
 };

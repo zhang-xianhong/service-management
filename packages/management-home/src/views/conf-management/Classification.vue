@@ -208,18 +208,21 @@ export default defineComponent({
             if (currentNode.value.parentId !== TEMP_KEY) {
               params.parentId = currentNode.value.parentId;
             }
-
-            const { code } = await confApi.addClassification(params);
-            if (code === 0) {
-              ElMessage.success('创建分类成功！');
+            try {
+              const { code } = await confApi.addClassification(params);
+              if (code === 0) {
+                ElMessage.success('创建分类成功！');
+              }
+            } catch (error) {
+              submitting.value = false;
             }
           }
           const toSave = tree.value.getNode(TEMP_KEY);
           if (toSave) {
             tree.value.remove(toSave);
           }
-          loadTreeData();
           submitting.value = false;
+          loadTreeData();
         }
       });
     };

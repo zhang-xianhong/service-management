@@ -506,11 +506,22 @@ const routes: Array<RouteRecordRaw> = [
         },
       },
       {
+        path: 'datatype/addedit',
+        component: () => import(/* webpackChunkName: "datatype-edit" */ '@/views/conf-management/DataTypeEdit.vue'),
+        name: 'DataTypeAddEdit',
+        meta: {
+          title: '新建数据类型',
+          hidden: true,
+          isRootLevel: false,
+          id: 19,
+        },
+      },
+      {
         path: 'datatype/edit/:id',
         component: () => import(/* webpackChunkName: "datatype-edit" */ '@/views/conf-management/DataTypeEdit.vue'),
         name: 'DataTypeEdit',
         meta: {
-          title: '新增数据类型',
+          title: '编辑数据类型',
           hidden: true,
           isRootLevel: false,
           id: 19,

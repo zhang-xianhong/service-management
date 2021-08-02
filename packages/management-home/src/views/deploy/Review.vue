@@ -25,7 +25,7 @@
             </el-form>
           </template>
         </el-table-column>
-        <el-table-column label="序号" type="index" width="60"></el-table-column>
+        <el-table-column label="序号" prop="index" width="60"></el-table-column>
         <el-table-column label="发布类型" width="80" prop="moduleType"></el-table-column>
         <el-table-column label="发布名称" prop="name">
           <template #default="props">
@@ -176,9 +176,9 @@
           <el-input
             v-model="reviewState.formData.reviewContent"
             type="textarea"
-            placeholder="请输入审核说明，不超过1024个字"
+            placeholder="请输入审核说明，不超过2048个字"
             :rows="5"
-            maxlength="512"
+            maxlength="2048"
             show-word-limit
           ></el-input>
         </el-form-item>
@@ -297,10 +297,11 @@ export default defineComponent({
         tableState.loading = false;
         const { count, rows = [] } = data;
         tableState.total = count;
-        tableState.tableData = rows.map((item: any) => ({
+        tableState.tableData = rows.map((item: any, index: number) => ({
           ...item,
           moduleType: getModuleType(item.type),
           reviewResult: getReviewResult(item.status),
+          index: index + 1,
         }));
         tableState.auditResultsFilters = Object.entries(STATUS).map((item) => ({
           id: item[0],
@@ -333,7 +334,7 @@ export default defineComponent({
     const reviewForm = ref(null as any);
     const reviewRules = [
       { required: true, message: '审核内容不能为空', trigger: 'blur' },
-      { min: 1, max: 512, message: '最多支持512个字符' },
+      { min: 1, max: 2048, message: '长度在 1 到 2048 个字符' },
     ];
 
     const openReviewDialog = () => {

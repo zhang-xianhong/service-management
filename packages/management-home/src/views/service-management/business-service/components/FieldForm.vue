@@ -53,8 +53,17 @@
         <!--        </el-table-column>-->
         <el-table-column prop="operations" label="操作" width="180" v-if="getShowBool('add') && !isRefrenceService">
           <template #default="scope">
-            <a @click="add(scope.$index)" class="operator" v-if="scope.$index === 0">添加</a>
-            <a @click="remove(scope.$index)" class="operator" :disabled="isFieldDisabled(scope)">删除</a>
+            <el-button type="text" @click="add(scope.$index)" class="operator" v-if="scope.$index === 0"
+              >添加</el-button
+            >
+            <el-button
+              @click="remove(scope.$index)"
+              class="operator"
+              :disabled="isFieldDisabled(scope)"
+              v-if="scope.$index !== 0"
+              type="text"
+              >删除</el-button
+            >
           </template>
         </el-table-column>
       </el-table>
@@ -67,12 +76,13 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref, inject, Ref, watchEffect, getCurrentInstance } from 'vue';
+import { defineComponent, getCurrentInstance, inject, onMounted, Ref, ref, watchEffect } from 'vue';
 import { getDataTypesAll } from '@/api/settings/data-types';
 import { updateFields } from '@/api/schema/model';
 import { getShowBool } from '@/utils/permission-show-module';
 import _ from 'lodash/fp';
 import { isRefrence } from '../utils/permisson';
+
 export default defineComponent({
   name: 'ColumnForm',
   setup(props, context) {
@@ -93,6 +103,9 @@ export default defineComponent({
         name: '',
         description: '',
         type: '',
+        isUnique: false,
+        notNull: false,
+        isIndex: false,
       });
     };
     const remove = (index: number) => {
@@ -168,7 +181,7 @@ export default defineComponent({
         context.emit('back');
       }
     };
-    const isFieldDisabled = (scope: any) => scope.row.isSystem;
+    const isFieldDisabled = (scope: any) => scope.row.isSystem || scope.row.typeId === 1;
 
     onMounted(() => {
       initTypeOption();

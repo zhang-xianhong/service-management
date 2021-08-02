@@ -14,7 +14,7 @@
       <el-col :offset="12" :span="6" style="text-align: right">
         <el-input
           style="max-width: 300px; margin-left: auto"
-          placeholder="请输入名称"
+          placeholder="请输入部署名称"
           suffix-icon="el-icon-search"
           @input="filterpublish"
           v-model="searchProps.keyword"
@@ -41,7 +41,7 @@
             </el-form>
           </template>
         </el-table-column>
-        <el-table-column type="index" label="序号" width="50" />
+        <el-table-column prop="index" label="序号" width="50" />
         <el-table-column label="部署类型" prop="moduleType"></el-table-column>
         <el-table-column label="部署名称" prop="name">
           <template #default="props">
@@ -51,18 +51,22 @@
         <el-table-column label="申请账号" prop="applicantName">
           <template #header>
             <i class="el-icon-search"></i>
-            <el-popover placement="bottom" :width="200" trigger="manual" :visible="applicantTitleVisiable">
+            <el-popover
+              placement="bottom"
+              :width="200"
+              trigger="manual"
+              :visible="applicantTitleVisiable"
+              v-if="isShowPopover"
+            >
               <template #reference>
-                <el-button type="text" @click="applicantTitleClick">申请账号</el-button>
+                <el-button type="text" @click="applicantTitleClick">申请人</el-button>
               </template>
               <el-select
                 v-model="searchProps.applicant"
-                placeholder="请输入申请账号"
+                placeholder="请选择申请人"
                 clearable
                 multiple
                 filterable
-                remote
-                :remote-method="remoteMethod"
                 @change="applicantChange"
                 :loading="seleteLoading"
               >
@@ -108,18 +112,22 @@
         <el-table-column label="审核人" prop="reviewerName">
           <template #header>
             <i class="el-icon-search"></i>
-            <el-popover placement="bottom" :width="200" trigger="manual" :visible="reviewerTitleVisiable">
+            <el-popover
+              placement="bottom"
+              :width="200"
+              trigger="manual"
+              :visible="reviewerTitleVisiable"
+              v-if="isShowPopover"
+            >
               <template #reference>
                 <el-button type="text" @click="reviewerTitleClick">审核人</el-button>
               </template>
               <el-select
                 v-model="searchProps.reviewer"
-                placeholder="请输入审核人"
+                placeholder="请选择审核人"
                 clearable
                 multiple
                 filterable
-                remote
-                :remote-method="remoteMethod"
                 @change="reviewerChange"
                 :loading="seleteLoading"
               >
@@ -133,7 +141,7 @@
             </el-popover>
           </template>
         </el-table-column>
-        <el-table-column label="部署版本" prop="version"></el-table-column>
+        <el-table-column label="部署版本" prop="publishVersion"> </el-table-column>
         <el-table-column label="部署时间" prop="publishTime">
           <template #default="scope">{{ dateFormat(scope.row.publishTime) }}</template>
         </el-table-column>
@@ -188,6 +196,7 @@
                 :key="index"
                 :label="item.name"
                 :value="item.id"
+                :disabled="item.id === 2"
               ></el-option>
             </el-select>
           </el-form-item>
@@ -214,9 +223,9 @@
           <el-form-item label="申请账号" prop="applicantName" :label-width="labelWidth">
             <el-input v-model="publishForm.formData.applicantName" :disabled="true"></el-input>
           </el-form-item>
-          <el-form-item label="部署版本" prop="version" :label-width="labelWidth">
+          <el-form-item label="部署版本" prop="publishVersion" :label-width="labelWidth">
             <el-select
-              v-model="publishForm.formData.version"
+              v-model="publishForm.formData.publishVersion"
               placeholder="请选择部署版本"
               clearable
               :disabled="publishForm.disabled"
@@ -224,8 +233,9 @@
               <el-option
                 v-for="(item, index) in publishForm.versionOptions"
                 :key="index"
-                :label="item.name"
-                :value="item.id"
+                :label="item.label"
+                :value="item.name"
+                :disabled="item.versionStatus !== 10"
               ></el-option>
             </el-select>
           </el-form-item>
@@ -253,15 +263,15 @@
 </template>
 
 <script lang="ts">
-import { reactive, toRefs, ref, onBeforeUnmount } from 'vue';
+import { reactive, toRefs, ref, onBeforeUnmount, onMounted } from 'vue';
 import {
   getPublishList,
   addPublish,
   updatePublish,
   deletePublish,
-  getServiceList,
   findUserByName,
 } from '@/api/demands/publish';
+import { getServiceList } from '@/api/deploy/deploy-apply';
 import PackagedPagination from '@/components/pagination/Index.vue';
 import { debounce } from 'lodash';
 import { ElMessageBox, ElMessage } from 'element-plus';
@@ -290,6 +300,7 @@ interface PublishFormState {
   disabled: boolean;
   isEdit: boolean;
   id: string;
+  servides: Array<object>;
   serviceList: Array<object>;
   applicationList: Array<object>;
   versionOptions: Array<object>;
@@ -300,6 +311,7 @@ interface PublishFormState {
     applicant: number;
     applicantName: string;
     version: number;
+    publishVersion: string;
     description: string;
   };
 }
@@ -342,14 +354,16 @@ export default {
         applicant: userInfo.value.userId,
         applicantName: `${userInfo.value.displayName}_${userInfo.value.userName}`,
         version: 1,
+        publishVersion: '',
         description: '',
       },
+      servides: [],
       serviceList: [],
       applicationList: [],
-      versionOptions: [{ id: 1, name: '1' }],
+      versionOptions: [],
       moduleType: [
         { id: 1, name: '服务' },
-        // { id: 2, name: '应用' },
+        { id: 2, name: '应用' },
       ],
     });
     const publishRules = {
@@ -357,6 +371,7 @@ export default {
       name: [{ required: true, message: '请输入部署名称', trigger: 'change' }],
       applicant: [{ required: true, message: '请选择申请账号', trigger: 'change' }],
       version: [{ required: true, message: '请选择部署版本', trigger: 'change' }],
+      publishVersion: [{ required: true, message: '请选择部署版本', trigger: 'change' }],
       description: [{ required: true, message: '请输入部署说明', trigger: 'blur' }],
     };
 
@@ -372,9 +387,12 @@ export default {
         applicant: userInfo.value.userId,
         applicantName: `${userInfo.value.displayName}_${userInfo.value.userName}`,
         version: 1,
+        publishVersion: '',
         description: '',
       };
     }
+
+    const seleteLoading = ref(false);
 
     // 获取部署列表数据
     async function getTableData() {
@@ -392,9 +410,10 @@ export default {
         }));
         const { count, rows = [] } = data;
         tableState.total = count;
-        const publishData = rows.map((item: any) => ({
+        const publishData = rows.map((item: any, index: number) => ({
           ...item,
           moduleType: getModuleType(item.moduleType),
+          index: index + 1,
         }));
         tableState.tableData = publishData;
       } catch (error) {
@@ -417,19 +436,38 @@ export default {
 
     // 获取服务列表
     async function getServices() {
-      const { data } = await getServiceList({ all: true });
-      const servides = data.rows || [];
-      publishForm.serviceList = servides.map((item: any) => ({
-        id: item.id,
-        name: `${item.description}_${item.name}`,
+      const { data } = await getServiceList();
+      publishForm.servides = data;
+      publishForm.serviceList = data.map((item: any) => ({
+        id: item.serviceName,
+        name: item.serviceName,
       }));
     }
 
     // 改变service方法
-    function serviceChange(serviceId: any) {
-      const data: any = publishForm.serviceList.find((i: any) => i.id === serviceId);
-      publishForm.formData.moduleId = serviceId;
+    function serviceChange(serviceName: any) {
+      const data: any = publishForm.serviceList.find((i: any) => i.id === serviceName);
       publishForm.formData.name = data?.name;
+      publishForm.formData.publishVersion = '';
+      const temp: any = ref(
+        publishForm.servides.find((item: any) => item.serviceName === publishForm.formData.name),
+      );
+      publishForm.versionOptions = temp.value.versions.map((item: any) => {
+        const label = ref('');
+        const statusStr = ['（发版成功）', '（发版中）', '（发版失败）'];
+        if (item.versionStatus === 10) {
+          label.value = `${item.version}${statusStr[0]}`;
+        } else if (item.versionStatus === 1) {
+          label.value = `${item.version}${statusStr[1]}`;
+        } else if (item.versionStatus === 2) {
+          label.value = `${item.version}${statusStr[2]}`;
+        }
+        return {
+          name: item.version,
+          label: label.value,
+          versionStatus: item.versionStatus,
+        };
+      });
     }
 
     function getNameByCode(code: number, type: string): string {
@@ -486,7 +524,7 @@ export default {
               btnLoading.value = false;
               closepublishForm();
             } catch (e) {
-              ElMessage.error(e);
+              console.log(e);
               btnLoading.value = false;
             }
           } else {
@@ -512,7 +550,7 @@ export default {
               closepublishForm();
             } catch (e) {
               btnLoading.value = false;
-              ElMessage.error(e);
+              console.log(e);
             }
           }
         }
@@ -584,26 +622,10 @@ export default {
       getTableData();
     };
 
-    const seleteLoading = ref(false);
-    async function remoteMethod(keyword: string) {
-      if (keyword !== '') {
-        seleteLoading.value = true;
-        const { data = [] } = await findUserByName({ keyword });
-        const users = data.map((item: any) => ({
-          id: item.id,
-          name: item.displayName,
-        }));
-        tableState.reviewerFilters = users;
-        tableState.applicantFilters = users;
-        seleteLoading.value = false;
-      } else {
-        tableState.reviewerFilters = [];
-        tableState.applicantFilters = [];
-      }
-    }
     // 筛选
     const blackHoverVisible = ref(false);
     const statusTitleVisiable = ref(false);
+    const isShowPopover = ref(true);
     function statusTitleClick() {
       statusTitleVisiable.value = true;
       blackHoverVisible.value = true;
@@ -633,8 +655,10 @@ export default {
 
     async function reviewerChange() {
       reviewerTitleVisiable.value = false;
+      isShowPopover.value = false;
       blackHoverVisible.value = false;
       await getTableData();
+      isShowPopover.value = true;
     }
 
     const applicantTitleVisiable = ref(false);
@@ -645,8 +669,10 @@ export default {
 
     async function applicantChange() {
       applicantTitleVisiable.value = false;
+      isShowPopover.value = false;
       blackHoverVisible.value = false;
       await getTableData();
+      isShowPopover.value = true;
     }
 
     function blackHoverclick() {
@@ -663,6 +689,18 @@ export default {
     function getRowOptionStatus(row: any) {
       return userInfo.value.userId !== row.applicant || row.status !== 0;
     }
+
+    onMounted(async () => {
+      seleteLoading.value = true;
+      const { data = [] } = await findUserByName();
+      const users = data.map((item: any) => ({
+        id: item.id,
+        name: item.displayName,
+      }));
+      tableState.reviewerFilters = users || [];
+      tableState.applicantFilters = users || [];
+      seleteLoading.value = false;
+    });
 
     return {
       ...toRefs(tableState),
@@ -694,7 +732,6 @@ export default {
       blackHoverVisible,
       blackHoverclick,
       seleteLoading,
-      remoteMethod,
       reviewerTitleVisiable,
       reviewerTitleClick,
       reviewerChange,
@@ -704,6 +741,7 @@ export default {
       getShowBool,
       getRowOptionStatus,
       btnLoading,
+      isShowPopover,
     };
   },
 };

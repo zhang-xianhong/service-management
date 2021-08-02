@@ -98,7 +98,7 @@
               </template>
             </el-table-column>
             <el-table-column property="source" label="服务来源"></el-table-column>
-            <el-table-column property="version" label="服务版本"></el-table-column>
+            <el-table-column property="serviceVersion" label="服务版本"></el-table-column>
           </el-table>
           <packaged-pagination
             @size-change="handleSizeChange"
@@ -114,7 +114,7 @@
     </div>
 
     <el-dialog title="新增服务" v-model="addServiceDialog" width="600px">
-      <div class="add-service-set" style="width: auto;">
+      <div class="add-service-set" style="width: auto">
         <el-form :model="serviceDetail">
           <el-form-item
             label="服务英文名"
@@ -182,6 +182,7 @@
           </el-form-item>
           <el-form-item label="服务依赖" :label-width="labelWidth" prop="dependencies">
             <el-cascader
+              filterable
               v-model="serviceDetail.dependencies"
               :options="dependenciesList"
               :props="serviceCascaderProps"
@@ -341,6 +342,7 @@ export default defineComponent({
         rememberMutiArray.value = [];
         tableLoading.value = false;
       });
+      console.log('serviceTableList.list', serviceTableList.list);
     };
 
     let intervalId: any = null;
