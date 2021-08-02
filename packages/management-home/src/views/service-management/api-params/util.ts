@@ -310,6 +310,9 @@ export const paramsToSaveData = (params: ParamItems) => {
         example: item.example,
         required: item.required,
         children: [],
+        importType: item.importType,
+        dtoName: item.dtoName,
+        serviceName: item.serviceName,
         config: JSON.stringify({
           ...item.config,
           type: item.type,

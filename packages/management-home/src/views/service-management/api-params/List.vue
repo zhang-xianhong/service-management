@@ -45,7 +45,7 @@
         <el-table-column prop="dtoName" align="right">
           <template #default="scope">
             <span v-if="scope.row.dtoName" class="import-info">
-              <tooltip :content="`来源：${scope.row.serviceName}_${scope.row.dtoName}`"></tooltip>
+              来源：<service-name :name="`${scope.row.serviceName}_${scope.row.dtoName}`"></service-name>
             </span>
           </template>
         </el-table-column>
@@ -248,7 +248,7 @@ export default defineComponent({
     const { apiInfo } = props;
     const loading = ref(false);
     const methodType = ref((apiInfo.methodType || '').toLowerCase());
-    const paramsMethod = ref(apiInfo.methodType === 'POST' ? 'body' : 'query');
+    const paramsMethod = ref(apiInfo.methodType === 'POST' || props.isResponse ? 'body' : 'query');
     const contentType = ref('json');
     const inputRefs = ref({});
     const formError = ref('');

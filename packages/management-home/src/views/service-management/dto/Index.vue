@@ -1,15 +1,13 @@
 <template>
-  <div>
-    <el-dialog v-model="showDtoList">
-      <DtoList ref="dtoListRef"></DtoList>
-      <template #footer>
-        <span class="dialog-footer">
-          <el-button type="primary" @click="onConfirmSelect">确定</el-button>
-          <el-button @click="closeDtoList">取消</el-button>
-        </span>
-      </template>
-    </el-dialog>
-  </div>
+  <el-dialog v-model="showDtoList">
+    <DtoList ref="dtoListRef" selectable></DtoList>
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button type="primary" @click="onConfirmSelect">确定</el-button>
+        <el-button @click="closeDtoList">取消</el-button>
+      </span>
+    </template>
+  </el-dialog>
 </template>
 
 <script lang="ts">

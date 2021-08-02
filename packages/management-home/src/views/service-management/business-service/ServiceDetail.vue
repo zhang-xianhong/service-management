@@ -703,6 +703,10 @@ export default {
     z-index: 10;
     background-color: white;
   }
+
+  ::v-deep .create-dto__bth {
+    margin: 10px;
+  }
 }
 .slide-fade-enter-active {
   transition: all 0.3s ease-in;

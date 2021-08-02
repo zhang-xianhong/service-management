@@ -10,7 +10,8 @@
       <el-table :data="dtoList" max-height="400">
         <el-table-column label="序号">
           <template #default="scope">
-            <el-radio name="dto-item" :label="scope.row.uniqueId" v-model="selectedId" />
+            <el-radio name="dto-item" :label="scope.row.uniqueId" v-model="selectedId" v-if="selectable" />
+            <span v-else>{{ scope.row.uniqueId }}</span>
           </template>
         </el-table-column>
         <el-table-column prop="name" label="模型英文名">
@@ -23,7 +24,7 @@
             {{ scope.row.zhName }}
           </template>
         </el-table-column>
-        <el-table-column label="操作">
+        <el-table-column label="操作" align="right">
           <template #default="scope">
             <el-button @click="editDtoModel(scope.row)" type="text" size="small">编辑</el-button>
           </template>
@@ -55,6 +56,12 @@ export default defineComponent({
   name: 'DtoListDialog',
   components: {
     EditDtoModel,
+  },
+  props: {
+    selectable: {
+      type: Boolean,
+      default: false,
+    },
   },
   emits: ['on-confirm'],
   setup() {
