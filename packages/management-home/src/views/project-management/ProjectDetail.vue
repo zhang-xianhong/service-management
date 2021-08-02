@@ -73,10 +73,10 @@
                       prop="roles"
                       :rules="[
                         { required: true, message: '角色不能为空', trigger: 'blur' },
-                        { min: 1, max: 20, message: '超过字数限制，最多不能超过20个字符', trigger: 'blur' },
+                        { min: 1, max: 20, message: '最多不能超过20个字符', trigger: 'blur' },
                         {
-                          pattern: /^[\u4e00-\u9fa5|a-zA-Z|()（）]+$/g,
-                          message: '仅支持中英文字母、中文、符号',
+                          pattern: /^[^\s]*$/g,
+                          message: '不能包含空格',
                           trigger: 'blur',
                         },
                         { validator: validatorTagsPass, trigger: 'blur' },
@@ -117,16 +117,16 @@
             prop="name"
             :rules="[
               { required: true, message: '角色不能为空', trigger: 'blur' },
-              { min: 1, max: 20, message: '超过字数限制，最多不能超过20个字符', trigger: 'blur' },
+              { min: 1, max: 20, message: '最多不能超过20个字符', trigger: 'blur' },
               {
-                pattern: /^[\u4e00-\u9fa5|a-zA-Z|()（）]+$/g,
-                message: '仅支持中英文字母、中文、符号',
+                pattern: /^[^\s]*$/g,
+                message: '不能包含空格',
                 trigger: 'blur',
               },
               { validator: validatorTagsPass, trigger: 'blur' },
             ]"
           >
-            <el-input ref="tagName" v-model.trim="form.name" autocomplete="off" placeholder="请输入角色名称"></el-input>
+            <el-input ref="tagName" v-model="form.name" autocomplete="off" placeholder="请输入角色名称"></el-input>
           </el-form-item>
         </el-form>
         <template #footer>
