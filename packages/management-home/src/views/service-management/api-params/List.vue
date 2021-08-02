@@ -221,6 +221,9 @@ import {
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { getApiParams, saveApiParams } from '@/api/servers';
 import _ from 'lodash';
+
+const POST_METHODTYPES = ['POST', 'PUT', 'PATCH'];
+const GET_METHODTYPES = ['GET', 'DELETE'];
 export default defineComponent({
   name: 'ParamsList',
   components: {
@@ -248,7 +251,7 @@ export default defineComponent({
     const { apiInfo } = props;
     const loading = ref(false);
     const methodType = ref((apiInfo.methodType || '').toLowerCase());
-    const paramsMethod = ref(apiInfo.methodType === 'POST' || props.isResponse ? 'body' : 'query');
+    const paramsMethod = ref(POST_METHODTYPES.includes(apiInfo.methodType) || props.isResponse ? 'body' : 'query');
     const contentType = ref('json');
     const inputRefs = ref({});
     const formError = ref('');
@@ -275,7 +278,7 @@ export default defineComponent({
       if (props.isResponse) {
         return [];
       }
-      if (apiInfo.methodType === 'GET') {
+      if (GET_METHODTYPES.includes(apiInfo.methodType)) {
         return getParamsMethods;
       }
       return postParamsMethods;
@@ -284,7 +287,7 @@ export default defineComponent({
     watch(
       () => props.apiInfo,
       (newValue) => {
-        methodType.value = (newValue.methodType || '').toLowerCase();
+        methodType.value = (newValue.methodType || 'get').toLowerCase();
       },
     );
 
@@ -298,7 +301,6 @@ export default defineComponent({
           type: props.isResponse ? 2 : 1,
         });
         const res = responseToParams(data.data);
-        console.log(res);
         sourceData.value = _.cloneDeep(res);
         // eslint-disable-next-line @typescript-eslint/no-use-before-define
         resetListMap();
