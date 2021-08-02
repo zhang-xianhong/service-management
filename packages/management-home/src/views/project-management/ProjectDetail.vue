@@ -79,7 +79,7 @@
                           message: '不能包含空格',
                           trigger: 'blur',
                         },
-                        { validator: validatorTagsPass, trigger: 'blur' },
+                        { validator: validatorRolePass, trigger: 'blur' },
                       ]"
                     >
                       <el-input v-model="userTreeInput.roles" autocomplete="off" clearable></el-input>
@@ -109,7 +109,7 @@
           </template>
         </el-tree>
       </div>
-      <el-dialog title="新建角色" v-model="DialogVisible" width="500px" @closed="cancel">
+      <el-dialog title="新建角色" v-model="DialogVisible" width="500px" @closed="cancel" :destroy-on-close="true">
         <el-form :model="form" ref="formRef">
           <el-form-item
             label="角色名称"
@@ -123,7 +123,7 @@
                 message: '不能包含空格',
                 trigger: 'blur',
               },
-              { validator: validatorTagsPass, trigger: 'blur' },
+              { validator: validatorRolePass, trigger: 'blur' },
             ]"
           >
             <el-input ref="tagName" v-model="form.name" autocomplete="off" placeholder="请输入角色名称"></el-input>
@@ -277,7 +277,8 @@ export default {
     const isDeleteVisible: Ref<boolean> = ref(true);
     const currentNode: any = ref();
     const loadings = ref(true);
-
+    // 编辑角色原始值
+    let editOldData = '';
     // 用户树
     const treeData: Ref<any> = ref([
       {
@@ -648,13 +649,16 @@ export default {
     });
 
     // 新建角色 提交取消表单
-    const validatorTagsPass = async (rule: any, value: string, callback: Function) => {
-      const { code, data } = await checkRoleRule({
-        name: value,
-        projectId: props.id,
-      });
-      if (code === 0 && data === null) {
-        callback(new Error('名称已存在!'));
+    const validatorRolePass = async (rule: any, value: string, callback: Function) => {
+      // 如果是修改
+      if (!(editOldData && editOldData === value)) {
+        const { code } = await checkRoleRule({
+          name: value,
+          projectId: props.id,
+        });
+        if (code !== 0) {
+          callback(new Error('名称已存在!'));
+        }
       }
       callback();
     };
@@ -697,8 +701,6 @@ export default {
       form.value.name = '';
       userTreeInput.value.roles = '';
       editPopBoxVisible.value[id] = false;
-      formRef.value.resetFields();
-      roleRef.value.resetFields();
     };
 
     // 修改角色名称
@@ -774,6 +776,7 @@ export default {
       });
       editPopBoxVisible.value[String(data.id)] = true;
       userTreeInput.value.roles = data.label;
+      editOldData = data.label;
     };
     return {
       loadings,
@@ -826,7 +829,7 @@ export default {
       filterRoleAndUser,
       editPopBoxVisible,
       editBoxsave,
-      validatorTagsPass,
+      validatorRolePass,
       currentNode,
       handleEditRole,
     };
