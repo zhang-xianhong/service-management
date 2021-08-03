@@ -70,11 +70,11 @@
 </template>
 
 <script lang="ts">
-import { computed, ref, WritableComputedRef, Ref } from 'vue';
+import { computed, defineComponent, ref, WritableComputedRef, Ref } from 'vue';
 import ManagerInfoInterface from '../types/manager-info-interface';
 import { copyFun } from '@/utils';
 
-export default {
+export default defineComponent({
   name: 'ManagerInfo',
   props: {
     isEdit: {
@@ -167,7 +167,7 @@ export default {
       handleCopy,
     };
   },
-};
+});
 </script>
 
 <style scoped>

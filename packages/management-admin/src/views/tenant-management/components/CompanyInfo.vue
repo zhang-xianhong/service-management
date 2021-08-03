@@ -176,7 +176,7 @@
 </template>
 
 <script lang="ts">
-import { computed, ref, WritableComputedRef, getCurrentInstance, Ref, watch } from 'vue';
+import { computed, defineComponent, ref, WritableComputedRef, getCurrentInstance, Ref, watch } from 'vue';
 import useCompanyInfo from '../utils/tenant-config';
 import { IMAGE_UPLOAD } from '@/shared/constant/file';
 import { SuccessResponse } from '@/types/response';
@@ -184,7 +184,7 @@ import { getImageUrl } from '@/api/files';
 import { validateCompanyName, validateLicense, validateEngAbbr } from '@/api/tenant';
 import CompanyInfoInterface from '../types/company-info-interface';
 import { uploadValidate } from '@/utils/validate';
-export default {
+export default defineComponent({
   name: 'CompanyInfo',
   props: {
     isEdit: {
@@ -453,7 +453,7 @@ export default {
       validateLicenseId,
     };
   },
-};
+});
 </script>
 
 <style lang="scss" scoped>
