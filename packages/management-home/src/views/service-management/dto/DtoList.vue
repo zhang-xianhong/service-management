@@ -29,6 +29,7 @@
         <el-table-column label="操作" align="right">
           <template #default="scope">
             <el-button @click="editDtoModel(scope.row)" type="text" size="small">编辑</el-button>
+            <el-button @click="removeDtoModel(scope.row)" type="text" size="small">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -67,7 +68,7 @@ export default defineComponent({
   },
   emits: ['on-confirm'],
   setup() {
-    const { fetchDtoList, dtoList, loading } = useDtoList();
+    const { fetchDtoList, dtoList, loading, removeDto } = useDtoList();
 
     const route = useRoute();
 
@@ -124,6 +125,12 @@ export default defineComponent({
       // eslint-disable-next-line no-unused-expressions
       editDtoModelRef.value?.dtoForm?.resetFields();
     };
+    const removeDtoModel = (row: DtoModel) => {
+      removeDto({
+        serviceId: (serviceId ?? id) as string,
+        uniqueId: row.uniqueId,
+      });
+    };
     return {
       dtoList,
       currentDto,
@@ -137,6 +144,7 @@ export default defineComponent({
       fetchDtoList,
       getSelectedData,
       resetList,
+      removeDtoModel,
     };
   },
 });
