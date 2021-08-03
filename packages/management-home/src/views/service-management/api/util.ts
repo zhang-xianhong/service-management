@@ -18,8 +18,8 @@ export const validName = (name: string, list: any[], id: string) => {
   if (isKeyword(name)) {
     return `禁止使用${name}关键字`;
   }
-  if (name.length > 256) {
-    return '接口名称最多支持256个字符';
+  if (name.length > 128) {
+    return '接口名称最多支持128个字符';
   }
   const nameLowerCase = name.toLocaleLowerCase();
   const hasRepeat = list.find((item) => item.$id !== id && item.name.toLocaleLowerCase() === nameLowerCase);
@@ -58,12 +58,9 @@ export const validUrl = (url: string, list: any[], id: string) => {
   return false;
 };
 
-export const validDescription = (desc: string) => {
-  if (!desc) {
-    return '描述不能为空';
-  }
-  if (desc.length > 500) {
-    return '描述最多支持512个字符';
+export const validDescription = (desc = '') => {
+  if (desc.length > 10240) {
+    return '描述最多支持10240个字符';
   }
   return false;
 };
