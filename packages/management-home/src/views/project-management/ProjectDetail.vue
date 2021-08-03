@@ -714,6 +714,11 @@ export default {
     // 修改角色名称
     const editBoxsave = (data: any) => {
       const ids = String(data.id);
+      if (userTreeInput.value.roles === editOldData) {
+        userTreeInput.value.roles = '';
+        editPopBoxVisible.value[ids] = false;
+        return;
+      }
       roleRef.value.validate(async (isValid: boolean) => {
         if (isValid) {
           submitting.value = true;
