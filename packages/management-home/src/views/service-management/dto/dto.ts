@@ -1,4 +1,5 @@
 import { dtoModelAPI } from '@/api/servers';
+import { ElMessage } from 'element-plus';
 import { computed, ref } from 'vue';
 
 export type DataType = 'String' | 'Int32' | 'Int64' | 'Float' | 'Double' | 'Date' | 'Boolean' | 'Array' | 'Object';
@@ -135,11 +136,28 @@ export const useDtoList = () => {
     loading.value = true;
     try {
       const { data, code } = await dtoModelAPI.findAll(serviceId);
-
       loading.value = false;
 
       if (code === 0) {
         setDtoList(data);
+      }
+    } catch (error) {
+      loading.value = false;
+      console.log(error);
+    }
+  };
+
+  const removeDto = async (params: DtoApiParams) => {
+    loading.value = true;
+    const { serviceId } = params;
+    try {
+      const { code } = await dtoModelAPI.remove(params);
+      loading.value = false;
+
+      if (code === 0) {
+        // updatelist
+        ElMessage.success('删除成功');
+        fetchDtoList(serviceId);
       }
     } catch (error) {
       loading.value = false;
@@ -151,5 +169,6 @@ export const useDtoList = () => {
     setDtoList,
     loading: computed(() => loading.value),
     dtoList: computed(() => dtoList.value),
+    removeDto,
   };
 };
