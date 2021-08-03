@@ -340,7 +340,7 @@ export default {
           gender: genderLabel[user.gender as 0 | 1],
         }));
         // roleId： 6是项目负责人；7是访客 不显示
-        const noPaRoles = data.roles.filter((x: any) => x.roleId !== 6 && x.roleId !== 7);
+        const noPaRoles = data.roles.filter((x: any) => x.roleId !== 7);
         treeData.value = _.flow(
           _.reject({ isOwnerRole: true }),
           _.map((role: any) => ({
@@ -435,6 +435,8 @@ export default {
 
     // 选中角色的权限点信息
     const checkedItem: any = ref({});
+    // 权限角色数据
+    const authRoleList: Ref<any> = ref([]);
     // 获取角色对应权限点
     const getAuth = async (node: any) => {
       // 获取当前选中节点数据
@@ -451,7 +453,17 @@ export default {
           const { moduleIds } = data;
           const checkObj: any = {};
           Object.entries(checkedItem.value).forEach((item: any) => {
-            checkObj[item[0]] = moduleIds;
+            checkObj[item[0]] = [];
+          });
+          // 处理权限点
+          moduleIds.forEach((moduleItem: any) => {
+            authRoleList.value.forEach((roleItem: any) => {
+              const { children } = roleItem;
+              const existData: any = children.find((authItem: any) => authItem.id === moduleItem);
+              if (typeof existData !== 'undefined') {
+                checkObj[String(roleItem.id)].push(moduleItem);
+              }
+            });
           });
           checkedItem.value = checkObj;
         } else {
@@ -541,8 +553,6 @@ export default {
 
     // tab切换菜单
     const activeTab = ref('userList');
-    // 权限角色数据
-    const authRoleList: Ref<any> = ref([]);
     // 选中所有
     const checkAll: any = ref({});
     const isIndeterminate: any = ref({});
@@ -568,8 +578,6 @@ export default {
       Object.values(checkedItem.value).forEach((item: any) => {
         moduleIds = [...moduleIds, ...item];
       });
-      // 去重
-      moduleIds = [...new Set(moduleIds)];
       // 获取当前选中节点数据
       const { data } = currentNode.value;
       const roleId = data.id;
@@ -603,7 +611,7 @@ export default {
     const handleCheckedItemsChange = (data: any) => {
       const { id, children } = data;
       const selId = String(id);
-      const checkedCount = checkedItem.value[selId].length;
+      const checkedCount = checkedItem.value[selId]?.length;
       checkAll.value[selId] = checkedCount === children.length;
       isIndeterminate.value[selId] = checkedCount > 0 && checkedCount < children.length;
     };
