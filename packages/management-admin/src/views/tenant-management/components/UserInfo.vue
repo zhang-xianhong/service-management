@@ -79,13 +79,13 @@
 </template>
 
 <script lang="ts">
-import { computed, ref, WritableComputedRef, getCurrentInstance, Ref, watch } from 'vue';
+import { computed, defineComponent, ref, WritableComputedRef, getCurrentInstance, Ref, watch } from 'vue';
 import { IMAGE_UPLOAD } from '@/shared/constant/file';
 import { SuccessResponse } from '@/types/response';
 import { getImageUrl } from '@/api/files';
 import UserInfoInterface from '../types/user-info-interface';
 import { uploadValidate } from '@/utils/validate';
-export default {
+export default defineComponent({
   name: 'UserInfo',
   props: {
     isEdit: {
@@ -223,7 +223,7 @@ export default {
       reverseUploadSuccess,
     };
   },
-};
+});
 </script>
 
 <style scoped>
