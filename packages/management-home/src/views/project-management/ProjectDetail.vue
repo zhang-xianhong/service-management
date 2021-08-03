@@ -675,12 +675,12 @@ export default {
     const validatorRolePass = async (rule: any, value: string, callback: Function) => {
       // 如果是修改
       if (!(editOldData && editOldData === value)) {
-        const { code } = await checkRoleRule({
+        const { code, data } = await checkRoleRule({
           name: value,
           projectId: props.id,
         });
-        if (code !== 0) {
-          callback(new Error('名称已存在!'));
+        if (code === 0 && !data) {
+          callback(new Error('该角色名称已存在!'));
         }
       }
       callback();
