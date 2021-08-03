@@ -234,15 +234,20 @@ export default defineComponent({
         return false;
       }
       submitLoading.value = true;
-      addProjectData().then((res: any) => {
-        if (res?.code === 0) {
-          pageInfo.page = 1;
-          getProjectListData();
-          closeDialog();
-          window.location.reload();
-        }
-        submitLoading.value = false;
-      });
+      addProjectData()
+        .then((res: any) => {
+          if (res?.code === 0) {
+            pageInfo.page = 1;
+            getProjectListData();
+            closeDialog();
+            window.location.reload();
+          }
+          submitLoading.value = false;
+        })
+        .catch((e) => {
+          console.log(e);
+          submitLoading.value = false;
+        });
     };
 
     const handleSizeChange = (res: number) => {
