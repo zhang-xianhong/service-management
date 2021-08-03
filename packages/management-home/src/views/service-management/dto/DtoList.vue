@@ -40,7 +40,7 @@
       <EditDtoModel :dto-data="currentDto" ref="editDtoModelRef" />
       <template #footer>
         <span class="dialog-footer">
-          <el-button type="primary" @click="onConfirmEdit">确定</el-button>
+          <el-button type="primary" @click="onConfirmEdit" :loading="confirmLoading">确定</el-button>
           <el-button @click="closeEditDto">取消</el-button>
         </span>
       </template>
@@ -73,8 +73,12 @@ export default defineComponent({
     const route = useRoute();
 
     const { serviceId, apiId, id } = route.params;
+
+    const currentServiceId = (serviceId ?? id) as string;
+    const confirmLoading = ref<boolean>(false);
+
     onBeforeMount(() => {
-      fetchDtoList((serviceId ?? id) as string);
+      fetchDtoList(currentServiceId);
     });
     const {
       currentDto,
@@ -96,19 +100,21 @@ export default defineComponent({
         initEdit(EditMode.Update, data);
       } else {
         // create
-        const createData: CreatDtoModel = { ...EMPTY_DTO, serviceId: Number(serviceId), apiId: Number(apiId) };
+        const createData: CreatDtoModel = { ...EMPTY_DTO, serviceId: Number(currentServiceId), apiId: Number(apiId) };
         initEdit(EditMode.Create, createData);
       }
     };
 
     const onConfirmEdit = async () => {
+      confirmLoading.value = true;
       const dtoData = await editDtoModelRef.value?.getData();
+      confirmLoading.value = false;
       if (dtoData) {
         setDtoModel(dtoData);
         await syncDtoData();
         closeEditDto();
         // 刷新列表
-        fetchDtoList(serviceId as string);
+        fetchDtoList(currentServiceId);
       }
     };
     const getSelectedData = () => {
@@ -127,7 +133,7 @@ export default defineComponent({
     };
     const removeDtoModel = (row: DtoModel) => {
       removeDto({
-        serviceId: (serviceId ?? id) as string,
+        serviceId: currentServiceId,
         uniqueId: row.uniqueId,
       });
     };
@@ -138,6 +144,7 @@ export default defineComponent({
       editDtoModelRef,
       loading,
       selectedId,
+      confirmLoading,
       onConfirmEdit,
       closeEditDto,
       editDtoModel,
