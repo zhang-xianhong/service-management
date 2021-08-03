@@ -9,13 +9,13 @@
       :row-class-name="tableRowClassName"
     >
       <el-table-column type="index" width="50" label="序号"></el-table-column>
-      <el-table-column prop="name" label="接口名称">
+      <el-table-column prop="name" label="接口名称" class-name="is-required">
         <template #default="scope">
           <span v-if="editId !== scope.row.$id">{{ scope.row.name }}</span>
           <el-input
             placeholder="请输入接口名称"
             v-model.trim="scope.row.name"
-            maxlength="256"
+            maxlength="128"
             v-else
             :ref="(ref) => (inputRefs[`name.${scope.row.$id}`] = ref)"
             @input="() => clearError(`name.${scope.row.$id}`)"
@@ -23,7 +23,7 @@
           />
         </template>
       </el-table-column>
-      <el-table-column prop="methodType" label="请求方式" width="170">
+      <el-table-column prop="methodType" label="请求方式" width="170" class-name="is-required">
         <template #default="scope">
           <span v-if="editId !== scope.row.$id">{{ scope.row.methodType }}</span>
           <el-select v-else placeholder="请选择请求方式" v-model="scope.row.methodType">
@@ -31,7 +31,7 @@
           </el-select>
         </template>
       </el-table-column>
-      <el-table-column prop="modelId" label="数据对象" width="200">
+      <el-table-column prop="modelId" label="数据对象" width="200" class-name="is-required">
         <template #default="scope">
           <span v-if="scope.row.isSystem">通用</span>
           <template v-else>
@@ -47,7 +47,7 @@
           </template>
         </template>
       </el-table-column>
-      <el-table-column prop="url" label="Path">
+      <el-table-column prop="url" label="Path" class-name="is-required">
         <template #default="scope">
           <span v-if="editId !== scope.row.$id">{{ scope.row.url }}</span>
           <el-input
@@ -68,7 +68,7 @@
             v-else
             placeholder="请输入接口描述"
             v-model.trim="scope.row.description"
-            maxlength="512"
+            maxlength="10240"
             :ref="(ref) => (inputRefs[`description.${scope.row.$id}`] = ref)"
             @input="() => clearError(`description.${scope.row.$id}`)"
             @change="(value) => handleInputChange('description', scope.row.$id, value)"

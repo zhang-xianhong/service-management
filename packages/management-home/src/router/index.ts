@@ -263,7 +263,7 @@ const routes: Array<RouteRecordRaw> = [
     name: 'ServiceManagement',
     component: Layout,
     meta: {
-      title: '服务管理',
+      title: '服务建模',
       icon: 'service',
       isRootLevel: true,
       id: 7,
@@ -278,6 +278,16 @@ const routes: Array<RouteRecordRaw> = [
           title: '业务服务',
           isRootLevel: false,
           id: 7,
+          hidden: false,
+        },
+      },
+      {
+        path: 'iot-list',
+        component: () => import('@/views/service-management/iot/Index.vue'),
+        name: 'IotServiceList',
+        meta: {
+          title: 'IOT服务',
+          isRootLevel: false,
           hidden: false,
         },
       },

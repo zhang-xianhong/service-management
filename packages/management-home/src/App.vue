@@ -1,6 +1,8 @@
 <template>
   <div class="apps">
-    <router-view></router-view>
+    <el-config-provider :locale="locale">
+      <router-view></router-view>
+    </el-config-provider>
   </div>
 </template>
 
@@ -9,8 +11,13 @@ import { defineComponent, watch } from 'vue';
 import { getUser } from '@/shared/userinfo';
 import { routerLoading } from '@/layout/messageCenter/routerRef';
 import { useRouter, useRoute } from 'vue-router';
+import { ElConfigProvider } from 'element-plus';
+import zhCn from 'element-plus/lib/locale/lang/zh-cn';
 
 export default defineComponent({
+  components: {
+    [ElConfigProvider.name]: ElConfigProvider,
+  },
   setup() {
     getUser();
     const router = useRouter();
@@ -19,6 +26,10 @@ export default defineComponent({
     watch(routerLoading, () => {
       router.push(route.redirectedFrom?.path || '/');
     });
+
+    return {
+      locale: zhCn,
+    };
   },
 });
 </script>
