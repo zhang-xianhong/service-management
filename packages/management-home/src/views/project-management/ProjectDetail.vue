@@ -437,6 +437,15 @@ export default {
     const checkedItem: any = ref({});
     // 权限角色数据
     const authRoleList: Ref<any> = ref([]);
+    // 初始化多选数据
+    const initCheckData = () => {
+      const checkData: any = {};
+      Object.entries(checkedItem.value).forEach((item: any) => {
+        checkData[item[0]] = [];
+      });
+      return checkData;
+    };
+
     // 获取角色对应权限点
     const getAuth = async (node: any) => {
       // 获取当前选中节点数据
@@ -451,10 +460,7 @@ export default {
         const { code, data } = await getAuthByRoleId({ roleId, projectId: props.id });
         if (code === ResCode.Success) {
           const { moduleIds } = data;
-          const checkObj: any = {};
-          Object.entries(checkedItem.value).forEach((item: any) => {
-            checkObj[item[0]] = [];
-          });
+          const checkObj = initCheckData();
           // 处理权限点
           moduleIds.forEach((moduleItem: any) => {
             authRoleList.value.forEach((roleItem: any) => {
@@ -595,6 +601,15 @@ export default {
       } catch (error) {
         console.log(error);
       }
+    };
+
+    // 初始化角色权限
+    const initRoleAuth = () => {
+      const checkObj = initCheckData();
+      checkedItem.value = checkObj;
+      editDisable.value = true;
+      isEdit.value = true;
+      currentNode.value = {};
     };
 
     // 全选
@@ -768,7 +783,10 @@ export default {
             roleId: rowId,
             projectId: props.id,
           });
-          if (code === 0) reloadUserList({ id: rowId });
+          if (code === 0) {
+            reloadUserList({ id: rowId });
+            initRoleAuth();
+          }
         });
       } else {
         ElMessageBox.confirm(
