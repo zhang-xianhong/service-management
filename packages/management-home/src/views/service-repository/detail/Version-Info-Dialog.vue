@@ -93,7 +93,7 @@ export default defineComponent({
       visible.value = true;
       fetchData(snapshotNo);
     };
-    const formatSql = (sql: string) => sql.replace(/\n/gm, '<br/>').replace(/\t/gm, '&nbsp;&nbsp;&nbsp;&nbsp;');
+    const formatSql = (sql: string) => (sql || '').replace(/\n/gm, '<br/>').replace(/\t/gm, '&nbsp;&nbsp;&nbsp;&nbsp;');
     return {
       visible,
       handleOpen,
