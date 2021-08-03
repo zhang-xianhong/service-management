@@ -36,7 +36,7 @@
     </list-wrap>
 
     <!-- 新建Dto modal -->
-    <el-dialog title="新建DTO模型" v-model="showEditDto" width="50%">
+    <el-dialog title="新建DTO模型" v-model="showEditDto" width="80%">
       <EditDtoModel :dto-data="currentDto" ref="editDtoModelRef" />
       <template #footer>
         <span class="dialog-footer">
