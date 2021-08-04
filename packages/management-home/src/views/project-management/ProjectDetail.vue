@@ -387,7 +387,7 @@ export default {
     const removeUser = (row: any) => {
       ElMessageBox.confirm(
         `是否将 ${row ? row.displayName : currentNodeData.value.label} 从 ${
-          row ? currentNode.value.label : currentNode.value.parent.data.label
+          currentNode.value.parent.data.label
         } 中移除？`,
         '提示',
         {
