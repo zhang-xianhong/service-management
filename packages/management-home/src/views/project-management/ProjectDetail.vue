@@ -340,7 +340,7 @@ export default {
           gender: genderLabel[user.gender as 0 | 1],
         }));
         // roleId： 6是项目负责人；7是访客 不显示
-        const noPaRoles = data.roles.filter((x: any) => x.roleId !== 6 && x.roleId !== 7);
+        const noPaRoles = data.roles.filter((x: any) => x.roleId !== 7);
         treeData.value = _.flow(
           _.reject({ isOwnerRole: true }),
           _.map((role: any) => ({
@@ -435,6 +435,17 @@ export default {
 
     // 选中角色的权限点信息
     const checkedItem: any = ref({});
+    // 权限角色数据
+    const authRoleList: Ref<any> = ref([]);
+    // 初始化多选数据
+    const initCheckData = () => {
+      const checkData: any = {};
+      Object.entries(checkedItem.value).forEach((item: any) => {
+        checkData[item[0]] = [];
+      });
+      return checkData;
+    };
+
     // 获取角色对应权限点
     const getAuth = async (node: any) => {
       // 获取当前选中节点数据
@@ -449,9 +460,16 @@ export default {
         const { code, data } = await getAuthByRoleId({ roleId, projectId: props.id });
         if (code === ResCode.Success) {
           const { moduleIds } = data;
-          const checkObj: any = {};
-          Object.entries(checkedItem.value).forEach((item: any) => {
-            checkObj[item[0]] = moduleIds;
+          const checkObj = initCheckData();
+          // 处理权限点
+          moduleIds.forEach((moduleItem: any) => {
+            authRoleList.value.forEach((roleItem: any) => {
+              const { children } = roleItem;
+              const existData: any = children.find((authItem: any) => authItem.id === moduleItem);
+              if (typeof existData !== 'undefined') {
+                checkObj[String(roleItem.id)].push(moduleItem);
+              }
+            });
           });
           checkedItem.value = checkObj;
         } else {
@@ -541,8 +559,6 @@ export default {
 
     // tab切换菜单
     const activeTab = ref('userList');
-    // 权限角色数据
-    const authRoleList: Ref<any> = ref([]);
     // 选中所有
     const checkAll: any = ref({});
     const isIndeterminate: any = ref({});
@@ -568,8 +584,6 @@ export default {
       Object.values(checkedItem.value).forEach((item: any) => {
         moduleIds = [...moduleIds, ...item];
       });
-      // 去重
-      moduleIds = [...new Set(moduleIds)];
       // 获取当前选中节点数据
       const { data } = currentNode.value;
       const roleId = data.id;
@@ -589,6 +603,15 @@ export default {
       }
     };
 
+    // 初始化角色权限
+    const initRoleAuth = () => {
+      const checkObj = initCheckData();
+      checkedItem.value = checkObj;
+      editDisable.value = true;
+      isEdit.value = true;
+      currentNode.value = {};
+    };
+
     // 全选
     const handleCheckAllChange = (data: any) => {
       const { id, children } = data;
@@ -603,7 +626,7 @@ export default {
     const handleCheckedItemsChange = (data: any) => {
       const { id, children } = data;
       const selId = String(id);
-      const checkedCount = checkedItem.value[selId].length;
+      const checkedCount = checkedItem.value[selId]?.length;
       checkAll.value[selId] = checkedCount === children.length;
       isIndeterminate.value[selId] = checkedCount > 0 && checkedCount < children.length;
     };
@@ -652,12 +675,12 @@ export default {
     const validatorRolePass = async (rule: any, value: string, callback: Function) => {
       // 如果是修改
       if (!(editOldData && editOldData === value)) {
-        const { code } = await checkRoleRule({
+        const { code, data } = await checkRoleRule({
           name: value,
           projectId: props.id,
         });
-        if (code !== 0) {
-          callback(new Error('名称已存在!'));
+        if (code === 0 && !data) {
+          callback(new Error('该角色名称已存在!'));
         }
       }
       callback();
@@ -706,6 +729,11 @@ export default {
     // 修改角色名称
     const editBoxsave = (data: any) => {
       const ids = String(data.id);
+      if (userTreeInput.value.roles === editOldData) {
+        userTreeInput.value.roles = '';
+        editPopBoxVisible.value[ids] = false;
+        return;
+      }
       roleRef.value.validate(async (isValid: boolean) => {
         if (isValid) {
           submitting.value = true;
@@ -755,7 +783,10 @@ export default {
             roleId: rowId,
             projectId: props.id,
           });
-          if (code === 0) reloadUserList({ id: rowId });
+          if (code === 0) {
+            reloadUserList({ id: rowId });
+            initRoleAuth();
+          }
         });
       } else {
         ElMessageBox.confirm(

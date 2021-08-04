@@ -28,7 +28,7 @@
         :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
         class="params-table"
       >
-        <el-table-column prop="name" label="参数" class-name="col-inline">
+        <el-table-column prop="name" label="参数" class-name="col-inline is-required">
           <template #default="scope">
             <span v-if="!isEdit || scope.row.readonly || scope.row.builtin">{{ scope.row.name }}</span>
             <el-input
@@ -49,7 +49,7 @@
             </span>
           </template>
         </el-table-column>
-        <el-table-column prop="type" label="参数类型" width="180">
+        <el-table-column prop="type" label="参数类型" width="180" class-name="is-required">
           <template #default="scope">
             <span v-if="!isEdit || scope.row.readonly">{{ getParamTypeName(scope.row.type) }}</span>
             <el-select
@@ -72,7 +72,7 @@
             </el-select>
           </template>
         </el-table-column>
-        <el-table-column prop="required" label="是否必填" width="150">
+        <el-table-column prop="required" label="是否必填" width="150" class-name="is-required">
           <template #default="scope">
             <span v-if="!isEdit || scope.row.readonly">{{ scope.row.required ? '是' : '否' }}</span>
             <el-select placeholder="请选择" v-model="scope.row.required" v-else>
