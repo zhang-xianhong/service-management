@@ -61,7 +61,10 @@
 <script lang="ts">
 import { defineComponent, reactive, ref, getCurrentInstance, Ref } from 'vue';
 import { getServiceConfig, getServiceUpgrade, releaseService } from '@/api/servers';
-import { closeReleaseDialog, encode } from '@/views/service-management/business-service/utils/service-release-data-utils';
+import {
+  closeReleaseDialog,
+  encode,
+} from '@/views/service-management/business-service/utils/service-release-data-utils';
 import CodeEditor from '@/components/sql-editor/Index.vue';
 // 状态码
 enum ResCode {
