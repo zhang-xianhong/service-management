@@ -1,9 +1,13 @@
 <template>
   <div class="form">
-    <h1>登录</h1>
+    <h1>超级管理员登录</h1>
     <el-form ref="formRef" :model="loginInfo" :rules="formRules">
       <el-form-item prop="username">
-        <el-input class="form-item" v-model="loginInfo.username" placeholder="帐号"></el-input>
+        <el-input
+          class="form-item"
+          v-model="loginInfo.username"
+          placeholder="请输入登录英文名称/邮箱/手机号"
+        ></el-input>
       </el-form-item>
       <el-form-item prop="password">
         <el-input
@@ -11,12 +15,17 @@
           show-password
           class="form-item"
           v-model="loginInfo.password"
-          placeholder="密码"
+          placeholder="请输入登录密码"
           minlength="8"
         ></el-input>
       </el-form-item>
       <el-form-item prop="captchaCode">
-        <el-input class="form-item" v-model="loginInfo.captchaCode" placeholder="验证码" @change="onInputCaptchaCode">
+        <el-input
+          class="form-item"
+          v-model="loginInfo.captchaCode"
+          placeholder="请输入右侧验证码"
+          @change="onInputCaptchaCode"
+        >
           <template #suffix>
             <el-button id="success-btn" v-if="isPassed" type="success" circle>
               <i class="el-icon-check"></i>
@@ -28,7 +37,7 @@
     </el-form>
     <el-button class="form-item__btn" type="primary" @click="onLogin" :loading="loading">登录</el-button>
     <!-- TODO:后续版本开发 -->
-    <!-- <div class="form-item__link" @click="goForgetPassword">忘记密码?</div> -->
+    <div class="form-item__link" @click="goForgetPassword">忘记密码?</div>
   </div>
 </template>
 
@@ -77,7 +86,7 @@ export default defineComponent({
     getCaptchaUrl();
 
     const goForgetPassword = () => {
-      router.push('/login/forget-password');
+      router.push('/forget-password');
     };
 
     // 验证码是否验证通过
@@ -186,6 +195,9 @@ export default defineComponent({
 
 <style scoped lang="scss">
 .form {
+  h1 {
+    font-size: 36px;
+  }
   &-item {
     display: block;
     width: 400px;
@@ -198,8 +210,11 @@ export default defineComponent({
       font-size: 14px;
     }
     &__link {
+      width: 70px;
       color: #bbb;
       cursor: pointer;
+      margin-top: 20px;
+      font-size: 14px;
     }
     img {
       width: 130px;

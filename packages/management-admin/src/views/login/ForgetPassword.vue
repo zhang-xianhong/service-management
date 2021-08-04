@@ -35,6 +35,11 @@ const tencentLogo = require('../../assets/img/tencent-logo.png');
 const citybaseLogo = require('../../assets/img/citybase-logo.png');
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const completeLogo = require('../../assets/img/complete.png');
+enum Types {
+  email = 'email',
+  password = 'password',
+  Complete = 'Complete',
+}
 
 export default defineComponent({
   name: 'ForgetPassword',
@@ -56,8 +61,22 @@ export default defineComponent({
       componentName: 'Email',
     });
     // TODO:忘记密码接口暂未开发
-    const onSubmit = (type: 'email' | 'password') => {
-      console.log(type);
+    const onSubmit = (payload: { type: Types }) => {
+      console.log(payload);
+      switch (payload.type) {
+        case 'email':
+          state.activeStep = 1;
+          break;
+        case 'password':
+          state.activeStep = 2;
+          break;
+        case 'Complete':
+          state.activeStep = 3;
+          break;
+      }
+      state.componentName = payload.type;
+      console.log('state.componentName', state.componentName);
+      console.log('state.activeStep', state.activeStep);
     };
     const backToLogin = () => {
       router.push('/login');
@@ -79,7 +98,7 @@ export default defineComponent({
   background: #fff;
   height: 900px;
   &-header {
-    height: 72px;
+    height: 70px;
     border-bottom: 1px solid #e6e6e6;
     &__icon {
       float: left;
@@ -95,9 +114,12 @@ export default defineComponent({
   }
   &-body {
     height: calc(100% - 70px);
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    width: 560px;
+    margin: auto;
+    margin-top: 150px;
+    // display: flex;
+    // justify-content: center;
+    // align-items: center;
   }
 }
 .complete-container {
