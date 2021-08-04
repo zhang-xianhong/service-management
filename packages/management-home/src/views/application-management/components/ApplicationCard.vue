@@ -40,17 +40,12 @@
           ></svg-icon>
         </el-tooltip>
         <el-tooltip content="删除应用" placement="top" effect="light" v-if="getShowBool('delete')">
-          <i class="el-icon-close application-operation__close" @click="onClose"></i>
+          <i class="el-icon-close application-operation__close" @click="onClose" style="font-size: 15px"></i>
         </el-tooltip>
       </div>
     </div>
   </div>
-  <application-detail
-    :visable="isDetailVisable"
-    :detail="computedDetail"
-    @close="onCloseDetail"
-    v-if="getShowBool('delete')"
-  ></application-detail>
+  <application-detail :visable="isDetailVisable" :detail="computedDetail" @close="onCloseDetail"></application-detail>
 </template>
 
 <script lang="ts">
