@@ -154,7 +154,7 @@ const routes: Array<RouteRecordRaw> = [
           title: '项目列表',
           icon: 'project-list',
           isRootLevel: false,
-          id: 13,
+          id: 4,
           hidden: false,
         },
       },
@@ -167,7 +167,7 @@ const routes: Array<RouteRecordRaw> = [
           isRootLevel: false,
           hidden: true,
           activeMenu: '/project-management/project-list',
-          id: 21,
+          id: 4,
           showBackButton: true,
         },
         props: true,
@@ -263,7 +263,7 @@ const routes: Array<RouteRecordRaw> = [
     name: 'ServiceManagement',
     component: Layout,
     meta: {
-      title: '服务管理',
+      title: '服务建模',
       icon: 'service',
       isRootLevel: true,
       id: 7,
@@ -277,8 +277,29 @@ const routes: Array<RouteRecordRaw> = [
         meta: {
           title: '业务服务',
           isRootLevel: false,
-          id: 16,
+          id: 7,
           hidden: false,
+        },
+      },
+      {
+        path: 'iot-list',
+        component: () => import('@/views/service-management/iot/Index.vue'),
+        name: 'IotServiceList',
+        meta: {
+          title: 'IOT服务',
+          isRootLevel: false,
+          hidden: false,
+        },
+      },
+      {
+        path: ':serviceId/interface/:apiId/params',
+        component: () => import('@/views/service-management/api-params/ParamList.vue'),
+        name: 'ServiceApiParamList',
+        meta: {
+          title: '接口参数',
+          isRootLevel: false,
+          hidden: true,
+          showBackButton: true,
         },
       },
       {
@@ -291,7 +312,7 @@ const routes: Array<RouteRecordRaw> = [
           hidden: true,
           activeMenu: '/service-management/service-list',
           showBackButton: true,
-          id: 16,
+          id: 7,
         },
       },
       // {
@@ -575,6 +596,15 @@ const routes: Array<RouteRecordRaw> = [
       },
     ],
   },
+  // {
+  //   path: '/dto-dev',
+  //   name: 'dto-dev',
+  //   component: () => import('@/views/service-management/dto/Index.vue'),
+  //   meta: {
+  //     isRootLevel: true,
+  //     title: '没有权限',
+  //   },
+  // },
 ];
 
 export const reCreateRouter = (routes: Array<RouteRecordRaw>): Router =>

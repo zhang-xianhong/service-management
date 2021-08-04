@@ -22,5 +22,20 @@ export default {
   POST_SERVICE_RELEASE: ['/services/release', '/mock/services/release.json'],
   GET_SERVICE_DEPENDENCY_LIST: ['/services/dependencies', '/mock/services/dependencies.json'],
   GET_RELEASE_CHECK: ['/services/release/check', '/mock/services/check.json'],
+
+  GET_SERVICE_API_LIST: ['/api/list'],
+  GET_SERVICE_API_INFO: ['/api/select'],
+  SAVE_SERVICE_API: ['/api/save'],
+  DELETE_SERVICE_API: ['/api/delete'],
+  UPDATE_SERVICE_API: ['/api/update'],
+  GET_DTO_MODEL: ['/dto/select'],
+  GET_DTO_MODEL_ALL_LIST: ['/dto/list'],
+  ADD_DTO_MODEL: ['/dto/add'],
+  UPDATE_DTO_MODEL: ['/dto/update'],
+  REMOVE_DTO_MODEL: ['/dto/delete'],
+  GET_DTO_MODEL_LIST: ['/mock/service/dto-list.json', '/mock/service/dto-list.json'],
+
+  GET_SERVICE_API_PARAMS: ['/api/param/select'],
+  SAVE_SERVICE_API_PARAMS: ['/api/param/update'],
   GET_START_CHECK: ['/services/start/check', '/mock/services/check.json'],
 };

@@ -1,0 +1,286 @@
+{
+    "code": 0,
+    "message": "ok",
+    "requestId": null,
+    "data": [
+      {
+        "id": 1,
+        "menuId": null,
+        "name": "项目管理",
+        "description": "",
+        "code": "",
+        "moduleParentId": null,
+        "moduleOrder": 1
+      },
+      {
+        "id": 2,
+        "menuId": null,
+        "name": "服务建模",
+        "description": "",
+        "code": "",
+        "moduleParentId": null,
+        "moduleOrder": 2
+      },
+      {
+        "id": 3,
+        "menuId": null,
+        "name": "应用编排",
+        "description": "",
+        "code": "",
+        "moduleParentId": null,
+        "moduleOrder": 3
+      },
+      {
+        "id": 4,
+        "menuId": null,
+        "name": "部署管理",
+        "description": "",
+        "code": "",
+        "moduleParentId": null,
+        "moduleOrder": 4
+      },
+      {
+        "id": 5,
+        "menuId": null,
+        "name": "发布管理",
+        "description": "",
+        "code": "",
+        "moduleParentId": null,
+        "moduleOrder": 5
+      },
+      {
+        "id": 6,
+        "menuId": 4,
+        "name": "管理项目",
+        "description": "新增、查询、修改、删除项目",
+        "code": "select-add-update-delete",
+        "moduleParentId": 1,
+        "moduleOrder": 1
+      },
+      {
+        "id": 8,
+        "menuId": 4,
+        "name": "项目详情",
+        "description": "查询项目详情",
+        "code": "selectDetail",
+        "moduleParentId": 1,
+        "moduleOrder": 4
+      },
+      {
+        "id": 9,
+        "menuId": 4,
+        "name": "编辑项目",
+        "description": "修改项目信息",
+        "code": "select-update",
+        "moduleParentId": 1,
+        "moduleOrder": 3
+      },
+      {
+        "id": 10,
+        "menuId": 4,
+        "name": "成员管理",
+        "description": "项目成员管理",
+        "code": "updateMember",
+        "moduleParentId": 1,
+        "moduleOrder": 5
+      },
+      {
+        "id": 11,
+        "menuId": 4,
+        "name": "角色管理",
+        "description": "项目角色管理",
+        "code": "updateRole",
+        "moduleParentId": 1,
+        "moduleOrder": 6
+      },
+      {
+        "id": 12,
+        "menuId": 14,
+        "name": "部署申请",
+        "description": "新增、查询、修改、删除部署",
+        "code": "select-add-update-delete",
+        "moduleParentId": 4,
+        "moduleOrder": 1
+      },
+      {
+        "id": 13,
+        "menuId": 15,
+        "name": "部署审核",
+        "description": "审核部署申请",
+        "code": "select-update",
+        "moduleParentId": 4,
+        "moduleOrder": 2
+      },
+      {
+        "id": 14,
+        "menuId": 7,
+        "name": "管理服务",
+        "description": "新建、编辑、删除服务",
+        "code": "add-update-delete-select",
+        "moduleParentId": 2,
+        "moduleOrder": 1
+      },
+      {
+        "id": 15,
+        "menuId": 7,
+        "name": "服务列表",
+        "description": "查看服务列表",
+        "code": "select",
+        "moduleParentId": 2,
+        "moduleOrder": 2
+      },
+      {
+        "id": 16,
+        "menuId": 7,
+        "name": "编辑服务",
+        "description": "编辑服务基本信息",
+        "code": "update",
+        "moduleParentId": 2,
+        "moduleOrder": 3
+      },
+      {
+        "id": 17,
+        "menuId": 7,
+        "name": "服务详情",
+        "description": "查看服务详情",
+        "code": "selectDetail",
+        "moduleParentId": 2,
+        "moduleOrder": 4
+      },
+      {
+        "id": 18,
+        "menuId": 7,
+        "name": "模型管理",
+        "description": "添加、查询、编辑、删除模型",
+        "code": "add-update-delete-select",
+        "moduleParentId": 2,
+        "moduleOrder": 5
+      },
+      {
+        "id": 19,
+        "menuId": 7,
+        "name": "模型信息",
+        "description": "查看模型信息",
+        "code": "selectDetail",
+        "moduleParentId": 2,
+        "moduleOrder": 6
+      },
+      {
+        "id": 20,
+        "menuId": 7,
+        "name": "接口管理",
+        "description": "添加、查询、编辑、删除接口",
+        "code": "add-update-delete-select",
+        "moduleParentId": 2,
+        "moduleOrder": 7
+      },
+      {
+        "id": 21,
+        "menuId": 7,
+        "name": "接口信息",
+        "description": "查看接口信息",
+        "code": "selectDetail",
+        "moduleParentId": 2,
+        "moduleOrder": 8
+      },
+      {
+        "id": 22,
+        "menuId": 7,
+        "name": "服务操作",
+        "description": "初始化、同步配置、启动、停止、日志、发版",
+        "code": "init-run-start-stop-release-log",
+        "moduleParentId": 2,
+        "moduleOrder": 9
+      },
+      {
+        "id": 23,
+        "menuId": 7,
+        "name": "服务配置",
+        "description": "添加服务配置",
+        "code": "updateConfig",
+        "moduleParentId": 2,
+        "moduleOrder": 10
+      },
+      {
+        "id": 24,
+        "menuId": 7,
+        "name": "查询配置",
+        "description": "查询服务配置",
+        "code": "selectConfig",
+        "moduleParentId": 2,
+        "moduleOrder": 11
+      },
+      {
+        "id": 42,
+        "menuId": 22,
+        "name": "管理应用",
+        "description": "新增、编辑、删除、查询应用",
+        "code": "add-update-delete-select",
+        "moduleParentId": 3,
+        "moduleOrder": 1
+      },
+      {
+        "id": 43,
+        "menuId": 22,
+        "name": "编辑基本信息",
+        "description": "编辑应用信息",
+        "code": "select-update",
+        "moduleParentId": 3,
+        "moduleOrder": 2
+      },
+      {
+        "id": 44,
+        "menuId": 22,
+        "name": "查询列表",
+        "description": "查询应用列表",
+        "code": "select",
+        "moduleParentId": 3,
+        "moduleOrder": 3
+      },
+      {
+        "id": 45,
+        "menuId": 22,
+        "name": "查看基本信息",
+        "description": "查看应用详情",
+        "code": "selectDetail",
+        "moduleParentId": 3,
+        "moduleOrder": 4
+      },
+      {
+        "id": 46,
+        "menuId": 22,
+        "name": "新建应用",
+        "description": "新建应用",
+        "code": "add",
+        "moduleParentId": 3,
+        "moduleOrder": 5
+      },
+      {
+        "id": 47,
+        "menuId": 22,
+        "name": "删除应用",
+        "description": "删除应用",
+        "code": "delete",
+        "moduleParentId": 3,
+        "moduleOrder": 6
+      },
+      {
+        "id": 57,
+        "menuId": 30,
+        "name": "申请发布租户仓库",
+        "description": "新增、删除、更新、查询发布",
+        "code": "add-delete-update-select",
+        "moduleParentId": 5,
+        "moduleOrder": 1
+      },
+      {
+        "id": 58,
+        "menuId": 31,
+        "name": "审核发布租户仓库",
+        "description": "审核发布申请",
+        "code": "select-update",
+        "moduleParentId": 5,
+        "moduleOrder": 2
+      }
+    ]
+  }

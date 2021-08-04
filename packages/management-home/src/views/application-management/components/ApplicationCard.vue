@@ -39,8 +39,8 @@
             @click="isDetailVisable = !isDetailVisable"
           ></svg-icon>
         </el-tooltip>
-        <el-tooltip content="删除应用" placement="top" effect="light">
-          <i class="el-icon-close application-operation__close" @click="onClose" v-if="getShowBool('delete')"></i>
+        <el-tooltip content="删除应用" placement="top" effect="light" v-if="getShowBool('delete')">
+          <i class="el-icon-close application-operation__close" @click="onClose"></i>
         </el-tooltip>
       </div>
     </div>

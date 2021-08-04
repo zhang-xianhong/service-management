@@ -96,7 +96,7 @@
               ></el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="负责人" :label-width="labelWidth">
+          <el-form-item label="负责人" :label-width="labelWidth" v-if="false">
             <fetch-owners-select @get-owners="setOwner" :use-project="false"></fetch-owners-select>
           </el-form-item>
           <el-form-item label="项目级别" :label-width="labelWidth">
@@ -113,7 +113,7 @@
             <el-radio v-model="projectDetail.status" :label="0">冻结</el-radio>
           </el-form-item>
           <el-form-item
-            label="项目简介"
+            label="项目描述"
             :label-width="labelWidth"
             prop="remark"
             :rules="[{ min: 0, max: 512, message: '最多支持512个字符', trigger: 'blur' }]"
@@ -222,15 +222,20 @@ export default defineComponent({
         return false;
       }
       submitLoading.value = true;
-      addProjectData().then((res: any) => {
-        if (res?.code === 0) {
-          pageInfo.page = 1;
-          getProjectListData();
-          closeDialog();
-          window.location.reload();
-        }
-        submitLoading.value = false;
-      });
+      addProjectData()
+        .then((res: any) => {
+          if (res?.code === 0) {
+            pageInfo.page = 1;
+            getProjectListData();
+            closeDialog();
+            window.location.reload();
+          }
+          submitLoading.value = false;
+        })
+        .catch((e) => {
+          console.log(e);
+          submitLoading.value = false;
+        });
     };
 
     const handleSizeChange = (res: number) => {
