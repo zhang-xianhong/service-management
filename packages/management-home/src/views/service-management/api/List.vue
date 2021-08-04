@@ -75,7 +75,7 @@
           />
         </template>
       </el-table-column>
-      <el-table-column prop="actions" label="操作" align="right" width="180">
+      <el-table-column prop="actions" label="操作" align="right" width="180" v-if="getShowBool('update')">
         <template #default="scope">
           <template v-if="!scope.row.isSystem">
             <template v-if="scope.row.id && editId !== scope.row.$id">
@@ -104,6 +104,7 @@ import { getServiceApiList, updateServiceApi, createServiceApi, delServiceApi } 
 import _ from 'lodash';
 import { genId } from '@/utils/util';
 import { useRouter } from 'vue-router';
+import { getShowBool } from '@/utils/permission-show-module';
 export default defineComponent({
   props: {
     id: {
@@ -338,6 +339,7 @@ export default defineComponent({
       getModelName,
       tableRowClassName,
       toParamsPage,
+      getShowBool,
     };
   },
 });

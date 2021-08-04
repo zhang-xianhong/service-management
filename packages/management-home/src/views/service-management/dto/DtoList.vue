@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-button type="primary" @click="editDtoModel()" class="create-dto__bth">新建</el-button>
+    <el-button type="primary" @click="editDtoModel()" class="create-dto__bth" v-if="getShowBool('add')">新建</el-button>
     <list-wrap
       :loading="loading"
       :inProject="false"
@@ -26,7 +26,7 @@
             {{ scope.row.zhName }}
           </template>
         </el-table-column>
-        <el-table-column label="操作" align="right">
+        <el-table-column label="操作" align="right" v-if="getShowBool('update')">
           <template #default="scope">
             <el-button @click="editDtoModel(scope.row)" type="text" size="small">编辑</el-button>
             <el-button @click="removeDtoModel(scope.row)" type="text" size="small">删除</el-button>
@@ -55,6 +55,7 @@ import { defineComponent, onBeforeMount } from '@vue/runtime-core';
 import EditDtoModel from './EditDtoModel.vue';
 import { useRoute } from 'vue-router';
 import { ElMessage } from 'element-plus';
+import { getShowBool } from '@/utils/permission-show-module';
 export default defineComponent({
   name: 'DtoListDialog',
   components: {
@@ -152,6 +153,7 @@ export default defineComponent({
       getSelectedData,
       resetList,
       removeDtoModel,
+      getShowBool,
     };
   },
 });

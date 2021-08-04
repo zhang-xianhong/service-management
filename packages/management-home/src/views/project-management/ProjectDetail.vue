@@ -10,7 +10,7 @@
       <div>
         <div class="title">
           项目信息
-          <span class="edit-btn" v-if="!editMode && getShowBool('update') && include" @click="editMode = true"
+          <span class="edit-btn" v-if="!editMode && getShowBool('update')" @click="editMode = true"
             >编辑</span
           >
         </div>
@@ -90,12 +90,14 @@
                     </div>
                   </el-form>
                   <template #reference>
-                    <i
-                      type="text"
-                      class="el-icon-edit"
-                      @click="handleEditRole(data)"
-                      v-show="node.level === 1 && !data.isSystem"
-                    ></i>
+                    <span >
+                      <i
+                        type="text"
+                        class="el-icon-edit"
+                        @click="handleEditRole(data)"
+                        v-if="node.level === 1 && !data.isSystem && getShowBool('updateRole')"
+                      ></i>
+                    </span>
                   </template>
                 </el-popover>
               </span>
@@ -143,7 +145,7 @@
             <el-table :data="userList">
               <el-table-column type="index" width="55"></el-table-column>
               <el-table-column v-for="column in columns" :key="column.prop" v-bind="column"></el-table-column>
-              <el-table-column prop="operator" width="55" v-if="getShowBool('update') && include">
+              <el-table-column prop="operator" width="55" v-if="getShowBool('updateMember')">
                 <template #default="{ row }">
                   <i
                     class="el-icon-error remove-user-icon"
