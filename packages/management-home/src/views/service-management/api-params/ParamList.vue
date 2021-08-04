@@ -1,5 +1,6 @@
 <template>
   <div class="detail-with-tabs">
+    <span class="method-type">{{ apiInfo?.methodType }}</span>
     <el-tabs v-model="activeTab" v-loading="loading">
       <el-tab-pane label="请求参数" name="req">
         <div class="tab-content-wrap">
@@ -55,5 +56,15 @@ export default defineComponent({
 <style lang="scss" scoped>
 .tab-content-wrap {
   min-height: 400px;
+}
+.detail-with-tabs {
+  .method-type {
+    position: absolute;
+    padding: 2px 8px;
+    z-index: 11;
+    background-color: #f0f0f0;
+    top: 16px;
+    left: 140px;
+  }
 }
 </style>

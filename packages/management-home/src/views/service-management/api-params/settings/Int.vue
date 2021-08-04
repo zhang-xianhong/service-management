@@ -54,7 +54,7 @@ import Base from './Base';
 const { handleSubmit, form, source, ...baseApi } = Base();
 
 const INT32_RANGE = [-2147483648, 2147483647];
-const INT64_RANGE = [-9223372036854775808, 9223372036854775808];
+const INT64_RANGE = [Number.MIN_SAFE_INTEGER, Number.MAX_SAFE_INTEGER];
 
 export default defineComponent({
   name: 'IntSettingDialog',

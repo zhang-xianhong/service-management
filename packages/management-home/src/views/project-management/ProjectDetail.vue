@@ -25,12 +25,7 @@
     <el-row class="user-info">
       <div class="user-tree" v-loading="loadings">
         <div class="user-tree-top">
-          <el-input
-            suffix-icon="el-icon-search"
-            placeholder="请输角色名称"
-            v-model="userInput"
-            @input="filterRoleAndUser"
-          ></el-input>
+          <el-input suffix-icon="el-icon-search" placeholder="请输入角色/人员名称" v-model="userInput"></el-input>
           <div class="user-tree-btn">
             <el-button type="primary" @click="DialogVisible = true" v-if="getShowBool('updateRole')">新建</el-button>
             <el-button @click="closeUserTree" :disabled="isDeleteVisible" v-if="getShowBool('updateRole')"
@@ -46,6 +41,7 @@
           node-key="id"
           :current-node-key="currentKey"
           @node-click="nodeClickHandler"
+          :filter-node-method="filterNode"
         >
           <template #default="{ node, data }">
             <div class="customNode">
@@ -99,12 +95,6 @@
                   </template>
                 </el-popover>
               </span>
-              <i
-                v-if="node.level === 1 && getShowBool('updateMember')"
-                class="el-icon-circle-plus"
-                style="float: right"
-                @click.stop="addMember(node, data)"
-              ></i>
             </div>
           </template>
         </el-tree>
@@ -140,6 +130,14 @@
         <h2>{{ currentNode?.label || '--' }}</h2>
         <el-tabs v-model="activeTab">
           <el-tab-pane label="成员列表" name="userList">
+            <el-button
+              type="primary"
+              @click="addMember"
+              :disabled="addUserBtnStatus"
+              v-if="getShowBool('updateMember')"
+            >
+              加入成员
+            </el-button>
             <el-table :data="userList">
               <el-table-column type="index" width="55"></el-table-column>
               <el-table-column v-for="column in columns" :key="column.prop" v-bind="column"></el-table-column>
@@ -214,8 +212,7 @@
 
 <script lang="ts">
 import _ from 'lodash/fp';
-import { debounce } from 'lodash';
-import { ref, Ref, provide, onMounted, getCurrentInstance } from 'vue';
+import { ref, Ref, provide, onMounted, getCurrentInstance, watch } from 'vue';
 import TreeSelector from './components/TreeSelector.vue';
 import BasicInfoForm from './components/BasicInfoForm.vue';
 import {
@@ -277,6 +274,7 @@ export default {
     const isDeleteVisible: Ref<boolean> = ref(true);
     const currentNode: any = ref();
     const loadings = ref(true);
+    const addUserBtnStatus = ref(true);
     // 编辑角色原始值
     let editOldData = '';
     // 用户树
@@ -286,7 +284,6 @@ export default {
         children: [],
       },
     ]);
-    let treeAllData: any = [];
     const editPopBoxVisible: any = ref({});
     const currentKey = ref('');
     const treeSelectorRole = ref({});
@@ -340,7 +337,7 @@ export default {
           gender: genderLabel[user.gender as 0 | 1],
         }));
         // roleId： 6是项目负责人；7是访客 不显示
-        const noPaRoles = data.roles.filter((x: any) => x.roleId !== 6 && x.roleId !== 7);
+        const noPaRoles = data.roles.filter((x: any) => x.roleId !== 7);
         treeData.value = _.flow(
           _.reject({ isOwnerRole: true }),
           _.map((role: any) => ({
@@ -356,8 +353,6 @@ export default {
             })(role.userIds),
           })),
         )(noPaRoles);
-        treeAllData = [...treeData.value];
-
         const res: any = {};
         treeData.value.forEach((item: any) => {
           res[String(item.id)] = false;
@@ -372,8 +367,10 @@ export default {
     const reloadUserList = async (s: any) => {
       await initUserList();
       if (s?.id) {
-        userTreeRef.value.setCurrentKey(s.id);
-        const treeUser: any = _.find({ id: s.id })(treeData.value[0].children);
+        userTreeRef.value.setCurrentKey(s.id, true);
+        currentNode.value = userTreeRef.value.getNode(s.id);
+        currentNodeData.value = currentNode.value.data;
+        const treeUser: any = _.find({ id: s.id })(treeData.value);
         userList.value = _.intersectionWith((node: any, user: any) => node.id === user.id)(allUsers.value)(
           treeUser?.children || [],
         );
@@ -403,7 +400,7 @@ export default {
           projectId: props.id,
           roleId,
         });
-        if (code === 0) reloadUserList({ id: currentNodeData.value.label });
+        if (code === 0) reloadUserList({ id: roleId });
       });
     };
     // 初始化项目信息
@@ -435,6 +432,17 @@ export default {
 
     // 选中角色的权限点信息
     const checkedItem: any = ref({});
+    // 权限角色数据
+    const authRoleList: Ref<any> = ref([]);
+    // 初始化多选数据
+    const initCheckData = () => {
+      const checkData: any = {};
+      Object.entries(checkedItem.value).forEach((item: any) => {
+        checkData[item[0]] = [];
+      });
+      return checkData;
+    };
+
     // 获取角色对应权限点
     const getAuth = async (node: any) => {
       // 获取当前选中节点数据
@@ -449,9 +457,16 @@ export default {
         const { code, data } = await getAuthByRoleId({ roleId, projectId: props.id });
         if (code === ResCode.Success) {
           const { moduleIds } = data;
-          const checkObj: any = {};
-          Object.entries(checkedItem.value).forEach((item: any) => {
-            checkObj[item[0]] = moduleIds;
+          const checkObj = initCheckData();
+          // 处理权限点
+          moduleIds.forEach((moduleItem: any) => {
+            authRoleList.value.forEach((roleItem: any) => {
+              const { children } = roleItem;
+              const existData: any = children.find((authItem: any) => authItem.id === moduleItem);
+              if (typeof existData !== 'undefined') {
+                checkObj[String(roleItem.id)].push(moduleItem);
+              }
+            });
           });
           checkedItem.value = checkObj;
         } else {
@@ -468,10 +483,12 @@ export default {
       currentNodeData.value = data;
       currentNode.value = node;
       if (node.level === 1) {
+        addUserBtnStatus.value = false;
         userList.value = _.intersectionWith((node: any, user: any) => node.id === user.id)(allUsers.value)(
           node.data.children,
         );
       } else {
+        addUserBtnStatus.value = true;
         userList.value = _.intersectionWith((node: any, user: any) => node.id === user.id)(allUsers.value)([node.data]);
       }
       // 判断是否可编辑 to-do
@@ -532,17 +549,15 @@ export default {
     };
     initDepartments();
     const otherRoleUser: Ref<Array<any>> = ref([]);
-    const addMember = (node: any, data: any) => {
-      treeSelectorRole.value = data;
-      selectedUser.value = _.intersectionBy('id')(allUsers.value)(data.children);
-      otherRoleUser.value = _.differenceBy('id')(allUsers.value)(data.children);
+    const addMember = () => {
+      treeSelectorRole.value = currentNodeData.value;
+      selectedUser.value = _.intersectionBy('id')(allUsers.value)(currentNodeData.value.children);
+      otherRoleUser.value = _.differenceBy('id')(allUsers.value)(currentNodeData.value.children);
       treeSelectorRef.value.show();
     };
 
     // tab切换菜单
     const activeTab = ref('userList');
-    // 权限角色数据
-    const authRoleList: Ref<any> = ref([]);
     // 选中所有
     const checkAll: any = ref({});
     const isIndeterminate: any = ref({});
@@ -568,8 +583,6 @@ export default {
       Object.values(checkedItem.value).forEach((item: any) => {
         moduleIds = [...moduleIds, ...item];
       });
-      // 去重
-      moduleIds = [...new Set(moduleIds)];
       // 获取当前选中节点数据
       const { data } = currentNode.value;
       const roleId = data.id;
@@ -589,6 +602,15 @@ export default {
       }
     };
 
+    // 初始化角色权限
+    const initRoleAuth = () => {
+      const checkObj = initCheckData();
+      checkedItem.value = checkObj;
+      editDisable.value = true;
+      isEdit.value = true;
+      currentNode.value = {};
+    };
+
     // 全选
     const handleCheckAllChange = (data: any) => {
       const { id, children } = data;
@@ -603,7 +625,7 @@ export default {
     const handleCheckedItemsChange = (data: any) => {
       const { id, children } = data;
       const selId = String(id);
-      const checkedCount = checkedItem.value[selId].length;
+      const checkedCount = checkedItem.value[selId]?.length;
       checkAll.value[selId] = checkedCount === children.length;
       isIndeterminate.value[selId] = checkedCount > 0 && checkedCount < children.length;
     };
@@ -630,20 +652,6 @@ export default {
     const handleCancel = () => {
       isEdit.value = true;
     };
-
-    // 搜索
-    const search = (keyword: string) => {
-      // 过滤当前的角色
-      if (!keyword.trim()) {
-        treeData.value = treeAllData;
-      } else {
-        // 过滤角色
-        const roleList = treeAllData.filter((subItem: any) => subItem.label.includes(keyword.trim()));
-        treeData.value = roleList;
-      }
-    };
-    const filterRoleAndUser = debounce(search, 500);
-
     onMounted(() => {
       getRoleAuthListData();
     });
@@ -652,12 +660,12 @@ export default {
     const validatorRolePass = async (rule: any, value: string, callback: Function) => {
       // 如果是修改
       if (!(editOldData && editOldData === value)) {
-        const { code } = await checkRoleRule({
+        const { code, data } = await checkRoleRule({
           name: value,
           projectId: props.id,
         });
-        if (code !== 0) {
-          callback(new Error('名称已存在!'));
+        if (code === 0 && !data) {
+          callback(new Error('该角色名称已存在!'));
         }
       }
       callback();
@@ -706,6 +714,11 @@ export default {
     // 修改角色名称
     const editBoxsave = (data: any) => {
       const ids = String(data.id);
+      if (userTreeInput.value.roles === editOldData) {
+        userTreeInput.value.roles = '';
+        editPopBoxVisible.value[ids] = false;
+        return;
+      }
       roleRef.value.validate(async (isValid: boolean) => {
         if (isValid) {
           submitting.value = true;
@@ -755,7 +768,9 @@ export default {
             roleId: rowId,
             projectId: props.id,
           });
-          if (code === 0) reloadUserList({ id: rowId });
+          if (code === 0) {
+            initRoleAuth();
+          }
         });
       } else {
         ElMessageBox.confirm(
@@ -778,6 +793,16 @@ export default {
       userTreeInput.value.roles = data.label;
       editOldData = data.label;
     };
+
+    // 成员和角色过滤
+    const filterNode = (value: any, data: any) => {
+      if (!value) return true;
+      return data.label.indexOf(value) !== -1;
+    };
+
+    watch(userInput, (newValue: string) => {
+      userTreeRef.value.filter(newValue);
+    });
     return {
       loadings,
       closeUserTree,
@@ -826,12 +851,13 @@ export default {
       iconEdit,
       save,
       cancel,
-      filterRoleAndUser,
       editPopBoxVisible,
       editBoxsave,
       validatorRolePass,
       currentNode,
       handleEditRole,
+      addUserBtnStatus,
+      filterNode,
     };
   },
 };
