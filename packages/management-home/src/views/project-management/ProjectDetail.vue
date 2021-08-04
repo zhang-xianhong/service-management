@@ -774,9 +774,9 @@ export default {
         return;
       }
       if (!currentNodeData.value.children.length) {
-        ElMessageBox.confirm(`删除【${currentNodeData.value.label}】 角色`, {
-          confirmButtonText: '我知道了',
-          showCancelButton: false,
+        ElMessageBox.confirm(`是否删除【${currentNodeData.value.label}】角色？`, '提示', {
+          confirmButtonText: '确认',
+          cancelButtonText: '取消',
           type: 'warning',
         }).then(async () => {
           const { code } = await deleteRole({
