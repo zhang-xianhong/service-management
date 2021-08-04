@@ -14,7 +14,9 @@
       <el-form-item prop="captcha">
         <el-input v-model="emailInfo.captcha" placeholder="请输入验证码">
           <template #suffix
-            ><div class="email-captcha" :class="{ 'email-captcha__toash': isToash }" @click="sendVerifyCode">发送验证码</div></template
+            ><div class="email-captcha" :class="{ 'email-captcha__toash': isToash }" @click="sendVerifyCode">
+              {{ isToash ? reSend : '发送验证码' }}
+            </div></template
           >
         </el-input>
       </el-form-item>
@@ -28,7 +30,17 @@
 
 <script lang="ts">
 import { ElMessage } from 'element-plus';
-import { defineComponent, PropType, WritableComputedRef, computed, reactive, ref, SetupContext, onBeforeUnmount } from 'vue';
+import { sendRetrievePasswordVerifyCode } from '@/api/tenant';
+import {
+  defineComponent,
+  PropType,
+  WritableComputedRef,
+  computed,
+  reactive,
+  ref,
+  SetupContext,
+  onBeforeUnmount,
+} from 'vue';
 
 interface EmailInfoInterface {
   email: string;
@@ -51,10 +63,10 @@ export default defineComponent({
       captcha: '',
     });
     const form: any = ref(null);
-
     const isToash = ref(false);
-
     const timeout = ref(null as any);
+    const reSend = ref('');
+    const receivedCaptcha = ref('');
 
     const checkMail = (rule: any, szMail: string): boolean => {
       // const reg = /^[A-Za-z0-9]+([_.][A-Za-z0-9]+)*@([A-Za-z0-9-]+\.)+[A-Za-z]{2,6}$/;
@@ -74,7 +86,7 @@ export default defineComponent({
       captcha: [{ required: true, message: '请输入验证码', trigger: 'blur' }],
     };
 
-    const sendVerifyCode = () => {
+    const sendVerifyCode = async () => {
       // TODO 这里需要调接口 获取返回的验证码并保存下来
       // const backcaptcha = 获取的验证码；
       console.log(emailInfo.email); // 获取邮箱号
@@ -87,11 +99,26 @@ export default defineComponent({
           message: '邮箱格式错误',
         });
       } else {
-        isToash.value = true;
-        timeout.value = setTimeout(() => {
-          console.log('islawful', isLawful);
-          isToash.value = false;
-        }, 5000);
+        const { code, data } = await sendRetrievePasswordVerifyCode({
+          toEmail: emailInfo.email,
+        });
+        receivedCaptcha.value = data?.captcha;
+        if (code === 0) {
+          isToash.value = true;
+          let timeo = 60;
+          reSend.value = `重新发送(${timeo})s`;
+          timeout.value = setInterval(() => {
+            // eslint-disable-next-line no-plusplus
+            timeo--;
+            if (timeo > 0) {
+              reSend.value = `重新发送(${timeo})s`;
+            } else {
+              timeo = 60;
+              isToash.value = false;
+              clearInterval(timeout.value);
+            }
+          }, 1000);
+        }
       }
     };
 
@@ -100,8 +127,7 @@ export default defineComponent({
       form.value?.validate(async (valid: boolean) => {
         if (valid) {
           // const { code } = await
-          if (emailInfo.captcha !== '123456') {
-            console.log('dosomething');
+          if (emailInfo.captcha !== receivedCaptcha.value) {
             ElMessage({
               type: 'error',
               message: '验证码错误',
@@ -110,6 +136,7 @@ export default defineComponent({
             console.log('email', emailInfo.email);
             const payload = {
               email: emailInfo.email,
+              captcha: emailInfo.captcha,
               type: 'password',
             };
             ctx.emit('submit', payload);
@@ -119,7 +146,7 @@ export default defineComponent({
     };
 
     onBeforeUnmount(() => {
-      clearTimeout(timeout.value);
+      clearInterval(timeout.value);
       console.log('clearTimeout');
     });
 
@@ -128,6 +155,7 @@ export default defineComponent({
       form,
       rules,
       isToash,
+      reSend,
       emailInfos,
       sendVerifyCode,
       submit,
@@ -175,7 +203,7 @@ export default defineComponent({
     border-left: 1px solid #dcdfe6;
     cursor: pointer;
     &__toash {
-      color: #dcdfe6;
+      color: #aaa;
       pointer-events: none;
     }
   }
