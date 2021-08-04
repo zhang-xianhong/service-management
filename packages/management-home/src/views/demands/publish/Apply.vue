@@ -264,13 +264,7 @@
 
 <script lang="ts">
 import { reactive, toRefs, ref, onBeforeUnmount, onMounted } from 'vue';
-import {
-  getPublishList,
-  addPublish,
-  updatePublish,
-  deletePublish,
-  findUserByName,
-} from '@/api/demands/publish';
+import { getPublishList, addPublish, updatePublish, deletePublish, findUserByName } from '@/api/demands/publish';
 import { getServiceList } from '@/api/deploy/deploy-apply';
 import PackagedPagination from '@/components/pagination/Index.vue';
 import { debounce } from 'lodash';
@@ -449,9 +443,7 @@ export default {
       const data: any = publishForm.serviceList.find((i: any) => i.id === serviceName);
       publishForm.formData.name = data?.name;
       publishForm.formData.publishVersion = '';
-      const temp: any = ref(
-        publishForm.servides.find((item: any) => item.serviceName === publishForm.formData.name),
-      );
+      const temp: any = ref(publishForm.servides.find((item: any) => item.serviceName === publishForm.formData.name));
       publishForm.versionOptions = temp.value.versions.map((item: any) => {
         const label = ref('');
         const statusStr = ['（发版成功）', '（发版中）', '（发版失败）'];

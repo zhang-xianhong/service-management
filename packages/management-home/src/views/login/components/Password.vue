@@ -1,33 +1,34 @@
 <template>
   <div class="reset-password__container">
-    <h1>重置CityBase密码</h1>
-    <el-form :model="formData" :rules="rules" ref="form" label-width="100px" class="password-reset__form">
-      <el-form-item label="邮箱" prop="email" size="large">
+    <div class="password-head">
+      <div class="password-head-left">重置密码</div>
+      <div class="password-head-right">
+        <span>已有账号？</span>
+        <a href="/login">马上登录</a>
+      </div>
+    </div>
+    <el-form :model="formData" :rules="rules" ref="form" class="password-reset__form">
+      <!-- <el-form-item label="邮箱" prop="email" size="large">
         <el-input :model-value="formData.email" type="email" placeholder="请输入您的邮箱地址" readonly></el-input>
+      </el-form-item> -->
+      <el-form-item prop="password" size="large">
+        <el-input v-model="formData.password" placeholder="请输入您的新密码" show-password></el-input>
       </el-form-item>
-      <el-form-item label="设置登录密码" prop="password" size="large">
-        <el-input v-model="formData.password" type="password" placeholder="请输入您的新密码" show-password></el-input>
-      </el-form-item>
-      <el-form-item label="确认登录密码" prop="confirmationPassword" size="large">
-        <el-input
-          v-model="formData.confirmationPassword"
-          type="password"
-          placeholder="请再次输入您的新密码"
-          show-password
-        ></el-input>
+      <el-form-item prop="confirmationPassword" size="large">
+        <el-input v-model="formData.confirmationPassword" placeholder="请再次输入您的新密码" show-password></el-input>
       </el-form-item>
       <el-form-item size="large">
-        <el-button class="reset-btn" type="primary" @click="submit">重置</el-button>
+        <el-button class="reset-btn" type="primary" @click="submit">提交</el-button>
       </el-form-item>
     </el-form>
   </div>
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, PropType, reactive, ref } from 'vue';
+import { computed, defineComponent, PropType, reactive, ref, SetupContext } from 'vue';
 import { PasswordRules } from '@/utils/validate';
-import { resetPassWord } from '@/api/company/users';
-import useMsg from '../useMsg';
+// import { resetPassWord } from '@/api/tenant';
+// import useMsg from '../useMsg';
 export default defineComponent({
   name: 'Password',
   props: {
@@ -44,16 +45,16 @@ export default defineComponent({
       default: '',
     },
   },
-  setup(props) {
+  setup(props, ctx: SetupContext) {
     const formData = reactive({
       password: '',
       confirmationPassword: '',
       email: computed(() => props.email),
     });
     const form: any = ref(null);
-
     // 获取组件实例
-    const { msgTips, goLoginPages } = useMsg();
+    // const { msgTips, goLoginPages } = useMsg();
+    // const { msgTips } = useMsg();
     const validatePassword = (rule: any, value: string, callback: Function) => {
       if (value === '') {
         callback(new Error('请输入密码'));
@@ -75,31 +76,42 @@ export default defineComponent({
       }
     };
     const rules = {
+      email: [
+        {
+          required: true,
+          message: '请输入新的邮箱',
+          trigger: 'blur',
+        },
+      ],
       password: [...PasswordRules, { validator: validatePassword, trigger: 'blur' }],
       confirmationPassword: [
-        { required: true, message: '请再次输入新的密码', trigger: 'blur' },
+        {
+          required: true,
+          message: '请再次输入密码',
+          trigger: 'blur',
+        },
         { validator: validateConfirmationPassword, trigger: 'blur' },
       ],
     };
-
     const submit = () => {
-      // disable submit
-      // eslint-disable-next-line no-unused-expressions
-      form.value?.validate(async (valid: boolean) => {
+      // 增加校验
+      form.value.validate(async (valid: boolean) => {
         if (valid) {
-          const { code } = await resetPassWord({
-            resetCode: props.code,
-            newPassword: formData.password,
-            userId: props.userId,
-          });
-          if (code === 0) {
-            msgTips('success', '密码重置成功');
-          } else {
-            msgTips('error', '密码重置失败');
-          }
-          goLoginPages();
-        } else {
-          return false;
+          // const { code } = await resetPassWord({
+          //   resetCode: props.code,
+          //   newPassword: formData.password,
+          //   userId: props.userId,
+          // });
+          // if (code === 0) {
+          //   msgTips('success', '密码重置成功');
+          // } else {
+          //   msgTips('error', '密码重置失败');
+          // }
+          // goLoginPages();
+          const payload = {
+            type: 'Complete',
+          };
+          ctx.emit('submit', payload);
         }
       });
     };
@@ -114,14 +126,28 @@ export default defineComponent({
 </script>
 <style scoped lang="scss">
 .reset-password__container {
-  width: 500px;
-  h1 {
+  width: 560px;
+  .password-head {
     margin-bottom: 30px;
-    text-align: center;
+    display: flex;
+    justify-content: space-between;
+    &-left {
+      font-size: 20px;
+      font-weight: bolder;
+    }
+    &-right {
+      font-size: 16px;
+      color: #aaa;
+      & > a {
+        text-decoration: underline;
+        color: #aaa;
+      }
+    }
   }
   .password-reset__form {
     .el-form-item {
-      margin-bottom: 2em;
+      width: 100%;
+      margin-bottom: 3em;
     }
     .reset-btn {
       width: 100%;

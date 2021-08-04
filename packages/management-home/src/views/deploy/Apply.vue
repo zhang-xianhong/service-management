@@ -18,7 +18,7 @@
           placeholder="请输入服务名称"
           @input="filterpublish"
           v-model="searchProps.keyword"
-          style="width: 300px;"
+          style="width: 300px"
         ></el-input>
       </el-col>
     </el-row>
