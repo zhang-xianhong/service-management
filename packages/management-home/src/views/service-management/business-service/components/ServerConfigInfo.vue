@@ -69,11 +69,11 @@
         <template v-else>{{ detailInfo.value }}</template>
       </el-form-item>
       <el-form-item label="默认值" prop="defaultValue">
-        <el-input v-if="isEditable" v-model.trim="detailInfo.defaultValue" placeholder="请输入默认值"></el-input>
+        <el-input v-if="!isRefrenceService" v-model.trim="detailInfo.defaultValue" placeholder="请输入默认值"></el-input>
         <template v-else>{{ detailInfo.defaultValue }}</template>
       </el-form-item>
       <el-form-item label="类型" prop="type">
-        <el-select v-if="isEditable" v-model="detailInfo.type">
+        <el-select v-if="!isRefrenceService" v-model="detailInfo.type">
           <el-option :value="0" label="应用类型"></el-option>
           <el-option :value="1" label="系统类型"></el-option>
         </el-select>
@@ -89,7 +89,7 @@
           <el-button @click="closeDetailDialog">取消</el-button>
         </template>
         <template v-else>
-          <el-button type="primary" @click="isEditable = true" v-if="!isRefrenceService">编辑</el-button>
+          <el-button type="primary" @click="isEditable = true">编辑</el-button>
         </template>
       </el-form-item>
     </el-form>

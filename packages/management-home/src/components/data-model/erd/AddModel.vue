@@ -80,7 +80,7 @@ export default defineComponent({
       name: [
         { required: true, message: '请输入对象名称', trigger: 'blur' },
         { pattern: /^([A-Z][a-z]+)+$/, message: '名称必须是大驼峰格式，均为英文字母，请重新输入', trigger: 'blur' },
-        { max: 36, message: '长度不可超过36个字符', trigger: 'blur' },
+        { max: 23, message: '长度不可超过23个字符', trigger: 'blur' },
       ],
       description: [
         { required: true, message: '请输入对象描述', trigger: 'blur' },
