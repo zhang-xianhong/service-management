@@ -29,8 +29,8 @@ module.exports = {
         // target: 'http://10.91.21.72:3000', // 雯雯的机器
         // target: 'http://tenant1.dev-citybase.oa.com', // 开发集成环境
         // target: 'http://cqszjj.dev-citybase.oa.com',
-        // target: 'http://fbxxyxgs.test-citybase.oa.com',
-        target: 'http://sunlight.test-citybase.oa.com',
+        target: 'http://fbxxyxgs.test-citybase.oa.com',
+        // target: 'http://sunlight.test-citybase.oa.com',
         // target: 'http://http://yunzhi.dev-citybase.oa.com/',
         ws: true,
         changeOrigin: true

@@ -212,6 +212,7 @@ export default defineComponent({
         white-space: nowrap;
         text-overflow: ellipsis;
         vertical-align: bottom;
+        padding-left: 5px;
       }
       label {
         opacity: 0.7;

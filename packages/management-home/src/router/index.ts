@@ -377,6 +377,7 @@ const routes: Array<RouteRecordRaw> = [
       isRootLevel: true,
       hidden: false,
       node: true,
+      id: 24,
     },
     children: [
       {
