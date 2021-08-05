@@ -121,21 +121,28 @@
             </template>
           </div>
         </div>
-        <transition name="slide-fade">
-          <div v-if="isShowDownDrawer" class="detail-drawer__container">
-            <keep-alive>
-              <component
-                :is="drawerName"
-                :id="currentServiceId"
-                :status="serverInfo.status"
-                :modelList="modelList.tables"
-                @back="isShowDownDrawer = false"
-              ></component>
-            </keep-alive>
-          </div>
-        </transition>
-      </div>
 
+        <sa-drawer
+          class="detail-drawer"
+          v-model="isShowDownDrawer"
+          :z-index="1000"
+          :size="460"
+          :backdrop="drawerReadonlyAuth ? true : false"
+          min-size="30%"
+          max-size="80%"
+        >
+          <keep-alive>
+            <component
+              :is="drawerName"
+              :id="currentServiceId"
+              :status="serverInfo.status"
+              :modelList="modelList.tables"
+              :modelFieldsLoading="modelFieldsLoading"
+              @back="isShowDownDrawer = false"
+            ></component>
+          </keep-alive>
+        </sa-drawer>
+      </div>
       <el-dialog title="日志" v-model="logDialogVisible" width="80%" @close="clearLogInterVal">
         <!--      <el-input type="textarea" :rows="25" :autosize="{ maxRows: 25, minRows: 25 }" v-model="logData"></el-input>-->
         <div class="log-content" id="log_content">
@@ -485,24 +492,23 @@ export default {
     });
 
     const pageLoading = ref(false);
+    const modelFieldsLoading = ref(false);
     const modelSelected = async (model: any) => {
-      modelInfo.value = null;
       if (model) {
         if (model.relationInfo) {
           componentName.value = 'RelationInfo';
           modelInfo.value = model.relationInfo;
           isShowDownDrawer.value = false;
         } else {
+          modelFieldsLoading.value = true;
+          isShowDownDrawer.value = true;
+          drawerName.value = 'ModelFieldForm';
           const { data } = await getModelDetail(model.id);
           // componentName.value = 'ModelBaseInfo';
           modelInfo.value = { ...data, fields: model.fields };
-          isShowDownDrawer.value = true;
-          drawerName.value = 'ModelFieldForm';
           pageLoading.value = true;
+          modelFieldsLoading.value = false;
         }
-      } else {
-        isShowDownDrawer.value = false;
-        componentName.value = '';
       }
     };
 
@@ -582,6 +588,8 @@ export default {
       }
     });
 
+    const drawerReadonlyAuth = computed(() => !(getShowBool('add') && getShowBool('update')));
+
     return {
       isShowDownDrawer,
       computedHeight,
@@ -596,6 +604,7 @@ export default {
       serverStatusInfo,
       componentName,
       drawerName,
+      modelFieldsLoading,
       openBaseInfo,
       openPropertyInfo,
       openConfigInfo,
@@ -629,6 +638,7 @@ export default {
       releaseRef,
       isRefrenceService,
       openDtoList,
+      drawerReadonlyAuth,
     };
   },
 };
@@ -702,10 +712,6 @@ export default {
     border-top: 8px solid #f2f2f2;
     z-index: 10;
     background-color: white;
-  }
-
-  ::v-deep .create-dto__bth {
-    margin: 10px;
   }
 }
 .slide-fade-enter-active {
@@ -807,6 +813,19 @@ export default {
     overflow: hidden;
     // width: 100%;
     // height: calc(100% - 120px);
+  }
+}
+</style>
+<style lang="scss" scoped>
+.detail-drawer {
+  left: 230px !important;
+  right: 20px !important;
+  width: unset !important;
+  height: unset !important;
+  top: unset !important;
+  bottom: 20px !important;
+  ::v-deep .sa-drawer__resizebar {
+    background-color: #f2f2f2;
   }
 }
 </style>
