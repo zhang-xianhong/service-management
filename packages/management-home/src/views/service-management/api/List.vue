@@ -75,7 +75,7 @@
           />
         </template>
       </el-table-column>
-      <el-table-column prop="actions" label="操作" align="right" width="180" v-if="getShowBool('update')">
+      <el-table-column prop="actions" label="操作" width="180" v-if="getShowBool('update')">
         <template #default="scope">
           <template v-if="!scope.row.isSystem">
             <template v-if="scope.row.id && editId !== scope.row.$id">

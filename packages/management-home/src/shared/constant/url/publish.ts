@@ -7,4 +7,5 @@ export default {
   UPDATE_PUBLISH: ['/demands/publish/_', 'mock/settings/config-update.json'],
   DELETE_PUBLISH: ['/demands/publish/delete/_', 'mock/settings/config-delete.json'],
   REVIEW_PUBLISH: ['/demands/publish/review/_', 'mock/settings/config-history.json'],
+  SEARCH_USERS: ['/demands/publish/search', 'mock/settings/config-history.json'],
 };

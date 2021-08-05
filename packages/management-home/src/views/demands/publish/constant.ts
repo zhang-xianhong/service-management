@@ -23,3 +23,9 @@ export const STATUS: any = {
 };
 
 export const getModuleType = (type: number) => MODULE_TYPE[type];
+
+export const changeUsers = (data = []) =>
+  data.map((item: any) => ({
+    id: item.id,
+    name: item.displayName,
+  }));
