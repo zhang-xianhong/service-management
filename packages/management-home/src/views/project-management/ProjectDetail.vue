@@ -25,7 +25,7 @@
         <div class="user-tree-top">
           <el-input
             suffix-icon="el-icon-search"
-            placeholder="请输角色名称"
+            placeholder="请输入角色名称"
             v-model="userInput"
             @input="filterRoleAndUser"
           ></el-input>
@@ -385,7 +385,7 @@ export default {
     const removeUser = (row: any) => {
       ElMessageBox.confirm(
         `是否将 ${row ? row.displayName : currentNodeData.value.label} 从 ${
-          currentNode.value.parent.data.label
+          currentNode.value.level === 1 ? currentNode.value.label : currentNode.value.parent.data.label
         } 中移除？`,
         '提示',
         {
@@ -394,10 +394,19 @@ export default {
           type: 'warning',
         },
       ).then(async () => {
-        const users = row ? currentNodeData.value?.children : currentNode.value.parent.data?.children;
+        let users: any;
+        let roleId: number;
+        if (row && currentNode.value.level === 1) {
+          users = currentNodeData.value?.children;
+          roleId = currentNode.value?.data?.id;
+        } else {
+          users = currentNode.value.parent.data?.children;
+          roleId = currentNode.value.parent?.data?.id;
+        }
+        console.log('users', users);
+        // const users = row ? currentNodeData.value?.children : currentNode.value.parent.data?.children;
         const removeUserId = row ? row.id : currentNodeData.value.id;
         const updateUsers = users.filter((user: any) => user.id !== removeUserId).map((user: any) => user.id);
-        const roleId = row ? currentNode.value?.data?.id : currentNode.value.parent?.data?.id;
         const { code } = await updateRoleMembers({
           userIds: updateUsers,
           projectId: props.id,
