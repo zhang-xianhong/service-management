@@ -61,7 +61,6 @@
       >
       <el-button @click="handleClose">取消</el-button>
     </div>
-
     <!-- 详情弹窗 -->
     <el-dialog title="参数配置" v-model="isOpenDetailDialog" width="570px">
       <el-form :mode="detailInfo" label-width="120px" label-position="left">
