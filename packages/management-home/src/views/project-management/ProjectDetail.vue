@@ -98,12 +98,6 @@
                 </el-popover>
               </div>
             </div>
-            <i
-              v-if="node.level === 1 && getShowBool('updateMember')"
-              class="el-icon-circle-plus"
-              style="float: right"
-              @click.stop="addMember(node, data)"
-            ></i>
           </template>
         </el-tree>
       </div>
@@ -991,11 +985,11 @@ export default {
   }
   ::v-deep .el-checkbox-group {
     font-size: 0;
-    width: 750px;
+    width: 800px;
     overflow: auto;
     .el-checkbox__label {
       display: inline-block;
-      min-width: 110px;
+      min-width: 120px;
     }
     .el-checkbox {
       margin: 0;
