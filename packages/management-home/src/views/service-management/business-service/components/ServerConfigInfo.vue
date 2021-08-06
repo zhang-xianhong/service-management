@@ -69,7 +69,11 @@
         <template v-else>{{ detailInfo.value }}</template>
       </el-form-item>
       <el-form-item label="默认值" prop="defaultValue">
-        <el-input v-if="!isRefrenceService" v-model.trim="detailInfo.defaultValue" placeholder="请输入默认值"></el-input>
+        <el-input
+          v-if="!isRefrenceService"
+          v-model.trim="detailInfo.defaultValue"
+          placeholder="请输入默认值"
+        ></el-input>
         <template v-else>{{ detailInfo.defaultValue }}</template>
       </el-form-item>
       <el-form-item label="类型" prop="type">
