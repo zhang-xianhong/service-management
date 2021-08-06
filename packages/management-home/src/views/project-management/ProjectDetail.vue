@@ -382,39 +382,6 @@ export default {
       }
     };
 
-    const removeUser = (row: any) => {
-      ElMessageBox.confirm(
-        `是否将 ${row ? row.displayName : currentNodeData.value.label} 从 ${
-          currentNode.value.level === 1 ? currentNode.value.label : currentNode.value.parent.data.label
-        } 中移除？`,
-        '提示',
-        {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning',
-        },
-      ).then(async () => {
-        let users: any;
-        let roleId: number;
-        if (row && currentNode.value.level === 1) {
-          users = currentNodeData.value?.children;
-          roleId = currentNode.value?.data?.id;
-        } else {
-          users = currentNode.value.parent.data?.children;
-          roleId = currentNode.value.parent?.data?.id;
-        }
-        console.log('users', users);
-        // const users = row ? currentNodeData.value?.children : currentNode.value.parent.data?.children;
-        const removeUserId = row ? row.id : currentNodeData.value.id;
-        const updateUsers = users.filter((user: any) => user.id !== removeUserId).map((user: any) => user.id);
-        const { code } = await updateRoleMembers({
-          userIds: updateUsers,
-          projectId: props.id,
-          roleId,
-        });
-        if (code === 0) reloadUserList({ id: currentNodeData.value.label });
-      });
-    };
     // 初始化项目信息
     const projectDetail = ref({});
     const include = ref(true);
@@ -586,6 +553,51 @@ export default {
       }
     };
 
+    // 初始化角色权限
+    const initRoleAuth = () => {
+      const checkObj = initCheckData();
+      checkedItem.value = checkObj;
+      editDisable.value = true;
+      isEdit.value = true;
+      currentNode.value = {};
+    };
+
+    const removeUser = (row: any) => {
+      ElMessageBox.confirm(
+        `是否将 ${row ? row.displayName : currentNodeData.value.label} 从 ${
+          currentNode.value.level === 1 ? currentNode.value.label : currentNode.value.parent.data.label
+        } 中移除？`,
+        '提示',
+        {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning',
+        },
+      ).then(async () => {
+        let users: any;
+        let roleId: number;
+        if (row && currentNode.value.level === 1) {
+          users = currentNodeData.value?.children;
+          roleId = currentNode.value?.data?.id;
+        } else {
+          users = currentNode.value.parent.data?.children;
+          roleId = currentNode.value.parent?.data?.id;
+        }
+        console.log('users', users);
+        // const users = row ? currentNodeData.value?.children : currentNode.value.parent.data?.children;
+        const removeUserId = row ? row.id : currentNodeData.value.id;
+        const updateUsers = users.filter((user: any) => user.id !== removeUserId).map((user: any) => user.id);
+        const { code } = await updateRoleMembers({
+          userIds: updateUsers,
+          projectId: props.id,
+          roleId,
+        });
+        if (code === 0) {
+          initRoleAuth();
+          reloadUserList({ id: currentNodeData.value.label });
+        }
+      });
+    };
     // 更新角色权限
     const updateRoleData = async () => {
       let moduleIds: number[] = [];
@@ -611,16 +623,6 @@ export default {
         console.log(error);
       }
     };
-
-    // 初始化角色权限
-    const initRoleAuth = () => {
-      const checkObj = initCheckData();
-      checkedItem.value = checkObj;
-      editDisable.value = true;
-      isEdit.value = true;
-      currentNode.value = {};
-    };
-
     // 全选
     const handleCheckAllChange = (data: any) => {
       const { id, children } = data;
