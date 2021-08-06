@@ -64,7 +64,7 @@
         </template>
       </el-dropdown>
     </div>
-    <el-dialog title="关于" v-model="dialogVisible" width="40%" top="25vh" @close="handleClose">
+    <el-dialog title="关于" v-model="dialogVisible" width="600px" top="25vh" @close="handleClose">
       <div class="about__divider"></div>
       <div class="about__logo">
         <img src="~@/assets/img/tcloud.png" />

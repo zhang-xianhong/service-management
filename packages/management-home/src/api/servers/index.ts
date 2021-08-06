@@ -180,3 +180,25 @@ export const getApiParams = (payload: any) =>
   });
 export const startCheck: (serviceId: any) => Promise<SuccessResponse<any>> = (serviceId: any) =>
   request.get(getUrl(URL.service.GET_START_CHECK), { params: { serviceId } });
+
+/**
+ * 发送验证码
+ * @param payload
+ * @returns
+ */
+export const sendRetrievePasswordVerifyCode = (payload: any) =>
+  apiProxy(SERVER_TYPES.ACCOUNT, service.SEND_RETRIEVE_PASSWD_VERIFY_CODE, {
+    method: 'GET',
+    params: payload,
+  });
+
+/**
+ * 重置密码
+ * @param payload
+ * @returns
+ */
+export const retrievePassword = (payload: any) =>
+  apiProxy(SERVER_TYPES.ACCOUNT, service.RETRIEVE_PASSWD, {
+    method: 'POST',
+    data: payload,
+  });
