@@ -150,7 +150,7 @@
                 type="text"
                 v-if="scope.row.type !== 'Array' && scope.row.type !== 'Object'"
                 @click="handleSetting(scope.row)"
-                >设置</el-button
+                >查看设置</el-button
               >
             </template>
           </template>
@@ -342,6 +342,7 @@ export default defineComponent({
 
     const handleParamsMethodChange = () => {
       formError.value = '';
+      previewCode.value = '';
       updateParamsDefine();
     };
 
@@ -467,6 +468,7 @@ export default defineComponent({
           type: props.isResponse ? 2 : 1,
         });
         ElMessage.success('保存成功');
+        isEdit.value = false;
         fetchApiParams();
       } catch (e) {}
       submitting.value = false;
