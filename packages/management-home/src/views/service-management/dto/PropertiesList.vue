@@ -430,7 +430,7 @@ export default defineComponent({
     const paramsToSaveData = (params) => {
       const parse = (items) =>
         items.map((item) => {
-          const { $id, config, ...dto } = item;
+          const { $id, config, readonly, ...dto } = item;
           const newItem = {
             ...dto,
             config: JSON.stringify(config),
@@ -487,6 +487,7 @@ export default defineComponent({
     // getData 提供外部调用
     const getData = () => {
       const properties = paramsToSaveData(list.value);
+      debugger;
       const res = validator();
       if (res) {
         if (properties.length === 0) {

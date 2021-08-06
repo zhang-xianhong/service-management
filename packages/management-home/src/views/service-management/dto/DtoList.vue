@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="dto__list">
     <el-button type="primary" @click="editDtoModel()" class="create-dto__bth" v-if="getShowBool('add')">新建</el-button>
     <list-wrap
       :loading="loading"
@@ -16,12 +16,12 @@
             <span v-else>{{ scope.$index + 1 }}</span>
           </template>
         </el-table-column>
-        <el-table-column prop="name" label="模型英文名">
+        <el-table-column prop="name" label="模型英文名" class-name="col-inline is-required">
           <template #default="scope">
             {{ scope.row.name }}
           </template>
         </el-table-column>
-        <el-table-column prop="chineseName" label="模型中文名">
+        <el-table-column prop="chineseName" label="模型中文名" class-name="col-inline is-required">
           <template #default="scope">
             {{ scope.row.zhName }}
           </template>
@@ -54,7 +54,7 @@ import { DtoModel, useEditDtoDialog, EditMode, useDtoList, EMPTY_DTO, CreatDtoMo
 import { defineComponent, onBeforeMount } from '@vue/runtime-core';
 import EditDtoModel from './EditDtoModel.vue';
 import { useRoute } from 'vue-router';
-import { ElMessage } from 'element-plus';
+import { ElMessage, ElMessageBox } from 'element-plus';
 import { getShowBool } from '@/utils/permission-show-module';
 export default defineComponent({
   name: 'DtoListDialog',
@@ -107,15 +107,19 @@ export default defineComponent({
     };
 
     const onConfirmEdit = async () => {
-      confirmLoading.value = true;
-      const dtoData = await editDtoModelRef.value?.getData();
-      confirmLoading.value = false;
-      if (dtoData) {
-        setDtoModel(dtoData);
-        await syncDtoData();
-        closeEditDto();
-        // 刷新列表
-        fetchDtoList(currentServiceId);
+      try {
+        confirmLoading.value = true;
+        const dtoData = await editDtoModelRef.value?.getData();
+        if (dtoData) {
+          setDtoModel(dtoData);
+          await syncDtoData();
+          closeEditDto();
+          // 刷新列表
+          fetchDtoList(currentServiceId);
+        }
+      } catch (error) {
+        console.log(error);
+        confirmLoading.value = false;
       }
     };
     const getSelectedData = () => {
@@ -133,9 +137,15 @@ export default defineComponent({
       editDtoModelRef.value?.dtoForm?.resetFields();
     };
     const removeDtoModel = (row: DtoModel) => {
-      removeDto({
-        serviceId: currentServiceId,
-        uniqueId: row.uniqueId,
+      ElMessageBox.confirm(`确认删除DTO${row.name}`, '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+      }).then(() => {
+        removeDto({
+          serviceId: currentServiceId,
+          uniqueId: row.uniqueId,
+        });
       });
     };
     return {
@@ -159,7 +169,7 @@ export default defineComponent({
 });
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .create-dto__bth {
   margin-bottom: 1em;
 }
