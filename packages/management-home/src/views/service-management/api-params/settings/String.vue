@@ -4,7 +4,7 @@
       <el-form :model="form" :rules="formRules" ref="formRef" label-width="100px">
         <el-form-item label="默认值" prop="defaultValue">
           <el-input v-model.trim="form.defaultValue" placeholder="请输入默认值" maxlength="20" v-if="isEdit" />
-          <span v-else>{{ form.defaultValue }}</span>
+          <span v-else>{{ typeof form.defaultValue === 'undefined' ? '--' : form.defaultValue }}</span>
         </el-form-item>
         <el-form-item label="最小长度" prop="minlength">
           <el-input-number
@@ -13,7 +13,7 @@
             placeholder="请输入最小长度"
             v-if="isEdit"
           ></el-input-number>
-          <span v-else>{{ form.minlength }}</span>
+          <span v-else>{{ typeof form.minlength === 'undefined' ? '--' : form.minlength }}</span>
         </el-form-item>
         <el-form-item label="最大长度" prop="maxlength">
           <el-input-number
@@ -22,7 +22,7 @@
             placeholder="请输入最大长度"
             v-if="isEdit"
           ></el-input-number>
-          <span v-else>{{ form.maxlength }}</span>
+          <span v-else>{{ typeof form.maxlength === 'undefined' ? '--' : form.maxlength }}</span>
         </el-form-item>
         <el-form-item label="Pattern" prop="pattern">
           <template v-slot:label
@@ -32,7 +32,7 @@
             </el-tooltip>
           </template>
           <el-input v-model.trim="form.pattern" placeholder="请输入Pattern" v-if="isEdit" />
-          <span v-else>{{ form.pattern }}</span>
+          <span v-else>{{ typeof form.pattern === 'undefined' ? '--' : form.pattern }}</span>
         </el-form-item>
       </el-form>
     </div>
