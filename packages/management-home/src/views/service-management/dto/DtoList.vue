@@ -62,7 +62,7 @@ import { DtoModel, useEditDtoDialog, EditMode, useDtoList, EMPTY_DTO, CreatDtoMo
 import { defineComponent, onBeforeMount } from '@vue/runtime-core';
 import EditDtoModel from './EditDtoModel.vue';
 import { useRoute } from 'vue-router';
-import { ElMessage } from 'element-plus';
+import { ElMessage, ElMessageBox } from 'element-plus';
 import { getShowBool } from '@/utils/permission-show-module';
 export default defineComponent({
   name: 'DtoListDialog',
@@ -115,15 +115,19 @@ export default defineComponent({
     };
 
     const onConfirmEdit = async () => {
-      confirmLoading.value = true;
-      const dtoData = await editDtoModelRef.value?.getData();
-      confirmLoading.value = false;
-      if (dtoData) {
-        setDtoModel(dtoData);
-        await syncDtoData();
-        closeEditDto();
-        // 刷新列表
-        fetchDtoList(currentServiceId);
+      try {
+        confirmLoading.value = true;
+        const dtoData = await editDtoModelRef.value?.getData();
+        if (dtoData) {
+          setDtoModel(dtoData);
+          await syncDtoData();
+          closeEditDto();
+          // 刷新列表
+          fetchDtoList(currentServiceId);
+        }
+      } catch (error) {
+        console.log(error);
+        confirmLoading.value = false;
       }
     };
     const getSelectedData = () => {
@@ -141,9 +145,15 @@ export default defineComponent({
       editDtoModelRef.value?.dtoForm?.resetFields();
     };
     const removeDtoModel = (row: DtoModel) => {
-      removeDto({
-        serviceId: currentServiceId,
-        uniqueId: row.uniqueId,
+      ElMessageBox.confirm(`确认删除DTO${row.name}`, '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+      }).then(() => {
+        removeDto({
+          serviceId: currentServiceId,
+          uniqueId: row.uniqueId,
+        });
       });
     };
     const handleClose = () => {
@@ -171,7 +181,7 @@ export default defineComponent({
 });
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .create-dto__bth {
   margin-bottom: 1em;
 }
