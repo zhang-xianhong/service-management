@@ -111,7 +111,6 @@ export default defineComponent({
     watchEffect(() => {
       fields.value = _.cloneDeep(currentModel.value?.fields || []);
     });
-    const modelId = currentModel.value?.id;
     const add = (index: number) => {
       console.log(index);
       fields.value.splice(0, 0, {
@@ -190,8 +189,7 @@ export default defineComponent({
           x.notNull = false;
         }
       });
-
-      const { code } = await updateFields(modelId, {
+      const { code } = await updateFields(currentModel.value?.id, {
         serviceId,
         fields: inputData,
       });
