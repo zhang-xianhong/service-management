@@ -39,3 +39,13 @@ export const PasswordRules = [
   { required: true, message: '请输入新的密码', trigger: 'blur' },
   { validator: validatorPassword, trigger: 'blur' },
 ];
+
+// 邮箱校验
+export function checkMail(szMail: string): boolean {
+  const szReg = /^\w+@[a-zA-Z0-9]{2,10}(?:\.[a-z]{2,4}){1,3}$/;
+  return szReg.test(szMail);
+}
+export const EmailRules = [
+  { required: true, message: '请输入验证邮箱号', trigger: 'blur' },
+  { validator: checkMail, trigger: 'blur' },
+];

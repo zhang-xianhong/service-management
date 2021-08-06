@@ -23,12 +23,7 @@
     <el-row class="user-info">
       <div class="user-tree" v-loading="loadings">
         <div class="user-tree-top">
-          <el-input
-            suffix-icon="el-icon-search"
-            placeholder="请输入角色名称"
-            v-model="userInput"
-            @input="filterRoleAndUser"
-          ></el-input>
+          <el-input suffix-icon="el-icon-search" placeholder="请输入角色/人员名称" v-model="userInput"></el-input>
           <div class="user-tree-btn">
             <el-button type="primary" @click="DialogVisible = true" v-if="getShowBool('updateRole')">新建</el-button>
             <el-button @click="closeUserTree" :disabled="isDeleteVisible" v-if="getShowBool('updateRole')"
@@ -44,6 +39,7 @@
           node-key="id"
           :current-node-key="currentKey"
           @node-click="nodeClickHandler"
+          :filter-node-method="filterNode"
         >
           <template #default="{ node, data }">
             <div class="customNode">
@@ -142,6 +138,14 @@
         <h2>{{ currentNode?.label || '--' }}</h2>
         <el-tabs v-model="activeTab">
           <el-tab-pane label="成员列表" name="userList">
+            <el-button
+              type="primary"
+              @click="addMember"
+              :disabled="addUserBtnStatus"
+              v-if="getShowBool('updateMember')"
+            >
+              加入成员
+            </el-button>
             <el-table :data="userList">
               <el-table-column type="index" width="55"></el-table-column>
               <el-table-column v-for="column in columns" :key="column.prop" v-bind="column"></el-table-column>
@@ -216,8 +220,7 @@
 
 <script lang="ts">
 import _ from 'lodash/fp';
-import { debounce } from 'lodash';
-import { ref, Ref, provide, onMounted, getCurrentInstance } from 'vue';
+import { ref, Ref, provide, onMounted, getCurrentInstance, watch } from 'vue';
 import TreeSelector from './components/TreeSelector.vue';
 import BasicInfoForm from './components/BasicInfoForm.vue';
 import {
@@ -279,6 +282,7 @@ export default {
     const isDeleteVisible: Ref<boolean> = ref(true);
     const currentNode: any = ref();
     const loadings = ref(true);
+    const addUserBtnStatus = ref(true);
     // 编辑角色原始值
     let editOldData = '';
     // 用户树
@@ -288,7 +292,6 @@ export default {
         children: [],
       },
     ]);
-    let treeAllData: any = [];
     const editPopBoxVisible: any = ref({});
     const currentKey = ref('');
     const treeSelectorRole = ref({});
@@ -358,8 +361,6 @@ export default {
             })(role.userIds),
           })),
         )(noPaRoles);
-        treeAllData = [...treeData.value];
-
         const res: any = {};
         treeData.value.forEach((item: any) => {
           res[String(item.id)] = false;
@@ -374,8 +375,10 @@ export default {
     const reloadUserList = async (s: any) => {
       await initUserList();
       if (s?.id) {
-        userTreeRef.value.setCurrentKey(s.id);
-        const treeUser: any = _.find({ id: s.id })(treeData.value[0].children);
+        userTreeRef.value.setCurrentKey(s.id, true);
+        currentNode.value = userTreeRef.value.getNode(s.id);
+        currentNodeData.value = currentNode.value.data;
+        const treeUser: any = _.find({ id: s.id })(treeData.value);
         userList.value = _.intersectionWith((node: any, user: any) => node.id === user.id)(allUsers.value)(
           treeUser?.children || [],
         );
@@ -464,10 +467,12 @@ export default {
       currentNodeData.value = data;
       currentNode.value = node;
       if (node.level === 1) {
+        addUserBtnStatus.value = false;
         userList.value = _.intersectionWith((node: any, user: any) => node.id === user.id)(allUsers.value)(
           node.data.children,
         );
       } else {
+        addUserBtnStatus.value = true;
         userList.value = _.intersectionWith((node: any, user: any) => node.id === user.id)(allUsers.value)([node.data]);
       }
       // 判断是否可编辑 to-do
@@ -528,10 +533,10 @@ export default {
     };
     initDepartments();
     const otherRoleUser: Ref<Array<any>> = ref([]);
-    const addMember = (node: any, data: any) => {
-      treeSelectorRole.value = data;
-      selectedUser.value = _.intersectionBy('id')(allUsers.value)(data.children);
-      otherRoleUser.value = _.differenceBy('id')(allUsers.value)(data.children);
+    const addMember = () => {
+      treeSelectorRole.value = currentNodeData.value;
+      selectedUser.value = _.intersectionBy('id')(allUsers.value)(currentNodeData.value.children);
+      otherRoleUser.value = _.differenceBy('id')(allUsers.value)(currentNodeData.value.children);
       treeSelectorRef.value.show();
     };
 
@@ -666,20 +671,6 @@ export default {
     const handleCancel = () => {
       isEdit.value = true;
     };
-
-    // 搜索
-    const search = (keyword: string) => {
-      // 过滤当前的角色
-      if (!keyword.trim()) {
-        treeData.value = treeAllData;
-      } else {
-        // 过滤角色
-        const roleList = treeAllData.filter((subItem: any) => subItem.label.includes(keyword.trim()));
-        treeData.value = roleList;
-      }
-    };
-    const filterRoleAndUser = debounce(search, 500);
-
     onMounted(() => {
       getRoleAuthListData();
     });
@@ -797,7 +788,6 @@ export default {
             projectId: props.id,
           });
           if (code === 0) {
-            reloadUserList({ id: rowId });
             initRoleAuth();
           }
         });
@@ -822,6 +812,16 @@ export default {
       userTreeInput.value.roles = data.label;
       editOldData = data.label;
     };
+
+    // 成员和角色过滤
+    const filterNode = (value: any, data: any) => {
+      if (!value) return true;
+      return data.label.indexOf(value) !== -1;
+    };
+
+    watch(userInput, (newValue: string) => {
+      userTreeRef.value.filter(newValue);
+    });
     return {
       loadings,
       closeUserTree,
@@ -870,12 +870,13 @@ export default {
       iconEdit,
       save,
       cancel,
-      filterRoleAndUser,
       editPopBoxVisible,
       editBoxsave,
       validatorRolePass,
       currentNode,
       handleEditRole,
+      addUserBtnStatus,
+      filterNode,
     };
   },
 };

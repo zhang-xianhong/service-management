@@ -15,4 +15,9 @@ export default {
   SEND_MAIL_FOR_RESET_PASSWORD: ['/users/send/email', '/mock/tenant/tenant-detail.json'],
   VERIFY_CODE_VALID_FOR_RESET_PASSWORD: ['/users/verify/password/code', '/mock/tenant/tenant-detail.json'],
   RESET_USER_PASSWD: ['/users/reset/password', '/mock/tenant/tenant-detail.json'],
+  SEND_RETRIEVE_PASSWD_VERIFY_CODE: [
+    '/user/password/sendRetrievePasswordVerifyCode',
+    '/mock/tenant/tenant-sendVerifyCode.json',
+  ],
+  RETRIEVE_PASSWD: ['/user/password/retrieve', '/mock/tenant/tenant-retrievePassword.json'],
 };
