@@ -7,7 +7,9 @@
             <el-option label="True" :value="1">True</el-option>
             <el-option label="False" :value="0">False</el-option>
           </el-select>
-          <span v-else>{{ form.defaultValue ? 'True' : 'False' }}</span>
+          <span v-else>{{
+            typeof form.defaultValue === 'undefined' ? '--' : form.defaultValue ? 'True' : 'False'
+          }}</span>
         </el-form-item>
       </el-form>
     </div>

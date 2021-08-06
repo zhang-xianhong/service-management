@@ -10,9 +10,7 @@
       <div>
         <div class="title">
           项目信息
-          <span class="edit-btn" v-if="!editMode && getShowBool('update') && include" @click="editMode = true"
-            >编辑</span
-          >
+          <span class="edit-btn" v-if="!editMode && getShowBool('update')" @click="editMode = true">编辑</span>
         </div>
         <basic-info-form
           :project-detail="projectDetail"
@@ -45,18 +43,20 @@
         >
           <template #default="{ node, data }">
             <div class="customNode">
-              <svg-icon
-                v-if="node.level < 2 && getShowBool('updateMember')"
-                icon-name="folder"
-                icon-class="tree-node-folder"
-              ></svg-icon>
-              <svg-icon
-                v-if="node.level === 2 && getShowBool('updateRole')"
-                icon-name="member"
-                icon-class="tree-node-member"
-              ></svg-icon>
-              <span>
+              <div class="content-style">
+                <svg-icon
+                  v-if="node.level < 2 && getShowBool('updateMember')"
+                  icon-name="folder"
+                  icon-class="tree-node-folder"
+                ></svg-icon>
+                <svg-icon
+                  v-if="node.level === 2 && getShowBool('updateRole')"
+                  icon-name="member"
+                  icon-class="tree-node-member"
+                ></svg-icon>
                 {{ node.label }}
+              </div>
+              <div>
                 <el-popover
                   placement="bottom-start"
                   :width="300"
@@ -86,15 +86,17 @@
                     </div>
                   </el-form>
                   <template #reference>
-                    <i
-                      type="text"
-                      class="el-icon-edit"
-                      @click="handleEditRole(data)"
-                      v-show="node.level === 1 && !data.isSystem"
-                    ></i>
+                    <span>
+                      <i
+                        type="text"
+                        class="el-icon-edit"
+                        @click="handleEditRole(data)"
+                        v-if="node.level === 1 && !data.isSystem && getShowBool('updateRole')"
+                      ></i>
+                    </span>
                   </template>
                 </el-popover>
-              </span>
+              </div>
             </div>
           </template>
         </el-tree>
@@ -141,7 +143,7 @@
             <el-table :data="userList">
               <el-table-column type="index" width="55"></el-table-column>
               <el-table-column v-for="column in columns" :key="column.prop" v-bind="column"></el-table-column>
-              <el-table-column prop="operator" width="55" v-if="getShowBool('update') && include">
+              <el-table-column prop="operator" width="55" v-if="getShowBool('updateMember')">
                 <template #default="{ row }">
                   <i
                     class="el-icon-error remove-user-icon"
@@ -379,30 +381,6 @@ export default {
       }
     };
 
-    const removeUser = (row: any) => {
-      ElMessageBox.confirm(
-        `是否将 ${row ? row.displayName : currentNodeData.value.label} 从 ${
-          row ? currentNode.value.label : currentNode.value.parent.data.label
-        } 中移除？`,
-        '提示',
-        {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning',
-        },
-      ).then(async () => {
-        const users = row ? currentNodeData.value?.children : currentNode.value.parent.data?.children;
-        const removeUserId = row ? row.id : currentNodeData.value.id;
-        const updateUsers = users.filter((user: any) => user.id !== removeUserId).map((user: any) => user.id);
-        const roleId = row ? currentNode.value?.data?.id : currentNode.value.parent?.data?.id;
-        const { code } = await updateRoleMembers({
-          userIds: updateUsers,
-          projectId: props.id,
-          roleId,
-        });
-        if (code === 0) reloadUserList({ id: roleId });
-      });
-    };
     // 初始化项目信息
     const projectDetail = ref({});
     const include = ref(true);
@@ -576,6 +554,51 @@ export default {
       }
     };
 
+    // 初始化角色权限
+    const initRoleAuth = () => {
+      const checkObj = initCheckData();
+      checkedItem.value = checkObj;
+      editDisable.value = true;
+      isEdit.value = true;
+      currentNode.value = {};
+    };
+
+    const removeUser = (row: any) => {
+      ElMessageBox.confirm(
+        `是否将 ${row ? row.displayName : currentNodeData.value.label} 从 ${
+          currentNode.value.level === 1 ? currentNode.value.label : currentNode.value.parent.data.label
+        } 中移除？`,
+        '提示',
+        {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning',
+        },
+      ).then(async () => {
+        let users: any;
+        let roleId: number;
+        if (row && currentNode.value.level === 1) {
+          users = currentNodeData.value?.children;
+          roleId = currentNode.value?.data?.id;
+        } else {
+          users = currentNode.value.parent.data?.children;
+          roleId = currentNode.value.parent?.data?.id;
+        }
+        console.log('users', users);
+        // const users = row ? currentNodeData.value?.children : currentNode.value.parent.data?.children;
+        const removeUserId = row ? row.id : currentNodeData.value.id;
+        const updateUsers = users.filter((user: any) => user.id !== removeUserId).map((user: any) => user.id);
+        const { code } = await updateRoleMembers({
+          userIds: updateUsers,
+          projectId: props.id,
+          roleId,
+        });
+        if (code === 0) {
+          initRoleAuth();
+          reloadUserList({ id: currentNodeData.value.label });
+        }
+      });
+    };
     // 更新角色权限
     const updateRoleData = async () => {
       let moduleIds: number[] = [];
@@ -601,16 +624,6 @@ export default {
         console.log(error);
       }
     };
-
-    // 初始化角色权限
-    const initRoleAuth = () => {
-      const checkObj = initCheckData();
-      checkedItem.value = checkObj;
-      editDisable.value = true;
-      isEdit.value = true;
-      currentNode.value = {};
-    };
-
     // 全选
     const handleCheckAllChange = (data: any) => {
       const { id, children } = data;
@@ -759,9 +772,9 @@ export default {
         return;
       }
       if (!currentNodeData.value.children.length) {
-        ElMessageBox.confirm(`删除【${currentNodeData.value.label}】 角色`, {
-          confirmButtonText: '我知道了',
-          showCancelButton: false,
+        ElMessageBox.confirm(`是否删除【${currentNodeData.value.label}】角色？`, '提示', {
+          confirmButtonText: '确认',
+          cancelButtonText: '取消',
           type: 'warning',
         }).then(async () => {
           const { code } = await deleteRole({
@@ -920,6 +933,7 @@ export default {
     .customNode {
       font-size: 12px;
       width: 100%;
+      display: flex;
       .el-icon-edit {
         visibility: hidden;
       }
@@ -928,17 +942,22 @@ export default {
           visibility: visible;
         }
       }
-      .el-icon-circle-plus {
-        font-size: 18px;
-        &:hover {
-          color: #333;
-        }
-      }
       .svg-icon {
         margin-right: 0.5em;
         &.tree-node-folder {
           color: #66bbff;
         }
+      }
+      .content-style {
+        width: 200px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+    .el-icon-circle-plus {
+      font-size: 18px !important;
+      &:hover {
+        color: #333;
       }
     }
   }
@@ -966,11 +985,11 @@ export default {
   }
   ::v-deep .el-checkbox-group {
     font-size: 0;
-    width: 750px;
+    width: 800px;
     overflow: auto;
     .el-checkbox__label {
       display: inline-block;
-      min-width: 110px;
+      min-width: 120px;
     }
     .el-checkbox {
       margin: 0;

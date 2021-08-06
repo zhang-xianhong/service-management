@@ -219,6 +219,7 @@ const routes: Array<RouteRecordRaw> = [
       icon: 'publish',
       hidden: false,
       id: 29,
+      node: true,
     },
     children: [
       {
@@ -252,7 +253,7 @@ const routes: Array<RouteRecordRaw> = [
           hidden: true,
           showBackButton: true,
           activeMenu: '/deploy',
-          id: 29,
+          id: 32,
         },
       },
     ],
@@ -377,6 +378,7 @@ const routes: Array<RouteRecordRaw> = [
       isRootLevel: true,
       hidden: false,
       node: true,
+      id: 24,
     },
     children: [
       {

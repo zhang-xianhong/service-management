@@ -86,11 +86,7 @@
           >
             <el-input v-model="projectDetail.description" ref="projectDescriptionInput"></el-input>
           </el-form-item>
-          <el-form-item
-            label="代码模板"
-            :label-width="labelWidth"
-            :rules="[{ required: true, message: '请选择代码模板', trigger: 'blur' }]"
-          >
+          <el-form-item label="代码模板" :label-width="labelWidth">
             <el-select v-model="projectDetail.templateId" placeholder="请选择代码模板" default-first-option>
               <el-option
                 v-for="(item, index) in codeTemplateList"
@@ -103,20 +99,12 @@
           <el-form-item label="负责人" :label-width="labelWidth" v-if="false">
             <fetch-owners-select @get-owners="setOwner" :use-project="false"></fetch-owners-select>
           </el-form-item>
-          <el-form-item
-            label="项目级别"
-            :label-width="labelWidth"
-            :rules="[{ required: true, message: '请输入项目级别', trigger: 'blur' }]"
-          >
+          <el-form-item label="项目级别" :label-width="labelWidth">
             <el-radio v-model="projectDetail.level" :label="1">通用级</el-radio>
             <el-radio v-model="projectDetail.level" :label="2">行业级</el-radio>
             <el-radio v-model="projectDetail.level" :label="3">租户级</el-radio>
           </el-form-item>
-          <el-form-item
-            label="许可类型"
-            :label-width="labelWidth"
-            :rules="[{ required: true, message: '请输入项目级别', trigger: 'blur' }]"
-          >
+          <el-form-item label="许可类型" :label-width="labelWidth">
             <el-radio v-model="projectDetail.license" :label="0">永久</el-radio>
             <el-radio v-model="projectDetail.license" :label="1">租用</el-radio>
           </el-form-item>

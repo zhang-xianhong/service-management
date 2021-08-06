@@ -4,13 +4,10 @@
       <span ref="placeholder">{{ content }}</span>
     </div>
     <div class="sa-tooltip__content">
-      <el-tooltip
-        v-if="showTooltip"
-        effect="dark"
-        :visible-arrow="visibleArrow"
-        :content="content"
-        :placement="placement"
-      >
+      <el-tooltip v-if="showTooltip" effect="dark" :visible-arrow="visibleArrow" :placement="placement">
+        <template #content>
+          <span style="display: inline-block; max-width: 500px">{{ content }}</span>
+        </template>
         <span>{{ content }}</span>
       </el-tooltip>
       <span v-else>{{ content }}</span>

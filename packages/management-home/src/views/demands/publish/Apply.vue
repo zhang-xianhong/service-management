@@ -263,15 +263,15 @@
 </template>
 
 <script lang="ts">
-import { reactive, toRefs, ref, onBeforeUnmount, onMounted } from 'vue';
-import { getPublishList, addPublish, updatePublish, deletePublish, findUserByName } from '@/api/demands/publish';
+import { reactive, toRefs, ref, onBeforeUnmount } from 'vue';
+import { getPublishList, addPublish, updatePublish, deletePublish, getSearchUsers } from '@/api/demands/publish';
 import { getServiceList } from '@/api/deploy/deploy-apply';
 import PackagedPagination from '@/components/pagination/Index.vue';
 import { debounce } from 'lodash';
 import { ElMessageBox, ElMessage } from 'element-plus';
 import dateFormat from '@/utils/date-format';
 import { userInfo } from '@/layout/messageCenter/user-info';
-import { STATUS, AUDIT_RESULTS, getModuleType } from './constant';
+import { STATUS, AUDIT_RESULTS, getModuleType, changeUsers } from './constant';
 import { getShowBool } from '@/utils/permission-show-module';
 
 interface TableState {
@@ -360,6 +360,7 @@ export default {
         { id: 2, name: '应用' },
       ],
     });
+
     const publishRules = {
       moduleType: [{ required: true, message: '请选择部署类型', trigger: 'change' }],
       name: [{ required: true, message: '请输入部署名称', trigger: 'change' }],
@@ -387,6 +388,14 @@ export default {
     }
 
     const seleteLoading = ref(false);
+    // 获取用户搜索列表
+    async function getUserlist() {
+      seleteLoading.value = true;
+      const { data = {} } = await getSearchUsers();
+      tableState.reviewerFilters = changeUsers(data.reviewers);
+      tableState.applicantFilters = changeUsers(data.applicants);
+      seleteLoading.value = false;
+    }
 
     // 获取部署列表数据
     async function getTableData() {
@@ -410,6 +419,7 @@ export default {
           index: index + 1,
         }));
         tableState.tableData = publishData;
+        await getUserlist();
       } catch (error) {
         tableState.loading = false;
         ElMessage({
@@ -681,18 +691,6 @@ export default {
     function getRowOptionStatus(row: any) {
       return userInfo.value.userId !== row.applicant || row.status !== 0;
     }
-
-    onMounted(async () => {
-      seleteLoading.value = true;
-      const { data = [] } = await findUserByName();
-      const users = data.map((item: any) => ({
-        id: item.id,
-        name: item.displayName,
-      }));
-      tableState.reviewerFilters = users || [];
-      tableState.applicantFilters = users || [];
-      seleteLoading.value = false;
-    });
 
     return {
       ...toRefs(tableState),

@@ -26,12 +26,13 @@
       <div class="project-item_mess"><label>负责人</label>{{ dataObj.ownerstr }}</div>
       <div class="project-item_mess">
         <label>项目描述</label>
-        <el-tooltip effect="dark" placement="top" popper-class="max-length">
+        <el-tooltip effect="dark" placement="top" popper-class="max-length" v-if="dataObj.remark.length > 10">
           <template #content>
             <div v-html="provpers"></div>
           </template>
           <span class="remarks">{{ dataObj.remark }}</span>
         </el-tooltip>
+        <span class="remarks" v-else>{{ dataObj.remark }}</span>
       </div>
       <div class="project-item_mess">
         <label>项目级别</label>
@@ -211,6 +212,7 @@ export default defineComponent({
         white-space: nowrap;
         text-overflow: ellipsis;
         vertical-align: bottom;
+        padding-left: 5px;
       }
       label {
         opacity: 0.7;
