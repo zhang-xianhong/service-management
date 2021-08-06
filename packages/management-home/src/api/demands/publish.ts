@@ -22,3 +22,5 @@ export const getServiceList: (payload: object) => Promise<SuccessResponse<any>> 
   axios.get(getUrl(service.GET_SERVICE_LIST), { params: payload });
 export const findUserByName = (payload?: any): Promise<SuccessResponse<any>> =>
   axios.get(getUrl(tenant.QUERY_IN_TENT), { params: payload });
+export const getSearchUsers = (payload?: any): Promise<SuccessResponse<any>> =>
+  axios.get(getUrl(publish.SEARCH_USERS), { params: payload });

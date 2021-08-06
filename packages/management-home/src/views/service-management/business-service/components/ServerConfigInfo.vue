@@ -41,7 +41,7 @@
             <template v-if="!scope.row.isEdit">
               <a class="operation-link" @click="addItem(scope.$index)">添加</a>
               <a class="operation-link" @click="openHistoryDialog(scope.row)">变更历史</a>
-              <a class="operation-link" @click="deleteItem(scope.row)" v-if="scope.row.scope">删除</a>
+              <a class="operation-link" @click="deleteItem(scope.row)" v-if="scope.row.projectId">删除</a>
             </template>
             <template v-else>
               <a class="operation-link" @click="saveModify(scope.row)">确定</a>

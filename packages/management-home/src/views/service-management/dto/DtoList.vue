@@ -60,6 +60,7 @@ import { defineComponent, onBeforeMount } from '@vue/runtime-core';
 import EditDtoModel from './EditDtoModel.vue';
 import { useRoute } from 'vue-router';
 import { ElMessage } from 'element-plus';
+import { getShowBool } from '@/utils/permission-show-module';
 export default defineComponent({
   name: 'DtoListDialog',
   components: {
@@ -161,6 +162,7 @@ export default defineComponent({
       resetList,
       removeDtoModel,
       handleClose,
+      getShowBool,
     };
   },
 });

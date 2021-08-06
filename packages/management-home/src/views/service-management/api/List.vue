@@ -77,6 +77,7 @@
               />
             </template>
           </el-table-column>
+
           <el-table-column prop="actions" label="操作" align="right" width="180">
             <template #default="scope">
               <template v-if="!scope.row.isSystem">
@@ -111,6 +112,7 @@ import { getServiceApiList, updateServiceApi, createServiceApi, delServiceApi } 
 import _ from 'lodash';
 import { genId } from '@/utils/util';
 import { useRouter } from 'vue-router';
+import { getShowBool } from '@/utils/permission-show-module';
 export default defineComponent({
   props: {
     id: {
@@ -362,6 +364,7 @@ export default defineComponent({
       tableRowClassName,
       toParamsPage,
       handleClose,
+      getShowBool,
     };
   },
 });

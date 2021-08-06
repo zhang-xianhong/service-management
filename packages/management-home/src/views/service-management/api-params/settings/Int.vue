@@ -12,7 +12,7 @@
             placeholder="请输入默认值"
             v-if="isEdit"
           ></el-input-number>
-          <span v-else>{{ form.defaultValue }}</span>
+          <span v-else>{{ typeof form.defaultValue === 'undefined' ? '--' : form.defaultValue }}</span>
         </el-form-item>
         <el-form-item label="最小值限制" prop="min">
           <el-input-number
@@ -24,7 +24,7 @@
             placeholder="请输入最小值限制"
             v-if="isEdit"
           ></el-input-number>
-          <span v-else>{{ form.min }}</span>
+          <span v-else>{{ typeof form.min === 'undefined' ? '--' : form.min }}</span>
         </el-form-item>
         <el-form-item label="最大值限制" prop="max">
           <el-input-number
@@ -36,7 +36,7 @@
             placeholder="请输入最大值限制"
             v-if="isEdit"
           ></el-input-number>
-          <span v-else>{{ form.max }}</span>
+          <span v-else>{{ typeof form.max === 'undefined' ? '--' : form.max }}</span>
         </el-form-item>
       </el-form>
     </div>

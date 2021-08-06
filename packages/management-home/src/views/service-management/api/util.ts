@@ -12,7 +12,7 @@ export const validName = (name: string, list: any[], id: string) => {
   if (!name) {
     return '接口名称不能为空';
   }
-  if (!/^[A-Za-z_]+\w?$/.test(name)) {
+  if (!/^[A-Za-z_]+(\w+)?$/.test(name)) {
     return '接口名称仅支持字母、数字、下划线，且不能以数字开头';
   }
   if (isKeyword(name)) {
