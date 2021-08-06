@@ -26,7 +26,7 @@ import { computed, defineComponent, PropType, reactive, ref, SetupContext } from
 import { PasswordRules } from '@/utils/validate';
 // import { resetPassWord } from '@/api/tenant';
 import useMsg from '../useMsg';
-import { retrievePassword } from '@/api/tenant';
+import { retrievePassword } from '@/api/servers/index';
 export default defineComponent({
   name: 'Password',
   props: {
@@ -52,10 +52,11 @@ export default defineComponent({
       password: '',
       confirmationPassword: '',
       email: computed(() => props.email),
+      verifyCode: computed(() => props.captcha),
     });
     const form: any = ref(null);
-    const verifyCode = ref(props.captcha);
-    console.log('props.captcha', verifyCode.value);
+    console.log('verifyCode', formData.verifyCode);
+    console.log('userEmail', formData.email);
     // 获取组件实例
     // const { msgTips, goLoginPages } = useMsg();
     const { msgTips } = useMsg();
@@ -103,7 +104,8 @@ export default defineComponent({
         if (valid) {
           console.log('formData.password', formData.password);
           const { code, data } = await retrievePassword({
-            verifyCode: verifyCode.value,
+            userEmail: formData.email,
+            verifyCode: formData.verifyCode,
             firstInputNewPassword: formData.password,
             secondInputNewPassword: formData.confirmationPassword,
           });

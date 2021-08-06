@@ -47,5 +47,5 @@ export function checkMail(szMail: string): boolean {
 }
 export const EmailRules = [
   { required: true, message: '请输入验证邮箱号', trigger: 'blur' },
-  { validator: checkMail, trigger: 'blue' },
+  { validator: checkMail, trigger: 'blur' },
 ];
