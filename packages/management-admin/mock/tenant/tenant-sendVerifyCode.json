@@ -1,0 +1,9 @@
+{
+    "code": 0,
+    "message": "",
+    "requestId": "",
+    "data": {
+        "captcha": "123456",
+        "success": true
+    }
+}

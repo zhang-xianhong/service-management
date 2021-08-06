@@ -216,7 +216,7 @@ export default defineComponent({
     };
     const handleCancel = () => {
       if (isInEdit.value) {
-        ElMessageBox.confirm(`确定退出？编辑中的数据尚未保存，是否退出?`, '提示', {
+        ElMessageBox.confirm(`编辑中的数据尚未保存，是否退出?`, '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning',
