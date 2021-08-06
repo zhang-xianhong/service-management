@@ -17,3 +17,11 @@ export const updateTenant: (payload: any) => Promise<SuccessResponse<any>> = (pa
 
 export const queryInTenant = (payload: any): Promise<SuccessResponse<any>> =>
   request.get(getUrl(URL.tenant.QUERY_IN_TENT), { params: payload });
+
+// 发送验证码
+export const sendRetrievePasswordVerifyCode = (payload: any): Promise<SuccessResponse<any>> =>
+  request.get(getUrl(URL.tenant.SEND_RETRIEVE_PASSWD_VERIFY_CODE), { params: payload });
+
+// 找回密码
+export const retrievePassword = (payload: any): Promise<SuccessResponse<any>> =>
+  request.post(getUrl(URL.tenant.RETRIEVE_PASSWD), payload);
