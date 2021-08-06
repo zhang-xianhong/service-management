@@ -47,18 +47,20 @@
         >
           <template #default="{ node, data }">
             <div class="customNode">
-              <svg-icon
-                v-if="node.level < 2 && getShowBool('updateMember')"
-                icon-name="folder"
-                icon-class="tree-node-folder"
-              ></svg-icon>
-              <svg-icon
-                v-if="node.level === 2 && getShowBool('updateRole')"
-                icon-name="member"
-                icon-class="tree-node-member"
-              ></svg-icon>
-              <span>
+              <div class="content-style">
+                <svg-icon
+                  v-if="node.level < 2 && getShowBool('updateMember')"
+                  icon-name="folder"
+                  icon-class="tree-node-folder"
+                ></svg-icon>
+                <svg-icon
+                  v-if="node.level === 2 && getShowBool('updateRole')"
+                  icon-name="member"
+                  icon-class="tree-node-member"
+                ></svg-icon>
                 {{ node.label }}
+              </div>
+              <div>
                 <el-popover
                   placement="bottom-start"
                   :width="300"
@@ -98,14 +100,14 @@
                     </span>
                   </template>
                 </el-popover>
-              </span>
-              <i
-                v-if="node.level === 1 && getShowBool('updateMember')"
-                class="el-icon-circle-plus"
-                style="float: right"
-                @click.stop="addMember(node, data)"
-              ></i>
+              </div>
             </div>
+            <i
+              v-if="node.level === 1 && getShowBool('updateMember')"
+              class="el-icon-circle-plus"
+              style="float: right"
+              @click.stop="addMember(node, data)"
+            ></i>
           </template>
         </el-tree>
       </div>
@@ -936,6 +938,7 @@ export default {
     .customNode {
       font-size: 12px;
       width: 100%;
+      display: flex;
       .el-icon-edit {
         visibility: hidden;
       }
@@ -944,17 +947,22 @@ export default {
           visibility: visible;
         }
       }
-      .el-icon-circle-plus {
-        font-size: 18px;
-        &:hover {
-          color: #333;
-        }
-      }
       .svg-icon {
         margin-right: 0.5em;
         &.tree-node-folder {
           color: #66bbff;
         }
+      }
+      .content-style {
+        width: 200px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+    .el-icon-circle-plus {
+      font-size: 18px !important;
+      &:hover {
+        color: #333;
       }
     }
   }
