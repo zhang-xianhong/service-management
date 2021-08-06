@@ -29,7 +29,8 @@
 
 <script lang="ts">
 import { ElMessage } from 'element-plus';
-import { sendRetrievePasswordVerifyCode } from '@/api/servers/index';
+// import { sendRetrievePasswordVerifyCode } from '@/api/servers/index';
+import { sendRetrievePasswordVerifyCode } from '@/api/tenant';
 import {
   defineComponent,
   PropType,
@@ -98,8 +99,6 @@ export default defineComponent({
     };
 
     const sendVerifyCode = async () => {
-      // TODO 这里需要调接口 获取返回的验证码并保存下来
-      // const backcaptcha = 获取的验证码；
       console.log(emailInfo.email); // 获取邮箱号
       console.log('发送验证码');
       const isLawful = checkMail('', emailInfo.email);
@@ -119,7 +118,7 @@ export default defineComponent({
             userEmail: emailInfo.email,
           });
           console.log('data', data);
-          receivedCaptcha.value = data?.captcha;
+          receivedCaptcha.value = data.captcha ? data.captcha : '';
           if (code === 0) {
             isToash.value = true;
             let timeo = 60;
