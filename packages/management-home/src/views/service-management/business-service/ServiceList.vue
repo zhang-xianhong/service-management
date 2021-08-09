@@ -189,6 +189,9 @@
               @change="nodeChange"
               @expand-change="expandChange"
             >
+              <template #default="{ data }">
+                <service-name :name="data.value" />
+              </template>
             </el-cascader>
           </el-form-item>
         </el-form>
