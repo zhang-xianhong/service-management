@@ -20,18 +20,8 @@ export const queryInTenant = (payload: any): Promise<SuccessResponse<any>> =>
 
 // 发送验证码
 export const sendRetrievePasswordVerifyCode = (payload: any): Promise<SuccessResponse<any>> =>
-  request.get(getUrl(URL.tenant.SEND_RETRIEVE_PASSWD_VERIFY_CODE), {
-    params: payload,
-    headers: {
-      'x-sa-user-id': 1,
-    },
-  });
+  request.post(getUrl(URL.tenant.SEND_RETRIEVE_PASSWD_VERIFY_CODE), payload);
 
 // 找回密码
 export const retrievePassword = (payload: any): Promise<SuccessResponse<any>> =>
-  request.post(getUrl(URL.tenant.RETRIEVE_PASSWD), {
-    payload,
-    headers: {
-      'x-sa-user-id': 1,
-    },
-  });
+  request.post(getUrl(URL.tenant.RETRIEVE_PASSWD), payload);

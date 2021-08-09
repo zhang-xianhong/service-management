@@ -7,8 +7,8 @@ export default {
   QUERY_IN_TENT: ['/users/search', 'mock/tenant/tenant-department.json'],
   // '/tenants/search/users'
   SEND_RETRIEVE_PASSWD_VERIFY_CODE: [
-    '/users/sendRetrievePasswordVerifyCode',
+    '/users/forget-password/send/code',
     '/mock/tenant/tenant-sendVerifyCode.json',
   ],
-  RETRIEVE_PASSWD: ['/users/retrievePassword', '/mock/tenant/tenant-retrievePassword.json'],
+  RETRIEVE_PASSWD: ['/users/forget-password/reset', '/mock/tenant/tenant-retrievePassword.json'],
 };
