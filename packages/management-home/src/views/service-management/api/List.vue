@@ -324,7 +324,6 @@ export default defineComponent({
       isAdd.value = false;
       editId.value = '';
       formError.value = '';
-      isEditStats.value = false;
       list.value = _.cloneDeep(sourceList.value);
     };
 
@@ -353,10 +352,12 @@ export default defineComponent({
           type: 'warning',
         }).then(async () => {
           handleCancel();
+          isEditStats.value = false;
           emit('back');
         });
       } else {
         handleCancel();
+        isEditStats.value = false;
         emit('back');
       }
     };
