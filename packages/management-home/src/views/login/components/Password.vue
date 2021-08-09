@@ -24,9 +24,9 @@
 <script lang="ts">
 import { computed, defineComponent, PropType, reactive, ref, SetupContext } from 'vue';
 import { PasswordRules } from '@/utils/validate';
-// import { resetPassWord } from '@/api/tenant';
+import { retrievePassword } from '@/api/tenant';
 import useMsg from '../useMsg';
-import { retrievePassword } from '@/api/servers/index';
+// import { retrievePassword } from '@/api/servers/index';
 export default defineComponent({
   name: 'Password',
   props: {
@@ -81,13 +81,6 @@ export default defineComponent({
       }
     };
     const rules = {
-      email: [
-        {
-          required: true,
-          message: '请输入新的邮箱',
-          trigger: 'blur',
-        },
-      ],
       password: [...PasswordRules, { validator: validatePassword, trigger: 'blur' }],
       confirmationPassword: [
         {
@@ -99,7 +92,6 @@ export default defineComponent({
       ],
     };
     const submit = () => {
-      // 增加校验
       form.value.validate(async (valid: boolean) => {
         if (valid) {
           console.log('formData.password', formData.password);

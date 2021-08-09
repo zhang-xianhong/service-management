@@ -62,9 +62,9 @@ export default defineComponent({
     });
     const captcha = ref('');
     const backEmail = ref('');
-    // TODO:忘记密码接口暂未开发
+    // 切换组件
     const onSubmit = (payload: { type: Types; captcha: string; email: string }) => {
-      console.log(payload);
+      console.log('返回信息', payload);
       switch (payload.type) {
         case 'email':
           state.activeStep = 1;
@@ -79,7 +79,6 @@ export default defineComponent({
       state.componentName = payload.type;
       captcha.value = payload.captcha ? payload.captcha : '';
       backEmail.value = payload.email ? payload.email : '';
-      console.log(' backEmail.value', backEmail.value);
     };
 
     const backToLogin = () => {
