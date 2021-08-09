@@ -487,7 +487,6 @@ export default defineComponent({
     // getData 提供外部调用
     const getData = () => {
       const properties = paramsToSaveData(list.value);
-      debugger;
       const res = validator();
       if (res) {
         if (properties.length === 0) {
