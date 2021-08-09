@@ -30,7 +30,7 @@
                   :indeterminate="data.isIndeterminate"
                   @change="checkUser(data, node)"
                 ></el-checkbox>
-                <el-tooltip effect="light" :content="data.name" placement="right-end">
+                <el-tooltip effect="light" :content="data.name + ' ' + (data.roleList || '')" placement="right-end">
                   <span
                     style="
                       z-index: 1;
@@ -40,8 +40,9 @@
                       white-space: nowrap;
                       text-overflow: ellipsis;
                     "
-                    >{{ data.name }}</span
-                  >
+                    >{{ data.name }}
+                    <span class="roleStyle">{{ data.roleList }}</span>
+                  </span>
                 </el-tooltip>
               </template>
             </el-tree>
@@ -176,7 +177,7 @@ export default {
         if (treeNode.isLeaf) {
           treeNode.isIndeterminate = false;
           treeNode.checked = ids.includes(treeNode.id);
-          // treeNode.disabled = treeNode.checked || notAllowIds.includes(treeNode.id);
+          treeNode.disabled = treeNode.checked;
         } else {
           setChecked(treeNode._children, ids, notAllowIds);
         }
@@ -410,5 +411,8 @@ export default {
 }
 .tree-wrapper:deep(.el-tree-node__expand-icon) {
   z-index: 1;
+}
+.roleStyle {
+  color: #999;
 }
 </style>
