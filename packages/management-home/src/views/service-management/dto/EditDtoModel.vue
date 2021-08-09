@@ -93,13 +93,13 @@ export default defineComponent({
 
     const getData = async () => {
       const validRes = await dtoForm.value?.validate();
-
       if (validRes) {
         const properties = propertiesListRef.value.getData();
         if (properties) {
           localDtoData.value.list = properties;
           return localDtoData.value;
         }
+        throw new Error('properties 校验失败');
       }
     };
 

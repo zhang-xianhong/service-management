@@ -31,6 +31,8 @@ module.exports = {
         target: 'http://cqszjj.dev-citybase.oa.com',
         // target: 'http://fbxxyxgs.test-citybase.oa.com',
         // target: 'http://sunlight.test-citybase.oa.com',
+        // target: 'http://cqszjj.dev-citybase.oa.com',
+        // target: 'http://fbxxyxgs.test-citybase.oa.com',
         // target: 'http://http://yunzhi.dev-citybase.oa.com/',
         ws: true,
         changeOrigin: true

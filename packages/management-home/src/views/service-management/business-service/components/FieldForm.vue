@@ -63,7 +63,7 @@
                 @click="remove(scope.$index)"
                 class="operator"
                 :disabled="isFieldDisabled(scope)"
-                v-if="scope.$index !== 0"
+                v-if="fields.length > 0"
                 type="text"
                 >删除</el-button
               >
@@ -111,7 +111,6 @@ export default defineComponent({
     watchEffect(() => {
       fields.value = _.cloneDeep(currentModel.value?.fields || []);
     });
-    const modelId = currentModel.value?.id;
     const add = (index: number) => {
       console.log(index);
       fields.value.splice(0, 0, {
@@ -179,14 +178,18 @@ export default defineComponent({
         ),
       )(fields.value);
 
+      if (inputData.length === 0) {
+        ElMessage.error('请至少添加一个属性');
+        return;
+      }
+
       inputData.forEach((x: any) => {
         if (!x.notNull) {
           // eslint-disable-next-line no-param-reassign
           x.notNull = false;
         }
       });
-
-      const { code } = await updateFields(modelId, {
+      const { code } = await updateFields(currentModel.value?.id, {
         serviceId,
         fields: inputData,
       });
