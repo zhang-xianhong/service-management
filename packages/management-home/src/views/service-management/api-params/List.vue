@@ -171,8 +171,8 @@
     </div>
 
     <div class="params-form-btns">
-      <el-button type="primary" @click="handleToggleEdit(true)" v-if="!isEdit">编辑</el-button>
-      <template v-else>
+      <el-button type="primary" @click="handleToggleEdit(true)" v-if="!isEdit && list.length > 0">编辑</el-button>
+      <template v-else-if="isEdit">
         <el-button type="primary" @click="handleSave" :loading="submitting">确定</el-button>
         <el-button @click="handleCancel">取消</el-button>
       </template>
@@ -428,7 +428,7 @@ export default defineComponent({
     const handleSave = async () => {
       formError.value = '';
       const error = Object.values(listMap).some((list) => {
-        const res = validParams(list);
+        const res = validParams(list, paramsDefine.value);
         if (res) {
           const error = res[0];
           try {
@@ -498,7 +498,11 @@ export default defineComponent({
       let valid = false;
       switch (field) {
         case 'name':
-          valid = validName(value);
+          valid = validName(value, {
+            id,
+            defines: paramsDefine.value,
+            list: list.value,
+          });
           break;
         case 'example':
           valid = validExample(value);
