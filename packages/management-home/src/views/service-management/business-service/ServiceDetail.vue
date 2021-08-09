@@ -40,7 +40,7 @@
               ></svg-icon>
             </el-tooltip>
             <!-- dto模型 -->
-            <el-tooltip effect="light" content="DTO模型" placement="bottom">
+            <el-tooltip effect="light" content="DTO模型" placement="bottom" v-if="getShowBool('apiSelect')">
               <svg-icon
                 :icon-name="drawerName === 'DtoList' ? 'unicom-hover' : 'unicom'"
                 icon-class="detail-icons__item"
@@ -48,7 +48,7 @@
               ></svg-icon>
             </el-tooltip>
             <!-- 接口列表 -->
-            <el-tooltip effect="light" content="接口列表" placement="bottom">
+            <el-tooltip effect="light" content="接口列表" placement="bottom" v-if="getShowBool('apiSelect')">
               <svg-icon
                 :icon-name="drawerName === 'ServerApiList' ? 'list-hover' : 'list'"
                 icon-class="detail-icons__item"

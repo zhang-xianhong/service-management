@@ -1,14 +1,14 @@
 <template>
   <div class="drawer-content">
     <div class="drawer-content__main">
-      <el-button type="primary" @click="editDtoModel()" class="create-dto__bth" v-if="getShowBool('add')"
+      <el-button type="primary" @click="editDtoModel()" class="create-dto__bth" v-if="getShowBool('apiUpdate')"
         >新建</el-button
       >
       <list-wrap
         :loading="loading"
         :inProject="false"
         :empty="dtoList?.length === 0"
-        :hasCreateAuth="getShowBool('add')"
+        :hasCreateAuth="getShowBool('apiUpdate')"
         :handleCreate="() => editDtoModel()"
       >
         <el-table :data="dtoList" height="calc(100% - 60px)">
@@ -30,7 +30,7 @@
               {{ scope.row.zhName }}
             </template>
           </el-table-column>
-          <el-table-column label="操作" align="right" v-if="getShowBool('add')">
+          <el-table-column label="操作" align="right" v-if="getShowBool('apiUpdate')">
             <template #default="scope">
               <el-button @click="editDtoModel(scope.row)" type="text" size="small">编辑</el-button>
               <el-button @click="removeDtoModel(scope.row)" type="text" size="small">删除</el-button>
@@ -124,6 +124,7 @@ export default defineComponent({
           closeEditDto();
           // 刷新列表
           fetchDtoList(currentServiceId);
+          confirmLoading.value = false;
         }
       } catch (error) {
         console.log(error);
@@ -143,6 +144,7 @@ export default defineComponent({
       selectedId.value = '';
       // eslint-disable-next-line no-unused-expressions
       editDtoModelRef.value?.dtoForm?.resetFields();
+      confirmLoading.value = false;
     };
     const removeDtoModel = (row: DtoModel) => {
       ElMessageBox.confirm(`确认删除DTO${row.name}`, '提示', {
@@ -157,6 +159,7 @@ export default defineComponent({
       });
     };
     const handleClose = () => {
+      confirmLoading.value = false;
       emit('back');
     };
     return {

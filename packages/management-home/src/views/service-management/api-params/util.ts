@@ -102,12 +102,16 @@ export const paramsToExample = (params: ParamItems, result: any) => {
       throw new Error('参数不能为空');
     }
     let value: any;
+    let message = `请为参数 ${name} 填写示例值或者设置默认值`;
     switch (type) {
       case 'Float':
       case 'Int32':
       case 'Int64':
       case 'Double':
         value = getNumberValue(example, config);
+        if (isNaN(value)) {
+          message = `参数 ${name} 示例或者默认值与参数类型不匹配`;
+        }
         break;
       case 'Boolean':
         value = getBooleanValue(example, config);
@@ -121,10 +125,8 @@ export const paramsToExample = (params: ParamItems, result: any) => {
       default:
         value = example || config?.defaultValue || '';
     }
-    if (value === undefined || isNaN(value) || (value === '' && required)) {
-      throw new Error(
-        isNaN(value) ? `参数 ${name} 示例或者默认值与参数类型不匹配` : `请为参数 ${name} 填写示例值或者设置默认值`,
-      );
+    if (value === undefined || (value === '' && required)) {
+      throw new Error(message);
     }
     if (Array.isArray(result)) {
       // eslint-disable-next-line no-param-reassign

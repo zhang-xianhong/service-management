@@ -95,7 +95,7 @@
                     type="text"
                     @click="handleCancel(scope.row)"
                     :disabled="!hasCancelBtn"
-                    v-if="getShowBool('add')"
+                    v-if="getShowBool('apiUpdate')"
                     >取消</el-button
                   >
                 </template>
@@ -107,7 +107,9 @@
       </list-wrap>
     </div>
     <div class="drawer-content__btns">
-      <el-button @click="handleToEditStats" type="primary" v-if="!isEditStats && getShowBool('add')">编辑</el-button>
+      <el-button @click="handleToEditStats" type="primary" v-if="!isEditStats && getShowBool('apiUpdate')"
+        >编辑</el-button
+      >
       <el-button @click="handleClose">取消</el-button>
     </div>
   </div>
@@ -359,7 +361,7 @@ export default defineComponent({
       }
     };
 
-    const showEditBtns = computed(() => getShowBool('add') && isEditStats.value);
+    const showEditBtns = computed(() => getShowBool('apiUpdate') && isEditStats.value);
 
     return {
       isAdd,
