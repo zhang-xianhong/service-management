@@ -4,7 +4,7 @@
       v-for="(item, index) in data"
       :key="index"
       class="packaged-steps__item"
-      :class="{ 'packaged-steps__item--active': index + 1 <= active }"
+      :class="{ 'packaged-steps__item--active': index + 1 === active }"
       :style="{ width: computedStepWidth }"
     >
       <div class="step-title">{{ item.title }}</div>

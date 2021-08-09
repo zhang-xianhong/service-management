@@ -40,7 +40,7 @@
           v-show="useNewName"
           :rules="[
             { required: true, message: '请输入服务名称', trigger: 'blur' },
-            { min: 1, max: 32, message: '最大不能超过 32 个字符', trigger: 'blur' },
+            { min: 1, max: 28, message: '最大不能超过 28 个字符', trigger: 'blur' },
             {
               validator: validatorEnName,
               message: '仅支持小写英文、数字、中划线，不能以中划线开头和结尾',

@@ -43,6 +43,10 @@ export const PasswordRules = [
   { required: true, message: '请输入新的密码', trigger: 'blur' },
   { validator: validatorPassword, trigger: 'blur' },
 ];
+export const EmailRules = [
+  { required: true, message: '请输入有验证邮箱号', trigger: 'blur' },
+  { validator: checkMail, trigger: 'blue' },
+];
 export const uploadValidate = (instance: any, file: { size: number; name: string }) => {
   if (!/\.jp(e)?g|png|gif|bmp$/i.test(file.name)) {
     (instance as any).proxy.$message({

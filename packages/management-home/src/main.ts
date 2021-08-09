@@ -15,6 +15,8 @@ import { showModule } from '@/utils/permission-show-module';
 import { addHighLight } from '@/plugins/highlight';
 import PackagedPagination from '@/components/pagination/Index.vue';
 import ServiceName from '@/views/service-management/components/ServiceName.vue';
+import SaDrawer from '@/components/sa-drawer/Index.vue';
+
 const app: Vue.App = createApp(App);
 
 app.component('DataList', DataList);
@@ -23,6 +25,7 @@ app.component('Tooltip', Tooltip);
 app.component('ListWrap', ListWrap);
 app.component('PackagedPagination', PackagedPagination);
 app.component('ServiceName', ServiceName);
+app.component('SaDrawer', SaDrawer);
 addHighLight(app);
 
 // element全局配置
@@ -32,9 +35,4 @@ app.config.globalProperties.$ELEMENT = {
 // 权限点鉴权，控制页面中按钮/模块显隐函数
 app.config.globalProperties.$showModule = showModule;
 
-app
-  .use(Element)
-  .use(SvgIcon)
-  .use(Store)
-  .use(Router)
-  .mount('#app');
+app.use(Element).use(SvgIcon).use(Store).use(Router).mount('#app');

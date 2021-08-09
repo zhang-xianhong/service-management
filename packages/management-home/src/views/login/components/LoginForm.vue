@@ -30,7 +30,7 @@
       >登录</el-button
     >
     <!-- TODO:后续版本开发 -->
-    <!-- <div class="form-item__link" @click="goForgetPassword">忘记密码?</div> -->
+    <div class="form-item__link" @click="goForgetPassword">忘记密码?</div>
   </div>
 </template>
 
@@ -70,7 +70,7 @@ export default defineComponent({
     getCaptchaUrl();
 
     const goForgetPassword = () => {
-      router.push('/login/forget-password');
+      router.push('/forget-password');
     };
 
     const isPassed: Ref<boolean> = ref(false);
@@ -182,8 +182,11 @@ export default defineComponent({
       font-size: 14px;
     }
     &__link {
+      width: 70px;
       color: #bbb;
       cursor: pointer;
+      margin-top: 20px;
+      font-size: 14px;
     }
     img {
       width: 130px;
