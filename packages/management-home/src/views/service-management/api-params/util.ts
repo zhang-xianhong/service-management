@@ -256,7 +256,7 @@ export const validParams = (params: ParamItems, defines?: any): any => {
       break;
     }
     if (children && children.length > 0) {
-      return validParams(children);
+      return validParams(children, defines);
     }
   }
   if (errors.length > 0) {
