@@ -1,12 +1,5 @@
 <template>
-  <el-dialog
-    :title="title"
-    v-model="dialogVisible"
-    width="500px"
-    @closed="closeDialog"
-    :close-on-click-modal="false"
-    :destroy-on-close="true"
-  >
+  <el-dialog :title="title" v-model="dialogVisible" width="500px" @closed="closeDialog" :destroy-on-close="true">
     <div>
       <el-form :model="formData" ref="diagFormRef" :rules="formRules">
         <el-form-item label="登录账号" prop="username" :label-width="labelWidth">
