@@ -59,8 +59,14 @@
       </el-form-item>
       <el-form-item label="服务依赖">
         <div v-if="isShowMode">
-          <el-tag :key="d.dependencyServiceName" v-for="d in formData.dependencies">
-            {{ dependencyNameAndVersion(d) }}
+          <el-tag
+            :key="d.dependencyServiceName"
+            v-for="d in formData.serviceDependencies"
+            :type="!d.versionTooHigh ? '' : 'danger'"
+          >
+            <el-tooltip effect="dark" :visible-arrow="false" :content="d.dependencyServiceName" placement="top">
+              <span>{{ dependencyNameAndVersion(d) }}</span>
+            </el-tooltip>
           </el-tag>
         </div>
         <el-cascader
@@ -71,6 +77,9 @@
           :props="serviceCascaderProps"
           @change="nodeChange"
         >
+          <template #default="{ data }">
+            <service-name :name="data.value" />
+          </template>
         </el-cascader>
       </el-form-item>
       <el-form-item v-if="getShowBool('update') && !isRefrenceService">
@@ -82,7 +91,7 @@
 </template>
 
 <script lang="ts">
-import { reactive, ref, computed, inject } from 'vue';
+import { reactive, ref, computed, inject, watch } from 'vue';
 import useClassifications from '../utils/service-baseinfo-classification';
 import useTags from '../utils/service-baseinfo-tag';
 import { updateService } from '@/api/servers';
@@ -147,7 +156,15 @@ export default {
       tag: props.data.tag,
       detail: props.data.detail,
       dependencies: props.data.dependencies,
+      serviceDependencies: props.data.serviceDependencies,
     });
+
+    watch(
+      () => props.data.serviceDependencies,
+      (v) => {
+        formData.serviceDependencies = v;
+      },
+    );
 
     const computedDependencyName = computed(() => {
       if (dependenciesList.value.length === 0) {
@@ -233,8 +250,8 @@ export default {
     };
 
     const dependencyNameAndVersion = (data: any) => {
-      const [name, version] = data;
-      return `${getServiceShowName(name)}/${version}`;
+      const { dependencyServiceName, dependencyServiceVersion } = data;
+      return `${getServiceShowName(dependencyServiceName)}/${dependencyServiceVersion}`;
     };
     return {
       isShowMode,
@@ -274,5 +291,8 @@ export default {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+.el-cascader-panel > :first-child .el-checkbox__input {
+  display: none;
 }
 </style>

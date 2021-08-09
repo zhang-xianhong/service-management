@@ -39,7 +39,7 @@
       </el-form-item>
       <el-form-item label="项目级别" prop="level">
         <div v-if="!editMode" class="form-content">{{ getLabel(detailInfo.level)(projectLevels) }}</div>
-        <el-radio-group class="form-content" v-if="editMode" v-model="formData.level">
+        <el-radio-group class="form-content" v-if="editMode" v-model="formData.level" :disabled="editMode">
           <el-radio v-for="level in projectLevels" :key="level.value" :label="level.value">{{ level.label }}</el-radio>
         </el-radio-group>
       </el-form-item>

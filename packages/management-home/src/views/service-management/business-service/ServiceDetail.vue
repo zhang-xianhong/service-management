@@ -80,7 +80,7 @@
             <el-row class="project-switch">
               <!-- 服务下拉选择框 -->
               <el-select v-model="currentServiceId" placeholder="请选择" @change="selectService" style="width: 200px">
-                <el-option v-for="server in serverList" :key="server.id" :value="server.id" :label="server.name">
+                <el-option v-for="server in serverList" :key="server.id" :value="server.id" :label="server.shortName">
                   <service-name :name="server.name"></service-name>
                 </el-option>
               </el-select>
@@ -280,7 +280,7 @@ export default {
       const { data } = await getServiceList({ all: true });
       data.rows.forEach((x: any) => {
         // eslint-disable-next-line no-param-reassign
-        x.name = x.name ? getServiceShowName(x.name) : '';
+        x.shortName = x.name ? getServiceShowName(x.name) : '';
       });
       serverList.push(...(data.rows || []));
     };
@@ -349,6 +349,7 @@ export default {
       serverInfo.value = {
         ...info,
         dependencies: dependencyList,
+        serviceDependencies: dependencies,
       };
       !modelList.value.tables.length && initModelList();
     };
