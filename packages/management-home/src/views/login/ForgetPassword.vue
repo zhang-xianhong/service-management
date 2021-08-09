@@ -122,9 +122,6 @@ export default defineComponent({
     width: 560px;
     margin: auto;
     margin-top: 150px;
-    // display: flex;
-    // justify-content: center;
-    // align-items: center;
   }
 }
 .complete-container {

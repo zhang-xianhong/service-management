@@ -66,10 +66,8 @@ export default defineComponent({
     const isToash = ref(false);
     const timeout = ref(null as any);
     const reSend = ref('');
-    const receivedCaptcha = ref('');
 
     const checkMail = (rule: any, szMail: string): boolean => {
-      // const reg = /^[A-Za-z0-9]+([_.][A-Za-z0-9]+)*@([A-Za-z0-9-]+\.)+[A-Za-z]{2,6}$/;
       const reg = /^([A-Za-z0-9_\-.])+@([A-Za-z0-9_\-.])+\.([A-Za-z]{2,4})$/;
       return reg.test(szMail);
     };
@@ -114,11 +112,9 @@ export default defineComponent({
             message: '邮箱格式错误',
           });
         } else {
-          const { code, data } = await sendRetrievePasswordVerifyCode({
+          const { code } = await sendRetrievePasswordVerifyCode({
             userEmail: emailInfo.email,
           });
-          console.log('data', data);
-          receivedCaptcha.value = data.captcha ? data.captcha : '';
           if (code === 0) {
             isToash.value = true;
             let timeo = 60;
@@ -156,7 +152,6 @@ export default defineComponent({
 
     onBeforeUnmount(() => {
       clearInterval(timeout.value);
-      console.log('clearTimeout');
     });
 
     return {

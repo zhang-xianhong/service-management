@@ -55,10 +55,6 @@ export default defineComponent({
       verifyCode: computed(() => props.captcha),
     });
     const form: any = ref(null);
-    console.log('verifyCode', formData.verifyCode);
-    console.log('userEmail', formData.email);
-    // 获取组件实例
-    // const { msgTips, goLoginPages } = useMsg();
     const { msgTips } = useMsg();
     const validatePassword = (rule: any, value: string, callback: Function) => {
       if (value === '') {
@@ -94,14 +90,12 @@ export default defineComponent({
     const submit = () => {
       form.value.validate(async (valid: boolean) => {
         if (valid) {
-          console.log('formData.password', formData.password);
-          const { code, data } = await retrievePassword({
+          const { code } = await retrievePassword({
             userEmail: formData.email,
             verifyCode: formData.verifyCode,
             firstInputNewPassword: formData.password,
             secondInputNewPassword: formData.confirmationPassword,
           });
-          console.log('success?', data?.success);
           if (code === 0) {
             msgTips('success', '密码重置成功');
             const payload = {

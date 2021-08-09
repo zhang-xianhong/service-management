@@ -36,7 +36,6 @@
       </el-form-item>
     </el-form>
     <el-button class="form-item__btn" type="primary" @click="onLogin" :loading="loading">登录</el-button>
-    <!-- TODO:后续版本开发 -->
     <div class="form-item__link" @click="goForgetPassword">忘记密码?</div>
   </div>
 </template>
