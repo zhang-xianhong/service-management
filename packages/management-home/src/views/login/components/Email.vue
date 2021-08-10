@@ -68,7 +68,8 @@ export default defineComponent({
     const reSend = ref('');
 
     const checkMail = (rule: any, szMail: string): boolean => {
-      const reg = /^([A-Za-z0-9_\-.])+@([A-Za-z0-9_\-.])+\.([A-Za-z]{2,4})$/;
+      const reg =
+        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
       return reg.test(szMail);
     };
 
@@ -149,6 +150,9 @@ export default defineComponent({
     };
 
     onBeforeUnmount(() => {
+      window.onbeforeunload = function () {
+        return '系统可能不会保存您所做的更改。';
+      };
       clearInterval(timeout.value);
     });
 

@@ -38,9 +38,4 @@ export default {
   GET_SERVICE_API_PARAMS: ['/api/param/select'],
   SAVE_SERVICE_API_PARAMS: ['/api/param/update'],
   GET_START_CHECK: ['/services/start/check', '/mock/services/check.json'],
-  SEND_RETRIEVE_PASSWD_VERIFY_CODE: [
-    '/user/password/sendRetrievePasswordVerifyCode',
-    '/mock/tenant/tenant-sendVerifyCode.json',
-  ],
-  RETRIEVE_PASSWD: ['/user/password/retrieve', '/mock/tenant/tenant-retrievePassword.json'],
 };

@@ -26,7 +26,6 @@ import { computed, defineComponent, PropType, reactive, ref, SetupContext } from
 import { PasswordRules } from '@/utils/validate';
 import { retrievePassword } from '@/api/tenant';
 import useMsg from '../useMsg';
-// import { retrievePassword } from '@/api/servers/index';
 export default defineComponent({
   name: 'Password',
   props: {

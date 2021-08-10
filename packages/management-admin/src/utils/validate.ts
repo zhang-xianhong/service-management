@@ -19,9 +19,9 @@ export const uploadValidate = (instance: any, file: { size: number; name: string
   }
 };
 
-// 自定义密码校验  长度在 8 到 16 个字符,只能输入大小写字母、数字、特殊字符（(!@#$%^&),至少1个大写字母，1个小写字母
+// 自定义密码校验  长度在 8 到 16 个字符,只能输入大小写字母、数字、特殊字符（~!@#$%^&*()_+":<>?;,./-),至少1个大写字母，1个小写字母
 export function checkPasswd(passwd: string): boolean {
-  const szReg = /^(?=.*[a-z])(?=.*[A-Z])[A-Za-z\d（!@#$%^&)]{8,16}$/;
+  const szReg = /^(?=.*[a-z])(?=.*[A-Z])[A-Za-z\d（~!@#$%\\^&*\\(\\)_+":\\<\\>\\?;,.\\/\\-）]{8,16}$/;
   return szReg.test(passwd);
 }
 // 组件库form表单校验器 async-valitor
