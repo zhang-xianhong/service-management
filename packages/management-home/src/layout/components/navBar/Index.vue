@@ -115,22 +115,22 @@ export default defineComponent({
             type: 'error',
           });
           console.log(res, 'this is awaitData');
-          alloverEdit.value = false;
-          postCurrentProject({ id: project.id }).then(() => {
-            userCurrentProject.value = project;
-            localStorage.setItem('projectId', project.id);
-            const { meta, fullPath } = route;
-            if (meta.checkPath) {
-              if (meta.checkPath === 'current') {
-                window.location.href = fullPath;
-              } else {
-                window.location.href = meta.activeMenu || '/';
-              }
-            } else {
-              window.location.href = '/';
-            }
-          });
         }
+        alloverEdit.value = false;
+        postCurrentProject({ id: project.id }).then(() => {
+          userCurrentProject.value = project;
+          localStorage.setItem('projectId', project.id);
+          const { meta, fullPath } = route;
+          if (meta.checkPath) {
+            if (meta.checkPath === 'current') {
+              window.location.href = fullPath;
+            } else {
+              window.location.href = meta.activeMenu || '/';
+            }
+          } else {
+            window.location.href = '/';
+          }
+        });
       }
     };
     const dialogVisible = ref(false);

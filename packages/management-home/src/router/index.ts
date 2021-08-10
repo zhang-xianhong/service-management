@@ -176,42 +176,6 @@ const routes: Array<RouteRecordRaw> = [
   },
 
   {
-    path: '/publish',
-    name: 'Publish',
-    component: Layout,
-    meta: {
-      title: '部署管理',
-      icon: 'publish',
-      isRootLevel: true,
-      id: 6,
-      node: true,
-    },
-    children: [
-      {
-        path: 'apply',
-        component: () => import(/* webpackChunkName: "general" */ '@/views/demands/publish/Apply.vue'),
-        name: 'PublishApply',
-        meta: {
-          title: '部署申请',
-          isRootLevel: false,
-          id: 14,
-          checkPath: 'current',
-        },
-      },
-      {
-        path: 'review',
-        component: () => import(/* webpackChunkName: "general" */ '@/views/demands/publish/Review.vue'),
-        name: 'PublishReview',
-        meta: {
-          title: '部署审核',
-          isRootLevel: false,
-          id: 15,
-          checkPath: 'current',
-        },
-      },
-    ],
-  },
-  {
     path: '/deploy',
     name: 'Deploy',
     component: Layout,
@@ -232,6 +196,7 @@ const routes: Array<RouteRecordRaw> = [
           title: '发布申请',
           isRootLevel: false,
           id: 30,
+          checkPath: 'current',
         },
       },
       {
@@ -242,6 +207,7 @@ const routes: Array<RouteRecordRaw> = [
           title: '发布审核',
           isRootLevel: false,
           id: 31,
+          checkPath: 'current',
         },
       },
       {
@@ -256,6 +222,7 @@ const routes: Array<RouteRecordRaw> = [
           showBackButton: true,
           activeMenu: '/deploy',
           id: 32,
+          checkPath: 'active',
         },
       },
     ],
@@ -477,6 +444,42 @@ const routes: Array<RouteRecordRaw> = [
           activeMenu: '/service-repository/tenant/distribute',
           showBackButton: true,
           id: 28,
+        },
+      },
+    ],
+  },
+  {
+    path: '/publish',
+    name: 'Publish',
+    component: Layout,
+    meta: {
+      title: '部署管理',
+      icon: 'publish',
+      isRootLevel: true,
+      id: 6,
+      node: true,
+    },
+    children: [
+      {
+        path: 'apply',
+        component: () => import(/* webpackChunkName: "general" */ '@/views/demands/publish/Apply.vue'),
+        name: 'PublishApply',
+        meta: {
+          title: '部署申请',
+          isRootLevel: false,
+          id: 14,
+          checkPath: 'current',
+        },
+      },
+      {
+        path: 'review',
+        component: () => import(/* webpackChunkName: "general" */ '@/views/demands/publish/Review.vue'),
+        name: 'PublishReview',
+        meta: {
+          title: '部署审核',
+          isRootLevel: false,
+          id: 15,
+          checkPath: 'current',
         },
       },
     ],
