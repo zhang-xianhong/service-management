@@ -190,7 +190,7 @@ export default defineComponent({
     const handleSelectionChange = (data: any): void => {
       baseFormData.configTemplates = data.map((item: any) => ({
         name: item.name,
-        defalutValue: item.defaultValue,
+        defaultValue: item.defaultValue,
       }));
     };
 
