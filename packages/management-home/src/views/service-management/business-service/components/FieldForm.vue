@@ -216,6 +216,7 @@ export default defineComponent({
     const toggleIsInEdit = (value: boolean) => (isInEdit.value = value);
     const beforeClose = () => {
       isInEdit.value = false;
+      fields.value = fields.value.filter((item) => item.id);
     };
     const handleCancel = () => {
       if (isInEdit.value) {

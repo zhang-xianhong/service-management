@@ -107,14 +107,14 @@
       </list-wrap>
     </div>
     <div class="drawer-content__btns">
-      <!-- <el-button
+      <el-button
         type="primary"
         :loading="getDebugUrlLoading"
         :disabled="Number(status) !== 21"
         v-if="getShowBool('apiDebug')"
         @click="handleGetDebugUrl"
         >接口调试</el-button
-      > -->
+      >
       <el-button @click="handleToEditStats" type="primary" v-if="!isEditStats && getShowBool('apiUpdate')"
         >编辑</el-button
       >
@@ -127,11 +127,18 @@ import { computed, defineComponent, ref } from 'vue';
 import { ElMessageBox, ElMessage } from 'element-plus';
 import { METHOD_TYPES, SYSTEM_APIS } from './config';
 import { validName, validUrl, validDescription, parseList } from './util';
-import { getServiceApiList, updateServiceApi, createServiceApi, delServiceApi } from '@/api/servers/index';
+import {
+  getServiceApiList,
+  updateServiceApi,
+  createServiceApi,
+  delServiceApi,
+  getServiceAPiDebugUrl,
+} from '@/api/servers/index';
 import _ from 'lodash';
 import { genId } from '@/utils/util';
 import { useRouter } from 'vue-router';
 import { getShowBool } from '@/utils/permission-show-module';
+import { userCurrentProject, userInfo } from '@/layout/messageCenter/user-info';
 export default defineComponent({
   props: {
     id: {
@@ -378,10 +385,23 @@ export default defineComponent({
 
     const showEditBtns = computed(() => getShowBool('apiUpdate') && isEditStats.value);
 
+    // 获取debugUrl
     const handleGetDebugUrl = async () => {
       if (!debugUrl.value) {
         getDebugUrlLoading.value = true;
+        try {
+          const { code, data } = await getServiceAPiDebugUrl({
+            userId: userInfo.value.userId,
+            projectId: userCurrentProject.value.id,
+          });
+          if (code === 0) {
+            debugUrl.value = data.url;
+          }
+        } catch (e) {}
         getDebugUrlLoading.value = false;
+        window.open(debugUrl.value, {
+          name: 'serviceDebug',
+        });
       }
     };
 
@@ -411,6 +431,7 @@ export default defineComponent({
       handleToEditStats,
       showEditBtns,
       handleGetDebugUrl,
+      getDebugUrlLoading,
     };
   },
 });
