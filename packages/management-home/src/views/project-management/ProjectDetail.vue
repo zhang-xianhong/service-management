@@ -508,6 +508,10 @@ export default {
 
         // 排序treeData
         const bkData = treeData.value.splice(4, 2);
+        const { children } = bkData[1];
+        if (children.length > 10) {
+          children.length = 10;
+        }
         treeData.value.splice(0, 0, bkData[1], bkData[0]);
         editPopBoxVisible.value = res;
         userList.value = [];
@@ -560,6 +564,12 @@ export default {
     };
     const otherRoleUser: Ref<Array<any>> = ref([]);
     const addMember = () => {
+      // 判断当前是否是项目负责人
+      const { id, children } = currentNodeData.value;
+      if (id === 6 && children.length >= 10) {
+        msgTips('warning', '最多只能添加10个项目负责人');
+        return;
+      }
       treeSelectorRole.value = currentNodeData.value;
       selectedUser.value = _.intersectionBy('id')(allUsers.value)(currentNodeData.value.children);
       otherRoleUser.value = _.differenceBy('id')(allUsers.value)(currentNodeData.value.children);
