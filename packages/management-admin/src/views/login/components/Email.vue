@@ -97,8 +97,6 @@ export default defineComponent({
     };
 
     const sendVerifyCode = async () => {
-      console.log(emailInfo.email); // 获取邮箱号
-      console.log('发送验证码');
       const isLawful = checkMail('', emailInfo.email);
       if (!emailInfo.email) {
         ElMessage({
