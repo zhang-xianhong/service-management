@@ -64,7 +64,6 @@ export default defineComponent({
     const backEmail = ref('');
     // 切换组件
     const onSubmit = (payload: { type: Types; captcha: string; email: string }) => {
-      console.log('返回信息', payload);
       switch (payload.type) {
         case 'email':
           state.activeStep = 1;
