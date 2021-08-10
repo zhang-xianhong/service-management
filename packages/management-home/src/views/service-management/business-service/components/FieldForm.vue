@@ -77,7 +77,7 @@
         <el-button type="primary" @click="save" v-if="isInEdit">确定</el-button>
         <el-button type="primary" @click="toggleIsInEdit(true)" v-else>编辑</el-button>
       </template>
-      <el-button @click="handleCancel">取消</el-button>
+      <el-button @click="handleCancel">{{ isInEdit ? '取消' : '关闭' }}</el-button>
     </div>
   </div>
 </template>
@@ -225,7 +225,6 @@ export default defineComponent({
           type: 'warning',
         }).then(async () => {
           beforeClose();
-          context.emit('back');
         });
       } else {
         beforeClose();

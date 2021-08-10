@@ -110,7 +110,7 @@
       <el-button @click="handleToEditStats" type="primary" v-if="!isEditStats && getShowBool('apiUpdate')"
         >编辑</el-button
       >
-      <el-button @click="handleClose">取消</el-button>
+      <el-button @click="handleClose">{{ isEditStats ? '取消' : '关闭' }}</el-button>
     </div>
   </div>
 </template>
@@ -353,7 +353,6 @@ export default defineComponent({
         }).then(async () => {
           handleCancel();
           isEditStats.value = false;
-          emit('back');
         });
       } else {
         handleCancel();

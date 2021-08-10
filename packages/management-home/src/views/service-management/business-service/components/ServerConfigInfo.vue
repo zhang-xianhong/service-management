@@ -59,7 +59,7 @@
         v-if="getShowBool('updateConfig')"
         >配置下发</el-button
       >
-      <el-button @click="handleClose">取消</el-button>
+      <el-button @click="handleClose">关闭</el-button>
     </div>
     <!-- 详情弹窗 -->
     <el-dialog title="参数配置" v-model="isOpenDetailDialog" width="570px">
