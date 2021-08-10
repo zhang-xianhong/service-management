@@ -726,6 +726,7 @@ export default defineComponent({
       };
     };
 
+    // contentType change
     const handleContentTypeChange = () => {
       formError.value = '';
       previewCode.value = '';

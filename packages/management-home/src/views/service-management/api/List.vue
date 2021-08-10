@@ -107,6 +107,14 @@
       </list-wrap>
     </div>
     <div class="drawer-content__btns">
+      <!-- <el-button
+        type="primary"
+        :loading="getDebugUrlLoading"
+        :disabled="Number(status) !== 21"
+        v-if="getShowBool('apiDebug')"
+        @click="handleGetDebugUrl"
+        >接口调试</el-button
+      > -->
       <el-button @click="handleToEditStats" type="primary" v-if="!isEditStats && getShowBool('apiUpdate')"
         >编辑</el-button
       >
@@ -134,6 +142,10 @@ export default defineComponent({
       type: Array,
       default: () => [],
     },
+    status: {
+      type: Number,
+      default: 1,
+    },
   },
   setup(props, { emit }) {
     const router = useRouter();
@@ -146,6 +158,9 @@ export default defineComponent({
     const inputRefs = ref({});
     const formError = ref('');
     const hasCancelBtn = ref(true);
+    const debugUrl = ref('');
+    const getDebugUrlLoading = ref(false);
+
     const fetchList = async () => {
       isAdd.value = false;
       editId.value = '';
@@ -363,6 +378,13 @@ export default defineComponent({
 
     const showEditBtns = computed(() => getShowBool('apiUpdate') && isEditStats.value);
 
+    const handleGetDebugUrl = async () => {
+      if (!debugUrl.value) {
+        getDebugUrlLoading.value = true;
+        getDebugUrlLoading.value = false;
+      }
+    };
+
     return {
       isAdd,
       editId,
@@ -388,6 +410,7 @@ export default defineComponent({
       getShowBool,
       handleToEditStats,
       showEditBtns,
+      handleGetDebugUrl,
     };
   },
 });
