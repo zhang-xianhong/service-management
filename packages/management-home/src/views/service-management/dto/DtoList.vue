@@ -40,7 +40,7 @@
       </list-wrap>
     </div>
     <div class="drawer-content__btns">
-      <el-button @click="handleClose">取消</el-button>
+      <el-button @click="handleClose">关闭</el-button>
     </div>
 
     <!-- 新建Dto modal -->
