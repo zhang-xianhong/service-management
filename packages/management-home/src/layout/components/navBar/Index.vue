@@ -28,27 +28,29 @@
           </el-dropdown-menu>
         </template>
       </el-dropdown>
-      <span class="el-dropdown-link" v-if="!userCurrentProject.name" style="font-size: 14px; margin-right: 10px">
-        <i class="el-icon-s-unfold header-title-object-icon3"></i> 暂无项目
-      </span>
-      <el-dropdown trigger="click" class="header-title" v-else>
-        <span class="el-dropdown-link">
-          <svg-icon icon-name="project-list" style="margin-right: 2px; vertical-align: bottom"></svg-icon>
-          {{ userCurrentProject.name }}
+      <template v-if="showProjectSelect">
+        <span class="el-dropdown-link" v-if="!userCurrentProject.name" style="font-size: 14px; margin-right: 10px">
+          <i class="el-icon-s-unfold header-title-object-icon3"></i> 暂无项目
         </span>
-        <template #dropdown>
-          <el-dropdown-menu>
-            <el-dropdown-item
-              v-for="(project, index) in userProjectList"
-              :key="index"
-              @click="handleDropClick(project)"
-              :icon="project.id === userCurrentProject.id ? 'el-icon-check' : ''"
-            >
-              {{ project.name }}
-            </el-dropdown-item>
-          </el-dropdown-menu>
-        </template>
-      </el-dropdown>
+        <el-dropdown trigger="click" class="header-title" v-else>
+          <span class="el-dropdown-link">
+            <svg-icon icon-name="project-list" style="margin-right: 2px; vertical-align: bottom"></svg-icon>
+            {{ userCurrentProject.name }}
+          </span>
+          <template #dropdown>
+            <el-dropdown-menu>
+              <el-dropdown-item
+                v-for="(project, index) in userProjectList"
+                :key="index"
+                @click="handleDropClick(project)"
+                :icon="project.id === userCurrentProject.id ? 'el-icon-check' : ''"
+              >
+                {{ project.name }}
+              </el-dropdown-item>
+            </el-dropdown-menu>
+          </template>
+        </el-dropdown>
+      </template>
       <el-dropdown trigger="click" class="header-title">
         <span class="el-dropdown-link">
           <i class="el-icon-user-solid" style="margin-right: 2px"></i>
@@ -78,12 +80,14 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onBeforeUnmount, reactive, ref } from 'vue';
+import { computed, defineComponent, onBeforeUnmount, reactive, ref } from 'vue';
 // import breadCurmb from '@/components/bread-curmb/Index.vue';
 import { userCurrentProject, userProjectList, userInfo } from '@/layout/messageCenter/user-info';
 import { postCurrentProject, logout } from '@/api/auth';
 import Message from 'element-plus/es/el-message';
-import { useRouter } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
+import { alloverEdit, currentids } from '@/layout/messageCenter/routerRef';
+import { ElMessageBox } from 'element-plus';
 
 export default defineComponent({
   name: 'navBar',
@@ -101,13 +105,32 @@ export default defineComponent({
         name: '测试项目2',
       },
     ]);
-    const handleDropClick = (project: any) => {
+    const route = useRoute();
+    const handleDropClick = async (project: any) => {
       if (project.id !== userCurrentProject.value.id) {
-        postCurrentProject({ id: project.id }).then(() => {
-          userCurrentProject.value = project;
-          localStorage.setItem('projectId', project.id);
-          window.location.href = '/';
-        });
+        if (alloverEdit.value) {
+          const res = await ElMessageBox.confirm('即将切换项目，正在编辑的内容将无法保存，是否切换?', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'error',
+          });
+          console.log(res, 'this is awaitData');
+          alloverEdit.value = false;
+          postCurrentProject({ id: project.id }).then(() => {
+            userCurrentProject.value = project;
+            localStorage.setItem('projectId', project.id);
+            const { meta, fullPath } = route;
+            if (meta.checkPath) {
+              if (meta.checkPath === 'current') {
+                window.location.href = fullPath;
+              } else {
+                window.location.href = meta.activeMenu || '/';
+              }
+            } else {
+              window.location.href = '/';
+            }
+          });
+        }
       }
     };
     const dialogVisible = ref(false);
@@ -143,6 +166,11 @@ export default defineComponent({
         intervalLogout = null;
       }
     });
+
+    const showProjectSelect = computed(() => {
+      const arr = [4, 10, 17, 18, 19, 20, 25, 26, 27, 28];
+      return !arr.includes(currentids.value);
+    });
     return {
       projectList,
       userCurrentProject,
@@ -154,6 +182,7 @@ export default defineComponent({
       toAboutInfo,
       dialogVisible,
       handleClose,
+      showProjectSelect,
     };
   },
 });

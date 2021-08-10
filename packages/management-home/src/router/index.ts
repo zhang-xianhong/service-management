@@ -195,6 +195,7 @@ const routes: Array<RouteRecordRaw> = [
           title: '部署申请',
           isRootLevel: false,
           id: 14,
+          checkPath: 'current',
         },
       },
       {
@@ -205,6 +206,7 @@ const routes: Array<RouteRecordRaw> = [
           title: '部署审核',
           isRootLevel: false,
           id: 15,
+          checkPath: 'current',
         },
       },
     ],
@@ -280,6 +282,7 @@ const routes: Array<RouteRecordRaw> = [
           isRootLevel: false,
           id: 7,
           hidden: false,
+          checkPath: 'current',
         },
       },
       {
@@ -314,6 +317,7 @@ const routes: Array<RouteRecordRaw> = [
           activeMenu: '/service-management/service-list',
           showBackButton: true,
           id: 7,
+          checkPath: 'active',
         },
       },
       // {
@@ -349,6 +353,7 @@ const routes: Array<RouteRecordRaw> = [
           title: '应用列表',
           isRootLevel: false,
           id: 23,
+          checkPath: 'current',
         },
       },
       {
@@ -363,6 +368,7 @@ const routes: Array<RouteRecordRaw> = [
           hidden: true,
           activeMenu: '/application/application-list',
           showBackButton: true,
+          checkPath: 'active',
         },
       },
     ],
