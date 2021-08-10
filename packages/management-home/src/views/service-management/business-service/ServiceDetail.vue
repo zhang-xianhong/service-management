@@ -40,7 +40,7 @@
               ></svg-icon>
             </el-tooltip>
             <!-- dto模型 -->
-            <el-tooltip effect="light" content="DTO模型" placement="bottom">
+            <el-tooltip effect="light" content="DTO模型" placement="bottom" v-if="getShowBool('apiSelect')">
               <svg-icon
                 :icon-name="drawerName === 'DtoList' ? 'unicom-hover' : 'unicom'"
                 icon-class="detail-icons__item"
@@ -48,7 +48,7 @@
               ></svg-icon>
             </el-tooltip>
             <!-- 接口列表 -->
-            <el-tooltip effect="light" content="接口列表" placement="bottom">
+            <el-tooltip effect="light" content="接口列表" placement="bottom" v-if="getShowBool('apiSelect')">
               <svg-icon
                 :icon-name="drawerName === 'ServerApiList' ? 'list-hover' : 'list'"
                 icon-class="detail-icons__item"
@@ -56,7 +56,7 @@
               ></svg-icon>
             </el-tooltip>
             <!-- 代码预览 -->
-            <el-tooltip effect="light" content="代码预览" placement="bottom">
+            <el-tooltip effect="light" content="代码预览" placement="bottom" v-if="getShowBool('read')">
               <svg-icon icon-name="gitlab" icon-class="detail-icons__item" @click="openGitlab"></svg-icon>
             </el-tooltip>
             <!-- 文档下载 -->
@@ -494,7 +494,8 @@ export default {
     const pageLoading = ref(false);
     const modelFieldsLoading = ref(false);
     const modelSelected = async (model: any) => {
-      if (model) {
+      const hasAuth = getShowBool('moduleSelect');
+      if (model && hasAuth) {
         if (model.relationInfo) {
           componentName.value = 'RelationInfo';
           modelInfo.value = model.relationInfo;

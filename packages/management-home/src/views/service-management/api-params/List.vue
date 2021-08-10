@@ -7,7 +7,14 @@
     </el-radio-group>
 
     <div class="content-types" v-if="paramsMethod === 'body' && !isResponse">
-      <el-radio v-model="contentType" :label="item" v-for="item in contentTypes" :key="item" :disabled="!isEdit">
+      <el-radio
+        v-model="contentType"
+        :label="item"
+        v-for="item in contentTypes"
+        :key="item"
+        :disabled="!isEdit"
+        @change="handleContentTypeChange"
+      >
         {{ item }}
       </el-radio>
     </div>
@@ -16,7 +23,7 @@
       :loading="loading"
       :inProject="false"
       :empty="list.length === 0"
-      :hasCreateAuth="true"
+      :hasCreateAuth="getShowBool('apiUpdate')"
       :handleCreate="handleAdd"
     >
       <el-table
@@ -118,7 +125,7 @@
         </el-table-column>
         <el-table-column prop="actions" label="操作" align="right" width="150">
           <template #default="scope">
-            <template v-if="isEdit">
+            <template v-if="isEdit && getShowBool('apiUpdate')">
               <el-button type="text" @click="handleAdd(scope.row)" v-if="canAdd(scope.row)">添加</el-button>
 
               <el-dropdown
@@ -170,9 +177,9 @@
       ><code v-html="previewCode" class="json" style="background: #f5f5f5; padding: 10px;"></code></pre>
     </div>
 
-    <div class="params-form-btns">
-      <el-button type="primary" @click="handleToggleEdit(true)" v-if="!isEdit">编辑</el-button>
-      <template v-else>
+    <div class="params-form-btns" v-if="getShowBool('apiUpdate')">
+      <el-button type="primary" @click="handleToggleEdit(true)" v-if="!isEdit && list.length > 0">编辑</el-button>
+      <template v-else-if="isEdit">
         <el-button type="primary" @click="handleSave" :loading="submitting">确定</el-button>
         <el-button @click="handleCancel">取消</el-button>
       </template>
@@ -221,7 +228,7 @@ import {
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { getApiParams, saveApiParams } from '@/api/servers';
 import _ from 'lodash';
-
+import { getShowBool } from '@/utils/permission-show-module';
 const POST_METHODTYPES = ['POST', 'PUT', 'PATCH'];
 const GET_METHODTYPES = ['GET', 'DELETE'];
 export default defineComponent({
@@ -266,13 +273,23 @@ export default defineComponent({
     const paramsDefine = ref(null);
     const submitting = ref(false);
     const sourceData = ref(null);
+    const listKeys = ['query', 'headers', ...CONTENT_TYPES];
 
     const listMap = reactive({
-      body: [],
+      // body: [],
       query: [],
       headers: [],
     });
-    const list = computed(() => listMap[paramsMethod.value]);
+    listKeys.forEach((key) => (listMap[key] = []));
+
+    const currentListKey = computed(() => {
+      if (paramsMethod.value === 'body') {
+        return contentType.value;
+      }
+      return paramsMethod.value;
+    });
+
+    const list = computed(() => listMap[currentListKey.value]);
 
     const paramsMethods = computed(() => {
       if (props.isResponse) {
@@ -313,31 +330,34 @@ export default defineComponent({
     // 数据重置
     const resetListMap = () => {
       const res = _.cloneDeep(sourceData.value);
+      listKeys.forEach((key) => (listMap[key] = []));
       // eslint-disable-next-line no-restricted-syntax
       postParamsMethods.forEach((k) => {
         const item = res[k];
         if (item) {
           listMap[k] = item.list;
           if (k === 'body') {
-            contentType.value = item.contentType;
+            contentType.value = item.contentType || 'json';
           }
-        } else {
-          listMap[k] = [];
         }
       });
+
       if (!contentType.value || props.isResponse) {
         contentType.value = 'json';
       }
       if (!paramsMethod.value || props.isResponse) {
         paramsMethod.value = 'body';
       }
+      listMap[contentType.value] = listMap.body || [];
+      delete listMap.body;
+      console.log(listMap);
       // eslint-disable-next-line @typescript-eslint/no-use-before-define
       updateParamsDefine();
     };
 
     // 更新节点描述
     const updateParamsDefine = () => {
-      paramsDefine.value = genTreeDefine(listMap[paramsMethod.value]);
+      paramsDefine.value = genTreeDefine(listMap[currentListKey.value]);
     };
 
     const handleParamsMethodChange = () => {
@@ -355,9 +375,9 @@ export default defineComponent({
     const handleAdd = (row) => {
       if (!row.$id) {
         handleToggleEdit(true);
-        listMap[paramsMethod.value].push(genParam());
+        listMap[currentListKey.value].push(genParam());
       } else {
-        findAndUpdateParams(listMap[paramsMethod.value], row.$id, (items, index) => {
+        findAndUpdateParams(listMap[currentListKey.value], row.$id, (items, index) => {
           items.splice(index + 1, 0, genParam());
         });
       }
@@ -366,7 +386,7 @@ export default defineComponent({
 
     // 移除
     const handleRemove = (row) => {
-      findAndUpdateParams(listMap[paramsMethod.value], row.$id, (items, index) => {
+      findAndUpdateParams(listMap[currentListKey.value], row.$id, (items, index) => {
         items.splice(index, 1);
       });
       updateParamsDefine();
@@ -389,7 +409,7 @@ export default defineComponent({
           } else {
             children.push(genParam());
           }
-          findAndUpdateParams(listMap[paramsMethod.value], row.$id, (items, index, item) => {
+          findAndUpdateParams(listMap[currentListKey.value], row.$id, (items, index, item) => {
             items.splice(index, 1, {
               ...item,
               example: '',
@@ -398,7 +418,7 @@ export default defineComponent({
             });
           });
         } else {
-          findAndUpdateParams(listMap[paramsMethod.value], row.$id, (items, index, item) => {
+          findAndUpdateParams(listMap[currentListKey.value], row.$id, (items, index, item) => {
             // eslint-disable-next-line no-param-reassign
             delete item.children;
             items.splice(index, 1, item);
@@ -427,8 +447,13 @@ export default defineComponent({
     // 保存
     const handleSave = async () => {
       formError.value = '';
-      const error = Object.values(listMap).some((list) => {
-        const res = validParams(list);
+      const saveListMap = {
+        body: listMap[contentType.value],
+        query: listMap.query,
+        headers: listMap.headers,
+      };
+      const error = Object.values(saveListMap).some((list) => {
+        const res = validParams(list, paramsDefine.value);
         if (res) {
           const error = res[0];
           try {
@@ -450,9 +475,9 @@ export default defineComponent({
         apiId: apiInfo.uniqueId,
       };
       const saveData = [];
-      const keys = props.isResponse ? ['body'] : Object.keys(listMap);
+      const keys = props.isResponse ? ['body'] : Object.keys(saveListMap);
       keys.forEach((key) => {
-        const list = [...listMap[key]];
+        const list = [...saveListMap[key]];
         saveData.push({
           ...baseInfo,
           paramIn: _.startCase(key),
@@ -498,7 +523,11 @@ export default defineComponent({
       let valid = false;
       switch (field) {
         case 'name':
-          valid = validName(value);
+          valid = validName(value, {
+            id,
+            defines: paramsDefine.value,
+            list: list.value,
+          });
           break;
         case 'example':
           valid = validExample(value);
@@ -545,7 +574,7 @@ export default defineComponent({
 
     // 设置
     const handleConfigChange = ({ id, config }) => {
-      findAndUpdateParams(listMap[paramsMethod.value], id, (items, index, item) => {
+      findAndUpdateParams(listMap[currentListKey.value], id, (items, index, item) => {
         items.splice(index, 1, {
           ...item,
           config: {
@@ -606,7 +635,7 @@ export default defineComponent({
     // 预览
     const handlePreview = () => {
       try {
-        const json = paramsToExample(listMap[paramsMethod.value], {});
+        const json = paramsToExample(listMap[currentListKey.value], {});
         // eslint-disable-next-line @typescript-eslint/naming-convention
         const _paramMethod = paramsMethod.value;
         if (!props.isResponse && _paramMethod === 'query') {
@@ -626,7 +655,6 @@ export default defineComponent({
         return true;
       }
       const define = paramsDefine.value[row.$id];
-      console.log(define);
       if (define.parent && (define.parent.type === 'Array' || define.parent.isReadonlyImport)) {
         return false;
       }
@@ -667,7 +695,7 @@ export default defineComponent({
         return;
       }
       const params = dtoToParams(row, currentQuoteType.value);
-      findAndUpdateParams(listMap[paramsMethod.value], currentParamId, (items, index, item) => {
+      findAndUpdateParams(listMap[currentListKey.value], currentParamId, (items, index, item) => {
         item.children.push(...params);
         items.splice(index, 1, {
           ...item,
@@ -697,6 +725,14 @@ export default defineComponent({
         colspan: 1,
       };
     };
+
+    // contentType change
+    const handleContentTypeChange = () => {
+      formError.value = '';
+      previewCode.value = '';
+      updateParamsDefine();
+    };
+
     return {
       methodType,
       paramsMethod,
@@ -747,6 +783,8 @@ export default defineComponent({
       handleParamsMethodChange,
       objectSpanMethod,
       submitting,
+      getShowBool,
+      handleContentTypeChange,
     };
   },
 });

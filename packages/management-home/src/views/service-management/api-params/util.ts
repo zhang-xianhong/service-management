@@ -49,13 +49,14 @@ export const genParam = (param?: ParamItem) => ({
  * @param cb
  * @returns
  */
-export const findAndUpdateParams = (params: ParamItems, id: string, cb: Function) => {
+export const findAndUpdateParams = (params: ParamItems, id: string, cb?: Function) => {
   const findParam = (items: ParamItems) => {
     // eslint-disable-next-line @typescript-eslint/prefer-for-of
     for (let i = 0; i < items.length; i++) {
       const item = items[i];
       if (item.$id === id) {
-        cb(items, i, item);
+        // eslint-disable-next-line no-unused-expressions
+        cb?.(items, i, item);
         break;
       }
       if (item.children) {
@@ -75,7 +76,7 @@ const getNumberValue = (example: any, config: any) => {
     value = config.defaultValue || config.min;
   }
   if (isNaN(Number(value))) {
-    return undefined;
+    return Number.NaN;
   }
   return Number(value);
 };
@@ -101,12 +102,16 @@ export const paramsToExample = (params: ParamItems, result: any) => {
       throw new Error('参数不能为空');
     }
     let value: any;
+    let message = `请为参数 ${name} 填写示例值或者设置默认值`;
     switch (type) {
       case 'Float':
       case 'Int32':
       case 'Int64':
       case 'Double':
         value = getNumberValue(example, config);
+        if (isNaN(value)) {
+          message = `参数 ${name} 示例或者默认值与参数类型不匹配`;
+        }
         break;
       case 'Boolean':
         value = getBooleanValue(example, config);
@@ -121,7 +126,7 @@ export const paramsToExample = (params: ParamItems, result: any) => {
         value = example || config?.defaultValue || '';
     }
     if (value === undefined || (value === '' && required)) {
-      throw new Error(`请为参数 ${name} 填写示例值或者设置默认值`);
+      throw new Error(message);
     }
     if (Array.isArray(result)) {
       // eslint-disable-next-line no-param-reassign
@@ -136,12 +141,33 @@ export const paramsToExample = (params: ParamItems, result: any) => {
   });
   return result;
 };
+
+/**
+ * 重复名称校验
+ * @param name
+ * @param options
+ */
+export const duplicateNameCheck = (name: string, options: any) => {
+  const { id, defines } = options;
+  if (!defines) {
+    return false;
+  }
+  const define = defines[id];
+  const sameNameRow = Object.values(defines).some(
+    (item: any) =>
+      item.id !== id && item.name === name && item.level === define.level && item.parentId === define.parentId,
+  );
+  if (sameNameRow) {
+    return `存在相同名称${name}的参数`;
+  }
+  return false;
+};
 /**
  * 校验参数
  * @param name
  * @returns
  */
-export const validName = (name: string) => {
+export const validName = (name: string, options?: any) => {
   if (!name) {
     return '参数不能为空';
   }
@@ -153,6 +179,12 @@ export const validName = (name: string) => {
   }
   if (name.length > 50) {
     return '参数最多支持50个字符';
+  }
+  if (options) {
+    const checkResult = duplicateNameCheck(name, options);
+    if (checkResult) {
+      return checkResult;
+    }
   }
   return false;
 };
@@ -189,11 +221,14 @@ export const validDescription = (description = '') => {
  * @param params
  * @returns
  */
-export const validParams = (params: ParamItems): any => {
+export const validParams = (params: ParamItems, defines?: any): any => {
   const errors: any = [];
   for (let i = 0, len = params.length; i < len; i++) {
     const { name, example = '', children, desc = '', $id } = params[i];
-    const checkName = validName(name as string);
+    const checkName = validName(name as string, {
+      id: $id,
+      defines,
+    });
     if (checkName) {
       errors.push({
         field: 'name',
@@ -221,7 +256,7 @@ export const validParams = (params: ParamItems): any => {
       break;
     }
     if (children && children.length > 0) {
-      return validParams(children);
+      return validParams(children, defines);
     }
   }
   if (errors.length > 0) {
@@ -231,10 +266,13 @@ export const validParams = (params: ParamItems): any => {
 };
 
 export interface TreeDefine {
+  id: string;
+  name: string;
   level: number;
   index: number;
   type: string;
   length: number;
+  parentId?: any;
   parent?: TreeDefine | null;
   isReadonlyImport?: boolean;
 }
@@ -248,11 +286,14 @@ export const genTreeDefine = (params: ParamItems) => {
   const flatten = (items: ParamItems, parent: any = null, level: number) => {
     items.forEach((item, i) => {
       const define = {
+        id: String(item.$id),
         level,
         type: item.type as string,
         parent,
         index: i,
         length: 0,
+        parentId: parent?.id || null,
+        name: item.name as string,
         // 只读引用
         isReadonlyImport: Boolean(item.dtoId && item.importType === 1),
       };
