@@ -53,7 +53,7 @@
             label="操作"
             width="180"
             align="right"
-            v-if="getShowBool('add') && !isRefrenceService && isInEdit"
+            v-if="getShowBool('moduleUpdate') && !isRefrenceService && isInEdit"
           >
             <template #default="scope">
               <el-button type="text" @click="add(scope.$index)" class="operator" v-if="scope.$index === 0"
@@ -73,11 +73,11 @@
       </list-wrap>
     </div>
     <div class="drawer-content__btns">
-      <template v-if="getShowBool('add') && !isRefrenceService">
+      <template v-if="getShowBool('moduleUpdate') && !isRefrenceService">
         <el-button type="primary" @click="save" v-if="isInEdit">确定</el-button>
         <el-button type="primary" @click="toggleIsInEdit(true)" v-else>编辑</el-button>
       </template>
-      <el-button @click="handleCancel">取消</el-button>
+      <el-button @click="handleCancel">{{ isInEdit ? '取消' : '关闭' }}</el-button>
     </div>
   </div>
 </template>
@@ -216,6 +216,7 @@ export default defineComponent({
     const toggleIsInEdit = (value: boolean) => (isInEdit.value = value);
     const beforeClose = () => {
       isInEdit.value = false;
+      fields.value = fields.value.filter((item) => item.id);
     };
     const handleCancel = () => {
       if (isInEdit.value) {
@@ -225,7 +226,6 @@ export default defineComponent({
           type: 'warning',
         }).then(async () => {
           beforeClose();
-          context.emit('back');
         });
       } else {
         beforeClose();

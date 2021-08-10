@@ -177,7 +177,7 @@
     </list-wrap>
 
     <el-dialog
-      :title="publishForm.isEdit ? '编辑' : '新建'"
+      :title="publishForm.isEdit ? '编辑' : '部署申请'"
       v-model="addpublishDialog"
       width="600px"
       @closed="closepublishForm"
@@ -196,14 +196,35 @@
                 :key="index"
                 :label="item.name"
                 :value="item.id"
-                :disabled="item.id === 2"
               ></el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="服务名称" prop="name" :label-width="labelWidth" :v-if="publishForm.moduleType === 1">
+          <el-form-item
+            label="服务名称"
+            prop="name"
+            :label-width="labelWidth"
+            v-if="publishForm.formData.moduleType === 1"
+          >
             <el-select
               v-model="publishForm.formData.name"
               placeholder="请选择服务"
+              filterable
+              clearable
+              @change="serviceChange"
+              :disabled="publishForm.disabled"
+            >
+              <el-option
+                v-for="(item, index) in publishForm.serviceList"
+                :key="index"
+                :label="item.name"
+                :value="item.id"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="应用名称" prop="name" :label-width="labelWidth" v-else>
+            <el-select
+              v-model="publishForm.formData.name"
+              placeholder="请选择应用"
               filterable
               clearable
               @change="serviceChange"

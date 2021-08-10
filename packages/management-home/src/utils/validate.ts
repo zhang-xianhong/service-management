@@ -20,7 +20,7 @@ export function checkEnName(name: string): boolean {
 // 手机号校验
 export function checkMobile(value: string): boolean {
   const subValue = value.replace(/[^-|\d]/g, '');
-  return /^(1)\d{10}$/.test(subValue);
+  return /^((\+|00)86)?1([3456789][0-9]|4[579]|6[67]|7[01235678]|9[012356789])[0-9]{8}$/.test(subValue);
 }
 // 自定义密码校验  长度在 8 到 16 个字符,只能输入大小写字母、数字、特殊字符（~!@#$%^&*()_+":<>?;,./-),至少1个大写字母，1个小写字母
 export function checkPasswd(passwd: string): boolean {

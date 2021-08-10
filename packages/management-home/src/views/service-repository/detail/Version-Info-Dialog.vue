@@ -25,9 +25,9 @@
                     {{ scope.row.name }}
                   </template>
                 </el-table-column>
-                <el-table-column prop="value" label="默认值">
+                <el-table-column prop="defaultValue" label="默认值">
                   <template #default="scope">
-                    {{ scope.row.value }}
+                    {{ scope.row.defaultValue }}
                   </template>
                 </el-table-column>
                 <!-- <el-table-column prop="url" label="类型"> </el-table-column> -->

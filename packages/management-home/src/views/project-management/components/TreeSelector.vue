@@ -2,7 +2,7 @@
   <el-dialog v-model="dialogVisible" width="800px">
     <el-row>
       <el-col :span="10" :offset="1">
-        <div class="title">添加人员</div>
+        <div class="title">加入成员</div>
         <div>
           <div class="field-label">{{ optionLabel }}</div>
           <div class="input-wrapper">

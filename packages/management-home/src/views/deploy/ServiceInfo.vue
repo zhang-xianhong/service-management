@@ -12,12 +12,23 @@
           </el-option>
         </el-select>
       </el-form-item>
-      <el-form-item prop="name" :label-width="labelWidth">
-        <template v-slot:label>
-          <span>{{ releaseData.serviceInfo.type === 1 ? '服务名称' : '应用名称' }}</span>
-        </template>
+      <el-form-item prop="name" label="服务名称" :label-width="labelWidth" v-if="releaseData.serviceInfo.type === 1">
         <el-select
           placeholder="请选择服务"
+          v-model="releaseData.serviceInfo.name"
+          filterable
+          clearable
+          :disabled="isEditable"
+          @change="changeService"
+        >
+          <el-option v-for="(item, index) in releaseData.serviceList" :key="index" :value="item.name">
+            <service-name :name="item.name"></service-name>
+          </el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item prop="name" label="应用名称" :label-width="labelWidth" v-else>
+        <el-select
+          placeholder="请选择应用"
           v-model="releaseData.serviceInfo.name"
           filterable
           clearable
