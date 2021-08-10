@@ -1,7 +1,7 @@
 <template>
-  <div class="erd-container-wrapper" :style="{ width, height }" v-on="handlers">
+  <div class="erd-container-wrapper" :style="{ width, height }" v-on="handlers" :class="{'erd-container_noClick': !getShowBool('moduleSelect')}">
     <div :style="`width: ${viewWidth}px; height: ${viewHeight}px; position: relative;`">
-      <add-model v-if="getShowBool('add') && !isRefrenceService"></add-model>
+      <add-model v-if="getShowBool('moduleUpdate') && !isRefrenceService"></add-model>
       <erd-relation></erd-relation>
       <template v-if="allTypes.length">
         <erd-table
@@ -304,5 +304,8 @@ export default defineComponent({
 .erd-container-wrapper {
   position: relative;
   overflow: auto;
+}
+.erd-container_noClick{
+  pointer-events: none;
 }
 </style>

@@ -56,7 +56,7 @@
               ></svg-icon>
             </el-tooltip>
             <!-- 代码预览 -->
-            <el-tooltip effect="light" content="代码预览" placement="bottom">
+            <el-tooltip effect="light" content="代码预览" placement="bottom" v-if="getShowBool('read')">
               <svg-icon icon-name="gitlab" icon-class="detail-icons__item" @click="openGitlab"></svg-icon>
             </el-tooltip>
             <!-- 文档下载 -->
@@ -494,7 +494,8 @@ export default {
     const pageLoading = ref(false);
     const modelFieldsLoading = ref(false);
     const modelSelected = async (model: any) => {
-      if (model) {
+      const hasAuth = getShowBool('moduleSelect');
+      if (model && hasAuth) {
         if (model.relationInfo) {
           componentName.value = 'RelationInfo';
           modelInfo.value = model.relationInfo;
