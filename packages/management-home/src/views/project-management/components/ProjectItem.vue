@@ -48,6 +48,7 @@ import { imgUpload, updateProject } from '@/api/project/project';
 import Message from 'element-plus/es/el-message';
 import { ElMessage } from 'element-plus';
 import { userInfo } from '@/layout/messageCenter/user-info';
+import { getShowBool } from '@/utils/permission-show-module';
 
 export default defineComponent({
   name: 'ProjectItem',
@@ -113,9 +114,15 @@ export default defineComponent({
     const { proxy } = getCurrentInstance() as any;
 
     const jump2detail = () => {
-      proxy.$router.push({
-        path: `/project-management/project-detail/${props.dataObj.id}`,
-      });
+      const hasAuth = getShowBool('selectDetail');
+      console.log('hasAuth', hasAuth);
+      if (hasAuth) {
+        proxy.$router.push({
+          path: `/project-management/project-detail/${props.dataObj.id}`,
+        });
+      } else {
+        ElMessage.warning('暂无查看项目详情权限');
+      }
     };
     const provpers = computed(() => {
       const str = props.dataObj?.remark;

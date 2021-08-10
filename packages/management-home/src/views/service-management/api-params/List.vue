@@ -16,7 +16,7 @@
       :loading="loading"
       :inProject="false"
       :empty="list.length === 0"
-      :hasCreateAuth="true"
+      :hasCreateAuth="getShowBool('apiUpdate')"
       :handleCreate="handleAdd"
     >
       <el-table
@@ -118,7 +118,7 @@
         </el-table-column>
         <el-table-column prop="actions" label="操作" align="right" width="150">
           <template #default="scope">
-            <template v-if="isEdit">
+            <template v-if="isEdit && getShowBool('apiUpdate')">
               <el-button type="text" @click="handleAdd(scope.row)" v-if="canAdd(scope.row)">添加</el-button>
 
               <el-dropdown
@@ -170,9 +170,9 @@
       ><code v-html="previewCode" class="json" style="background: #f5f5f5; padding: 10px;"></code></pre>
     </div>
 
-    <div class="params-form-btns">
-      <el-button type="primary" @click="handleToggleEdit(true)" v-if="!isEdit">编辑</el-button>
-      <template v-else>
+    <div class="params-form-btns" v-if="getShowBool('apiUpdate')">
+      <el-button type="primary" @click="handleToggleEdit(true)" v-if="!isEdit && list.length > 0">编辑</el-button>
+      <template v-else-if="isEdit">
         <el-button type="primary" @click="handleSave" :loading="submitting">确定</el-button>
         <el-button @click="handleCancel">取消</el-button>
       </template>
@@ -221,7 +221,7 @@ import {
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { getApiParams, saveApiParams } from '@/api/servers';
 import _ from 'lodash';
-
+import { getShowBool } from '@/utils/permission-show-module';
 const POST_METHODTYPES = ['POST', 'PUT', 'PATCH'];
 const GET_METHODTYPES = ['GET', 'DELETE'];
 export default defineComponent({
@@ -428,7 +428,7 @@ export default defineComponent({
     const handleSave = async () => {
       formError.value = '';
       const error = Object.values(listMap).some((list) => {
-        const res = validParams(list);
+        const res = validParams(list, paramsDefine.value);
         if (res) {
           const error = res[0];
           try {
@@ -498,7 +498,11 @@ export default defineComponent({
       let valid = false;
       switch (field) {
         case 'name':
-          valid = validName(value);
+          valid = validName(value, {
+            id,
+            defines: paramsDefine.value,
+            list: list.value,
+          });
           break;
         case 'example':
           valid = validExample(value);
@@ -747,6 +751,7 @@ export default defineComponent({
       handleParamsMethodChange,
       objectSpanMethod,
       submitting,
+      getShowBool,
     };
   },
 });

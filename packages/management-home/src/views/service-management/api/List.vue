@@ -82,14 +82,22 @@
             <template #default="scope">
               <template v-if="!scope.row.isSystem">
                 <template v-if="scope.row.id && editId !== scope.row.$id">
-                  <el-button type="text" @click="handleAdd(scope.row)" v-if="scope.$index === 0">添加</el-button>
-                  <el-button type="text" @click="handleEdit(scope.row)">编辑</el-button>
+                  <el-button type="text" @click="handleAdd(scope.row)" v-if="scope.$index === 0 && showEditBtns"
+                    >添加</el-button
+                  >
+                  <el-button type="text" @click="handleEdit(scope.row)" v-if="showEditBtns">编辑</el-button>
                   <el-button type="text" @click="toParamsPage(scope.row)">参数</el-button>
-                  <el-button type="text" @click="handleRemove(scope.row)">删除</el-button>
+                  <el-button type="text" @click="handleRemove(scope.row)" v-if="showEditBtns">删除</el-button>
                 </template>
                 <template v-else>
-                  <el-button type="text" @click="handleSave(scope.row)">保存</el-button>
-                  <el-button type="text" @click="handleCancel(scope.row)" :disabled="!hasCancelBtn">取消</el-button>
+                  <el-button type="text" @click="handleSave(scope.row)" v-if="showEditBtns">保存</el-button>
+                  <el-button
+                    type="text"
+                    @click="handleCancel(scope.row)"
+                    :disabled="!hasCancelBtn"
+                    v-if="getShowBool('apiUpdate')"
+                    >取消</el-button
+                  >
                 </template>
               </template>
             </template>
@@ -99,12 +107,15 @@
       </list-wrap>
     </div>
     <div class="drawer-content__btns">
+      <el-button @click="handleToEditStats" type="primary" v-if="!isEditStats && getShowBool('apiUpdate')"
+        >编辑</el-button
+      >
       <el-button @click="handleClose">取消</el-button>
     </div>
   </div>
 </template>
 <script>
-import { defineComponent, ref } from 'vue';
+import { computed, defineComponent, ref } from 'vue';
 import { ElMessageBox, ElMessage } from 'element-plus';
 import { METHOD_TYPES, SYSTEM_APIS } from './config';
 import { validName, validUrl, validDescription, parseList } from './util';
@@ -127,6 +138,7 @@ export default defineComponent({
   setup(props, { emit }) {
     const router = useRouter();
     const loading = ref(false);
+    const isEditStats = ref(false);
     const isAdd = ref(false);
     const editId = ref('');
     const sourceList = ref([]);
@@ -144,12 +156,6 @@ export default defineComponent({
       });
       const rowList = parseList(data || []);
       if (rowList.length === 0) {
-        isAdd.value = true;
-        const $id = genId();
-        rowList.push({
-          $id,
-        });
-        editId.value = $id;
         hasCancelBtn.value = false;
       } else {
         hasCancelBtn.value = true;
@@ -161,6 +167,17 @@ export default defineComponent({
     };
 
     fetchList();
+
+    // 进入编辑态
+    const handleToEditStats = () => {
+      isAdd.value = true;
+      const $id = genId();
+      list.value.unshift({
+        $id,
+      });
+      editId.value = $id;
+      isEditStats.value = true;
+    };
 
     // 清除错误
     const clearError = (refId) => {
@@ -335,13 +352,17 @@ export default defineComponent({
           type: 'warning',
         }).then(async () => {
           handleCancel();
+          isEditStats.value = false;
           emit('back');
         });
       } else {
         handleCancel();
+        isEditStats.value = false;
         emit('back');
       }
     };
+
+    const showEditBtns = computed(() => getShowBool('apiUpdate') && isEditStats.value);
 
     return {
       isAdd,
@@ -352,6 +373,7 @@ export default defineComponent({
       loading,
       methodTypes: [...METHOD_TYPES],
       hasCancelBtn,
+      isEditStats,
       handleAdd,
       handleEdit,
       handleRemove,
@@ -365,6 +387,8 @@ export default defineComponent({
       toParamsPage,
       handleClose,
       getShowBool,
+      handleToEditStats,
+      showEditBtns,
     };
   },
 });
