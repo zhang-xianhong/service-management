@@ -203,8 +203,12 @@ export default defineComponent({
       oldPassword: [
         { required: true, message: '请输入原密码' },
         // TODO:原密码不应该加校验
-        // { min: 8, max: 16, message: '密码长度在8到16位', trigger: 'blur' },
-        // { pattern: /^[a-zA-Z0-9_]+$/g, message: '包含非法字符，只能输入大小写字母、数字、下划线', trigger: 'blur' },
+        { min: 8, max: 16, message: '密码长度在8到16位', trigger: 'blur' },
+        {
+          pattern: /^(?=.*[a-z])(?=.*[A-Z])[A-Za-z\d（!@#$%^&)]{8,16}/,
+          message: '只能输入大小写字母、数字、下划线，且必须包含大、小写字母',
+          trigger: 'blur',
+        },
       ],
       newPassword: [
         { required: true, message: '请输入新密码' },

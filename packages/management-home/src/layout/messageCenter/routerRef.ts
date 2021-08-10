@@ -77,3 +77,7 @@ export const getPermissionRoutes = function (config = getComputedRoutes() as any
   // route[0].redirect = route[1] ? route[1].path : '/no-right';
   return route;
 };
+
+export const currentids = ref(0);
+
+export const alloverEdit = ref(false);
