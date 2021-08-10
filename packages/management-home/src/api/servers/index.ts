@@ -6,6 +6,7 @@ import SERVER_TYPES from '@/shared/servertype';
 import service from '@/shared/constant/url/service';
 import { apiProxy } from '../proxy/proxy';
 import { DtoModel, DtoApiParams, CreatDtoModel } from '@/views/service-management/dto/dto';
+import { ServiceSnashot } from '@/views/service-management/business-service/components/release';
 
 export const addService: (payload: object) => Promise<SuccessResponse<any>> = (payload: object) =>
   request.post(getUrl(URL.service.ADD_SERVICE), payload);
@@ -180,3 +181,15 @@ export const getApiParams = (payload: any) =>
   });
 export const startCheck: (serviceId: any) => Promise<SuccessResponse<any>> = (serviceId: any) =>
   request.get(getUrl(URL.service.GET_START_CHECK), { params: { serviceId } });
+
+/**
+ * 获取服务最新版本
+ */
+
+export const getLastVersion: (serviceId: number) => Promise<SuccessResponse<ServiceSnashot>> = (serviceId: number) =>
+  apiProxy(SERVER_TYPES.REPO, service.GET_LAST_VERSION, {
+    method: 'GET',
+    params: {
+      serviceId,
+    },
+  });

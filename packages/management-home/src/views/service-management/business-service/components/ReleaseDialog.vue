@@ -21,7 +21,8 @@
         v-show="tabMenuData[currentActive].id === 'baseInfo'"
       >
         <el-form-item label="版本" prop="serviceVersion">
-          <el-input v-model="baseFormData.serviceVersion"></el-input>
+          <!-- <el-input v-model="baseFormData.serviceVersion"></el-input> -->
+          <VersionInput v-model="baseFormData.serviceVersion" :lastVersion="lastVersion"></VersionInput>
         </el-form-item>
         <el-form-item label="发版说明" prop="description">
           <el-input type="textarea" v-model="baseFormData.description"></el-input>
@@ -66,6 +67,11 @@ import {
   encode,
 } from '@/views/service-management/business-service/utils/service-release-data-utils';
 import CodeEditor from '@/components/sql-editor/Index.vue';
+
+import VersionInput from './VersionInput.vue';
+import { compare, diff, parse, Relation, valid } from './version';
+
+import { useServiceVerion } from './release';
 // 状态码
 enum ResCode {
   Success,
@@ -94,18 +100,36 @@ interface BaseFormDataType {
   ddlScript: string;
   dmlScript: string;
 }
-// 发版说明  版本号必须只能包含英文字母、数字、西文点号、西文“-”， 西文“_”，且长度限制在1~20个西文字符。
-const regDes = /^[A-Za-z\d（.\-_)]{1,20}$/;
-// 密码校验
-const validatorVersionPass = (rule: any, value: string, callback: Function) => {
-  if (!regDes.test(value)) {
-    callback(new Error('版本号必须只能包含英文字母、数字、西文点号、西文“-”， 西文“_”，且长度限制在1~20个西文字符'));
+const checkVerion = (value: string, callback: Function, lastVersion: string | undefined) => {
+  // 首次版本从1.0.0 开始
+  if (value === '') {
+    callback(new Error('版本号不能为空'));
   }
-  callback();
+  if (!valid(value)) {
+    callback(new Error('不合法的版本号'));
+  }
+  if (lastVersion) {
+    if (compare(value, lastVersion) === Relation.Equal) {
+      callback(new Error('不能等于上个版本号'));
+    }
+    if (compare(value, lastVersion) === Relation.Less) {
+      callback(new Error('不能小于上个版本号'));
+    }
+    // 主版本号跨度不能大于1
+    if (diff(value, lastVersion, 'major') > 1) {
+      callback(new Error('主版本与上一版本跨度不能大于 1'));
+    }
+  } else {
+    // 初始版本比较主版本必须为1
+    if (parse(value)?.major !== 1) {
+      callback(new Error('初始版本主版本必须为 1'));
+    }
+  }
 };
+
 export default defineComponent({
   name: 'ReleaseDialog',
-  components: { CodeEditor },
+  components: { CodeEditor, VersionInput },
   setup() {
     const tabMenuData = [
       {
@@ -131,6 +155,8 @@ export default defineComponent({
     const finishing: Ref<boolean> = ref(false);
     // 获取组件实例
     const instance = getCurrentInstance();
+    // 组件版本
+    const lastVersion = ref<string>();
     // 提示信息
     function msgTips(type: string, content: string) {
       (instance as any).proxy.$message({
@@ -150,7 +176,12 @@ export default defineComponent({
     const baseFormRules = {
       serviceVersion: [
         { required: true, message: '请输入版本号', trigger: 'blur' },
-        { validator: validatorVersionPass, trigger: 'blur' },
+        {
+          validator: (rule: any, value: string, callback: Function) => {
+            checkVerion(value, callback, lastVersion.value);
+          },
+          trigger: 'blur',
+        },
       ],
       description: [
         { required: true, message: '请输入使用注意事项，更新日志，版本信息、bug修复记录', trigger: 'blur' },
@@ -193,7 +224,6 @@ export default defineComponent({
         value: item.defaultValue,
       }));
     };
-
     function defaultSel() {
       // 默认选中的配置
       const defaultSelConfig: any = configTableData.value.filter(
@@ -239,6 +269,7 @@ export default defineComponent({
       serviceId = id;
       getConfigList(serviceId);
       getUpgradeScript(serviceId);
+      useServiceVerion(serviceId, lastVersion);
     };
 
     // 初始化
@@ -288,6 +319,8 @@ export default defineComponent({
     };
     // 服务默认选择类型
     const handleSelAble = (row: any) => row.scope !== 0;
+
+    openDialog(0); // debugger
     return {
       releaseDialogVisible,
       baseFormData,
@@ -307,6 +340,7 @@ export default defineComponent({
       releaseBaseForm,
       finishing,
       handleSelAble,
+      lastVersion,
     };
   },
 });
