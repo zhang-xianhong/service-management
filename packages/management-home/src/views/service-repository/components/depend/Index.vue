@@ -38,7 +38,7 @@ export default defineComponent({
     const fetchData = async (service) => {
       isError.value = false;
       const { data } = await getServiceDepend({
-        serviceName: service?.serviceName || '',
+        serviceName: service?.name || '',
         serviceVersion: service?.serviceVersion || '',
       });
       dataLoaded.value = true;

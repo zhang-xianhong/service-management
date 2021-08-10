@@ -6,7 +6,7 @@
         <el-table-column prop="name" label="接口名称"></el-table-column>
         <el-table-column prop="methodType" label="请求方式">
           <template #default="scope">
-            {{ getMethodName(scope.row.methodType) }}
+            {{ scope.row.methodType }}
           </template>
         </el-table-column>
         <el-table-column prop="modelId" label="数据模型">
@@ -38,21 +38,20 @@ export default defineComponent({
   setup(props) {
     const apiList = ref([] as any);
     const models = ref([] as any);
-    const getModelName = (modelId: number) => {
-      const model = models.value.find((item: any) => item.id === modelId);
-      return model?.name || '';
-    };
     const getMethodName = (method: number) => METHOD_TYPES[method] || '';
 
     const parseApiList = (info: any) => {
       try {
-        apiList.value = JSON.parse(info.snapshotInfo.config || '{}').serviceApis.map((item: any) => item);
-        models.value = JSON.parse(info.snapshotInfo.config || '{}').modelInfos.map((item: any) => item);
+        apiList.value = info.apiList;
+        models.value = info.models;
       } catch (e) {
         apiList.value = [];
       }
     };
-
+    const getModelName = (modelId: number) => {
+      const model = models.value.find((item: any) => item.id === Number(modelId));
+      return model?.name || '';
+    };
     if (props.info) {
       parseApiList(props.info);
     }
@@ -65,6 +64,7 @@ export default defineComponent({
     );
     return {
       apiList,
+      models,
       getModelName,
       getMethodName,
     };

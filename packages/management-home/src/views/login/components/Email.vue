@@ -14,7 +14,9 @@
       <el-form-item prop="captcha">
         <el-input v-model="emailInfo.captcha" placeholder="请输入验证码">
           <template #suffix
-            ><div class="email-captcha" :class="{ 'email-captcha__toash': isToash }" @click="sendVerifyCode">发送验证码</div></template
+            ><div class="email-captcha" :class="{ 'email-captcha__toash': isToash }" @click="sendVerifyCode">
+              发送验证码
+            </div></template
           >
         </el-input>
       </el-form-item>
@@ -28,7 +30,16 @@
 
 <script lang="ts">
 import { ElMessage } from 'element-plus';
-import { defineComponent, PropType, WritableComputedRef, computed, reactive, ref, SetupContext, onBeforeUnmount } from 'vue';
+import {
+  defineComponent,
+  PropType,
+  WritableComputedRef,
+  computed,
+  reactive,
+  ref,
+  SetupContext,
+  onBeforeUnmount,
+} from 'vue';
 
 interface EmailInfoInterface {
   email: string;

@@ -2,6 +2,9 @@ import request from '@/utils/request';
 import URL from '@/shared/constant/url';
 import { getUrl } from '../utils';
 import { SuccessResponse } from '@/types/response';
+import { apiProxy } from '@/api/proxy/proxy';
+import SERVER_TYPES from '@/shared/servertype';
+// import service from "@/shared/constant/url/service";
 const { repository } = URL;
 
 // 获取仓库列表
@@ -29,8 +32,14 @@ export const getRepositoryDetail: (id: string) => Promise<SuccessResponse<any>> 
   request.get(getUrl(repository.GET_REPOSITORY_DETAIL_URL, String(id)));
 
 // 获取服务历史
-export const getRepositoryHistory: (payload: any) => Promise<SuccessResponse<any>> = (payload: any) =>
-  request.get(getUrl(repository.GET_REPOSITORY_HISTORY), {
+// export const getRepositoryHistory: (payload: any) => Promise<SuccessResponse<any>> = (payload: any) =>
+//   request.get(getUrl(repository.GET_REPOSITORY_HISTORY), {
+//     params: payload,
+//   });
+
+export const getRepositoryHistory = (payload: any) =>
+  apiProxy(SERVER_TYPES.SERVICE_REPOSITORY, repository.GET_REPOSITORY_HISTORY, {
+    method: 'GET',
     params: payload,
   });
 

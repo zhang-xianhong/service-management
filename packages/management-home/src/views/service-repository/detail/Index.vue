@@ -13,7 +13,7 @@
         <service-api :loading="loading" :info="serviceInfo" />
       </el-tab-pane>
       <el-tab-pane label="历史版本" name="history">
-        <service-history :info="serviceInfo" v-if="serviceInfo" />
+        <service-history :info="serviceInfo" v-if="serviceInfo" :isService="isService" />
       </el-tab-pane>
     </el-tabs>
   </div>
@@ -26,6 +26,8 @@ import ServiceDepend from '../components/depend/Index.vue';
 import ServiceBase from './Base.vue';
 import ServiceApi from './Api.vue';
 import ServiceHistory from './History.vue';
+import { getServiceApiList, getServiceInfoById } from '@/api/servers';
+import { parseServiceInfo, parseRepositoryInfo } from '@/views/service-repository/detail/util';
 
 export default defineComponent({
   name: 'RepositoryPlatformDetail',
@@ -34,16 +36,32 @@ export default defineComponent({
     const activeTab = ref('base');
     const serviceDependRef = ref(null as any);
     const serviceInfo = ref(null as any);
-    const { params } = useRoute();
+    const router = useRoute();
+    const { params } = router;
+    const isService = ref(router.name === 'ServiceDetail');
     const { id } = params;
     const loading = ref(true);
     const fetchData = async () => {
       loading.value = true;
-      const { data } = await getRepositoryDetail(id as string);
+      // 判断服务类型
+      let data = null;
+      if (isService.value) {
+        const [infoRes, apiRes] = await Promise.all([
+          getServiceInfoById({
+            id,
+          }),
+          getServiceApiList({
+            serviceId: Number(id),
+          }),
+        ]);
+        data = parseServiceInfo(infoRes.data, apiRes.data);
+      } else {
+        const res = await getRepositoryDetail(id as string);
+        data = parseRepositoryInfo(res.data);
+      }
       serviceInfo.value = data;
       loading.value = false;
     };
-
     fetchData();
 
     watch(activeTab, (tab) => {
@@ -56,6 +74,7 @@ export default defineComponent({
       serviceDependRef,
       serviceInfo,
       loading,
+      isService,
     };
   },
 });

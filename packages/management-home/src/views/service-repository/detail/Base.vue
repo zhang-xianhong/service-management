@@ -54,43 +54,37 @@ export default defineComponent({
 
     const columns: Column[] = [
       {
-        key: 'serviceName',
+        key: 'name',
         label: '服务英文名',
       },
       {
-        key: 'serviceNameZh',
+        key: 'zhName',
         label: '服务中文名',
-        render(col: Column, row: any) {
-          return row.snapshotInfo.serviceNameZh;
-        },
       },
       {
-        key: 'snapshotInfo.level',
+        key: 'level',
         label: '级别',
         render(col: Column, row: any) {
-          return SERVICE_LEVEL[row.snapshotInfo.level];
+          return SERVICE_LEVEL[row.level];
         },
       },
       {
         key: 'type',
         label: '类型',
-        render() {
-          return '业务服务';
-        },
       },
       {
         key: 'origin',
         label: '来源',
         render(col: Column, row: any) {
+          if (typeof row.tenantId === 'string') {
+            return '---';
+          }
           return row.tenantId === userInfo.value.tenantId ? '自研新建' : '平台共享';
         },
       },
       {
         key: 'developer',
         label: '开发方',
-        render(col: Column, row: any) {
-          return row.snapshotInfo.developer;
-        },
       },
       {
         key: 'platformShareType',
@@ -102,22 +96,19 @@ export default defineComponent({
       {
         key: 'serviceVersion',
         label: '版本',
-        render(col: Column, row: any) {
-          return row.snapshotInfo.serviceVersion;
-        },
       },
       {
         key: 'classification',
         label: '分类',
         render(col: Column, row: any) {
-          return getClassificationName(row.snapshotInfo.classification, classificationList.value);
+          return getClassificationName(row.classification, classificationList.value);
         },
       },
       {
-        key: 'tag',
+        key: 'tags',
         label: '标签',
         render(col: Column, row: any) {
-          return getTagsName((row.snapshotInfo.tag || '').split(','), tagList.value);
+          return getTagsName((row.tags || '').split(','), tagList.value);
         },
       },
     ];
@@ -126,7 +117,7 @@ export default defineComponent({
       newColumns.value = columns.map((item) => {
         const column = item;
         const { render } = column;
-        column.render = () => render?.(column, info) || '';
+        column.render = () => render?.(column, info) || info[item.key];
         return column;
       });
     };

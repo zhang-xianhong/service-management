@@ -281,6 +281,7 @@ const routes: Array<RouteRecordRaw> = [
           hidden: false,
         },
       },
+
       {
         path: 'iot-list',
         component: () => import('@/views/service-management/iot/Index.vue'),
@@ -304,12 +305,28 @@ const routes: Array<RouteRecordRaw> = [
       },
       {
         path: 'service-list/detail/:id',
-        component: () => import('@/views/service-management/business-service/ServiceDetail.vue'),
+        // component: () => import('@/views/service-management/business-service/ServiceDetail.vue'),
+        component: () =>
+          import(/* webpackChunkName: "repository-detail" */ '@/views/service-repository/detail/Index.vue'),
         name: 'ServiceDetail',
         meta: {
           title: '业务服务详情',
           isRootLevel: false,
           hidden: true,
+          activeMenu: '/service-management/service-list',
+          showBackButton: true,
+          id: 7,
+        },
+      },
+      {
+        path: 'service-list/edit/:id',
+        component: () => import('@/views/service-management/business-service/ServiceDetail.vue'),
+        name: 'ServiceEdit',
+        meta: {
+          title: '服务详情',
+          isRootLevel: false,
+          hidden: true,
+          // 回退路由
           activeMenu: '/service-management/service-list',
           showBackButton: true,
           id: 7,
