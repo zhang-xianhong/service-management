@@ -1,39 +1,47 @@
 <template>
-  <div>
-    <el-button type="primary" @click="editDtoModel()" class="create-dto__bth">新建</el-button>
-    <list-wrap
-      :loading="loading"
-      :inProject="false"
-      :empty="dtoList?.length === 0"
-      :handleCreate="() => editDtoModel()"
-    >
-      <el-table :data="dtoList" max-height="400">
-        <el-table-column label="序号">
-          <template #default="scope">
-            <el-radio name="dto-item" :label="scope.row.uniqueId" v-model="selectedId" v-if="selectable">{{
-              scope.$index + 1
-            }}</el-radio>
-            <span v-else>{{ scope.$index + 1 }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column prop="name" label="模型英文名">
-          <template #default="scope">
-            {{ scope.row.name }}
-          </template>
-        </el-table-column>
-        <el-table-column prop="chineseName" label="模型中文名">
-          <template #default="scope">
-            {{ scope.row.zhName }}
-          </template>
-        </el-table-column>
-        <el-table-column label="操作" align="right">
-          <template #default="scope">
-            <el-button @click="editDtoModel(scope.row)" type="text" size="small">编辑</el-button>
-            <el-button @click="removeDtoModel(scope.row)" type="text" size="small">删除</el-button>
-          </template>
-        </el-table-column>
-      </el-table>
-    </list-wrap>
+  <div class="drawer-content">
+    <div class="drawer-content__main">
+      <el-button type="primary" @click="editDtoModel()" class="create-dto__bth" v-if="getShowBool('apiUpdate')"
+        >新建</el-button
+      >
+      <list-wrap
+        :loading="loading"
+        :inProject="false"
+        :empty="dtoList?.length === 0"
+        :hasCreateAuth="getShowBool('apiUpdate')"
+        :handleCreate="() => editDtoModel()"
+      >
+        <el-table :data="dtoList" height="calc(100% - 60px)">
+          <el-table-column label="序号">
+            <template #default="scope">
+              <el-radio name="dto-item" :label="scope.row.uniqueId" v-model="selectedId" v-if="selectable">{{
+                scope.$index + 1
+              }}</el-radio>
+              <span v-else>{{ scope.$index + 1 }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column prop="name" label="模型英文名">
+            <template #default="scope">
+              {{ scope.row.name }}
+            </template>
+          </el-table-column>
+          <el-table-column prop="chineseName" label="模型中文名">
+            <template #default="scope">
+              {{ scope.row.zhName }}
+            </template>
+          </el-table-column>
+          <el-table-column label="操作" align="right" v-if="getShowBool('apiUpdate')">
+            <template #default="scope">
+              <el-button @click="editDtoModel(scope.row)" type="text" size="small">编辑</el-button>
+              <el-button @click="removeDtoModel(scope.row)" type="text" size="small">删除</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+      </list-wrap>
+    </div>
+    <div class="drawer-content__btns">
+      <el-button @click="handleClose">关闭</el-button>
+    </div>
 
     <!-- 新建Dto modal -->
     <el-dialog title="新建DTO模型" v-model="showEditDto" width="80%">
@@ -54,7 +62,8 @@ import { DtoModel, useEditDtoDialog, EditMode, useDtoList, EMPTY_DTO, CreatDtoMo
 import { defineComponent, onBeforeMount } from '@vue/runtime-core';
 import EditDtoModel from './EditDtoModel.vue';
 import { useRoute } from 'vue-router';
-import { ElMessage } from 'element-plus';
+import { ElMessage, ElMessageBox } from 'element-plus';
+import { getShowBool } from '@/utils/permission-show-module';
 export default defineComponent({
   name: 'DtoListDialog',
   components: {
@@ -66,8 +75,8 @@ export default defineComponent({
       default: false,
     },
   },
-  emits: ['on-confirm'],
-  setup() {
+  emits: ['on-confirm', 'back'],
+  setup(props, { emit }) {
     const { fetchDtoList, dtoList, loading, removeDto } = useDtoList();
 
     const route = useRoute();
@@ -106,15 +115,20 @@ export default defineComponent({
     };
 
     const onConfirmEdit = async () => {
-      confirmLoading.value = true;
-      const dtoData = await editDtoModelRef.value?.getData();
-      confirmLoading.value = false;
-      if (dtoData) {
-        setDtoModel(dtoData);
-        await syncDtoData();
-        closeEditDto();
-        // 刷新列表
-        fetchDtoList(currentServiceId);
+      try {
+        confirmLoading.value = true;
+        const dtoData = await editDtoModelRef.value?.getData();
+        if (dtoData) {
+          setDtoModel(dtoData);
+          await syncDtoData();
+          closeEditDto();
+          // 刷新列表
+          fetchDtoList(currentServiceId);
+          confirmLoading.value = false;
+        }
+      } catch (error) {
+        console.log(error);
+        confirmLoading.value = false;
       }
     };
     const getSelectedData = () => {
@@ -130,12 +144,23 @@ export default defineComponent({
       selectedId.value = '';
       // eslint-disable-next-line no-unused-expressions
       editDtoModelRef.value?.dtoForm?.resetFields();
+      confirmLoading.value = false;
     };
     const removeDtoModel = (row: DtoModel) => {
-      removeDto({
-        serviceId: currentServiceId,
-        uniqueId: row.uniqueId,
+      ElMessageBox.confirm(`确认删除DTO${row.name}`, '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+      }).then(() => {
+        removeDto({
+          serviceId: currentServiceId,
+          uniqueId: row.uniqueId,
+        });
       });
+    };
+    const handleClose = () => {
+      confirmLoading.value = false;
+      emit('back');
     };
     return {
       dtoList,
@@ -152,12 +177,14 @@ export default defineComponent({
       getSelectedData,
       resetList,
       removeDtoModel,
+      handleClose,
+      getShowBool,
     };
   },
 });
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .create-dto__bth {
   margin-bottom: 1em;
 }

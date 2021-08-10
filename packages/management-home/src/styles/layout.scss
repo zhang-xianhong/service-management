@@ -56,3 +56,37 @@ $breadCurmbColor: #ffffff;
 .hljs-number {
   color: #006eff;
 }
+
+.drawer-content {
+  display: flex;
+  flex-flow: column;
+  height: 100%;
+  &__main {
+    flex: 1;
+    overflow: hidden;
+    .sa-list-wrap,
+    .sa-list-wrap__content,
+    .sa-list-wrap__main {
+      height: 100%;
+    }
+    .create-dto__bth {
+      margin: 10px;
+    }
+    .sa-list-wrap__content {
+      position: relative;
+      .sa-list-wrap__empty {
+        position: absolute;
+        width: 100%;
+        top: 40%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+      }
+    }
+  }
+
+  &__btns {
+    flex-shrink: 0;
+    padding: 20px;
+    text-align: right;
+  }
+}

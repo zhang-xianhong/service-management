@@ -2,11 +2,11 @@
   "code": 0,
   "data": {
     "info": {
-      "userId": 83,
-      "tenantId": 1,
-      "userName": "test1111",
-      "displayName": "test2222",
-      "redirectUrl": "http://tenant1.dev-citybase.oa.com/api/login",
+      "userId": 263,
+      "tenantId": 17,
+      "userName": "admin@yufuid.com",
+      "displayName": "admin",
+      "redirectUrl": "",
       "roleIds": [],
       "userAuth": [
         {
@@ -14,6 +14,7 @@
           "name": "首页",
           "parentId": null,
           "description": "",
+          "isDelete": null,
           "modules": []
         },
         {
@@ -21,6 +22,7 @@
           "name": "租户管理",
           "parentId": null,
           "description": "",
+          "isDelete": null,
           "modules": []
         },
         {
@@ -28,6 +30,7 @@
           "name": "公司管理",
           "parentId": null,
           "description": "",
+          "isDelete": null,
           "modules": []
         },
         {
@@ -35,34 +38,61 @@
           "name": "项目管理",
           "parentId": null,
           "description": "",
+          "isDelete": null,
           "modules": [
-            {
-              "id": 8,
-              "menuId": 4,
-              "name": "项目列表",
-              "code": "select",
-              "description": "查询项目列表"
-            },
-            {
-              "id": 9,
-              "menuId": 4,
-              "name": "编辑项目",
-              "code": "update",
-              "description": "编辑项目信息"
-            },
             {
               "id": 10,
               "menuId": 4,
-              "name": "项目详情",
-              "code": "selectDetail",
-              "description": "查询项目详情"
+              "name": "管理项目成员",
+              "description": "",
+              "code": "updateMember",
+              "moduleParentId": 1,
+              "moduleOrder": null
+            },
+            {
+              "id": 11,
+              "menuId": 4,
+              "name": "角色管理",
+              "description": "",
+              "code": "updateRole",
+              "moduleParentId": 1,
+              "moduleOrder": null
+            },
+            {
+              "id": 6,
+              "menuId": 4,
+              "name": "管理项目",
+              "description": "",
+              "code": "select-add-update-delete",
+              "moduleParentId": 1,
+              "moduleOrder": null
             },
             {
               "id": 7,
               "menuId": 4,
-              "name": "管理项目",
-              "code": "add-update-delete",
-              "description": "新建、编辑、删除项目"
+              "name": "项目列表",
+              "description": "",
+              "code": "select",
+              "moduleParentId": 1,
+              "moduleOrder": null
+            },
+            {
+              "id": 8,
+              "menuId": 4,
+              "name": "项目详情",
+              "description": "",
+              "code": "selectDetail",
+              "moduleParentId": 1,
+              "moduleOrder": null
+            },
+            {
+              "id": 9,
+              "menuId": 4,
+              "name": "编辑基本信息",
+              "description": "",
+              "code": "select-selectDetail-update",
+              "moduleParentId": 1,
+              "moduleOrder": null
             }
           ]
         },
@@ -71,13 +101,15 @@
           "name": "需求管理",
           "parentId": null,
           "description": "",
+          "isDelete": null,
           "modules": []
         },
         {
           "id": 6,
-          "name": "发布管理",
+          "name": "部署管理",
           "parentId": null,
           "description": "",
+          "isDelete": null,
           "modules": []
         },
         {
@@ -85,13 +117,115 @@
           "name": "服务管理",
           "parentId": null,
           "description": "",
-          "modules": []
+          "isDelete": null,
+          "modules": [
+            {
+              "id": 14,
+              "menuId": 7,
+              "name": "新建/编辑/删除服务",
+              "description": "",
+              "code": "add-update-delete-select",
+              "moduleParentId": 2,
+              "moduleOrder": null
+            },
+            {
+              "id": 15,
+              "menuId": 7,
+              "name": "查看服务列表",
+              "description": "",
+              "code": "select",
+              "moduleParentId": 2,
+              "moduleOrder": null
+            },
+            {
+              "id": 16,
+              "menuId": 7,
+              "name": "编辑基本信息",
+              "description": "",
+              "code": "selectDetail -update",
+              "moduleParentId": 2,
+              "moduleOrder": null
+            },
+            {
+              "id": 17,
+              "menuId": 7,
+              "name": "查看服务详情",
+              "description": "",
+              "code": "selectDetail",
+              "moduleParentId": 2,
+              "moduleOrder": null
+            },
+            {
+              "id": 18,
+              "menuId": 7,
+              "name": "新建/编辑/删除模型",
+              "description": "",
+              "code": "add-update-delete-select",
+              "moduleParentId": 2,
+              "moduleOrder": null
+            },
+            {
+              "id": 19,
+              "menuId": 7,
+              "name": "查看数据模型",
+              "description": "",
+              "code": "selectDetail",
+              "moduleParentId": 2,
+              "moduleOrder": null
+            },
+            {
+              "id": 20,
+              "menuId": 7,
+              "name": "新建/编辑/删除接口",
+              "description": "",
+              "code": "add-update-delete-select",
+              "moduleParentId": 2,
+              "moduleOrder": null
+            },
+            {
+              "id": 21,
+              "menuId": 7,
+              "name": "查看接口信息",
+              "description": "",
+              "code": "selectDetail",
+              "moduleParentId": 2,
+              "moduleOrder": null
+            },
+            {
+              "id": 22,
+              "menuId": 7,
+              "name": "服务操作",
+              "description": "",
+              "code": "init-run-start-stop-release-log",
+              "moduleParentId": 2,
+              "moduleOrder": null
+            },
+            {
+              "id": 23,
+              "menuId": 7,
+              "name": "新建/编辑/删除服务配置",
+              "description": "",
+              "code": "updateConfig",
+              "moduleParentId": 2,
+              "moduleOrder": null
+            },
+            {
+              "id": 24,
+              "menuId": 7,
+              "name": "查看服务配置",
+              "description": "",
+              "code": "selectConfig",
+              "moduleParentId": 2,
+              "moduleOrder": null
+            }
+          ]
         },
         {
           "id": 8,
           "name": "配置管理",
           "parentId": null,
           "description": "",
+          "isDelete": null,
           "modules": []
         },
         {
@@ -99,56 +233,33 @@
           "name": "租户列表",
           "parentId": 2,
           "description": "",
-          "modules": [
-            {
-              "id": 1,
-              "menuId": 9,
-              "name": "管理租户",
-              "code": "select-add-update-delete-run-stop",
-              "description": "租户列表、新建、编辑、删除、冻结、启用"
-            },
-            {
-              "id": 2,
-              "menuId": 9,
-              "name": "租户列表",
-              "code": "select",
-              "description": "查看租户列表"
-            },
-            {
-              "id": 3,
-              "menuId": 9,
-              "name": "租户编辑",
-              "code": "update",
-              "description": "编辑租户信息"
-            },
-            {
-              "id": 4,
-              "menuId": 9,
-              "name": "租户详情",
-              "code": "selectDetail",
-              "description": "查看租户详情"
-            }
-          ]
+          "isDelete": null,
+          "modules": []
         },
         {
           "id": 10,
           "name": "租户详情",
           "parentId": 2,
           "description": "",
+          "isDelete": null,
           "modules": [
             {
-              "id": 6,
-              "menuId": 10,
-              "name": "租户详情",
-              "code": "selectDetail",
-              "description": "查看租户详情"
-            },
-            {
-              "id": 5,
+              "id": 25,
               "menuId": 10,
               "name": "租户编辑",
-              "code": "update",
-              "description": "编辑租户"
+              "description": "",
+              "code": "selectDetail-update",
+              "moduleParentId": null,
+              "moduleOrder": null
+            },
+            {
+              "id": 26,
+              "menuId": 10,
+              "name": "租户详情",
+              "description": "",
+              "code": "selectDetail",
+              "moduleParentId": null,
+              "moduleOrder": null
             }
           ]
         },
@@ -157,133 +268,158 @@
           "name": "人员管理",
           "parentId": 3,
           "description": "",
-          "modules": []
+          "isDelete": null,
+          "modules": [
+            {
+              "id": 27,
+              "menuId": 11,
+              "name": "管理人员",
+              "description": "",
+              "code": "select-add-update-delete",
+              "moduleParentId": null,
+              "moduleOrder": null
+            },
+            {
+              "id": 28,
+              "menuId": 11,
+              "name": "人员列表",
+              "description": "",
+              "code": "select",
+              "moduleParentId": null,
+              "moduleOrder": null
+            },
+            {
+              "id": 29,
+              "menuId": 11,
+              "name": "编辑人员",
+              "description": "",
+              "code": "update",
+              "moduleParentId": null,
+              "moduleOrder": null
+            },
+            {
+              "id": 30,
+              "menuId": 11,
+              "name": "重置密码",
+              "description": "",
+              "code": "password",
+              "moduleParentId": null,
+              "moduleOrder": null
+            }
+          ]
         },
         {
           "id": 12,
           "name": "部门管理",
           "parentId": 3,
           "description": "",
-          "modules": []
+          "isDelete": null,
+          "modules": [
+            {
+              "id": 31,
+              "menuId": 12,
+              "name": "管理部门",
+              "description": "",
+              "code": "add-update-delete-select",
+              "moduleParentId": null,
+              "moduleOrder": null
+            },
+            {
+              "id": 32,
+              "menuId": 12,
+              "name": "编辑部门成员",
+              "description": "",
+              "code": "personnel",
+              "moduleParentId": null,
+              "moduleOrder": null
+            },
+            {
+              "id": 33,
+              "menuId": 12,
+              "name": "查看部门",
+              "description": "",
+              "code": "select",
+              "moduleParentId": null,
+              "moduleOrder": null
+            }
+          ]
         },
         {
           "id": 13,
           "name": "项目列表",
           "parentId": 4,
           "description": "",
+          "isDelete": null,
           "modules": []
         },
         {
           "id": 14,
-          "name": "发布申请",
+          "name": "部署申请",
           "parentId": 6,
           "description": "",
-          "modules": []
+          "isDelete": null,
+          "modules": [
+            {
+              "id": 12,
+              "menuId": 14,
+              "name": "部署申请",
+              "description": "",
+              "code": "select-add-update-delete",
+              "moduleParentId": 4,
+              "moduleOrder": null
+            }
+          ]
         },
         {
           "id": 15,
-          "name": "发布审核",
+          "name": "部署审核",
           "parentId": 6,
           "description": "",
-          "modules": []
+          "isDelete": null,
+          "modules": [
+            {
+              "id": 13,
+              "menuId": 15,
+              "name": "部署审核",
+              "description": "",
+              "code": "select-update",
+              "moduleParentId": 4,
+              "moduleOrder": null
+            }
+          ]
         },
         {
           "id": 16,
           "name": "业务服务",
           "parentId": 7,
           "description": "",
-          "modules": [
-            {
-              "id": 18,
-              "menuId": 16,
-              "name": "接口信息",
-              "code": "selectDetail",
-              "description": "查看接口信息"
-            },
-            {
-              "id": 19,
-              "menuId": 16,
-              "name": "服务操作",
-              "code": "init-run-stop-log",
-              "description": "初始化、同步配置、启动、停止、日志"
-            },
-            {
-              "id": 20,
-              "menuId": 16,
-              "name": "服务配置",
-              "code": "update",
-              "description": "添加服务配置"
-            },
-            {
-              "id": 11,
-              "menuId": 16,
-              "name": "管理服务",
-              "code": "add-update-delete",
-              "description": "新建、编辑、删除服务"
-            },
-            {
-              "id": 12,
-              "menuId": 16,
-              "name": "服务列表",
-              "code": "select",
-              "description": "查看服务列表"
-            },
-            {
-              "id": 13,
-              "menuId": 16,
-              "name": "编辑服务",
-              "code": "update",
-              "description": "编辑服务信息"
-            },
-            {
-              "id": 14,
-              "menuId": 16,
-              "name": "服务详情",
-              "code": "selectDetail",
-              "description": "查看服务详情"
-            },
-            {
-              "id": 15,
-              "menuId": 16,
-              "name": "模型管理",
-              "code": "add-update-select",
-              "description": "添加、编辑、删除模型"
-            },
-            {
-              "id": 16,
-              "menuId": 16,
-              "name": "模型信息",
-              "code": "selectDetail",
-              "description": "查看模型信息"
-            },
-            {
-              "id": 17,
-              "menuId": 16,
-              "name": "接口管理",
-              "code": "add-update-delete",
-              "description": "添加、编辑、删除接口"
-            }
-          ]
+          "isDelete": null,
+          "modules": []
         },
         {
           "id": 17,
           "name": "分类信息",
           "parentId": 8,
           "description": "",
+          "isDelete": null,
           "modules": [
             {
-              "id": 21,
+              "id": 34,
               "menuId": 17,
               "name": "管理分类",
+              "description": "",
               "code": "add-update-delete",
-              "description": "新增、编辑、删除分类"
+              "moduleParentId": null,
+              "moduleOrder": null
             },
             {
-              "id": 22,
+              "id": 35,
               "menuId": 17,
               "name": "分类列表",
+              "description": "",
               "code": "select",
-              "description": "查看分类"
+              "moduleParentId": null,
+              "moduleOrder": null
             }
           ]
         },
@@ -292,20 +428,25 @@
           "name": "标签信息",
           "parentId": 8,
           "description": "",
+          "isDelete": null,
           "modules": [
             {
-              "id": 23,
+              "id": 36,
               "menuId": 18,
               "name": "管理标签",
-              "code": "add-update-delete",
-              "description": "新增、编辑、删除标签"
+              "description": "",
+              "code": "add-update-delete-select",
+              "moduleParentId": null,
+              "moduleOrder": null
             },
             {
-              "id": 24,
+              "id": 37,
               "menuId": 18,
               "name": "标签列表",
+              "description": "",
               "code": "selectDetail",
-              "description": "查看标签"
+              "moduleParentId": null,
+              "moduleOrder": null
             }
           ]
         },
@@ -314,20 +455,25 @@
           "name": "数据类型",
           "parentId": 8,
           "description": "",
+          "isDelete": null,
           "modules": [
             {
-              "id": 25,
+              "id": 38,
               "menuId": 19,
               "name": "管理数据类型",
-              "code": "add-update-delete",
-              "description": "新增、编辑、删除数据类型"
+              "description": "",
+              "code": "add-update-delete-select",
+              "moduleParentId": null,
+              "moduleOrder": null
             },
             {
-              "id": 26,
+              "id": 39,
               "menuId": 19,
               "name": "数据类型列表",
+              "description": "",
               "code": "selectDetail",
-              "description": "查看数据类型"
+              "moduleParentId": null,
+              "moduleOrder": null
             }
           ]
         },
@@ -336,20 +482,25 @@
           "name": "统一配置",
           "parentId": 8,
           "description": "",
+          "isDelete": null,
           "modules": [
             {
-              "id": 27,
+              "id": 40,
               "menuId": 20,
               "name": "管理配置",
-              "code": "add-update-delete",
-              "description": "新增、编辑、删除配置"
+              "description": "",
+              "code": "add-update-delete-selectDetail",
+              "moduleParentId": null,
+              "moduleOrder": null
             },
             {
-              "id": 28,
+              "id": 41,
               "menuId": 20,
               "name": "配置列表",
+              "description": "",
               "code": "select-detail",
-              "description": "查看配置列表"
+              "moduleParentId": null,
+              "moduleOrder": null
             }
           ]
         },
@@ -358,51 +509,290 @@
           "name": "项目详情",
           "parentId": 4,
           "description": "",
+          "isDelete": null,
           "modules": []
+        },
+        {
+          "id": 22,
+          "name": "应用编排",
+          "parentId": null,
+          "description": "",
+          "isDelete": null,
+          "modules": []
+        },
+        {
+          "id": 23,
+          "name": "应用列表",
+          "parentId": 22,
+          "description": "",
+          "isDelete": null,
+          "modules": [
+            {
+              "id": 42,
+              "menuId": 23,
+              "name": "编排应用",
+              "description": "",
+              "code": "add-update-delete-select",
+              "moduleParentId": 3,
+              "moduleOrder": null
+            },
+            {
+              "id": 43,
+              "menuId": 23,
+              "name": "编辑基本信息",
+              "description": "",
+              "code": "select-update",
+              "moduleParentId": 3,
+              "moduleOrder": null
+            },
+            {
+              "id": 44,
+              "menuId": 23,
+              "name": "查看应用",
+              "description": "",
+              "code": "select",
+              "moduleParentId": 3,
+              "moduleOrder": null
+            },
+            {
+              "id": 45,
+              "menuId": 23,
+              "name": "查看基本信息",
+              "description": "",
+              "code": "selectDetail",
+              "moduleParentId": 3,
+              "moduleOrder": null
+            },
+            {
+              "id": 46,
+              "menuId": 23,
+              "name": "新建应用",
+              "description": "",
+              "code": "add",
+              "moduleParentId": 3,
+              "moduleOrder": null
+            },
+            {
+              "id": 47,
+              "menuId": 23,
+              "name": "删除应用",
+              "description": "",
+              "code": "delete",
+              "moduleParentId": 3,
+              "moduleOrder": null
+            }
+          ]
+        },
+        {
+          "id": 24,
+          "name": "服务仓库",
+          "parentId": null,
+          "description": "",
+          "isDelete": null,
+          "modules": []
+        },
+        {
+          "id": 25,
+          "name": "平台仓库",
+          "parentId": 24,
+          "description": "",
+          "isDelete": null,
+          "modules": [
+            {
+              "id": 48,
+              "menuId": 25,
+              "name": "平台仓库服务列表",
+              "description": "",
+              "code": "select",
+              "moduleParentId": null,
+              "moduleOrder": null
+            },
+            {
+              "id": 49,
+              "menuId": 25,
+              "name": "平台仓库服务详情",
+              "description": "",
+              "code": "selectDetail",
+              "moduleParentId": null,
+              "moduleOrder": null
+            },
+            {
+              "id": 50,
+              "menuId": 25,
+              "name": "平台仓库服务拉取",
+              "description": "",
+              "code": "update",
+              "moduleParentId": null,
+              "moduleOrder": null
+            }
+          ]
+        },
+        {
+          "id": 26,
+          "name": "租户仓库",
+          "parentId": 24,
+          "description": "",
+          "isDelete": null,
+          "modules": []
+        },
+        {
+          "id": 27,
+          "name": "服务共享",
+          "parentId": 26,
+          "description": "",
+          "isDelete": null,
+          "modules": [
+            {
+              "id": 51,
+              "menuId": 27,
+              "name": "服务共享列表",
+              "description": "",
+              "code": "select",
+              "moduleParentId": null,
+              "moduleOrder": null
+            },
+            {
+              "id": 52,
+              "menuId": 27,
+              "name": "服务共享详情",
+              "description": "",
+              "code": "selectDetail",
+              "moduleParentId": null,
+              "moduleOrder": null
+            },
+            {
+              "id": 53,
+              "menuId": 27,
+              "name": "服务共享",
+              "description": "",
+              "code": "update",
+              "moduleParentId": null,
+              "moduleOrder": null
+            }
+          ]
+        },
+        {
+          "id": 28,
+          "name": "服务下发",
+          "parentId": 26,
+          "description": "",
+          "isDelete": null,
+          "modules": [
+            {
+              "id": 54,
+              "menuId": 28,
+              "name": "下发服务列表",
+              "description": "",
+              "code": "select",
+              "moduleParentId": null,
+              "moduleOrder": null
+            },
+            {
+              "id": 55,
+              "menuId": 28,
+              "name": "下发服务详情",
+              "description": "",
+              "code": "selectDetail",
+              "moduleParentId": null,
+              "moduleOrder": null
+            },
+            {
+              "id": 56,
+              "menuId": 28,
+              "name": "下发服务",
+              "description": "",
+              "code": "update",
+              "moduleParentId": null,
+              "moduleOrder": null
+            }
+          ]
+        },
+        {
+          "id": 29,
+          "name": "发布管理",
+          "parentId": null,
+          "description": "",
+          "isDelete": null,
+          "modules": []
+        },
+        {
+          "id": 30,
+          "name": "发布申请",
+          "parentId": 29,
+          "description": "",
+          "isDelete": null,
+          "modules": [
+            {
+              "id": 57,
+              "menuId": 30,
+              "name": "申请发布租户仓库",
+              "description": "",
+              "code": "add-delete-update-select",
+              "moduleParentId": 5,
+              "moduleOrder": null
+            }
+          ]
+        },
+        {
+          "id": 31,
+          "name": "发布审核",
+          "parentId": 29,
+          "description": "",
+          "isDelete": null,
+          "modules": [
+            {
+              "id": 58,
+              "menuId": 31,
+              "name": "审核发布租户仓库",
+              "description": "",
+              "code": "select-update",
+              "moduleParentId": 5,
+              "moduleOrder": null
+            }
+          ]
+        },
+        {
+          "id": 32,
+          "name": "发布详情",
+          "parentId": 29,
+          "description": "",
+          "isDelete": null,
+          "modules": [
+            {
+              "id": 66,
+              "menuId": 32,
+              "name": "发布详情",
+              "description": "",
+              "code": "selectDetail",
+              "moduleParentId": null,
+              "moduleOrder": null
+            }
+          ]
         }
       ],
-      "admin": false
+      "admin": true
     },
     "menus": [],
     "projects": [
       {
-        "id": 42,
-        "name": "dasita",
-        "description": "打死他"
+        "id": 196,
+        "name": "test-debug",
+        "description": "接口调试项目"
       },
       {
-        "id": 72,
-        "name": "citybase-chongqing",
-        "description": "重庆服务迁移"
+        "id": 204,
+        "name": "test-aaa",
+        "description": "测试测试"
       },
       {
-        "id": 73,
-        "name": "giao",
-        "description": "giao"
-      },
-      {
-        "id": 74,
-        "name": "giao",
-        "description": "giao"
-      },
-      {
-        "id": 77,
-        "name": "giao",
-        "description": "giao"
-      },
-      {
-        "id": 78,
-        "name": "testone",
-        "description": "不可描述的内容"
-      },
-      {
-        "id": 91,
-        "name": "test-create",
-        "description": "创建项目测试"
+        "id": 216,
+        "name": "test-bbb",
+        "description": "yoneli测试项目2"
       }
-    ]
+    ],
+    "deployEnv": "public"
   },
   "message": "successful",
   "httpStatus": 200,
-  "timestamp": 1621221966069
+  "timestamp": 1628476716639
 }

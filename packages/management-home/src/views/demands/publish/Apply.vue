@@ -177,7 +177,7 @@
     </list-wrap>
 
     <el-dialog
-      :title="publishForm.isEdit ? '编辑' : '新建'"
+      :title="publishForm.isEdit ? '编辑' : '部署申请'"
       v-model="addpublishDialog"
       width="600px"
       @closed="closepublishForm"
@@ -196,14 +196,35 @@
                 :key="index"
                 :label="item.name"
                 :value="item.id"
-                :disabled="item.id === 2"
               ></el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="服务名称" prop="name" :label-width="labelWidth" :v-if="publishForm.moduleType === 1">
+          <el-form-item
+            label="服务名称"
+            prop="name"
+            :label-width="labelWidth"
+            v-if="publishForm.formData.moduleType === 1"
+          >
             <el-select
               v-model="publishForm.formData.name"
               placeholder="请选择服务"
+              filterable
+              clearable
+              @change="serviceChange"
+              :disabled="publishForm.disabled"
+            >
+              <el-option
+                v-for="(item, index) in publishForm.serviceList"
+                :key="index"
+                :label="item.name"
+                :value="item.id"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="应用名称" prop="name" :label-width="labelWidth" v-else>
+            <el-select
+              v-model="publishForm.formData.name"
+              placeholder="请选择应用"
               filterable
               clearable
               @change="serviceChange"
@@ -263,15 +284,15 @@
 </template>
 
 <script lang="ts">
-import { reactive, toRefs, ref, onBeforeUnmount, onMounted } from 'vue';
-import { getPublishList, addPublish, updatePublish, deletePublish, findUserByName } from '@/api/demands/publish';
+import { reactive, toRefs, ref, onBeforeUnmount } from 'vue';
+import { getPublishList, addPublish, updatePublish, deletePublish, getSearchUsers } from '@/api/demands/publish';
 import { getServiceList } from '@/api/deploy/deploy-apply';
 import PackagedPagination from '@/components/pagination/Index.vue';
 import { debounce } from 'lodash';
 import { ElMessageBox, ElMessage } from 'element-plus';
 import dateFormat from '@/utils/date-format';
 import { userInfo } from '@/layout/messageCenter/user-info';
-import { STATUS, AUDIT_RESULTS, getModuleType } from './constant';
+import { STATUS, AUDIT_RESULTS, getModuleType, changeUsers } from './constant';
 import { getShowBool } from '@/utils/permission-show-module';
 
 interface TableState {
@@ -360,6 +381,7 @@ export default {
         { id: 2, name: '应用' },
       ],
     });
+
     const publishRules = {
       moduleType: [{ required: true, message: '请选择部署类型', trigger: 'change' }],
       name: [{ required: true, message: '请输入部署名称', trigger: 'change' }],
@@ -387,6 +409,14 @@ export default {
     }
 
     const seleteLoading = ref(false);
+    // 获取用户搜索列表
+    async function getUserlist() {
+      seleteLoading.value = true;
+      const { data = {} } = await getSearchUsers();
+      tableState.reviewerFilters = changeUsers(data.reviewers);
+      tableState.applicantFilters = changeUsers(data.applicants);
+      seleteLoading.value = false;
+    }
 
     // 获取部署列表数据
     async function getTableData() {
@@ -410,6 +440,7 @@ export default {
           index: index + 1,
         }));
         tableState.tableData = publishData;
+        await getUserlist();
       } catch (error) {
         tableState.loading = false;
         ElMessage({
@@ -681,18 +712,6 @@ export default {
     function getRowOptionStatus(row: any) {
       return userInfo.value.userId !== row.applicant || row.status !== 0;
     }
-
-    onMounted(async () => {
-      seleteLoading.value = true;
-      const { data = [] } = await findUserByName();
-      const users = data.map((item: any) => ({
-        id: item.id,
-        name: item.displayName,
-      }));
-      tableState.reviewerFilters = users || [];
-      tableState.applicantFilters = users || [];
-      seleteLoading.value = false;
-    });
 
     return {
       ...toRefs(tableState),

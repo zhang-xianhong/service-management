@@ -8,9 +8,6 @@
       </div>
     </div>
     <el-form :model="formData" :rules="rules" ref="form" class="password-reset__form">
-      <!-- <el-form-item label="邮箱" prop="email" size="large">
-        <el-input :model-value="formData.email" type="email" placeholder="请输入您的邮箱地址" readonly></el-input>
-      </el-form-item> -->
       <el-form-item prop="password" size="large">
         <el-input v-model="formData.password" placeholder="请输入您的新密码" show-password></el-input>
       </el-form-item>
@@ -27,8 +24,9 @@
 <script lang="ts">
 import { computed, defineComponent, PropType, reactive, ref, SetupContext } from 'vue';
 import { PasswordRules } from '@/utils/validate';
-// import { resetPassWord } from '@/api/tenant';
-// import useMsg from '../useMsg';
+import { retrievePassword } from '@/api/tenant';
+import useMsg from '../useMsg';
+// import { retrievePassword } from '@/api/servers/index';
 export default defineComponent({
   name: 'Password',
   props: {
@@ -44,17 +42,20 @@ export default defineComponent({
       type: String as PropType<string>,
       default: '',
     },
+    captcha: {
+      type: String as PropType<string>,
+      default: '',
+    },
   },
   setup(props, ctx: SetupContext) {
     const formData = reactive({
       password: '',
       confirmationPassword: '',
       email: computed(() => props.email),
+      verifyCode: computed(() => props.captcha),
     });
     const form: any = ref(null);
-    // 获取组件实例
-    // const { msgTips, goLoginPages } = useMsg();
-    // const { msgTips } = useMsg();
+    const { msgTips } = useMsg();
     const validatePassword = (rule: any, value: string, callback: Function) => {
       if (value === '') {
         callback(new Error('请输入密码'));
@@ -76,13 +77,6 @@ export default defineComponent({
       }
     };
     const rules = {
-      email: [
-        {
-          required: true,
-          message: '请输入新的邮箱',
-          trigger: 'blur',
-        },
-      ],
       password: [...PasswordRules, { validator: validatePassword, trigger: 'blur' }],
       confirmationPassword: [
         {
@@ -94,24 +88,23 @@ export default defineComponent({
       ],
     };
     const submit = () => {
-      // 增加校验
       form.value.validate(async (valid: boolean) => {
         if (valid) {
-          // const { code } = await resetPassWord({
-          //   resetCode: props.code,
-          //   newPassword: formData.password,
-          //   userId: props.userId,
-          // });
-          // if (code === 0) {
-          //   msgTips('success', '密码重置成功');
-          // } else {
-          //   msgTips('error', '密码重置失败');
-          // }
-          // goLoginPages();
-          const payload = {
-            type: 'Complete',
-          };
-          ctx.emit('submit', payload);
+          const { code } = await retrievePassword({
+            userEmail: formData.email,
+            verifyCode: formData.verifyCode,
+            firstInputNewPassword: formData.password,
+            secondInputNewPassword: formData.confirmationPassword,
+          });
+          if (code === 0) {
+            msgTips('success', '密码重置成功');
+            const payload = {
+              type: 'Complete',
+            };
+            ctx.emit('submit', payload);
+          } else {
+            msgTips('error', '密码重置失败');
+          }
         }
       });
     };

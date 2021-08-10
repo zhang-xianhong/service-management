@@ -26,12 +26,13 @@
       <div class="project-item_mess"><label>负责人</label>{{ dataObj.ownerstr }}</div>
       <div class="project-item_mess">
         <label>项目描述</label>
-        <el-tooltip effect="dark" placement="top" popper-class="max-length">
+        <el-tooltip effect="dark" placement="top" popper-class="max-length" v-if="dataObj.remark.length > 10">
           <template #content>
             <div v-html="provpers"></div>
           </template>
           <span class="remarks">{{ dataObj.remark }}</span>
         </el-tooltip>
+        <span class="remarks" v-else>{{ dataObj.remark }}</span>
       </div>
       <div class="project-item_mess">
         <label>项目级别</label>
@@ -47,6 +48,7 @@ import { imgUpload, updateProject } from '@/api/project/project';
 import Message from 'element-plus/es/el-message';
 import { ElMessage } from 'element-plus';
 import { userInfo } from '@/layout/messageCenter/user-info';
+import { getShowBool } from '@/utils/permission-show-module';
 
 export default defineComponent({
   name: 'ProjectItem',
@@ -112,9 +114,15 @@ export default defineComponent({
     const { proxy } = getCurrentInstance() as any;
 
     const jump2detail = () => {
-      proxy.$router.push({
-        path: `/project-management/project-detail/${props.dataObj.id}`,
-      });
+      const hasAuth = getShowBool('selectDetail');
+      console.log('hasAuth', hasAuth);
+      if (hasAuth) {
+        proxy.$router.push({
+          path: `/project-management/project-detail/${props.dataObj.id}`,
+        });
+      } else {
+        ElMessage.warning('暂无查看项目详情权限');
+      }
     };
     const provpers = computed(() => {
       const str = props.dataObj?.remark;
@@ -211,6 +219,7 @@ export default defineComponent({
         white-space: nowrap;
         text-overflow: ellipsis;
         vertical-align: bottom;
+        padding-left: 5px;
       }
       label {
         opacity: 0.7;

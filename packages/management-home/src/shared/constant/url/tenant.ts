@@ -6,4 +6,9 @@ export default {
   UPDATE_TENANT: ['/tenants/info', 'mock/services/delete.json'],
   QUERY_IN_TENT: ['/users/search', 'mock/tenant/tenant-department.json'],
   // '/tenants/search/users'
+  SEND_RETRIEVE_PASSWD_VERIFY_CODE: [
+    '/users/forget-password/send/code',
+    '/mock/tenant/tenant-sendVerifyCode.json',
+  ],
+  RETRIEVE_PASSWD: ['/users/forget-password/reset', '/mock/tenant/tenant-retrievePassword.json'],
 };

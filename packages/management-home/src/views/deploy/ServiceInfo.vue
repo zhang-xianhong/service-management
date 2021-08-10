@@ -2,25 +2,33 @@
   <el-dialog width="600px" v-model="isVisable" @close="closeReleaseForm">
     <template v-slot:title>
       <span class="pop-title">
-        {{ isEditable ? '编辑服务' : '发布服务' }}
+        {{ isEditable ? '编辑服务' : '发布申请' }}
       </span>
     </template>
     <el-form :model="releaseData.serviceInfo" :rules="releaseRules" label-position="left" ref="releaseFormRef">
       <el-form-item label="发布类型" prop="type" :label-width="labelWidth">
         <el-select placeholder="请选择类型" v-model="releaseData.serviceInfo.type" clearable :disabled="isEditable">
-          <el-option
-            v-for="(item, index) in releaseData.types"
-            :key="index"
-            :label="item.name"
-            :value="item.id"
-            :disabled="item.id === 2"
-          >
+          <el-option v-for="(item, index) in releaseData.types" :key="index" :label="item.name" :value="item.id">
           </el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="服务名称" prop="name" :label-width="labelWidth">
+      <el-form-item prop="name" label="服务名称" :label-width="labelWidth" v-if="releaseData.serviceInfo.type === 1">
         <el-select
           placeholder="请选择服务"
+          v-model="releaseData.serviceInfo.name"
+          filterable
+          clearable
+          :disabled="isEditable"
+          @change="changeService"
+        >
+          <el-option v-for="(item, index) in releaseData.serviceList" :key="index" :value="item.name">
+            <service-name :name="item.name"></service-name>
+          </el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item prop="name" label="应用名称" :label-width="labelWidth" v-else>
+        <el-select
+          placeholder="请选择应用"
           v-model="releaseData.serviceInfo.name"
           filterable
           clearable

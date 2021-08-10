@@ -1,90 +1,104 @@
 <template>
-  <div style="background: #fff">
-    <div style="width: 100%; height: 330px; position: relative" class="column-table">
-      <el-table :data="fields" :height="330">
-        <el-table-column type="index" width="50"></el-table-column>
-        <el-table-column prop="name" label="属性名称">
-          <template #default="scope">
-            <el-input v-model.trim="scope.row.name" :disabled="isFieldDisabled(scope)"></el-input>
-          </template>
-        </el-table-column>
-        <el-table-column prop="description" label="属性描述">
-          <template #default="scope">
-            <el-input v-model.trim="scope.row.description" :disabled="isFieldDisabled(scope)"></el-input>
-          </template>
-        </el-table-column>
-        <el-table-column prop="type" label="数据类型">
-          <template #default="scope">
-            <el-select v-model="scope.row.typeId" :disabled="isFieldDisabled(scope)">
-              <el-option
-                v-for="type in allTypes"
-                :key="type.id"
-                :label="type.name"
-                :value="type.id"
-                :disabled="type.id === 1"
-              ></el-option>
-            </el-select>
-          </template>
-        </el-table-column>
-        <el-table-column prop="notNull" label="非空" width="60">
-          <template #default="scope">
-            <el-checkbox v-model="scope.row.notNull" :disabled="isFieldDisabled(scope)"></el-checkbox>
-          </template>
-        </el-table-column>
-        <el-table-column prop="isUnique" label="唯一" width="60">
-          <template #default="scope">
-            <el-checkbox v-model="scope.row.isUnique" :disabled="isFieldDisabled(scope)"></el-checkbox>
-          </template>
-        </el-table-column>
-        <el-table-column prop="isIndex" label="索引" width="60">
-          <template #default="scope">
-            <el-checkbox v-model="scope.row.isIndex" :disabled="isFieldDisabled(scope)"></el-checkbox>
-          </template>
-        </el-table-column>
-        <!--        <el-table-column prop="isParticipleSupport" label="分词" width="60">-->
-        <!--          <template #default="scope">-->
-        <!--            <el-checkbox v-model="scope.row.isParticipleSupport" :disabled="isFieldDisabled(scope)"></el-checkbox>-->
-        <!--          </template>-->
-        <!--        </el-table-column>-->
-        <!--        <el-table-column prop="isPinyinSupport" label="拼音" width="60">-->
-        <!--          <template #default="scope">-->
-        <!--            <el-checkbox v-model="scope.row.isPinyinSupport" :disabled="isFieldDisabled(scope)"></el-checkbox>-->
-        <!--          </template>-->
-        <!--        </el-table-column>-->
-        <el-table-column prop="operations" label="操作" width="180" v-if="getShowBool('add') && !isRefrenceService">
-          <template #default="scope">
-            <el-button type="text" @click="add(scope.$index)" class="operator" v-if="scope.$index === 0"
-              >添加</el-button
-            >
-            <el-button
-              @click="remove(scope.$index)"
-              class="operator"
-              :disabled="isFieldDisabled(scope)"
-              v-if="scope.$index !== 0"
-              type="text"
-              >删除</el-button
-            >
-          </template>
-        </el-table-column>
-      </el-table>
+  <div class="drawer-content">
+    <div class="drawer-content__main">
+      <list-wrap :loading="modelFieldsLoading" :inProject="false" :empty="fields.length === 0" :hasCreateAuth="false">
+        <el-table :data="fields" height="100%">
+          <el-table-column type="index" width="50"></el-table-column>
+          <el-table-column prop="name" label="属性名称">
+            <template #default="scope">
+              <span v-if="isReadonly">{{ scope.row.name }}</span>
+              <el-input v-model.trim="scope.row.name" :disabled="isFieldDisabled(scope)" v-else></el-input>
+            </template>
+          </el-table-column>
+          <el-table-column prop="description" label="属性描述">
+            <template #default="scope">
+              <span v-if="isReadonly">{{ scope.row.description }}</span>
+              <el-input v-model.trim="scope.row.description" :disabled="isFieldDisabled(scope)" v-else></el-input>
+            </template>
+          </el-table-column>
+          <el-table-column prop="type" label="数据类型">
+            <template #default="scope">
+              <span v-if="isReadonly">{{ getModelTypeName(scope.row.typeId) }}</span>
+              <el-select v-model="scope.row.typeId" :disabled="isFieldDisabled(scope)" v-else>
+                <el-option
+                  v-for="type in allTypes"
+                  :key="type.id"
+                  :label="type.name"
+                  :value="type.id"
+                  :disabled="type.id === 1"
+                ></el-option>
+              </el-select>
+            </template>
+          </el-table-column>
+          <el-table-column prop="notNull" label="非空" width="60">
+            <template #default="scope">
+              <span v-if="isReadonly">{{ scope.row.notNull ? '是' : '否' }}</span>
+              <el-checkbox v-model="scope.row.notNull" :disabled="isFieldDisabled(scope)" v-else></el-checkbox>
+            </template>
+          </el-table-column>
+          <el-table-column prop="isUnique" label="唯一" width="60">
+            <template #default="scope">
+              <span v-if="isReadonly">{{ scope.row.isUnique ? '是' : '否' }}</span>
+              <el-checkbox v-model="scope.row.isUnique" :disabled="isFieldDisabled(scope)" v-else></el-checkbox>
+            </template>
+          </el-table-column>
+          <el-table-column prop="isIndex" label="索引" width="60">
+            <template #default="scope">
+              <span v-if="isReadonly">{{ scope.row.isIndex ? '是' : '否' }}</span>
+              <el-checkbox v-model="scope.row.isIndex" :disabled="isFieldDisabled(scope)" v-else></el-checkbox>
+            </template>
+          </el-table-column>
+          <el-table-column
+            prop="operations"
+            label="操作"
+            width="180"
+            align="right"
+            v-if="getShowBool('moduleUpdate') && !isRefrenceService && isInEdit"
+          >
+            <template #default="scope">
+              <el-button type="text" @click="add(scope.$index)" class="operator" v-if="scope.$index === 0"
+                >添加</el-button
+              >
+              <el-button
+                @click="remove(scope.$index)"
+                class="operator"
+                :disabled="isFieldDisabled(scope)"
+                v-if="fields.length > 0"
+                type="text"
+                >删除</el-button
+              >
+            </template>
+          </el-table-column>
+        </el-table>
+      </list-wrap>
     </div>
-    <div class="form-field__btns">
-      <el-button type="primary" @click="save" v-if="getShowBool('add') && !isRefrenceService">确定</el-button>
-      <el-button @click="back">取消</el-button>
+    <div class="drawer-content__btns">
+      <template v-if="getShowBool('moduleUpdate') && !isRefrenceService">
+        <el-button type="primary" @click="save" v-if="isInEdit">确定</el-button>
+        <el-button type="primary" @click="toggleIsInEdit(true)" v-else>编辑</el-button>
+      </template>
+      <el-button @click="handleCancel">{{ isInEdit ? '取消' : '关闭' }}</el-button>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, getCurrentInstance, inject, onMounted, Ref, ref, watchEffect } from 'vue';
+import { computed, defineComponent, getCurrentInstance, inject, onMounted, Ref, ref, watchEffect } from 'vue';
 import { getDataTypesAll } from '@/api/settings/data-types';
 import { updateFields } from '@/api/schema/model';
 import { getShowBool } from '@/utils/permission-show-module';
 import _ from 'lodash/fp';
 import { isRefrence } from '../utils/permisson';
+import { ElMessage, ElMessageBox } from 'element-plus';
 
 export default defineComponent({
   name: 'ColumnForm',
+  props: {
+    modelFieldsLoading: {
+      type: Boolean,
+      default: true,
+    },
+  },
   setup(props, context) {
     // 组件实例
     const instance = getCurrentInstance();
@@ -92,11 +106,11 @@ export default defineComponent({
     const serviceId = inject('serviceId') as number;
     const afterUpdate = inject('afterUpdate') as Function;
     const isRefrenceService = inject(isRefrence);
+    const isInEdit = ref(false);
     const fields: Ref<Array<any>> = ref([]);
     watchEffect(() => {
       fields.value = _.cloneDeep(currentModel.value?.fields || []);
     });
-    const modelId = currentModel.value.id;
     const add = (index: number) => {
       console.log(index);
       fields.value.splice(0, 0, {
@@ -164,21 +178,26 @@ export default defineComponent({
         ),
       )(fields.value);
 
+      if (inputData.length === 0) {
+        ElMessage.error('请至少添加一个属性');
+        return;
+      }
+
       inputData.forEach((x: any) => {
         if (!x.notNull) {
           // eslint-disable-next-line no-param-reassign
           x.notNull = false;
         }
       });
-
-      const { code } = await updateFields(modelId, {
+      const { code } = await updateFields(currentModel.value?.id, {
         serviceId,
         fields: inputData,
       });
       if (code === 0) {
         currentModel.value.fields = fields.value;
+        ElMessage.success('保存成功');
+        isInEdit.value = false;
         afterUpdate();
-        context.emit('back');
       }
     };
     const isFieldDisabled = (scope: any) => scope.row.isSystem || scope.row.typeId === 1;
@@ -186,6 +205,34 @@ export default defineComponent({
     onMounted(() => {
       initTypeOption();
     });
+
+    // 获取类型名称
+    const getModelTypeName = (id: number) => {
+      const type: any = allTypes.value.find((item: any) => item.id === id);
+      return type?.name || '';
+    };
+
+    const isReadonly = computed(() => !isInEdit.value);
+    const toggleIsInEdit = (value: boolean) => (isInEdit.value = value);
+    const beforeClose = () => {
+      isInEdit.value = false;
+      fields.value = fields.value.filter((item) => item.id);
+    };
+    const handleCancel = () => {
+      if (isInEdit.value) {
+        ElMessageBox.confirm(`编辑中的数据尚未保存，是否退出?`, '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning',
+        }).then(async () => {
+          beforeClose();
+        });
+      } else {
+        beforeClose();
+        context.emit('back');
+      }
+    };
+
     return {
       fields,
       add,
@@ -196,6 +243,11 @@ export default defineComponent({
       isFieldDisabled,
       getShowBool,
       isRefrenceService,
+      isInEdit,
+      isReadonly,
+      toggleIsInEdit,
+      handleCancel,
+      getModelTypeName,
     };
   },
 });

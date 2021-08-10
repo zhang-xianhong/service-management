@@ -175,14 +175,14 @@
 </template>
 
 <script lang="ts">
-import { reactive, toRefs, ref, onBeforeUnmount, onMounted } from 'vue';
-import { getPublishReviewList, reviewPublish, findUserByName } from '@/api/demands/publish';
+import { reactive, toRefs, ref, onBeforeUnmount } from 'vue';
+import { getPublishReviewList, reviewPublish, getSearchUsers } from '@/api/demands/publish';
 import PackagedPagination from '@/components/pagination/Index.vue';
 import { debounce } from 'lodash';
 import { ElMessage } from 'element-plus';
 import dateFormat from '@/utils/date-format';
 import { userInfo } from '@/layout/messageCenter/user-info';
-import { STATUS, AUDIT_RESULTS, AUDIT_RESULTS_CODE, getModuleType } from './constant';
+import { STATUS, AUDIT_RESULTS, AUDIT_RESULTS_CODE, getModuleType, changeUsers } from './constant';
 import { getShowBool } from '@/utils/permission-show-module';
 
 interface TableState {
@@ -258,6 +258,14 @@ export default {
     }
 
     const seleteLoading = ref(false);
+    // 获取用户搜索列表
+    async function getUserlist() {
+      seleteLoading.value = true;
+      const { data = {} } = await getSearchUsers();
+      tableState.reviewerFilters = changeUsers(data.reviewers);
+      tableState.applicantFilters = changeUsers(data.applicants);
+      seleteLoading.value = false;
+    }
 
     // 获取审核列表数据
     async function getTableData() {
@@ -277,6 +285,7 @@ export default {
           index: index + 1,
         }));
         tableState.tableData = publishData;
+        await getUserlist();
       } catch (error) {
         tableState.loading = false;
         ElMessage({
@@ -423,18 +432,6 @@ export default {
     }
     onBeforeUnmount(() => {
       blackHoverclick();
-    });
-
-    onMounted(async () => {
-      seleteLoading.value = true;
-      const { data = [] } = await findUserByName();
-      const users = data.map((item: any) => ({
-        id: item.id,
-        name: item.displayName,
-      }));
-      tableState.reviewerFilters = users || [];
-      tableState.applicantFilters = users || [];
-      seleteLoading.value = false;
     });
 
     return {

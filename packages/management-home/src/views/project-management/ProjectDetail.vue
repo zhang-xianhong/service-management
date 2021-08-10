@@ -10,9 +10,7 @@
       <div>
         <div class="title">
           项目信息
-          <span class="edit-btn" v-if="!editMode && getShowBool('update') && include" @click="editMode = true"
-            >编辑</span
-          >
+          <span class="edit-btn" v-if="!editMode && getShowBool('update')" @click="editMode = true">编辑</span>
         </div>
         <basic-info-form
           :project-detail="projectDetail"
@@ -45,18 +43,20 @@
         >
           <template #default="{ node, data }">
             <div class="customNode">
-              <svg-icon
-                v-if="node.level < 2 && getShowBool('updateMember')"
-                icon-name="folder"
-                icon-class="tree-node-folder"
-              ></svg-icon>
-              <svg-icon
-                v-if="node.level === 2 && getShowBool('updateRole')"
-                icon-name="member"
-                icon-class="tree-node-member"
-              ></svg-icon>
-              <span>
+              <div class="content-style">
+                <svg-icon
+                  v-if="node.level < 2 && getShowBool('updateMember')"
+                  icon-name="folder"
+                  icon-class="tree-node-folder"
+                ></svg-icon>
+                <svg-icon
+                  v-if="node.level === 2 && getShowBool('updateRole')"
+                  icon-name="member"
+                  icon-class="tree-node-member"
+                ></svg-icon>
                 {{ node.label }}
+              </div>
+              <div>
                 <el-popover
                   placement="bottom-start"
                   :width="300"
@@ -86,15 +86,17 @@
                     </div>
                   </el-form>
                   <template #reference>
-                    <i
-                      type="text"
-                      class="el-icon-edit"
-                      @click="handleEditRole(data)"
-                      v-show="node.level === 1 && !data.isSystem"
-                    ></i>
+                    <span>
+                      <i
+                        type="text"
+                        class="el-icon-edit"
+                        @click="handleEditRole(data)"
+                        v-if="node.level === 1 && !data.isSystem && getShowBool('updateRole')"
+                      ></i>
+                    </span>
                   </template>
                 </el-popover>
-              </span>
+              </div>
             </div>
           </template>
         </el-tree>
@@ -141,13 +143,9 @@
             <el-table :data="userList">
               <el-table-column type="index" width="55"></el-table-column>
               <el-table-column v-for="column in columns" :key="column.prop" v-bind="column"></el-table-column>
-              <el-table-column prop="operator" width="55" v-if="getShowBool('update') && include">
+              <el-table-column label="操作" prop="operator" width="55" v-if="getShowBool('updateMember')">
                 <template #default="{ row }">
-                  <i
-                    class="el-icon-error remove-user-icon"
-                    @click="removeUser(row)"
-                    v-if="getShowBool('updateMember')"
-                  ></i>
+                  <el-button type="text" @click="removeUser(row)" v-if="getShowBool('updateMember')"> 移除 </el-button>
                 </template>
               </el-table-column>
             </el-table>
@@ -212,7 +210,7 @@
 
 <script lang="ts">
 import _ from 'lodash/fp';
-import { ref, Ref, provide, onMounted, getCurrentInstance, watch } from 'vue';
+import { ref, Ref, provide, onMounted, getCurrentInstance, watch, nextTick } from 'vue';
 import TreeSelector from './components/TreeSelector.vue';
 import BasicInfoForm from './components/BasicInfoForm.vue';
 import {
@@ -321,88 +319,64 @@ export default {
         width: '60',
       },
       {
-        prop: 'deptName',
-        label: '部门',
+        prop: 'roles',
+        label: '角色',
       },
     ];
-    const allUsers = ref([]);
-    const initUserList = async () => {
-      const { code, data } = await getRoleList({
-        projectId: props.id,
-      });
+    const userRoleList: any = ref([]);
+    const initDepartments = async () => {
+      const { code, data } = await getTenantDepartment({ deptId: 0, level: 9 });
+      const { userRoles = [] } = data;
+      userRoleList.value = userRoles;
       if (code === 0) {
-        allUsers.value = data.users.map((user: any) => ({
-          ...user,
-          status: userStatus[user.status as 0 | -1],
-          gender: genderLabel[user.gender as 0 | 1],
-        }));
-        // roleId： 6是项目负责人；7是访客 不显示
-        const noPaRoles = data.roles.filter((x: any) => x.roleId !== 7);
-        treeData.value = _.flow(
-          _.reject({ isOwnerRole: true }),
-          _.map((role: any) => ({
-            id: role.roleId,
-            label: role.name,
-            isSystem: role.isSystem,
-            children: _.map((userId: any) => {
-              const user: any = _.find({ id: userId })(data.users);
+        const deptTree = [
+          {
+            name: data.tenant.name,
+            _children: [],
+            id: 0,
+            isLeaf: false,
+          },
+        ];
+        const setChildren = (parentNode: any, allData: any) => {
+          const childrenUser = _.flow(
+            _.filter({ deptId: parentNode.id }),
+            _.map((user: any) => {
+              let roleString = '';
+              const res = userRoles.find((item: any) => item.userId === user.id);
+              if (res) {
+                roleString = res.roleList.map((item: any) => item.roleName).join(', ');
+              }
               return {
-                label: user?.displayName,
-                id: user?.id,
+                id: user.id,
+                name: user.displayName,
+                deptName: parentNode.name,
+                parent: parentNode,
+                isLeaf: true,
+                roleList: roleString,
               };
-            })(role.userIds),
-          })),
-        )(noPaRoles);
-        const res: any = {};
-        treeData.value.forEach((item: any) => {
-          res[String(item.id)] = false;
-        });
-        editPopBoxVisible.value = res;
-        userList.value = [];
-        loadings.value = false;
-      }
-    };
-    initUserList();
-
-    const reloadUserList = async (s: any) => {
-      await initUserList();
-      if (s?.id) {
-        userTreeRef.value.setCurrentKey(s.id, true);
-        currentNode.value = userTreeRef.value.getNode(s.id);
-        currentNodeData.value = currentNode.value.data;
-        const treeUser: any = _.find({ id: s.id })(treeData.value);
-        userList.value = _.intersectionWith((node: any, user: any) => node.id === user.id)(allUsers.value)(
-          treeUser?.children || [],
-        );
-      } else {
-        userList.value = allUsers.value;
+            }),
+          )(allData.users);
+          const childrenDept = _.flow(
+            _.filter({ parentId: parentNode.id }),
+            _.map((dept: any) => ({
+              id: dept.deptId,
+              name: dept.deptName,
+              parent: parentNode,
+              isLeaf: false,
+            })),
+          )(allData.depts);
+          childrenDept.forEach((dept: any) => {
+            setChildren(dept, allData);
+          });
+          // eslint-disable-next-line no-param-reassign
+          parentNode._children = [...childrenUser, ...childrenDept];
+        };
+        setChildren(deptTree[0], data);
+        allDeptUser.value = deptTree;
       }
     };
 
-    const removeUser = (row: any) => {
-      ElMessageBox.confirm(
-        `是否将 ${row ? row.displayName : currentNodeData.value.label} 从 ${
-          row ? currentNode.value.label : currentNode.value.parent.data.label
-        } 中移除？`,
-        '提示',
-        {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning',
-        },
-      ).then(async () => {
-        const users = row ? currentNodeData.value?.children : currentNode.value.parent.data?.children;
-        const removeUserId = row ? row.id : currentNodeData.value.id;
-        const updateUsers = users.filter((user: any) => user.id !== removeUserId).map((user: any) => user.id);
-        const roleId = row ? currentNode.value?.data?.id : currentNode.value.parent?.data?.id;
-        const { code } = await updateRoleMembers({
-          userIds: updateUsers,
-          projectId: props.id,
-          roleId,
-        });
-        if (code === 0) reloadUserList({ id: roleId });
-      });
-    };
+    const allUsers = ref([]);
     // 初始化项目信息
     const projectDetail = ref({});
     const include = ref(true);
@@ -476,7 +450,90 @@ export default {
         console.log('获取角色', error);
       }
     };
+    // 初始化选中的角色树节点
+    function initNodeSel() {
+      // 默认选中项目负责人节点
+      userTreeRef.value.setCurrentKey(6, true);
+      currentNode.value = userTreeRef.value.getNode(6);
+      currentNodeData.value = currentNode.value.data;
+      const treeUser: any = _.find({ id: 6 })(treeData.value);
+      userList.value = _.intersectionWith((node: any, user: any) => node.id === user.id)(allUsers.value)(
+        treeUser?.children || [],
+      );
+      addUserBtnStatus.value = false;
+      getAuth(currentNode.value);
+    }
 
+    // 初始化人员列表
+    const initUserList = async () => {
+      await initDepartments();
+      const { code, data } = await getRoleList({
+        projectId: props.id,
+      });
+      if (code === 0) {
+        allUsers.value = data.users.map((user: any) => {
+          let userRoles: any = [];
+          const userRolesInfo = userRoleList.value.find((item: any) => item.userId === user.id);
+          if (userRolesInfo?.roleList) {
+            userRoles = userRolesInfo.roleList.map((rolePoint: any) => rolePoint.roleName);
+          }
+          return {
+            ...user,
+            status: userStatus[user.status as 0 | -1],
+            gender: genderLabel[user.gender as 0 | 1],
+            roles: userRoles.join(', '),
+          };
+        });
+        // roleId： 6是项目负责人；7是访客 不显示
+        const noPaRoles = data.roles.filter((x: any) => x.roleId !== 7);
+        treeData.value = _.flow(
+          _.reject({ isOwnerRole: true }),
+          _.map((role: any) => ({
+            id: role.roleId,
+            label: role.name,
+            isSystem: role.isSystem,
+            children: _.map((userId: any) => {
+              const user: any = _.find({ id: userId })(data.users);
+              return {
+                label: user?.displayName,
+                id: user?.id,
+              };
+            })(role.userIds),
+          })),
+        )(noPaRoles);
+        const res: any = {};
+        treeData.value.forEach((item: any) => {
+          res[String(item.id)] = false;
+        });
+
+        // 排序treeData
+        const bkData = treeData.value.splice(4, 2);
+        const { children } = bkData[1];
+        if (children.length > 10) {
+          children.length = 10;
+        }
+        treeData.value.splice(0, 0, bkData[1], bkData[0]);
+        editPopBoxVisible.value = res;
+        userList.value = [];
+        loadings.value = false;
+        nextTick(initNodeSel);
+      }
+    };
+    initUserList();
+    const reloadUserList = async (s: any) => {
+      await initUserList();
+      if (s?.id) {
+        userTreeRef.value.setCurrentKey(s.id, true);
+        currentNode.value = userTreeRef.value.getNode(s.id);
+        currentNodeData.value = currentNode.value.data;
+        const treeUser: any = _.find({ id: s.id })(treeData.value);
+        userList.value = _.intersectionWith((node: any, user: any) => node.id === user.id)(allUsers.value)(
+          treeUser?.children || [],
+        );
+      } else {
+        userList.value = allUsers.value;
+      }
+    };
     const editDisable: Ref<boolean> = ref(true);
     const isEdit: Ref<boolean> = ref(true);
     const nodeClickHandler = async (data: any, node: any) => {
@@ -505,51 +562,14 @@ export default {
       }
       getAuth(node);
     };
-
-    const initDepartments = async () => {
-      const { code, data } = await getTenantDepartment({ deptId: 0, level: 9 });
-      if (code === 0) {
-        const deptTree = [
-          {
-            name: data.tenant.name,
-            _children: [],
-            id: 0,
-            isLeaf: false,
-          },
-        ];
-        const setChildren = (parentNode: any, allData: any) => {
-          const childrenUser = _.flow(
-            _.filter({ deptId: parentNode.id }),
-            _.map((user: any) => ({
-              id: user.id,
-              name: user.displayName,
-              deptName: parentNode.name,
-              parent: parentNode,
-              isLeaf: true,
-            })),
-          )(allData.users);
-          const childrenDept = _.flow(
-            _.filter({ parentId: parentNode.id }),
-            _.map((dept: any) => ({
-              id: dept.deptId,
-              name: dept.deptName,
-              parent: parentNode,
-              isLeaf: false,
-            })),
-          )(allData.depts);
-          childrenDept.forEach((dept: any) => {
-            setChildren(dept, allData);
-          });
-          // eslint-disable-next-line no-param-reassign
-          parentNode._children = [...childrenUser, ...childrenDept];
-        };
-        setChildren(deptTree[0], data);
-        allDeptUser.value = deptTree;
-      }
-    };
-    initDepartments();
     const otherRoleUser: Ref<Array<any>> = ref([]);
     const addMember = () => {
+      // 判断当前是否是项目负责人
+      const { id, children } = currentNodeData.value;
+      if (id === 6 && children.length >= 10) {
+        msgTips('warning', '最多只能添加10个项目负责人');
+        return;
+      }
       treeSelectorRole.value = currentNodeData.value;
       selectedUser.value = _.intersectionBy('id')(allUsers.value)(currentNodeData.value.children);
       otherRoleUser.value = _.differenceBy('id')(allUsers.value)(currentNodeData.value.children);
@@ -576,6 +596,51 @@ export default {
       }
     };
 
+    // 初始化角色权限
+    const initRoleAuth = () => {
+      const checkObj = initCheckData();
+      checkedItem.value = checkObj;
+      editDisable.value = true;
+      isEdit.value = true;
+      currentNode.value = {};
+    };
+
+    const removeUser = (row: any) => {
+      ElMessageBox.confirm(
+        `是否将 ${row ? row.displayName : currentNodeData.value.label} 从 ${
+          currentNode.value.level === 1 ? currentNode.value.label : currentNode.value.parent.data.label
+        } 中移除？`,
+        '提示',
+        {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning',
+        },
+      ).then(async () => {
+        let users: any;
+        let roleId: number;
+        if (row && currentNode.value.level === 1) {
+          users = currentNodeData.value?.children;
+          roleId = currentNode.value?.data?.id;
+        } else {
+          users = currentNode.value.parent.data?.children;
+          roleId = currentNode.value.parent?.data?.id;
+        }
+        console.log('users', users);
+        // const users = row ? currentNodeData.value?.children : currentNode.value.parent.data?.children;
+        const removeUserId = row ? row.id : currentNodeData.value.id;
+        const updateUsers = users.filter((user: any) => user.id !== removeUserId).map((user: any) => user.id);
+        const { code } = await updateRoleMembers({
+          userIds: updateUsers,
+          projectId: props.id,
+          roleId,
+        });
+        if (code === 0) {
+          initRoleAuth();
+          reloadUserList({ id: currentNodeData.value.label });
+        }
+      });
+    };
     // 更新角色权限
     const updateRoleData = async () => {
       let moduleIds: number[] = [];
@@ -601,16 +666,6 @@ export default {
         console.log(error);
       }
     };
-
-    // 初始化角色权限
-    const initRoleAuth = () => {
-      const checkObj = initCheckData();
-      checkedItem.value = checkObj;
-      editDisable.value = true;
-      isEdit.value = true;
-      currentNode.value = {};
-    };
-
     // 全选
     const handleCheckAllChange = (data: any) => {
       const { id, children } = data;
@@ -652,9 +707,6 @@ export default {
     const handleCancel = () => {
       isEdit.value = true;
     };
-    onMounted(() => {
-      getRoleAuthListData();
-    });
 
     // 新建角色 提交取消表单
     const validatorRolePass = async (rule: any, value: string, callback: Function) => {
@@ -759,9 +811,9 @@ export default {
         return;
       }
       if (!currentNodeData.value.children.length) {
-        ElMessageBox.confirm(`删除【${currentNodeData.value.label}】 角色`, {
-          confirmButtonText: '我知道了',
-          showCancelButton: false,
+        ElMessageBox.confirm(`是否删除【${currentNodeData.value.label}】角色？`, '提示', {
+          confirmButtonText: '确认',
+          cancelButtonText: '取消',
           type: 'warning',
         }).then(async () => {
           const { code } = await deleteRole({
@@ -802,6 +854,9 @@ export default {
 
     watch(userInput, (newValue: string) => {
       userTreeRef.value.filter(newValue);
+    });
+    onMounted(() => {
+      getRoleAuthListData();
     });
     return {
       loadings,
@@ -920,6 +975,7 @@ export default {
     .customNode {
       font-size: 12px;
       width: 100%;
+      display: flex;
       .el-icon-edit {
         visibility: hidden;
       }
@@ -928,17 +984,22 @@ export default {
           visibility: visible;
         }
       }
-      .el-icon-circle-plus {
-        font-size: 18px;
-        &:hover {
-          color: #333;
-        }
-      }
       .svg-icon {
         margin-right: 0.5em;
         &.tree-node-folder {
           color: #66bbff;
         }
+      }
+      .content-style {
+        width: 200px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+    .el-icon-circle-plus {
+      font-size: 18px !important;
+      &:hover {
+        color: #333;
       }
     }
   }
@@ -966,11 +1027,11 @@ export default {
   }
   ::v-deep .el-checkbox-group {
     font-size: 0;
-    width: 750px;
+    width: 800px;
     overflow: auto;
     .el-checkbox__label {
       display: inline-block;
-      min-width: 110px;
+      min-width: 120px;
     }
     .el-checkbox {
       margin: 0;

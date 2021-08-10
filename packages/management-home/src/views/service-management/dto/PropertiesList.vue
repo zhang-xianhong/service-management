@@ -254,7 +254,7 @@ export default defineComponent({
 
     // 校验
     const validator = () => {
-      const res = validParams(list.value);
+      const res = validParams(list.value, paramsDefine.value);
       formError.value = '';
       if (res) {
         const error = res[0];
@@ -290,7 +290,10 @@ export default defineComponent({
       let valid = false;
       switch (field) {
         case 'name':
-          valid = validName(value);
+          valid = validName(value, {
+            id,
+            defines: paramsDefine.value,
+          });
           break;
         case 'example':
           valid = validExample(value);
@@ -430,7 +433,7 @@ export default defineComponent({
     const paramsToSaveData = (params) => {
       const parse = (items) =>
         items.map((item) => {
-          const { $id, config, ...dto } = item;
+          const { $id, config, readonly, ...dto } = item;
           const newItem = {
             ...dto,
             config: JSON.stringify(config),

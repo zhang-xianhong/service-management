@@ -1,57 +1,69 @@
 {
   "code": 0,
   "data": {
-      "id": 3,
-      "updateTime": "2021-06-25T09:25:13.000Z",
-      "createTime": "2021-06-25T09:25:13.000Z",
-      "createUser": null,
-      "updateUser": null,
-      "isDelete": false,
-      "version": 0,
-      "projectId": 1,
-      "name": "srv-test-wxpqq",
-      "url": "",
-      "serverPort": 8082,
-      "deployId": null,
-      "moduleDependencyId": null,
-      "deposit": null,
-      "status": 0,
-      "description": "测试更新服务依赖",
-      "detail": null,
-      "isAllByExtend": null,
-      "extendVersion": null,
-      "classification": "",
-      "tag": "",
-      "initTimes": 0,
-      "codeQuality": "",
-      "serviceRank": "",
-      "serviceApiUrl": "",
-      "druidUrl": "",
-      "startTime": null,
-      "cloneBy": "",
-      "repositoryId": null,
-      "lastSyncTime": "2021-06-25T09:25:13.000Z",
-      "serviceVersion": "master",
-      "serviceVersionType": 1,
-      "serviceSource": 1,
-      "owners": [
-          {
-              "userId": 75
-          }
-      ],
-      "dependencies": [
-          {
-              "dependencyServiceName": "public.cqszjj.xiangmu1.xiaowen",
-              "dependencyServiceVersionType": 1,
-              "dependencyServiceVersion": "master"
-          },
-          {
-              "dependencyServiceName": "public.cqszjj.xiangmu1.taolei",
-              "dependencyServiceVersionType": 2,
-              "dependencyServiceVersion": "v2.0"
-          }
-      ],
-      "sshHost": "http://9.134.38.8"
+    "id": 3,
+    "updateTime": "2021-06-25T09:25:13.000Z",
+    "createTime": "2021-06-25T09:25:13.000Z",
+    "createUser": null,
+    "updateUser": null,
+    "isDelete": false,
+    "version": 0,
+    "projectId": 1,
+    "name": "srv-test-wxpqq",
+    "url": "",
+    "serverPort": 8082,
+    "deployId": null,
+    "moduleDependencyId": null,
+    "deposit": null,
+    "status": 0,
+    "description": "测试更新服务依赖",
+    "detail": null,
+    "isAllByExtend": null,
+    "extendVersion": null,
+    "classification": "",
+    "tag": "",
+    "initTimes": 0,
+    "codeQuality": "",
+    "serviceRank": "",
+    "serviceApiUrl": "",
+    "druidUrl": "",
+    "startTime": null,
+    "cloneBy": "",
+    "repositoryId": null,
+    "lastSyncTime": "2021-06-25T09:25:13.000Z",
+    "serviceVersion": "master",
+    "serviceVersionType": 1,
+    "serviceSource": 1,
+    "owners": [
+      {
+        "userId": 75
+      }
+    ],
+    "dependencies": [
+      {
+        "dependencyServiceName": "public.cqszjj.xiangmu1.xiaowen",
+        "dependencyServiceVersionType": 1,
+        "dependencyServiceVersion": "master"
+      },
+      {
+        "dependencyServiceName": "public.cqszjj.xiangmu1.taolei",
+        "dependencyServiceVersionType": 2,
+        "dependencyServiceVersion": "v2.0",
+        "versionTooHigh": true
+      },
+      {
+        "dependencyServiceName": "public.cqszjj.xiangmu1.guotao",
+        "dependencyServiceVersionType": 2,
+        "dependencyServiceVersion": "v3.0",
+        "versionTooHigh": true
+      },
+      {
+        "dependencyServiceName": "public.cqszjj.xiangmu1.jiaoguo",
+        "dependencyServiceVersionType": 2,
+        "dependencyServiceVersion": "v2.0"
+      }
+    ],
+    "sshHost": "http://9.134.38.8"
   },
   "message": "successful",
   "httpStatus": 200,

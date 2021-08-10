@@ -11,7 +11,7 @@
       <div class="password-body__container">
         <packaged-steps width="600px" :active="activeStep" :data="steps"></packaged-steps>
         <keep-alive>
-          <component :is="componentName" @submit="onSubmit">
+          <component :is="componentName" @submit="onSubmit" :captcha="captcha || ''" :email="backEmail">
             <div v-if="componentName === 'Complete'" class="complete-container">
               <div class="complete-container__title"><img :src="completeLogo" /><span>设置密码成功</span></div>
               <el-button class="complete-container__btn" type="primary" @click="backToLogin">立即登录</el-button>
@@ -24,7 +24,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, toRefs } from 'vue';
+import { defineComponent, reactive, ref, toRefs } from 'vue';
 import { useRouter } from 'vue-router';
 import PackagedSteps from '@/components/packaged-steps/Index.vue';
 import Email from './components/Email.vue';
@@ -60,9 +60,10 @@ export default defineComponent({
       steps: [{ title: '1.验证邮箱' }, { title: '2.重置密码' }, { title: '3.完成' }],
       componentName: 'Email',
     });
-    // TODO:忘记密码接口暂未开发
-    const onSubmit = (payload: { type: Types }) => {
-      console.log(payload);
+    const captcha = ref('');
+    const backEmail = ref('');
+    // 切换组件
+    const onSubmit = (payload: { type: Types; captcha: string; email: string }) => {
       switch (payload.type) {
         case 'email':
           state.activeStep = 1;
@@ -75,9 +76,10 @@ export default defineComponent({
           break;
       }
       state.componentName = payload.type;
-      console.log('state.componentName', state.componentName);
-      console.log('state.activeStep', state.activeStep);
+      captcha.value = payload.captcha ? payload.captcha : '';
+      backEmail.value = payload.email ? payload.email : '';
     };
+
     const backToLogin = () => {
       router.push('/login');
     };
@@ -86,7 +88,9 @@ export default defineComponent({
       tencentLogo,
       citybaseLogo,
       completeLogo,
+      captcha,
       onSubmit,
+      backEmail,
       backToLogin,
     };
   },
@@ -117,9 +121,6 @@ export default defineComponent({
     width: 560px;
     margin: auto;
     margin-top: 150px;
-    // display: flex;
-    // justify-content: center;
-    // align-items: center;
   }
 }
 .complete-container {
