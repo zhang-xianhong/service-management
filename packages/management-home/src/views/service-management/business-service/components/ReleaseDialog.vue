@@ -125,6 +125,7 @@ const checkVerion = (value: string, callback: Function, lastVersion: string | un
       callback(new Error('初始版本主版本必须为 1'));
     }
   }
+  callback();
 };
 
 export default defineComponent({

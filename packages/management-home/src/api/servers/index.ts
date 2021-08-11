@@ -190,9 +190,6 @@ export const startCheck: (serviceId: any) => Promise<SuccessResponse<any>> = (se
  */
 
 export const getLastVersion: (serviceId: number) => Promise<SuccessResponse<ServiceSnashot>> = (serviceId: number) =>
-  apiProxy(SERVER_TYPES.SERVICE_REPOSITORY, service.GET_LAST_VERSION, {
+  apiProxy(SERVER_TYPES.SERVICE_REPOSITORY, [`${service.GET_LAST_VERSION}/${serviceId}`], {
     method: 'GET',
-    params: {
-      serviceId,
-    },
   });

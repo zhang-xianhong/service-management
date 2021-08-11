@@ -32,9 +32,10 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, onMounted, PropType, reactive, ref, toRef } from 'vue';
+import { computed, defineComponent, onMounted, PropType, reactive, watch, ref } from 'vue';
 import { parse, ReleaseType } from './version';
 import { DEFAULT_VESION } from './release';
+import { useForceUpdare } from './useVerionInput';
 export default defineComponent({
   name: 'VersionInput',
   props: {
@@ -49,26 +50,38 @@ export default defineComponent({
   },
   emits: ['update:modelValue'],
   setup(props, ctx) {
-    const lastVersion = toRef(props, 'lastVersion');
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const semVer = parse(lastVersion.value) ?? parse(DEFAULT_VESION)!;
-    if (lastVersion.value) {
-      //
-      semVer.inc('patch');
-    }
-    const { major, minor, patch } = semVer;
-    const localValue = reactive({
-      major,
-      minor,
-      patch,
+    const localValue = ref({
+      major: 1,
+      minor: 0,
+      patch: 0,
     });
 
-    const renderKey = ref(0);
-    const forceUpdate = () => {
-      renderKey.value += 1;
+    const init = () => {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const semVer = parse(props.lastVersion) ?? parse(DEFAULT_VESION)!;
+      if (props.lastVersion) {
+        semVer.inc('patch');
+      }
+      const { major, minor, patch } = semVer;
+      localValue.value = reactive({
+        major,
+        minor,
+        patch,
+      });
     };
 
-    const currentVersion = computed(() => `v${localValue.major}.${localValue.minor}.${localValue.patch}`);
+    init();
+
+    watch(
+      () => props.lastVersion,
+      () => {
+        init();
+      },
+    );
+
+    const currentVersion = computed(
+      () => `v${localValue.value.major}.${localValue.value.minor}.${localValue.value.patch}`,
+    );
     const handleInput = (type: ReleaseType, value: string | undefined) => {
       if (value === undefined) return;
 
@@ -76,13 +89,13 @@ export default defineComponent({
 
       if (Math.sign(identifier) === -1) return;
       if (type === 'major') {
-        localValue.major = identifier;
+        localValue.value.major = identifier;
       }
       if (type === 'minor') {
-        localValue.minor = identifier;
+        localValue.value.minor = identifier;
       }
       if (type === 'patch') {
-        localValue.patch = identifier;
+        localValue.value.patch = identifier;
       }
       ctx.emit('update:modelValue', currentVersion);
     };
@@ -91,9 +104,8 @@ export default defineComponent({
     });
     return {
       localValue,
-      renderKey,
       handleInput,
-      forceUpdate,
+      ...useForceUpdare(),
     };
   },
 });
