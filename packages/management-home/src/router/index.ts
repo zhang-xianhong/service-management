@@ -603,6 +603,7 @@ const routes: Array<RouteRecordRaw> = [
           icon: 'el-icon-eleme',
           isRootLevel: false,
           hidden: true,
+          id: 10,
         },
       },
     ],

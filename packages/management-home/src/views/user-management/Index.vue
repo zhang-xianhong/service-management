@@ -74,13 +74,11 @@
 </template>
 
 <script lang="ts">
-/* eslint-disabled */
 import { defineComponent, reactive, ref, watch } from 'vue';
 import { userInfo } from '@/layout/messageCenter/user-info';
 import { getUserProfile, updateUserPassword, updateUserProfile } from '@/api/auth';
 import { ElMessage } from 'element-plus';
 import { getTenantDetail } from '@/api/tenant';
-import { parseForESLint } from '@typescript-eslint/parser';
 
 export default defineComponent({
   name: 'UserManagement',
