@@ -141,12 +141,11 @@ export default defineComponent({
       // eslint-disable-next-line no-unused-expressions
       form.value?.validate(async (valid: boolean) => {
         if (valid) {
-          // 讲道理这里需要调一下后端接口判断输入的验证码是否正确，才能放行，目前这里无接口，未进行判断
-          const { code } = await validateVerifyCode({
+          const { data } = await validateVerifyCode({
             userEmail: emailInfo.email,
             verifyCode: emailInfo.captcha,
           });
-          if (code === 0) {
+          if (data === true) {
             ElMessage({
               type: 'success',
               message: '验证码输入成功',
