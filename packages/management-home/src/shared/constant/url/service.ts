@@ -39,4 +39,6 @@ export default {
   GET_SERVICE_API_PARAMS: ['/api/param/select'],
   SAVE_SERVICE_API_PARAMS: ['/api/param/update'],
   GET_START_CHECK: ['/services/start/check', '/mock/services/check.json'],
+
+  GET_LAST_VERSION: ['/snapshot/latest'],
 };
