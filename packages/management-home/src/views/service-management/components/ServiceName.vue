@@ -1,5 +1,5 @@
 <template>
-  <el-tooltip effect="dark" :visible-arrow="false" :content="name" placement="top">
+  <el-tooltip effect="dark" :visible-arrow="false" :content="name" placement="right">
     <span>{{ showName }}</span>
   </el-tooltip>
 </template>

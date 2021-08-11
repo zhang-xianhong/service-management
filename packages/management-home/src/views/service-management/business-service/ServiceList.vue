@@ -40,11 +40,20 @@
             <el-table-column type="selection" width="55" v-if="getShowBool('delete')"></el-table-column>
             <el-table-column type="index" width="50" label="序号"></el-table-column>
             <el-table-column property="name" label="服务英文名">
+              <!--              原始路由-->
+              <!--              <template #default="scope">-->
+              <!--                <router-link-->
+              <!--                  v-if="getShowBool('selectDetail')"-->
+              <!--                  :to="{ path: `service-list/detail/${scope.row.id}`, query: { detailName: scope.row.name } }"-->
+              <!--                >-->
+              <!--                  <service-name :name="scope.row.name" />-->
+              <!--                </router-link>-->
+              <!--                <service-name :name="scope.row.name" v-else />-->
+              <!--              </template>-->
+
+              <!--              新路由-->
               <template #default="scope">
-                <router-link
-                  v-if="getShowBool('selectDetail')"
-                  :to="{ path: `service-list/detail/${scope.row.id}`, query: { detailName: scope.row.name } }"
-                >
+                <router-link v-if="getShowBool('selectDetail')" :to="{ path: `service-list/detail/${scope.row.id}` }">
                   <service-name :name="scope.row.name" />
                 </router-link>
                 <service-name :name="scope.row.name" v-else />
@@ -99,6 +108,15 @@
             </el-table-column>
             <el-table-column property="source" label="服务来源"></el-table-column>
             <el-table-column property="serviceVersion" label="服务版本"></el-table-column>
+            <el-table-column label="操作">
+              <template #default="scope">
+                <router-link
+                  v-if="getShowBool('selectDetail')"
+                  :to="{ path: `service-list/edit/${scope.row.id}`, query: { detailName: scope.row.name } }"
+                  >编辑
+                </router-link>
+              </template>
+            </el-table-column>
           </el-table>
           <packaged-pagination
             @size-change="handleSizeChange"
