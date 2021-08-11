@@ -21,7 +21,7 @@
 
 <script lang="ts">
 import { ref } from '@vue/reactivity';
-import { defineComponent, PropType, provide, watch } from '@vue/runtime-core';
+import { computed, defineComponent, PropType, provide, watch } from '@vue/runtime-core';
 import { ElForm } from 'element-plus';
 import { CreatDtoModel, DtoModel, DtoProperties, dtoUniqueId } from './dto';
 import PropertiesList from './PropertiesList.vue';
@@ -108,7 +108,7 @@ export default defineComponent({
       dtoSelector.value?.openDialog();
     };
 
-    const dtoId = 'uniqueId' in props.dtoData ? props.dtoData.uniqueId : undefined;
+    const dtoId = computed(() => ('uniqueId' in props.dtoData ? props.dtoData.uniqueId : undefined));
 
     provide(dtoUniqueId, dtoId);
 

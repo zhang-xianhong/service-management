@@ -1,6 +1,6 @@
 import { dtoModelAPI } from '@/api/servers';
 import { ElMessage } from 'element-plus';
-import { computed, InjectionKey, ref } from 'vue';
+import { computed, ComputedRef, InjectionKey, ref } from 'vue';
 
 export type DataType = 'String' | 'Int32' | 'Int64' | 'Float' | 'Double' | 'Date' | 'Boolean' | 'Array' | 'Object';
 
@@ -173,4 +173,4 @@ export const useDtoList = () => {
   };
 };
 
-export const dtoUniqueId: InjectionKey<string> = Symbol('dtoid');
+export const dtoUniqueId: InjectionKey<ComputedRef<string>> = Symbol('dtoid');
