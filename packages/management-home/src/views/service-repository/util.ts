@@ -48,7 +48,6 @@ export const getClassificationName = (classificationId: number, classificationLi
   const array: any[] = convertTreeToArray(JSON.parse(JSON.stringify(classificationList)));
   console.log(array);
   const item = array.find((item) => item.id === Number(classificationId));
-  console.log(item);
   return item?.name || '';
 };
 

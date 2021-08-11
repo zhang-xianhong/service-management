@@ -139,6 +139,7 @@ import dateFormat from '@/utils/date-format';
 import { getShowBool } from '@/utils/permission-show-module';
 import { CONFIG_LEVEL, isRefrence } from '../utils/permisson';
 import { ElMessageBox } from 'element-plus';
+import { alloverEdit } from '@/layout/messageCenter/routerRef';
 
 export default {
   name: 'ServerConfigInfo',
@@ -233,6 +234,7 @@ export default {
         scope: 0,
         isEdit: true,
       });
+      alloverEdit.value = true;
     };
 
     // 保存新增配置项修改
@@ -267,11 +269,14 @@ export default {
         });
         getTableData();
       }
+
+      alloverEdit.value = false;
     };
 
     // 取消新增配置项修改
     const cancelModify = (index: number) => {
       state.tableData.splice(index, 1);
+      alloverEdit.value = false;
     };
 
     // 删除配置项
