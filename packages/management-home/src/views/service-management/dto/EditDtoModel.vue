@@ -15,15 +15,15 @@
       </el-form-item>
     </el-form>
     <PropertiesList :propertiesList="localDtoData.list" ref="propertiesListRef"></PropertiesList>
-    <SelectDtoProperties ref="dtoSelector" @on-confirm="onConfirm"></SelectDtoProperties>
+    <SelectDtoProperties ref="dtoSelector" @on-confirm="onConfirm" :dto-id="dtoId"></SelectDtoProperties>
   </div>
 </template>
 
 <script lang="ts">
 import { ref } from '@vue/reactivity';
-import { defineComponent, PropType, watch } from '@vue/runtime-core';
+import { defineComponent, PropType, provide, watch } from '@vue/runtime-core';
 import { ElForm } from 'element-plus';
-import { CreatDtoModel, DtoModel, DtoProperties } from './dto';
+import { CreatDtoModel, DtoModel, DtoProperties, dtoUniqueId } from './dto';
 import PropertiesList from './PropertiesList.vue';
 import SelectDtoProperties from './SelectDtoProperties.vue';
 export default defineComponent({
@@ -108,12 +108,17 @@ export default defineComponent({
       dtoSelector.value?.openDialog();
     };
 
+    const dtoId = 'uniqueId' in props.dtoData ? props.dtoData.uniqueId : undefined;
+
+    provide(dtoUniqueId, dtoId);
+
     return {
       dtoSelector,
       localDtoData,
       propertiesListRef,
       rules,
       dtoForm,
+      dtoId,
       reset,
       onConfirm,
       getData,

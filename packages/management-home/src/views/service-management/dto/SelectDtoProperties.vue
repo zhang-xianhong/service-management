@@ -18,7 +18,12 @@
       <el-table :data="dtoList" max-height="400">
         <el-table-column label="序号">
           <template #default="scope">
-            <el-radio name="dto-item" :label="scope.row.uniqueId" v-model="selectedId" />
+            <el-radio
+              name="dto-item"
+              :label="scope.row.uniqueId"
+              v-model="selectedId"
+              :disabled="scope.row.uniqueId === dtoId"
+            />
           </template>
         </el-table-column>
         <el-table-column prop="name" label="模型英文名">
@@ -59,6 +64,9 @@ export default defineComponent({
     referenceType: {
       type: Number as PropType<ReferenceType>,
       default: ReferenceType.CLONE,
+    },
+    dtoId: {
+      type: String as PropType<string>,
     },
   },
   setup(props, ctx) {
