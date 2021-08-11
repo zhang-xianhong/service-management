@@ -67,6 +67,10 @@ export const resetPassWord: (payload?: {
 export const sendRetrievePasswordVerifyCode = (payload: any): Promise<SuccessResponse<any>> =>
   request.post(getUrl(URL.tenant.SEND_RETRIEVE_PASSWD_VERIFY_CODE), payload);
 
+// 判断验证码是否正确
+export const validateVerifyCode = (payload: any): Promise<SuccessResponse<any>> =>
+  request.post(getUrl(URL.tenant.VALIDATE_VERIFY_CODE), payload);
+
 // 找回密码
 export const retrievePassword = (payload: any): Promise<SuccessResponse<any>> =>
   request.post(getUrl(URL.tenant.RETRIEVE_PASSWD), payload);
