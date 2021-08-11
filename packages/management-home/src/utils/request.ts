@@ -37,8 +37,13 @@ service.interceptors.request.use(
 service.interceptors.response.use(
   (response: AxiosResponse) => response.data,
   (error) => {
-    if (error.toString().includes('timeout')) {
+    const errorString = error.toString().toLocaleLowerCase();
+    if (errorString.includes('timeout')) {
       Message.error('请求超时');
+      return Promise.reject(error);
+    }
+    if (errorString.includes('network')) {
+      Message.error('当前网络不可用');
       return Promise.reject(error);
     }
     // 如果没有error.response返回，则当做服务器异常处理
@@ -72,6 +77,7 @@ service.interceptors.response.use(
     if (error.code === 'ECONNABORTED') {
       return Message.error('请求超时！');
     }
+
     const { data } = error.response; // status
     const { httpStatus, message } = data;
     // 错误状态处理
