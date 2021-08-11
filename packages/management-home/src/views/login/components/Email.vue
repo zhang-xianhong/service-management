@@ -21,7 +21,7 @@
         </el-input>
       </el-form-item>
       <el-form-item>
-        <el-button class="email-btn" type="primary" @click="submit">下一步</el-button>
+        <el-button class="email-btn" type="primary" @click="submit">确定</el-button>
       </el-form-item>
     </el-form>
   </div>
@@ -29,8 +29,7 @@
 
 <script lang="ts">
 import { ElMessage } from 'element-plus';
-// import { sendRetrievePasswordVerifyCode } from '@/api/servers/index';
-import { sendRetrievePasswordVerifyCode } from '@/api/tenant';
+import { validateVerifyCode, sendRetrievePasswordVerifyCode } from '@/api/tenant';
 import {
   defineComponent,
   PropType,
@@ -111,6 +110,10 @@ export default defineComponent({
             message: '邮箱格式错误',
           });
         } else {
+          ElMessage({
+            type: 'success',
+            message: '验证码发送成功',
+          });
           const { code } = await sendRetrievePasswordVerifyCode({
             userEmail: emailInfo.email,
           });
@@ -139,20 +142,35 @@ export default defineComponent({
       form.value?.validate(async (valid: boolean) => {
         if (valid) {
           // 讲道理这里需要调一下后端接口判断输入的验证码是否正确，才能放行，目前这里无接口，未进行判断
-          const payload = {
-            email: emailInfo.email,
-            captcha: emailInfo.captcha,
-            type: 'password',
-          };
-          ctx.emit('submit', payload);
+          const { code } = await validateVerifyCode({
+            userEmail: emailInfo.email,
+            verifyCode: emailInfo.captcha,
+          });
+          if (code === 0) {
+            ElMessage({
+              type: 'success',
+              message: '验证码输入成功',
+            });
+            const payload = {
+              email: emailInfo.email,
+              captcha: emailInfo.captcha,
+              type: 'password',
+            };
+            ctx.emit('submit', payload);
+          } else {
+            ElMessage({
+              type: 'error',
+              message: '验证码错误',
+            });
+          }
         }
       });
     };
 
     onBeforeUnmount(() => {
-      window.onbeforeunload = function () {
-        return '系统可能不会保存您所做的更改。';
-      };
+      // window.onbeforeunload = function () {
+      //   return '系统可能不会保存您所做的更改。';
+      // };
       clearInterval(timeout.value);
     });
 
@@ -205,6 +223,7 @@ export default defineComponent({
     color: #006eff;
     width: 172px;
     height: 48px;
+    margin-right: -5px;
     line-height: 48px;
     border-left: 1px solid #dcdfe6;
     cursor: pointer;
@@ -212,6 +231,10 @@ export default defineComponent({
       color: #aaa;
       pointer-events: none;
     }
+  }
+  &-captcha:hover {
+    background-color: #006eff;
+    color: #fff;
   }
   &-btn {
     width: 100%;

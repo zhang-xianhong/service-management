@@ -32,7 +32,7 @@ export function checkPasswd(passwd: string): boolean {
 // -------------------------------------------------------------------
 // 组件库form表单校验器 async-valitor
 export const HELP_MSG =
-  '长度在 8 到 16 个字符，只能输入大小写字母、数字、特殊字符（(!@#$%^&),至少1个大写字母，1个小写字母';
+  '长度在 8 到 16 个字符，只能输入大小写字母、数字、特殊字符（~!@#$%^&*()_+":<>?;,./-),至少1个大写字母，1个小写字母';
 // 密码校验
 const validatorPassword = (rule: any, value: string, callback: Function) => {
   if (!checkPasswd(value)) {
