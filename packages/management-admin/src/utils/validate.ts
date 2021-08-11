@@ -40,6 +40,11 @@ export const PasswordRules = [
   { validator: validatorPassword, trigger: 'blur' },
 ];
 
+export const ConfirmPasswordRules = [
+  { required: true, message: '请再次输入密码', trigger: 'blur' },
+  { validator: validatorPassword, trigger: 'blur' },
+];
+
 // 邮箱校验
 export function checkMail(szMail: string): boolean {
   const szReg = /^\w+@[a-zA-Z0-9]{2,10}(?:\.[a-z]{2,4}){1,3}$/;

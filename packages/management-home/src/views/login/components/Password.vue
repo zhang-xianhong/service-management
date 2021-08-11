@@ -23,10 +23,9 @@
 
 <script lang="ts">
 import { computed, defineComponent, PropType, reactive, ref, SetupContext } from 'vue';
-import { PasswordRules } from '@/utils/validate';
+import { ConfirmPasswordRules, PasswordRules } from '@/utils/validate';
 import { retrievePassword } from '@/api/tenant';
 import useMsg from '../useMsg';
-// import { retrievePassword } from '@/api/servers/index';
 export default defineComponent({
   name: 'Password',
   props: {
@@ -70,40 +69,35 @@ export default defineComponent({
     const validateConfirmationPassword = (rule: any, value: string, callback: Function) => {
       if (value === '') {
         callback(new Error('请再次输入密码'));
-      } else if (value !== formData.password) {
-        callback(new Error('两次输入密码不一致!'));
       } else {
         callback();
       }
     };
     const rules = {
       password: [...PasswordRules, { validator: validatePassword, trigger: 'blur' }],
-      confirmationPassword: [
-        {
-          required: true,
-          message: '请再次输入密码',
-          trigger: 'blur',
-        },
-        { validator: validateConfirmationPassword, trigger: 'blur' },
-      ],
+      confirmationPassword: [...ConfirmPasswordRules, { validator: validateConfirmationPassword, trigger: 'blur' }],
     };
     const submit = () => {
       form.value.validate(async (valid: boolean) => {
         if (valid) {
-          const { code } = await retrievePassword({
-            userEmail: formData.email,
-            verifyCode: formData.verifyCode,
-            firstInputNewPassword: formData.password,
-            secondInputNewPassword: formData.confirmationPassword,
-          });
-          if (code === 0) {
-            msgTips('success', '密码重置成功');
-            const payload = {
-              type: 'Complete',
-            };
-            ctx.emit('submit', payload);
+          if (formData.password !== formData.confirmationPassword) {
+            msgTips('error', '两次输入密码不一致');
           } else {
-            msgTips('error', '密码重置失败');
+            const { code } = await retrievePassword({
+              userEmail: formData.email,
+              verifyCode: formData.verifyCode,
+              firstInputNewPassword: formData.password,
+              secondInputNewPassword: formData.confirmationPassword,
+            });
+            if (code === 0) {
+              msgTips('success', '密码重置成功');
+              const payload = {
+                type: 'Complete',
+              };
+              ctx.emit('submit', payload);
+            } else {
+              msgTips('error', '密码重置失败');
+            }
           }
         }
       });

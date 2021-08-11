@@ -44,6 +44,10 @@ export const PasswordRules = [
   { required: true, message: '请输入新的密码', trigger: 'blur' },
   { validator: validatorPassword, trigger: 'blur' },
 ];
+export const ConfirmPasswordRules = [
+  { required: true, message: '请再次输入密码', trigger: 'blur' },
+  { validator: validatorPassword, trigger: 'blur' },
+];
 export const EmailRules = [
   { required: true, message: '请输入有验证邮箱号', trigger: 'blur' },
   { validator: checkMail, trigger: 'blue' },
