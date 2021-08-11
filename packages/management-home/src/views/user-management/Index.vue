@@ -74,11 +74,13 @@
 </template>
 
 <script lang="ts">
+/* eslint-disabled */
 import { defineComponent, reactive, ref, watch } from 'vue';
 import { userInfo } from '@/layout/messageCenter/user-info';
 import { getUserProfile, updateUserPassword, updateUserProfile } from '@/api/auth';
 import { ElMessage } from 'element-plus';
 import { getTenantDetail } from '@/api/tenant';
+import { parseForESLint } from '@typescript-eslint/parser';
 
 export default defineComponent({
   name: 'UserManagement',
@@ -117,15 +119,13 @@ export default defineComponent({
 
       if (id === 2) {
         // https://github.com/VincentSit/ChinaMobilePhoneNumberRegex
-        const reg =
-          /^(?:\+?86)?1(?:3\d{3}|5[^4\D]\d{2}|8\d{3}|7(?:[0-35-9]\d{2}|4(?:0\d|1[0-2]|9\d))|9[0-35-9]\d{2}|6[2567]\d{2}|4(?:(?:10|4[01])\d{3}|[68]\d{4}|[579]\d{2}))\d{6}$/;
+        const reg = /^(?:\+?86)?1(?:3\d{3}|5[^4\D]\d{2}|8\d{3}|7(?:[0-35-9]\d{2}|4(?:0\d|1[0-2]|9\d))|9[0-35-9]\d{2}|6[2567]\d{2}|4(?:(?:10|4[01])\d{3}|[68]\d{4}|[579]\d{2}))\d{6}$/;
         if (!reg.test(userSetInfo[prop])) {
           return ElMessage.error('请输入正确的电话号码');
         }
       }
       if (id === 3) {
-        const reg =
-          /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        const reg = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
         if (!reg.test(userSetInfo[prop])) {
           return ElMessage.error('请输入正确的电子邮箱');
         }
@@ -155,6 +155,7 @@ export default defineComponent({
     const formRef = ref(null as any);
     const sendPass = () => {
       let viva = true;
+      console.log(formRef.value);
       formRef.value.validate((res: any) => {
         viva = res;
       });
@@ -179,10 +180,12 @@ export default defineComponent({
     // 初始密码校验
     const validatePass = (rule: any, value: string, callback: Function) => {
       if (value !== '') {
-        if (value === userSetInfo.value.displayName) {
+        if (value === userSetInfo?.userName) {
           callback(new Error('密码不能与用户名相同'));
+        } else {
+          callback();
+          formRef.value.validateField('confirmPassword');
         }
-        formRef.value.validateField('confirmPassword');
       }
       callback();
     };
@@ -191,12 +194,11 @@ export default defineComponent({
     const checkPasswordValidator = (rule: any, value: string, callback: Function) => {
       if (value === '') {
         callback(new Error('请再次输入密码'));
-      } else {
-        if (value !== passForm.newPassword) {
-          callback(new Error('两次输入密码不一致'));
-        }
-        callback();
       }
+      if (value !== passForm.newPassword) {
+        callback(new Error('两次输入密码不一致'));
+      }
+      callback();
     };
 
     const formRules = {

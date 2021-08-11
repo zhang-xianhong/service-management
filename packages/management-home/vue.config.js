@@ -7,7 +7,7 @@ function resolve(dir) {
 }
 
 module.exports = {
-  // lintOnSave: false,
+  lintOnSave: false,
   css: {
     loaderOptions: {
       sass: {
@@ -26,9 +26,9 @@ module.exports = {
       '/api': {
         // 后端rest服务
         // target: 'http://tenant1.dev-citybase.oa.com', // 开发集成环境
-        target: 'http://cqszjj.dev-citybase.oa.com',
+        // target: 'http://cqszjj.dev-citybase.oa.com',
         // target: 'http://fbxxyxgs.test-citybase.oa.com',
-        // target: 'http://sunlight.test-citybase.oa.com',
+        target: 'http://sunlight.test-citybase.oa.com',
         // target: 'http://http://yunzhi.dev-citybase.oa.com/',
         ws: true,
         changeOrigin: true

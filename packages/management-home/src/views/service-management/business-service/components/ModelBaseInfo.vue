@@ -62,6 +62,7 @@ import useClassifications from '../utils/service-baseinfo-classification';
 import useTags from '../utils/service-baseinfo-tag';
 import { updateModel } from '@/api/schema/model';
 import OwnerSelect from '@/components/owners-select/Index.vue';
+import { alloverEdit } from '@/layout/messageCenter/routerRef';
 
 export default {
   name: 'ModelBaseInfo',
@@ -134,6 +135,7 @@ export default {
     // 修改表单数据
     const modifyFormData = () => {
       isShowMode.value = false;
+      alloverEdit.value = true;
     };
 
     // 保存表单修改
@@ -141,6 +143,7 @@ export default {
       const { code } = await updateModel(formData.value, formData.value.id);
       if (code === 0) {
         isShowMode.value = true;
+        alloverEdit.value = false;
         useTags(formData.value.tags, props.tags);
         useClassifications(formData.value.classification, props.classifications);
       }
