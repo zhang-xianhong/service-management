@@ -138,11 +138,12 @@
       ref="dtoPropertiesDialog"
       @on-confirm="handleDtoConfirm"
       :referenceType="currentQuoteType"
+      :dto-id="dtoId"
     ></SelectDtoProperties>
   </div>
 </template>
 <script>
-import { defineComponent, ref, computed, watch } from 'vue';
+import { defineComponent, ref, computed, watch, inject } from 'vue';
 import { CONTENT_TYPES, getParamTypeName, PARAMS_TYPE_BODY } from '../api-params/config';
 import StringSettingDialog from '../api-params/settings/String.vue';
 import FloatSettingDialog from '../api-params/settings/Float.vue';
@@ -150,6 +151,7 @@ import IntSettingDialog from '../api-params/settings/Int.vue';
 import DateSettingDialog from '../api-params/settings/Date.vue';
 import BooleanSettingDialog from '../api-params/settings/Boolean.vue';
 import SelectDtoProperties from './SelectDtoProperties.vue';
+import { dtoUniqueId } from './dto';
 import {
   genParam,
   findAndUpdateParams,
@@ -184,7 +186,7 @@ export default defineComponent({
   setup(props) {
     const loading = ref(false);
     const list = ref([]);
-
+    const dtoId = inject(dtoUniqueId);
     const contentType = ref('json');
     const inputRefs = ref({});
     const formError = ref('');
@@ -543,6 +545,7 @@ export default defineComponent({
       handleDtoConfirm,
       currentQuoteType,
       getData,
+      dtoId,
     };
   },
 });
