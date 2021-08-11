@@ -320,7 +320,6 @@ export default defineComponent({
     // 服务默认选择类型
     const handleSelAble = (row: any) => row.scope !== 0;
 
-    openDialog(0); // debugger
     return {
       releaseDialogVisible,
       baseFormData,
