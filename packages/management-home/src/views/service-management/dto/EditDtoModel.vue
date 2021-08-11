@@ -4,7 +4,7 @@
       <el-form-item label="模型名称" prop="name">
         <div class="dto-name__container">
           <el-input v-model="localDtoData.name"></el-input>
-          <div class="btn-group"><span @click="openDtoSelector">克隆</span> <span @click="reset">重置</span></div>
+          <!-- <div class="btn-group"><span @click="openDtoSelector">克隆</span> <span @click="reset">重置</span></div> -->
         </div>
       </el-form-item>
       <el-form-item label="模型中文名称" prop="zhName">
