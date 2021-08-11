@@ -32,7 +32,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, onMounted, PropType, reactive, watch, ref } from 'vue';
+import { computed, defineComponent, PropType, reactive, watch, ref } from 'vue';
 import { parse, ReleaseType } from './version';
 import { DEFAULT_VESION } from './release';
 import { useForceUpdare } from './useVerionInput';
@@ -56,6 +56,9 @@ export default defineComponent({
       patch: 0,
     });
 
+    const currentVersion = computed(
+      () => `v${localValue.value.major}.${localValue.value.minor}.${localValue.value.patch}`,
+    );
     const init = () => {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const semVer = parse(props.lastVersion) ?? parse(DEFAULT_VESION)!;
@@ -68,6 +71,8 @@ export default defineComponent({
         minor,
         patch,
       });
+
+      ctx.emit('update:modelValue', currentVersion);
     };
 
     init();
@@ -79,9 +84,6 @@ export default defineComponent({
       },
     );
 
-    const currentVersion = computed(
-      () => `v${localValue.value.major}.${localValue.value.minor}.${localValue.value.patch}`,
-    );
     const handleInput = (type: ReleaseType, value: string | undefined) => {
       if (value === undefined) return;
 
@@ -99,9 +101,6 @@ export default defineComponent({
       }
       ctx.emit('update:modelValue', currentVersion);
     };
-    onMounted(() => {
-      ctx.emit('update:modelValue', currentVersion);
-    });
     return {
       localValue,
       handleInput,
