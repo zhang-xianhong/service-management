@@ -138,6 +138,7 @@
               :status="serverInfo.status"
               :modelList="modelList.tables"
               :modelFieldsLoading="modelFieldsLoading"
+              :showCloseBtn="true"
               @back="isShowDownDrawer = false"
             ></component>
           </keep-alive>
