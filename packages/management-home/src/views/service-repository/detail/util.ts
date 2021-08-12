@@ -32,7 +32,7 @@ export const parseServiceInfo = (data: any, apiList: any[]): ServiceInfo => ({
   classification: data.baseInfo.classification,
   tags: data.baseInfo.tag,
   tenantId: '',
-  apiList: [apiList || [], ...SYSTEM_APIS],
+  apiList: [...(apiList || []), ...SYSTEM_APIS],
   models: data.models,
 });
 
