@@ -391,22 +391,20 @@ export default defineComponent({
 
     // 获取debugUrl
     const handleGetDebugUrl = async () => {
-      if (!debugUrl.value) {
-        getDebugUrlLoading.value = true;
-        try {
-          const { code, data } = await getServiceAPiDebugUrl({
-            userId: userInfo.value.userId,
-            projectId: userCurrentProject.value.id,
-          });
-          if (code === 0) {
-            debugUrl.value = data.url;
-          }
-        } catch (e) {}
-        getDebugUrlLoading.value = false;
-        window.open(debugUrl.value, {
-          name: 'serviceDebug',
+      getDebugUrlLoading.value = true;
+      try {
+        const { code } = await getServiceAPiDebugUrl({
+          userId: userInfo.value.userId,
+          projectId: userCurrentProject.value.id,
         });
-      }
+        if (code === 0) {
+          debugUrl.value = '/swagger-ui';
+        }
+      } catch (e) {}
+      getDebugUrlLoading.value = false;
+      window.open(debugUrl.value, {
+        name: 'serviceDebug',
+      });
     };
 
     return {
