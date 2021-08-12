@@ -183,10 +183,13 @@ export const startCheck: (serviceId: any) => Promise<SuccessResponse<any>> = (se
 
 // 获取服务debug url
 export const getServiceAPiDebugUrl = (payload: any) =>
-  apiProxy(SERVER_TYPES.ACCOUNT, service.GET_SERVICE_DEBUG_URL, {
-    method: 'GET',
+  request.get('/service/debug', {
     params: payload,
   });
+// apiProxy(SERVER_TYPES.ACCOUNT, service.GET_SERVICE_DEBUG_URL, {
+//   method: 'GET',
+//   params: payload,
+// });
 
 /**
  * 发送验证码

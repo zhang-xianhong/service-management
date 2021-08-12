@@ -386,17 +386,17 @@ export default {
         userList.value = allUsers.value;
       }
     };
-    
+
     // 获取用户项目权限
-    const getUserInfoByProject = async() => {
+    const getUserInfoByProject = async () => {
       const currentId = localStorage.getItem('currentPathId');
-     const { data } = await getUserInfo({ projectId: props.id });
+      const { data } = await getUserInfo({ projectId: props.id });
       const { info } = data;
       const { userAuth = [] } = info;
-      const [ modules = {} ] = userAuth.filter((m: any) => Number(m.id) === Number(currentId));
+      const [modules = {}] = userAuth.filter((m: any) => Number(m.id) === Number(currentId));
       const Opt = getAuthModules(modules);
       projectAuth.value = Opt;
-    }
+    };
 
     // 初始化项目信息
     const projectDetail = ref({});
