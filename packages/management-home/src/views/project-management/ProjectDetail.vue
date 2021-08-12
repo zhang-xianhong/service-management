@@ -238,8 +238,8 @@ import {
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { getTenantDepartment } from '@/api/tenant';
 import { userInfo, userProjectList } from '@/layout/messageCenter/user-info';
-import { getShowBool } from '@/utils/permission-show-module';
-import { getTreeArr } from './utils/project-data-utils';
+import { getAuthModules, getTreeArr, projectAuth, getShowBool } from './utils/project-data-utils';
+import { getUserInfo } from '@/api/auth';
 
 const userStatus = {
   '-1': '冻结',
@@ -386,6 +386,17 @@ export default {
         userList.value = allUsers.value;
       }
     };
+    
+    // 获取用户项目权限
+    const getUserInfoByProject = async() => {
+      const currentId = localStorage.getItem('currentPathId');
+     const { data } = await getUserInfo({ projectId: props.id });
+      const { info } = data;
+      const { userAuth = [] } = info;
+      const [ modules = {} ] = userAuth.filter((m: any) => Number(m.id) === Number(currentId));
+      const Opt = getAuthModules(modules);
+      projectAuth.value = Opt;
+    }
 
     // 初始化项目信息
     const projectDetail = ref({});
@@ -672,6 +683,7 @@ export default {
       isEdit.value = true;
     };
     onMounted(() => {
+      getUserInfoByProject();
       getRoleAuthListData();
     });
 
