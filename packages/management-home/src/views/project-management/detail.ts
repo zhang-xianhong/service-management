@@ -15,9 +15,9 @@ import {
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { getTenantDepartment } from '@/api/tenant';
 import { userInfo, userProjectList } from '@/layout/messageCenter/user-info';
-import { getShowBool } from '@/utils/permission-show-module';
-import { getTreeArr } from './utils/project-data-utils';
+import { getAuthModules, getTreeArr, projectAuth, getShowBool } from './utils/project-data-utils';
 import { USER_STATUS, RES_CODE, PL_ROLE_ID, VISITOR_ROLE_ID, MAX_USER_COUNT } from './utils/constant';
+import { getUserInfo } from '@/api/auth';
 
 interface PropType {
   id: string;
@@ -147,6 +147,18 @@ export default function (props: PropType) {
   };
 
   const allUsers = ref([]);
+
+
+  // 获取用户项目权限
+  const getUserInfoByProject = async() => {
+    const currentId = localStorage.getItem('currentPathId');
+    const { data } = await getUserInfo({ projectId: props.id });
+    const { info } = data;
+    const { userAuth = [] } = info;
+    const [ modules = {} ] = userAuth.filter((m: any) => Number(m.id) === Number(currentId));
+    const Opt = getAuthModules(modules);
+    projectAuth.value = Opt;
+  }
   // 初始化项目信息
   const projectDetail = ref({});
   const include = ref(true);
@@ -627,6 +639,7 @@ export default function (props: PropType) {
     userTreeRef.value.filter(newValue);
   });
   onMounted(() => {
+    getUserInfoByProject();
     getRoleAuthListData();
   });
   return {
