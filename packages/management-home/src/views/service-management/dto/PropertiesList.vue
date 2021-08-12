@@ -21,7 +21,7 @@
       >
         <el-table-column prop="name" label="属性" class-name="col-inline is-required">
           <template #default="scope">
-            <span v-if="scope.row.readonly">{{ scope.row.name }}</span>
+            <span v-if="scope.row.readonly || scope.row.builtin">{{ scope.row.name }}</span>
             <el-input
               placeholder="请输入属性名称"
               v-model.trim="scope.row.name"
@@ -33,11 +33,20 @@
             />
           </template>
         </el-table-column>
+        <el-table-column prop="dtoName" align="right">
+          <template #default="scope">
+            <span v-if="scope.row.dtoName" class="import-info">
+              来源：<service-name :name="`${scope.row.serviceName}_${scope.row.dtoName}`"></service-name>
+            </span>
+          </template>
+        </el-table-column>
         <el-table-column prop="type" label="属性类型" width="180" class-name="is-required">
           <template #default="scope">
+            <span v-if="scope.row.readonly">{{ getParamTypeName(scope.row.type) }}</span>
             <el-select
               placeholder="请选择属性类型"
               v-model="scope.row.type"
+              v-else
               @change="
                 (value) => {
                   handleTypeChange(scope.row, value);
@@ -56,7 +65,8 @@
         </el-table-column>
         <el-table-column prop="required" label="是否必填" width="150" class-name="is-required">
           <template #default="scope">
-            <el-select placeholder="请选择" v-model="scope.row.required">
+            <span v-if="scope.row.readonly">{{ scope.row.required ? '是' : '否' }}</span>
+            <el-select placeholder="请选择" v-model="scope.row.required" v-else>
               <el-option
                 v-for="item in paramRequireds"
                 :key="item.value"
@@ -96,7 +106,11 @@
         <el-table-column prop="actions" label="操作" align="right" width="150">
           <template #default="scope">
             <el-button type="text" @click="handleAdd(scope.row)" v-if="canAdd(scope.row)">添加</el-button>
-            <el-dropdown v-if="scope.row.type === 'Object'" trigger="click" style="margin: 0 5px">
+            <el-dropdown
+              v-if="scope.row.type === 'Object' && !(scope.row.dtoId && scope.row.importType === 1)"
+              trigger="click"
+              style="margin: 0 5px"
+            >
               <el-button type="text"
                 >引入<i class="el-icon-arrow-down el-icon--right" style="margin-left: 0"></i
               ></el-button>
@@ -108,7 +122,10 @@
               </template>
             </el-dropdown>
 
-            <el-button type="text" v-else-if="scope.row.type !== 'Array'" @click="handleSetting(scope.row)"
+            <el-button
+              type="text"
+              v-else-if="scope.row.type !== 'Array' && scope.row.type !== 'Object'"
+              @click="handleSetting(scope.row)"
               >设置</el-button
             >
             <el-button type="text" @click="handleRemove(scope.row)" v-if="canDel(scope.row)">删除</el-button>
@@ -357,7 +374,6 @@ export default defineComponent({
 
     // 禁用类型
     const isDisableParamType = (type, row) => {
-      console.log(paramsDefine.value);
       if ((type !== 'Array' && type !== 'Object') || !paramsDefine.value) {
         return false;
       }
@@ -398,7 +414,7 @@ export default defineComponent({
         return true;
       }
       const define = paramsDefine.value[row.$id];
-      if (define.parent && define.parent.type === 'Array') {
+      if (define.parent && (define.parent.type === 'Array' || define.parent.isReadonlyImport)) {
         return false;
       }
       return true;
@@ -406,19 +422,19 @@ export default defineComponent({
 
     // 是否可删除
     const canDel = (row) => {
+      // 引用只读
       if (!paramsDefine.value || !paramsDefine.value[row.$id]) {
         return true;
       }
       const define = paramsDefine.value[row.$id];
       if (define.parent) {
-        const { type, length } = define.parent;
-        if (type === 'Array' || (type === 'Object' && length === 1)) {
+        const { type, length, isReadonlyImport } = define.parent;
+        if (isReadonlyImport || type === 'Array' || (type === 'Object' && length === 1)) {
           return false;
         }
       }
       return true;
     };
-
     const currentQuoteParamId = ref(null);
     // 引入方式
     const currentQuoteType = ref(1);

@@ -112,7 +112,9 @@ export default defineComponent({
           ElMessage.error('请至少选择一项');
           return;
         }
-        return data;
+        return {
+          ...data,
+        };
       }
 
       const nodes = treeRef.value?.getCheckedNodes(false, false);
