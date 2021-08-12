@@ -166,39 +166,7 @@ import { ElMessageBox } from 'element-plus';
 import { debounce } from 'lodash';
 import PackagedPagination from '@/components/pagination/Index.vue';
 import { getShowBool } from '@/utils/permission-show-module';
-
-interface TreeDataSourceType {
-  label: string;
-  [attr: string]: any;
-}
-
-interface TreeDataType {
-  loading: boolean;
-  treeDataSource: Array<TreeDataSourceType>;
-  isSel: boolean;
-  currentNodeData: any;
-  currentNodeUsers: any;
-  [attr: string]: any;
-}
-
-interface TableDataType {
-  total: number;
-  searchProps: {
-    page: number;
-    pageSize: number;
-    keyword: string;
-  };
-  tableDataSource: any;
-}
-// 账户状态
-enum UserStatus {
-  禁用 = -1,
-  启用 = 0,
-}
-// 状态码
-enum ResCode {
-  Success,
-}
+import { TreeDataType, TableDataType, ResCode, UserStatus } from './depart';
 const treeProps = {
   label: 'name',
   children: 'children',
