@@ -32,7 +32,7 @@ export const parseServiceInfo = (data: any, apiList: any[]): ServiceInfo => ({
   classification: data.baseInfo.classification,
   tags: data.baseInfo.tag,
   tenantId: '',
-  apiList: [apiList || [], ...SYSTEM_APIS],
+  apiList: [...(apiList || []), ...SYSTEM_APIS],
   models: data.models,
 });
 
@@ -51,6 +51,9 @@ export const parseRepositoryInfo = (data: any): ServiceInfo => ({
   classification: data.snapshotInfo.classification,
   tags: data.snapshotInfo.tag,
   tenantId: data.tenantId,
-  apiList: JSON.parse(data.snapshotInfo.config || '{}').serviceApis?.map((item: any) => item) || [],
+  apiList: [
+    ...(JSON.parse(data.snapshotInfo.config || '{}').serviceApis?.map((item: any) => item) || []),
+    ...SYSTEM_APIS,
+  ],
   models: JSON.parse(data.snapshotInfo.config || '{}').modelInfos?.map((item: any) => item) || [],
 });
