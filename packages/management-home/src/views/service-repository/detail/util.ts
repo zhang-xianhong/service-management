@@ -51,6 +51,9 @@ export const parseRepositoryInfo = (data: any): ServiceInfo => ({
   classification: data.snapshotInfo.classification,
   tags: data.snapshotInfo.tag,
   tenantId: data.tenantId,
-  apiList: JSON.parse(data.snapshotInfo.config || '{}').serviceApis?.map((item: any) => item) || [],
+  apiList: [
+    ...(JSON.parse(data.snapshotInfo.config || '{}').serviceApis?.map((item: any) => item) || []),
+    ...SYSTEM_APIS,
+  ],
   models: JSON.parse(data.snapshotInfo.config || '{}').modelInfos?.map((item: any) => item) || [],
 });
