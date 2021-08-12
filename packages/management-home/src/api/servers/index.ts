@@ -185,6 +185,17 @@ export const getApiParams = (payload: any) =>
 export const startCheck: (serviceId: any) => Promise<SuccessResponse<any>> = (serviceId: any) =>
   request.get(getUrl(URL.service.GET_START_CHECK), { params: { serviceId } });
 
+// 获取服务debug url
+export const getServiceAPiDebugUrl = (payload: any) =>
+  request.get('/service/debug', {
+    params: payload,
+  });
+
+// apiProxy(SERVER_TYPES.ACCOUNT, service.GET_SERVICE_DEBUG_URL, {
+//   method: 'GET',
+//   params: payload,
+// });
+
 /**
  * 获取服务最新版本
  */

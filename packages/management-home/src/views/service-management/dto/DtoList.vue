@@ -39,7 +39,7 @@
         </el-table>
       </list-wrap>
     </div>
-    <div class="drawer-content__btns">
+    <div class="drawer-content__btns" v-if="showCloseBtn">
       <el-button @click="handleClose">关闭</el-button>
     </div>
 
@@ -71,6 +71,10 @@ export default defineComponent({
   },
   props: {
     selectable: {
+      type: Boolean,
+      default: false,
+    },
+    showCloseBtn: {
       type: Boolean,
       default: false,
     },

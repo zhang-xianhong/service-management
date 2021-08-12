@@ -97,9 +97,8 @@ export default defineComponent({
         .then(() => ctx.emit('reload-projects'));
     };
     const changePic = () => {
-      const ownerArr = props.dataObj.owners.map((x: any) => x.userId);
-      const includes = userInfo.value.admin || ownerArr.includes(userInfo.value.userId);
-      if (props.updateOrNot && includes) {
+      const hasAuth = getShowBool('update');
+      if (props.updateOrNot && hasAuth) {
         selectPic.value.click();
       } else {
         ElMessage.warning('暂无更新权限');

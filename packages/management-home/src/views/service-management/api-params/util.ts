@@ -386,7 +386,7 @@ export const responseToParams = (data: any[]) => {
         example: item.example,
         required: item.required,
         children: [],
-        config: JSON.parse(item.config) || {},
+        config: JSON.parse(item.config || '{}') || {},
         importType: item.importType,
         readonly: item.importType === 1,
         dtoName: item.dtoName,
@@ -421,7 +421,7 @@ export const parseList = (items: any) =>
       example: item.example,
       required: item.required,
       children: [],
-      config: JSON.parse(item.config) || {},
+      config: JSON.parse(item.config || '{}') || {},
     };
     if (item.dtoId) {
       newItem.dtoId = item.dtoId;
