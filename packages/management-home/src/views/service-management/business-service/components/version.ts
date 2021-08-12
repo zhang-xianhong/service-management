@@ -40,7 +40,7 @@ export class SemVer implements SemVerStruct {
     this.raw = version;
   }
 
-  get version(): `${number}.${number}.${number}` {
+  get version(): any {
     return `${this.major}.${this.minor}.${this.patch}`;
   }
 
