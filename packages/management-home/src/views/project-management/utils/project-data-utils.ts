@@ -16,6 +16,8 @@ export const pageInfo = reactive({
 } as any);
 export const codeTemplateList = ref([] as any);
 
+export const projectAuth = ref([] as any);
+
 export const getProjectListData = () =>
   getProjectList(pageInfo).then((res) => {
     const ownersMap = {} as any;
@@ -93,4 +95,19 @@ export const getTreeArr = (obj: any): any => {
     });
   }
   return treeArray;
+};
+
+export const getAuthModules = (data: any) => {
+  const { modules = [] } = data;
+  const projectOpt = [];
+  for (const module of modules) {
+    if (module.code) {
+      projectOpt.push(...module.code.split('-'))
+    }
+  }
+  return [...new Set(projectOpt)];
+};
+
+export const getShowBool = (id: string | number) => {
+    return projectAuth.value.includes(id);
 };
