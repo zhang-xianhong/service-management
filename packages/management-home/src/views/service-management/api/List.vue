@@ -139,6 +139,7 @@ import { genId } from '@/utils/util';
 import { useRouter } from 'vue-router';
 import { getShowBool } from '@/utils/permission-show-module';
 import { userCurrentProject, userInfo } from '@/layout/messageCenter/user-info';
+import { alloverEdit } from '@/layout/messageCenter/routerRef';
 export default defineComponent({
   props: {
     id: {
@@ -199,6 +200,7 @@ export default defineComponent({
       });
       editId.value = $id;
       isEditStats.value = true;
+      alloverEdit.value = true;
     };
 
     // 清除错误
@@ -375,10 +377,12 @@ export default defineComponent({
         }).then(async () => {
           handleCancel();
           isEditStats.value = false;
+          alloverEdit.value = false;
         });
       } else {
         handleCancel();
         isEditStats.value = false;
+        alloverEdit.value = false;
         emit('back');
       }
     };

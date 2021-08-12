@@ -90,6 +90,7 @@ import { getShowBool } from '@/utils/permission-show-module';
 import _ from 'lodash/fp';
 import { isRefrence } from '../utils/permisson';
 import { ElMessage, ElMessageBox } from 'element-plus';
+import { alloverEdit } from '@/layout/messageCenter/routerRef';
 
 export default defineComponent({
   name: 'ColumnForm',
@@ -213,7 +214,10 @@ export default defineComponent({
     };
 
     const isReadonly = computed(() => !isInEdit.value);
-    const toggleIsInEdit = (value: boolean) => (isInEdit.value = value);
+    const toggleIsInEdit = (value: boolean) => {
+      isInEdit.value = value;
+      alloverEdit.value = value;
+    };
     const beforeClose = () => {
       isInEdit.value = false;
       fields.value = fields.value.filter((item) => item.id);

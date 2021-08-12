@@ -7,7 +7,7 @@ function resolve(dir) {
 }
 
 module.exports = {
-  // lintOnSave: false,
+  lintOnSave: false,
   css: {
     loaderOptions: {
       sass: {

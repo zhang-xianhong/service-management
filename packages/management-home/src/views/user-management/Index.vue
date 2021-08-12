@@ -153,6 +153,7 @@ export default defineComponent({
     const formRef = ref(null as any);
     const sendPass = () => {
       let viva = true;
+      console.log(formRef.value);
       formRef.value.validate((res: any) => {
         viva = res;
       });
@@ -177,10 +178,12 @@ export default defineComponent({
     // 初始密码校验
     const validatePass = (rule: any, value: string, callback: Function) => {
       if (value !== '') {
-        if (value === userSetInfo.value.displayName) {
+        if (value === userSetInfo?.userName) {
           callback(new Error('密码不能与用户名相同'));
+        } else {
+          callback();
+          formRef.value.validateField('confirmPassword');
         }
-        formRef.value.validateField('confirmPassword');
       }
       callback();
     };
@@ -189,20 +192,23 @@ export default defineComponent({
     const checkPasswordValidator = (rule: any, value: string, callback: Function) => {
       if (value === '') {
         callback(new Error('请再次输入密码'));
-      } else {
-        if (value !== passForm.newPassword) {
-          callback(new Error('两次输入密码不一致'));
-        }
-        callback();
       }
+      if (value !== passForm.newPassword) {
+        callback(new Error('两次输入密码不一致'));
+      }
+      callback();
     };
 
     const formRules = {
       oldPassword: [
         { required: true, message: '请输入原密码' },
         // TODO:原密码不应该加校验
-        // { min: 8, max: 16, message: '密码长度在8到16位', trigger: 'blur' },
-        // { pattern: /^[a-zA-Z0-9_]+$/g, message: '包含非法字符，只能输入大小写字母、数字、下划线', trigger: 'blur' },
+        { min: 8, max: 16, message: '密码长度在8到16位', trigger: 'blur' },
+        {
+          pattern: /^(?=.*[a-z])(?=.*[A-Z])[A-Za-z\d（!@#$%^&)]{8,16}/,
+          message: '只能输入大小写字母、数字、下划线，且必须包含大、小写字母',
+          trigger: 'blur',
+        },
       ],
       newPassword: [
         { required: true, message: '请输入新密码' },

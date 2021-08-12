@@ -101,6 +101,7 @@ import { ElMessage } from 'element-plus';
 import { getShowBool } from '@/utils/permission-show-module';
 import { getServiceShowName } from '../../components/utils';
 import { isRefrence } from '../utils/permisson';
+import { alloverEdit } from '@/layout/messageCenter/routerRef';
 
 export default {
   name: 'ServerBaseInfo',
@@ -213,6 +214,7 @@ export default {
     // 修改表单数据
     const modifyFormData = () => {
       isShowMode.value = false;
+      alloverEdit.value = true;
     };
 
     // 保存表单修改
@@ -235,6 +237,7 @@ export default {
       const { code } = await updateService(String(props.id), data);
       if (code === 0) {
         isShowMode.value = true;
+        alloverEdit.value = false;
         useTags(formData.tag, props.tags);
         useClassifications(formData.classification, props.classifications);
         ctx.emit('changeSource');

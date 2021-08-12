@@ -1,5 +1,14 @@
 <template>
+<<<<<<< HEAD
   <div class="erd-container-wrapper" :style="{ width, height }" v-on="handlers" :class="{'erd-container_noClick': !getShowBool('moduleSelect')}">
+=======
+  <div
+    class="erd-container-wrapper"
+    :style="{ width, height }"
+    v-on="handlers"
+    :class="{ 'erd-container_noClick': !getShowBool('moduleSelect') }"
+  >
+>>>>>>> develop
     <div :style="`width: ${viewWidth}px; height: ${viewHeight}px; position: relative;`">
       <add-model v-if="getShowBool('moduleUpdate') && !isRefrenceService"></add-model>
       <erd-relation></erd-relation>
@@ -305,7 +314,11 @@ export default defineComponent({
   position: relative;
   overflow: auto;
 }
+<<<<<<< HEAD
 .erd-container_noClick{
+=======
+.erd-container_noClick {
+>>>>>>> develop
   pointer-events: none;
 }
 </style>

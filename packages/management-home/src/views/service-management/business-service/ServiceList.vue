@@ -363,7 +363,6 @@ export default defineComponent({
         rememberMutiArray.value = [];
         tableLoading.value = false;
       });
-      console.log('serviceTableList.list', serviceTableList.list);
     };
 
     let intervalId: any = null;

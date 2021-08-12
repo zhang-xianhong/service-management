@@ -5,7 +5,7 @@ import 'nprogress/nprogress.css';
 
 // import { getToken } from '@/utils/todoToken';
 
-import { routerLoading } from '@/layout/messageCenter/routerRef';
+import { currentids, routerLoading } from '@/layout/messageCenter/routerRef';
 
 NProgress.configure({ showSpinner: false });
 
@@ -44,6 +44,7 @@ router.beforeEach(async (to, from, next) => {
   if (to.matched.length >= 1 || whiteList.includes(to.path)) {
     next();
     localStorage.setItem('currentPathId', to.meta.id as any);
+    currentids.value = Number(to.meta.id || 0);
   } else {
     const { matched } = usefulRoutes.resolve(to);
     if (matched.length >= 1) {
