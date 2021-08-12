@@ -427,6 +427,7 @@ export default defineComponent({
         return true;
       }
       const define = paramsDefine.value[row.$id];
+      if (define.isReadonlyImport) return false; // fix #90774013
       if (define.parent) {
         const { type, length, isReadonlyImport } = define.parent;
         if (isReadonlyImport || type === 'Array' || (type === 'Object' && length === 1)) {
