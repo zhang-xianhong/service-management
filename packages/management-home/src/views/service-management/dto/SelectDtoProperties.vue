@@ -116,13 +116,13 @@ export default defineComponent({
           ...data,
         };
       }
+      const nodes = treeRef.value?.getCheckedNodes(false, true); // 包含半选的节点
 
-      const nodes = treeRef.value?.getCheckedNodes(false, false);
-      const rootNodes = nodes?.filter((e) => e.rootId === '0');
+      const rootNodes = nodes?.filter((e) => e.rootId === null); // 根节点
 
-      const properties = nodes?.filter((e) => e.rootId !== '0'); // nodes 含有父节点的数据，这里只需要父级节点下面所有的子节点的数据
+      const properties = nodes?.filter((e) => e.rootId === undefined); // 所有子节点
       if (rootNodes?.length === 1) {
-        // 只有一个根节点，将属性合并至rootnode
+        // 只有一个根节点
         const dto = dtoList.value?.find((e) => e.uniqueId === rootNodes[0].uniqueId);
         if (dto) {
           return {
