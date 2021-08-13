@@ -414,7 +414,7 @@ export default defineComponent({
         return;
       }
 
-      if (senddata.name.length > 32) {
+      if (senddata.name.length > 28) {
         return;
       }
 

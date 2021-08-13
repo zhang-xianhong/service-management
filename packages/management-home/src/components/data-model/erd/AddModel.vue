@@ -54,7 +54,7 @@ export default defineComponent({
       if (
         !form.value.name ||
         !form.value.description ||
-        form.value.name?.length > 36 ||
+        form.value.name?.length > 23 ||
         form.value.description?.length > 255
       ) {
         return false;
