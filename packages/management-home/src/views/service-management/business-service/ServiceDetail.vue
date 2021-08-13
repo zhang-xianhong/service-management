@@ -433,8 +433,6 @@ export default {
     // 打开基本信息
     const openBaseInfo = () => {
       if (componentName.value === 'ServerBaseInfo') {
-        modelInfo.value = null;
-        // isShowDownDrawer.value = false;
         componentName.value = '';
       } else {
         componentName.value = 'ServerBaseInfo';
@@ -830,5 +828,8 @@ export default {
   ::v-deep .sa-drawer__resizebar {
     background-color: #f2f2f2;
   }
+}
+.detail-icons {
+  user-select: none;
 }
 </style>
