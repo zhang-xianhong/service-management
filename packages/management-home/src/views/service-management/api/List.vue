@@ -166,7 +166,6 @@ export default defineComponent({
     const inputRefs = ref({});
     const formError = ref('');
     const hasCancelBtn = ref(true);
-    const debugUrl = ref('');
     const getDebugUrlLoading = ref(false);
 
     const fetchList = async () => {
@@ -398,13 +397,12 @@ export default defineComponent({
           projectId: userCurrentProject.value.id,
         });
         if (code === 0) {
-          debugUrl.value = '/swagger-ui';
+          window.open('/swagger-ui', {
+            name: 'serviceDebug',
+          });
         }
       } catch (e) {}
       getDebugUrlLoading.value = false;
-      window.open(debugUrl.value, {
-        name: 'serviceDebug',
-      });
     };
 
     return {

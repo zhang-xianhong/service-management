@@ -113,7 +113,7 @@ export default defineComponent({
     const form = reactive({
       projectId: '',
       platformShareType: 2,
-      rename: 1,
+      rename: 0,
       serviceName: '',
       serviceNameZh: '',
     });
@@ -156,7 +156,7 @@ export default defineComponent({
           repositoryId: sourceData.value.id,
         };
         // 需要重命名
-        if (form.platformShareType && form.rename === 1) {
+        if (form.platformShareType === 2 && form.rename === 1) {
           // eslint-disable-next-line @typescript-eslint/no-use-before-define
           postData.serviceName = newServiceFullName.value;
           postData.serviceNameZh = form.serviceNameZh;
