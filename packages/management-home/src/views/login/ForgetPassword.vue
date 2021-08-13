@@ -100,7 +100,8 @@ export default defineComponent({
 <style scoped lang="scss">
 .password {
   background: #fff;
-  height: 900px;
+  height: 100%;
+  overflow: scroll;
   &-header {
     height: 70px;
     border-bottom: 1px solid #e6e6e6;
@@ -120,7 +121,7 @@ export default defineComponent({
     height: calc(100% - 70px);
     width: 560px;
     margin: auto;
-    margin-top: 150px;
+    padding-top: 10%;
   }
 }
 .complete-container {
