@@ -12,13 +12,10 @@
         <el-input v-model="emailInfo.email" placeholder="请输入账号验证邮箱"></el-input>
       </el-form-item>
       <el-form-item prop="captcha">
-        <el-input v-model="emailInfo.captcha" placeholder="请输入验证码">
-          <template #suffix
-            ><div class="email-captcha" :class="{ 'email-captcha__toash': isToash }" @click="sendVerifyCode">
-              {{ isToash ? reSend : '发送验证码' }}
-            </div></template
-          >
-        </el-input>
+        <el-input v-model="emailInfo.captcha" placeholder="请输入验证码" class="email-input"> </el-input>
+        <div class="email-captcha" :class="{ 'email-captcha__toash': isToash }" @click="sendVerifyCode">
+          {{ isToash ? reSend : '发送验证码' }}
+        </div>
       </el-form-item>
       <el-form-item>
         <el-button class="email-btn" type="primary" @click="submit">确定</el-button>
@@ -218,13 +215,21 @@ export default defineComponent({
       }
     }
   }
+  &-input {
+    width: 388px;
+    position: relative;
+  }
   &-captcha {
     color: #006eff;
     width: 172px;
     height: 48px;
-    margin-right: -5px;
+    display: inline-block;
+    position: absolute;
+    right: 0;
     line-height: 48px;
-    border-left: 1px solid #dcdfe6;
+    border: 1px solid #dcdfe6;
+    border-left: none;
+    text-align: center;
     cursor: pointer;
     &__toash {
       color: #aaa;
