@@ -11,7 +11,7 @@
         </el-table-column>
         <el-table-column prop="modelId" label="数据模型">
           <template #default="scope">
-            {{ getModelName(scope.row.modelId) }}
+            {{ scope.row.isSystem ? '通用' : getModelName(scope.row.modelId) }}
           </template>
         </el-table-column>
         <el-table-column prop="url" label="URL"> </el-table-column>

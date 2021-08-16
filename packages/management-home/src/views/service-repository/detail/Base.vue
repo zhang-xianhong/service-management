@@ -7,7 +7,7 @@
             <span style="color: #606266">{{ col.label }}</span></el-col
           >
           <el-col :span="18" :offset="1">
-            <service-name :name="info.serviceName" v-if="col.key === 'serviceName'" />
+            <service-name :name="info.name" v-if="col.key === 'name'" />
             <template v-else>{{ col.render() }} </template>
           </el-col>
         </el-row>

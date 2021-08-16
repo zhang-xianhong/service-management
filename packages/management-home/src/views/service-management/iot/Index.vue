@@ -6,7 +6,7 @@
 </template>
 <script>
 import { defineComponent } from 'vue';
-import icon from '@/assets/img/develop.svg';
+import icon from '@/assets/img/whitelist.svg';
 export default defineComponent({
   setup() {
     return {
@@ -26,8 +26,7 @@ export default defineComponent({
   img {
     width: 100%;
     height: 100%;
-    max-width: 522px;
-    max-height: 300px;
+    max-width: 320px;
   }
 
   h3 {
