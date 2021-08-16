@@ -38,7 +38,7 @@
           v-model="companyInfo.tenantEngAbbr"
           style="width: 400px"
           placeholder="请输入企业英文简称"
-          maxlength="16"
+          maxlength="32"
           @blur="validateEngAbbrName"
         ></el-input>
       </el-form-item>
@@ -287,8 +287,8 @@ export default defineComponent({
         { required: true, message: '请输入企业英文简称', trigger: 'blur' },
         {
           min: 6,
-          max: 16,
-          message: '企业英文简称长度在6到16个字符之间',
+          max: 32,
+          message: '企业英文简称长度在6到32个字符之间',
           trigger: 'blur',
         },
         {
