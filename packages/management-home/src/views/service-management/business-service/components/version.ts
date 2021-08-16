@@ -9,13 +9,13 @@ export const enum Relation {
   Greater = 1,
   Less = -1,
 }
-export type SemVerNumer = {
+export type SemVerNumber = {
   readonly [key in ReleaseType]: number;
 };
 export type Mutable<T> = {
   -readonly [P in keyof T]: T[P];
 };
-export type SemVerStruct = SemVerNumer & {
+export type SemVerStruct = SemVerNumber & {
   readonly raw: string;
   readonly version: `${number}.${number}.${number}`;
   compare: (version: string) => Relation;

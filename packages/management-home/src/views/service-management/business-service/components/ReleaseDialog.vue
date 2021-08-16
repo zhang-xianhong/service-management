@@ -71,7 +71,7 @@ import CodeEditor from '@/components/sql-editor/Index.vue';
 import VersionInput from './VersionInput.vue';
 import { compare, diff, parse, Relation, valid } from './version';
 
-import { useServiceVerion } from './release';
+import { useServiceVersion } from './release';
 // 状态码
 enum ResCode {
   Success,
@@ -270,7 +270,7 @@ export default defineComponent({
       serviceId = id;
       getConfigList(serviceId);
       getUpgradeScript(serviceId);
-      useServiceVerion(serviceId, lastVersion);
+      useServiceVersion(serviceId, lastVersion);
     };
 
     // 初始化

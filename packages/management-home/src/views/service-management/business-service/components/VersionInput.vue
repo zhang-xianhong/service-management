@@ -34,8 +34,8 @@
 <script lang="ts">
 import { computed, defineComponent, PropType, reactive, watch, ref } from 'vue';
 import { parse, ReleaseType } from './version';
-import { DEFAULT_VESION } from './release';
-import { useForceUpdare } from './useVerionInput';
+import { DEFAULT_VERSION } from './release';
+import { useForceUpdate } from './useVerionInput';
 export default defineComponent({
   name: 'VersionInput',
   props: {
@@ -61,7 +61,7 @@ export default defineComponent({
     );
     const init = () => {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const semVer = parse(props.lastVersion) ?? parse(DEFAULT_VESION)!;
+      const semVer = parse(props.lastVersion) ?? parse(DEFAULT_VERSION)!;
       if (props.lastVersion) {
         semVer.inc('patch');
       }
@@ -104,7 +104,7 @@ export default defineComponent({
     return {
       localValue,
       handleInput,
-      ...useForceUpdare(),
+      ...useForceUpdate(),
     };
   },
 });
