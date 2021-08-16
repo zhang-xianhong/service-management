@@ -302,18 +302,9 @@ const routes: Array<RouteRecordRaw> = [
           activeMenu: '/service-management/service-list',
           showBackButton: true,
           id: 7,
+          checkPath: 'active',
         },
       },
-      // {
-      //   path: 'other-service',
-      //   component: () => import('@/views/service-management/other-service/Index.vue'),
-      //   name: 'OtherService',
-      //   meta: {
-      //     title: '其他服务',
-      //     icon: 'el-icon-eleme',
-      //     isRootLevel: false,
-      //   },
-      // },
     ],
   },
   {

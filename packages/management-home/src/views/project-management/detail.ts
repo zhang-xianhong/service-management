@@ -22,7 +22,7 @@ import { getUserInfo } from '@/api/auth';
 interface PropType {
   id: string;
 }
-export default function (props: PropType) {
+export default function(props: PropType) {
   const treeSelectorRef: any = ref(null);
   const editMode = ref(false);
   const selectedUser: Ref<Array<any>> = ref([]);

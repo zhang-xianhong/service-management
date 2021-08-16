@@ -102,12 +102,10 @@ export const getAuthModules = (data: any) => {
   const projectOpt = [];
   for (const module of modules) {
     if (module.code) {
-      projectOpt.push(...module.code.split('-'))
+      projectOpt.push(...module.code.split('-'));
     }
   }
   return [...new Set(projectOpt)];
 };
 
-export const getShowBool = (id: string | number) => {
-    return projectAuth.value.includes(id);
-};
+export const getShowBool = (id: string | number) => projectAuth.value.includes(id);

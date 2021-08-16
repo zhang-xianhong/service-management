@@ -47,7 +47,6 @@ import { computed, defineComponent, getCurrentInstance, ref } from 'vue';
 import { imgUpload, updateProject } from '@/api/project/project';
 import Message from 'element-plus/es/el-message';
 import { ElMessage } from 'element-plus';
-import { userInfo } from '@/layout/messageCenter/user-info';
 import { getShowBool } from '@/utils/permission-show-module';
 
 export default defineComponent({
