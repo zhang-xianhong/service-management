@@ -141,13 +141,20 @@ export default defineComponent({
       // 过滤空和非法字符
       const res = fields.value.find((item: any) => {
         const { description, name, typeId } = item;
-        return !(description && name && typeId && /^([a-z]|[a-z]+[A-Z][a-z]+)+$/.test(name));
+        return !(
+          description &&
+          name.length > 0 &&
+          name.length <= 16 &&
+          typeId &&
+          /^([a-z]|[a-z]+[A-Z][a-z]+)+$/.test(name)
+        );
       });
+      console.log('res', res);
       if (res) {
         let msg = '';
         const { description, name } = res;
-        if (!name) {
-          msg = '属性名不能为空！';
+        if (name.length < 0 || name.length > 16) {
+          msg = '属性名不能为空且长度不大于16个字符！';
         } else if (!/^([a-z]|[a-z]+[A-Z][a-z]+)+$/.test(name)) {
           msg = '属性名称填写错误，必须是小驼峰格式';
         } else if (!description) {

@@ -1,5 +1,5 @@
 <template>
-  <el-dialog v-model="dialogVisible" width="800px">
+  <el-dialog v-model="dialogVisible" width="800px" :destroy-on-close="true">
     <el-row>
       <el-col :span="10" :offset="1">
         <div class="title">加入成员</div>
@@ -267,6 +267,7 @@ export default {
       }
     };
     const cancel = () => {
+      searchStr.value = '';
       dialogVisible.value = false;
       context.emit('userChanged', props.role);
     };
