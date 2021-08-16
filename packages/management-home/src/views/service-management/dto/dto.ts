@@ -49,6 +49,7 @@ export interface DtoProperties {
   dtoId: number;
   propertyOrder: string;
   collectionType: CollectionType;
+  importType: number;
   children: DtoProperties[];
 }
 export type UpdateDtoProperties = Partial<DtoProperties>;
@@ -174,3 +175,15 @@ export const useDtoList = () => {
 };
 
 export const dtoUniqueId: InjectionKey<ComputedRef<string>> = Symbol('dtoid');
+
+export const findReadonlyProp: (properties: DtoProperties[]) => DtoProperties | null = (properties) => {
+  for (const item of properties) {
+    if (item.importType === 1) {
+      return item;
+    }
+    if (item.children) {
+      return findReadonlyProp(item.children);
+    }
+  }
+  return null;
+};

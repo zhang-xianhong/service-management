@@ -58,12 +58,13 @@
 
 <script lang="ts">
 import { ref } from '@vue/reactivity';
-import { DtoModel, useEditDtoDialog, EditMode, useDtoList, EMPTY_DTO, CreatDtoModel } from './dto';
+import { DtoModel, useEditDtoDialog, EditMode, useDtoList, EMPTY_DTO, CreatDtoModel, findReadonlyProp } from './dto';
 import { defineComponent, onBeforeMount } from '@vue/runtime-core';
 import EditDtoModel from './EditDtoModel.vue';
 import { useRoute } from 'vue-router';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { getShowBool } from '@/utils/permission-show-module';
+import { parseList } from '../api-params/util';
 export default defineComponent({
   name: 'DtoListDialog',
   components: {
@@ -150,7 +151,14 @@ export default defineComponent({
       editDtoModelRef.value?.dtoForm?.resetFields();
       confirmLoading.value = false;
     };
-    const removeDtoModel = (row: DtoModel) => {
+    const removeDtoModel = async (row: DtoModel) => {
+      // 是否包含引用的DTO
+
+      const properties = findReadonlyProp(parseList(row.list));
+      if (properties) {
+        ElMessage.warning('该DTO已被只读引入，请删除引入关系后再操作');
+        return;
+      }
       ElMessageBox.confirm(`确认删除DTO${row.name}`, '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',

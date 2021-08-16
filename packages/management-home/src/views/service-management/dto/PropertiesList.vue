@@ -21,7 +21,7 @@
       >
         <el-table-column prop="name" label="属性" class-name="col-inline is-required">
           <template #default="scope">
-            <span v-if="scope.row.readonly || scope.row.builtin">{{ scope.row.name }}</span>
+            <span v-if="nameIsReadonly(scope.row)">{{ scope.row.name }}</span>
             <el-input
               placeholder="请输入属性名称"
               v-model.trim="scope.row.name"
@@ -448,7 +448,11 @@ export default defineComponent({
       // eslint-disable-next-line no-unused-expressions
       dtoPropertiesDialog?.value.openDialog();
     };
-
+    // 名称是否只读
+    const nameIsReadonly = (row) => {
+      const define = paramsDefine.value[row.$id];
+      return !isEdit.value || row.readonly || (define.name === 'item' && define.parent?.type === 'Array');
+    };
     const paramsToSaveData = (params) => {
       const parse = (items) =>
         items.map((item) => {
@@ -560,6 +564,7 @@ export default defineComponent({
       canDel,
       handleOpenDto,
       handleDtoConfirm,
+      nameIsReadonly,
       currentQuoteType,
       getData,
       dtoId,
