@@ -37,7 +37,7 @@
       >
         <el-table-column prop="name" label="参数" class-name="col-inline is-required">
           <template #default="scope">
-            <span v-if="!isEdit || scope.row.readonly || scope.row.builtin">{{ scope.row.name }}</span>
+            <span v-if="nameIsReadonly(scope.row)">{{ scope.row.name }}</span>
             <el-input
               placeholder="请输入参数名称"
               v-model.trim="scope.row.name"
@@ -402,7 +402,6 @@ export default defineComponent({
           if (value === 'Array') {
             children.push(
               genParam({
-                builtin: true,
                 name: 'item',
               }),
             );
@@ -733,6 +732,12 @@ export default defineComponent({
       updateParamsDefine();
     };
 
+    // 名称是否只读
+    const nameIsReadonly = (row) => {
+      const define = paramsDefine.value[row.$id];
+      return !isEdit.value || row.readonly || (define.name === 'item' && define.parent?.type === 'Array');
+    };
+
     return {
       methodType,
       paramsMethod,
@@ -785,6 +790,7 @@ export default defineComponent({
       submitting,
       getShowBool,
       handleContentTypeChange,
+      nameIsReadonly,
     };
   },
 });
