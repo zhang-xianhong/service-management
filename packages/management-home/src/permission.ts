@@ -29,8 +29,11 @@ router.beforeEach(async (to, from, next) => {
   if (to.matched.length >= 1 || whiteList.includes(to.path)) {
     next();
     localStorage.setItem('currentPathId', to.meta.id as any);
+    // 屏蔽项目选择的页面id
     const arr = [3, 4, 10, 11, 12, 17, 18, 19, 20, 25, 26, 27, 28];
-    currentids.value = !arr.includes(Number(to?.meta?.id || 0));
+    setTimeout(() => {
+      currentids.value = !arr.includes(Number(to?.meta?.id || 0));
+    }, 100);
     console.log(currentids.value, 'this is currentPathId-show');
   } else {
     const { matched } = usefulRoutes.resolve(to);
