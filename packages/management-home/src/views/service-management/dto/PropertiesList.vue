@@ -451,7 +451,7 @@ export default defineComponent({
     // 名称是否只读
     const nameIsReadonly = (row) => {
       const define = paramsDefine.value[row.$id];
-      return !isEdit.value || row.readonly || (define.name === 'item' && define.parent?.type === 'Array');
+      return row.readonly || (define.name === 'item' && define.parent?.type === 'Array');
     };
     const paramsToSaveData = (params) => {
       const parse = (items) =>
