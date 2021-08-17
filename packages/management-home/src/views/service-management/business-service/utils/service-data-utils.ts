@@ -6,6 +6,7 @@ import { getClassificationList } from '@/api/settings/classification';
 import { statusMap } from '@/views/service-management/business-service/utils/service-status-map';
 import { getServiceShowName } from '../../components/utils';
 import { SERVICE_SOURCE_NAME } from './permisson';
+import { getShowBool } from '@/utils/permission-show-module';
 
 export const serviceTableList = reactive({
   list: [],
@@ -25,6 +26,12 @@ export const ownersMap = ref({} as any);
 
 const getServiceSourceName = (code: number) => SERVICE_SOURCE_NAME[code];
 export function refreshServiceList(payload = {} as any) {
+  const hasAuth = getShowBool('select');
+  if (!hasAuth) {
+    return new Promise((resolve) => {
+      resolve({});
+    });
+  }
   let data = {} as any;
   if (payload) {
     data = { ...payload };

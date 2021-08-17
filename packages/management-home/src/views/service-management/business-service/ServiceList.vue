@@ -631,7 +631,7 @@ export default defineComponent({
       clearInterval(intervalId);
       // clearInterval(intervalStatus);
       // intervalStatus = null;
-      blackHoverclick();
+      // blackHoverclick();
     });
 
     const nodeChange = (nodes: any) => {

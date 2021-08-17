@@ -1,6 +1,7 @@
 <template>
   <div class="sa-list-wrap" :style="{ backgroundColor: backgroundColor }">
-    <div class="sa-list-wrap__empty" v-if="isEmptyProject">暂无项目，请联系管理员添加项目</div>
+    <div class="sa-list-wrap__empty" v-if="!getShowBool('select')">暂无数据权限，请联系管理员添加</div>
+    <div class="sa-list-wrap__empty" v-else-if="isEmptyProject">暂无项目，请联系管理员添加项目</div>
     <div class="sa-list-wrap__content" v-else v-loading="loading" element-loading-text="加载中...">
       <div class="sa-list-wrap__main">
         <slot />
@@ -18,6 +19,7 @@
 import { defineComponent, computed } from 'vue';
 import { userProjectList } from '@/layout/messageCenter/user-info';
 import _ from 'lodash';
+import { getShowBool } from '@/utils/permission-show-module';
 export default defineComponent({
   name: 'ListWrap',
   props: {
@@ -52,6 +54,7 @@ export default defineComponent({
     return {
       userProjectList,
       isEmptyProject,
+      getShowBool,
     };
   },
 });

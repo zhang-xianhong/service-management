@@ -101,7 +101,7 @@ import PackagedPagination from '@/components/pagination/Index.vue';
 import { IMAGE_UPLOAD } from '@/shared/constant/file';
 import { getApps, createApp } from '@/api/app';
 import { SuccessResponse } from '@/types/response';
-import { allService, getAllService } from '../service-management/business-service/utils/service-data-utils';
+import { allService, getAllService } from './utils/app-data-utils';
 import { debounce } from 'lodash/fp';
 import { userProjectList } from '@/layout/messageCenter/user-info';
 import { getShowBool } from '@/utils/permission-show-module';
