@@ -105,8 +105,10 @@
 <script lang="ts">
 /* eslint-disable no-param-reassign */
 import _ from 'lodash/fp';
-import { computed, inject, ref, Ref, watchEffect, nextTick } from 'vue';
+import { computed, inject, ref, Ref, watchEffect, nextTick, getCurrentInstance } from 'vue';
 import { updateRoleMembers } from '@/api/project/project';
+import { PL_ROLE_ID, MAX_USER_COUNT } from '../utils/constant';
+
 export default {
   name: 'TreeSelector',
   props: {
@@ -255,11 +257,26 @@ export default {
         checkSingle(user);
       }
     };
+    // 获取组件实例
+    const instance = getCurrentInstance();
+    // 提示信息
+    function msgTips(type: string, content: string) {
+      (instance as any).proxy.$message({
+        type,
+        message: content,
+      });
+    }
     const submit = async () => {
+      const roleId = props.role.id;
+      const userIds = _.map('id')(selectedUser.value.concat(props.checked));
+      if (roleId === PL_ROLE_ID && userIds.length > MAX_USER_COUNT) {
+        msgTips('warning', '最多只能添加10个项目负责人');
+        return;
+      }
       const { code } = await updateRoleMembers({
         projectId,
-        roleId: props.role.id,
-        userIds: _.map('id')(selectedUser.value.concat(props.checked)),
+        roleId,
+        userIds,
       });
       if (code === 0) {
         dialogVisible.value = false;
