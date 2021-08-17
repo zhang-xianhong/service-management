@@ -168,7 +168,7 @@ export default defineComponent({
     });
 
     const showProjectSelect = computed(() => {
-      const arr = [4, 10, 17, 18, 19, 20, 25, 26, 27, 28];
+      const arr = [3, 4, 10, 11, 12, 17, 18, 19, 20, 25, 26, 27, 28];
       return !arr.includes(currentids.value);
     });
     return {
