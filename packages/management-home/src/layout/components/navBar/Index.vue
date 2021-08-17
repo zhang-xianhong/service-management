@@ -28,7 +28,7 @@
           </el-dropdown-menu>
         </template>
       </el-dropdown>
-      <template v-if="showProjectSelect">
+      <template v-if="currentids">
         <span class="el-dropdown-link" v-if="!userCurrentProject.name" style="font-size: 14px; margin-right: 10px">
           <i class="el-icon-s-unfold header-title-object-icon3"></i> 暂无项目
         </span>
@@ -80,7 +80,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, onBeforeUnmount, reactive, ref } from 'vue';
+import { defineComponent, onBeforeUnmount, reactive, ref } from 'vue';
 // import breadCurmb from '@/components/bread-curmb/Index.vue';
 import { userCurrentProject, userProjectList, userInfo } from '@/layout/messageCenter/user-info';
 import { postCurrentProject, logout } from '@/api/auth';
@@ -166,11 +166,6 @@ export default defineComponent({
         intervalLogout = null;
       }
     });
-
-    const showProjectSelect = computed(() => {
-      const arr = [3, 4, 10, 11, 12, 17, 18, 19, 20, 25, 26, 27, 28];
-      return !arr.includes(currentids.value);
-    });
     return {
       projectList,
       userCurrentProject,
@@ -182,7 +177,7 @@ export default defineComponent({
       toAboutInfo,
       dialogVisible,
       handleClose,
-      showProjectSelect,
+      currentids,
     };
   },
 });

@@ -18,21 +18,6 @@ router.beforeEach(async (to, from, next) => {
   // const hasToken = getToken();
   const usefulRoutes = alloverRouter();
 
-  // if (!hasToken) {
-  //   if (to.path === '/logins') {
-  //     next();
-  //     NProgress.done();
-  //   } else {
-  //   }
-  // } else {
-  //   if (whiteList.indexOf(to.path) !== -1) {
-  //     next();
-  //   } else {
-  //     next(`/login?redirect=${to.path}`);
-  //     NProgress.done();
-  //   }
-  // }
-
   if (whiteList.indexOf(to.path) !== -1) {
     next();
   } else {
@@ -44,7 +29,9 @@ router.beforeEach(async (to, from, next) => {
   if (to.matched.length >= 1 || whiteList.includes(to.path)) {
     next();
     localStorage.setItem('currentPathId', to.meta.id as any);
-    currentids.value = Number(to.meta.id || 0);
+    const arr = [3, 4, 10, 11, 12, 17, 18, 19, 20, 25, 26, 27, 28];
+    currentids.value = !arr.includes(Number(to?.meta?.id || 0));
+    console.log(currentids.value, 'this is currentPathId-show');
   } else {
     const { matched } = usefulRoutes.resolve(to);
     if (matched.length >= 1) {

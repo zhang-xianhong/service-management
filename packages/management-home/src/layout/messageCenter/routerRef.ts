@@ -74,10 +74,11 @@ export const getPermissionRoutes = function(config = getComputedRoutes() as any)
       route.push(obj);
     }
   });
-  // route[0].redirect = route[1] ? route[1].path : '/no-right';
   return route;
 };
 
-export const currentids = ref(0);
+export const currentids = ref(false);
 
-export const alloverEdit = ref(false);
+// eslint-disable-next-line
+// @ts-ignore
+export const alloverEdit = ref(false) as any;
