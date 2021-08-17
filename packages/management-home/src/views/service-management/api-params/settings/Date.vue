@@ -5,7 +5,7 @@
         <el-form-item label="类型选择" prop="type">
           <template v-if="isEdit">
             <el-radio name="set-date-type" v-model="form.type" :label="1">时间戳格式</el-radio>
-            <el-radio name="set-date-type" v-model="form.type" :label="2">时间格式</el-radio>
+            <!-- <el-radio name="set-date-type" v-model="form.type" :label="2">时间格式</el-radio> -->
           </template>
           <span v-else>{{ form.type === 1 ? '时间戳格式' : '时间格式' }}</span>
         </el-form-item>
@@ -82,7 +82,10 @@ export default defineComponent({
     });
     return {
       formRules,
-      form,
+      form: reactive({
+        ...form,
+        type: 1,
+      }),
       ...baseApi,
       handleSubmit: () => {
         handleSubmit(emit);

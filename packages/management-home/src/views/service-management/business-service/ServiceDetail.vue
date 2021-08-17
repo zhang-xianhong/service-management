@@ -125,7 +125,7 @@
         <sa-drawer
           class="detail-drawer"
           v-model="isShowDownDrawer"
-          :z-index="1000"
+          :z-index="10"
           :size="460"
           :backdrop="drawerReadonlyAuth ? true : false"
           min-size="30%"
