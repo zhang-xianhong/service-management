@@ -22,7 +22,7 @@ import { getUserInfo } from '@/api/auth';
 interface PropType {
   id: string;
 }
-export default function(props: PropType) {
+export default function (props: PropType) {
   const treeSelectorRef: any = ref(null);
   const editMode = ref(false);
   const selectedUser: Ref<Array<any>> = ref([]);
@@ -95,7 +95,7 @@ export default function(props: PropType) {
   ];
   const userRoleList: any = ref([]);
   const initDepartments = async () => {
-    const { code, data } = await getTenantDepartment({ deptId: 0, level: 9 });
+    const { code, data } = await getTenantDepartment({ deptId: 0, level: 9, projectId: props.id });
     const { userRoles = [] } = data;
     userRoleList.value = userRoles;
     if (code === 0) {
@@ -487,6 +487,7 @@ export default function(props: PropType) {
   // 取消
   const handleCancel = () => {
     isEdit.value = true;
+    getAuth(currentNode.value);
   };
 
   // 新建角色 提交取消表单
