@@ -1,14 +1,18 @@
 <template>
   <div class="drawer-content">
     <div class="drawer-content__main">
-      <el-button type="primary" @click="editDtoModel()" class="create-dto__bth" v-if="getShowBool('apiUpdate')"
+      <el-button
+        type="primary"
+        @click="editDtoModel()"
+        class="create-dto__bth"
+        v-if="getShowBool('apiUpdate') && !isRefrenceService"
         >新建</el-button
       >
       <list-wrap
         :loading="loading"
         :inProject="false"
         :empty="dtoList?.length === 0"
-        :hasCreateAuth="getShowBool('apiUpdate')"
+        :hasCreateAuth="getShowBool('apiUpdate') && !isRefrenceService"
         :handleCreate="() => editDtoModel()"
       >
         <el-table :data="dtoList" height="calc(100% - 60px)">
@@ -30,7 +34,7 @@
               {{ scope.row.zhName }}
             </template>
           </el-table-column>
-          <el-table-column label="操作" align="right" v-if="getShowBool('apiUpdate')">
+          <el-table-column label="操作" align="right" v-if="getShowBool('apiUpdate') && !isRefrenceService">
             <template #default="scope">
               <el-button @click="editDtoModel(scope.row)" type="text" size="small">编辑</el-button>
               <el-button @click="removeDtoModel(scope.row)" type="text" size="small">删除</el-button>
@@ -76,6 +80,10 @@ export default defineComponent({
       default: false,
     },
     showCloseBtn: {
+      type: Boolean,
+      default: false,
+    },
+    isRefrenceService: {
       type: Boolean,
       default: false,
     },

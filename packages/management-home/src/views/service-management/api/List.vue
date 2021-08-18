@@ -115,7 +115,10 @@
         @click="handleGetDebugUrl"
         >接口调试</el-button
       >
-      <el-button @click="handleToEditStats" type="primary" v-if="!isEditStats && getShowBool('apiUpdate')"
+      <el-button
+        @click="handleToEditStats"
+        type="primary"
+        v-if="!isEditStats && getShowBool('apiUpdate') && !isRefrenceService"
         >编辑</el-button
       >
       <el-button @click="handleClose">{{ isEditStats ? '取消' : '关闭' }}</el-button>
@@ -153,6 +156,10 @@ export default defineComponent({
     status: {
       type: Number,
       default: 1,
+    },
+    isRefrenceService: {
+      type: Boolean,
+      default: false,
     },
   },
   setup(props, { emit }) {

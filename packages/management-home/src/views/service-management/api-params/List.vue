@@ -23,7 +23,7 @@
       :loading="loading"
       :inProject="false"
       :empty="list.length === 0"
-      :hasCreateAuth="getShowBool('apiUpdate')"
+      :hasCreateAuth="getShowBool('apiUpdate') && !isRefrenceService"
       :handleCreate="handleAdd"
     >
       <el-table
@@ -177,7 +177,7 @@
       ><code v-html="previewCode" class="json" style="background: #f5f5f5; padding: 10px;"></code></pre>
     </div>
 
-    <div class="params-form-btns" v-if="getShowBool('apiUpdate')">
+    <div class="params-form-btns" v-if="getShowBool('apiUpdate') && !isRefrenceService">
       <el-button type="primary" @click="handleToggleEdit(true)" v-if="!isEdit && list.length > 0">编辑</el-button>
       <template v-else-if="isEdit">
         <el-button type="primary" @click="handleSave" :loading="submitting">确定</el-button>
@@ -229,6 +229,7 @@ import { ElMessage, ElMessageBox } from 'element-plus';
 import { getApiParams, saveApiParams } from '@/api/servers';
 import _ from 'lodash';
 import { getShowBool } from '@/utils/permission-show-module';
+import { useCheckRefrenceService } from '../business-service/utils/permisson';
 const POST_METHODTYPES = ['POST', 'PUT', 'PATCH'];
 const GET_METHODTYPES = ['GET', 'DELETE'];
 export default defineComponent({
@@ -247,6 +248,12 @@ export default defineComponent({
       default: false,
     },
     apiInfo: {
+      type: Object,
+      default() {
+        return {};
+      },
+    },
+    serviceInfo: {
       type: Object,
       default() {
         return {};
@@ -738,6 +745,8 @@ export default defineComponent({
       return !isEdit.value || row.readonly || (define.name === 'item' && define.parent?.type === 'Array');
     };
 
+    const { isRefrenceService } = useCheckRefrenceService(ref(props.serviceInfo));
+
     return {
       methodType,
       paramsMethod,
@@ -791,6 +800,7 @@ export default defineComponent({
       getShowBool,
       handleContentTypeChange,
       nameIsReadonly,
+      isRefrenceService,
     };
   },
 });

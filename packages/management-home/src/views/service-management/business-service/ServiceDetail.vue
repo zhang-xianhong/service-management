@@ -139,6 +139,7 @@
               :modelList="modelList.tables"
               :modelFieldsLoading="modelFieldsLoading"
               :showCloseBtn="true"
+              :isRefrenceService="isRefrenceService"
               @back="isShowDownDrawer = false"
             ></component>
           </keep-alive>

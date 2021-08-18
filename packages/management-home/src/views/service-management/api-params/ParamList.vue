@@ -4,12 +4,12 @@
     <el-tabs v-model="activeTab" v-loading="loading">
       <el-tab-pane label="请求参数" name="req">
         <div class="tab-content-wrap">
-          <params-list :apiInfo="apiInfo" v-if="apiInfo" />
+          <params-list :apiInfo="apiInfo" :serviceInfo="serviceInfo" v-if="apiInfo" />
         </div>
       </el-tab-pane>
       <el-tab-pane label="返回参数" name="res">
         <div class="tab-content-wrap">
-          <params-list :is-response="true" :apiInfo="apiInfo" v-if="apiInfo" />
+          <params-list :is-response="true" :apiInfo="apiInfo" :serviceInfo="serviceInfo" v-if="apiInfo" />
         </div>
       </el-tab-pane>
     </el-tabs>
@@ -18,7 +18,7 @@
 <script>
 import { defineComponent, ref } from 'vue';
 import ParamsList from './List.vue';
-import { findServiceApi } from '@/api/servers/index';
+import { findServiceApi, getServiceById } from '@/api/servers/index';
 import { useRoute } from 'vue-router';
 export default defineComponent({
   components: {
@@ -28,25 +28,36 @@ export default defineComponent({
     const activeTab = ref('req');
     const loading = ref(false);
     const apiInfo = ref(null);
+    const serviceInfo = ref(null);
     const route = useRoute();
     const serviceId = ref(route.params.serviceId);
     const apiId = ref(route.params.apiId);
 
     const getInfo = async () => {
       loading.value = true;
-      const { data } = await findServiceApi({
-        serviceId: serviceId.value,
-        uniqueId: apiId.value,
-      });
-      apiInfo.value = data;
+      try {
+        const [resServiceInfo, resApiInfo] = await Promise.all([
+          getServiceById({
+            id: serviceId.value,
+          }),
+          findServiceApi({
+            serviceId: serviceId.value,
+            uniqueId: apiId.value,
+          }),
+        ]);
+        serviceInfo.value = resServiceInfo.data;
+        apiInfo.value = resApiInfo.data;
+      } catch (e) {}
       loading.value = false;
     };
+
     getInfo();
 
     return {
       activeTab,
       loading,
       apiInfo,
+      serviceInfo,
       serviceId,
       apiId,
     };
