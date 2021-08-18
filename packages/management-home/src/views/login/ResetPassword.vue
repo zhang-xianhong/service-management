@@ -7,7 +7,7 @@
 <script lang="ts">
 import { defineComponent, onMounted, ref } from 'vue';
 import LoginPage from './Index.vue';
-import PasswordForm from './components/Password.vue';
+import PasswordForm from './components/ResetPasswordForm.vue';
 import { verifyCouldResetPassword } from '@/api/company/users';
 import useMsg from './useMsg';
 export default defineComponent({
