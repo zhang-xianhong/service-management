@@ -2,7 +2,7 @@
   <div class="add-model-btn" @click="showDialog">
     <i class="el-icon-plus"></i>
     <span>添加数据对象</span>
-    <el-dialog v-model="dialogVisible" title="创建数据对象" width="600px">
+    <el-dialog v-model="dialogVisible" title="创建数据对象" width="600px" append-to-body>
       <el-form ref="formRef" label-width="120px" label-position="left" :model="form" :rules="rules">
         <el-form-item label="数据对象名称" prop="name">
           <el-input v-model.trim="form.name" ref="objectName"></el-input>
@@ -65,15 +65,17 @@ export default defineComponent({
       }
       // 英文驼峰名验证
       submitting.value = true;
-      const { code } = await createModel({
-        ...form.value,
-        serviceId,
-      });
-      if (code === 0) {
-        dialogVisible.value = false;
-        ElMessage.success('创建成功');
-        erdEmit('model-change');
-      }
+      try {
+        const { code } = await createModel({
+          ...form.value,
+          serviceId,
+        });
+        if (code === 0) {
+          dialogVisible.value = false;
+          ElMessage.success('创建成功');
+          erdEmit('model-change');
+        }
+      } catch (e) {}
       submitting.value = false;
     };
     const rules = {
